@@ -4,11 +4,12 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "parcel index.html",
+    "start": "parcel index.html --host prod.foo.redhat.com --https --port 1337",
     "build": "parcel build index.html"
   },
   "dependencies": {
     "@xstate/inspect": "^0.4.1",
+    "keycloak-js": "^9.0.0",
     "react-app-polyfill": "^1.0.0"
   },
   "alias": {

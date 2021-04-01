@@ -4,6 +4,7 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.2.7",
     "@changesets/cli": "^2.10.3",
+    "@openapitools/openapi-generator-cli": "2.1.7",
     "@types/react": "^16.9.43",
     "@types/react-dom": "^16.9.8",
     "cypress": "^5.2.0",
@@ -22,13 +23,15 @@
     "test": "lerna run test --",
     "lint": "lerna run lint -- --fix",
     "build": "lerna run build",
-    "prepublish": "lerna run prepublish",
+    "prepublish": "yarn run api:generate && lerna run prepublish",
     "start:app": "yarn run build && yarn --cwd example && yarn --cwd example start",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
     "changeset": "changeset",
     "release": "changeset publish",
     "version:canary": "changeset version --snapshot canary",
-    "release:canary": "changeset publish --tag canary"
+    "release:canary": "changeset publish --tag canary",
+
+    "api:generate": "openapi-generator-cli generate -i mas-mock/managed-services-api.yaml -g typescript-axios -o packages/api --additional-properties=ngVersion=6.1.7,npmName=@kas-connectors/api,supportsES6=true,withInterfaces=true"
   }
 }

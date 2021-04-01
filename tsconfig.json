@@ -6,6 +6,7 @@
     "baseUrl": ".",
     "typeRoots": ["./node_modules/@types", "./types"],
     "paths": {
+      "@kas-connectors/api": ["packages/api/src"],
       "@kas-connectors/machines": ["packages/machines/src"],
       "@kas-connectors/react": ["packages/configurator/src"],
       "$test/*": ["test/*"]

@@ -1,20 +1,55 @@
 import { inspect } from '@xstate/inspect';
 import 'react-app-polyfill/ie11';
-import "@patternfly/react-core/dist/styles/base.css";
+import '@patternfly/react-core/dist/styles/base.css';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { Spinner } from '@patternfly/react-core';
 import { ConnectorConfigurator } from '@kas-connectors/configurator';
+import { getKeycloakInstance } from './auth/keycloak/keycloakAuth';
+import { AuthContext } from './auth/AuthContext';
+import {
+  KeycloakAuthProvider,
+  KeycloakContext,
+} from './auth/keycloak/KeycloakContext';
+import Keycloak from 'keycloak-js';
+
+let keycloak: Keycloak.KeycloakInstance | undefined;
 
 inspect({
-  iframe: () => document.querySelector('iframe[data-xstate]')
+  iframe: () => document.querySelector('iframe[data-xstate]'),
 });
 
 const App = () => {
+  const [initialized, setInitialized] = React.useState(false);
+
+  // Initialize the client
+  React.useEffect(() => {
+    const init = async () => {
+      keycloak = await getKeycloakInstance();
+      setInitialized(true);
+    };
+    init();
+  }, []);
+
+  if (!initialized) return <Spinner />;
+
   return (
-    <div data-test-id="zop">
-      <ConnectorConfigurator />
-    </div>
+    <KeycloakContext.Provider value={{ keycloak, profile: keycloak?.profile }}>
+      <KeycloakAuthProvider>
+        <div data-test-id="zop">
+          <ConnectedConnectorConfigurator />
+        </div>
+      </KeycloakAuthProvider>
+    </KeycloakContext.Provider>
   );
 };
+
+const ConnectedConnectorConfigurator = () => {
+  const authContext = React.useContext(AuthContext);
+
+  return (
+    <ConnectorConfigurator authToken={authContext?.getToken} basePath={process.env.BASE_PATH} />
+  )
+}
 
 ReactDOM.render(<App />, document.getElementById('root'));

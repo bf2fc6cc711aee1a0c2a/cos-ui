@@ -1,9 +1,11 @@
+import { KafkaRequest } from '@kas-connectors/api';
 import { Machine, assign } from 'xstate';
 import { kafkaInstancesMachine } from './KafkaInstancesMachine';
 
 type ConfiguratorContext = {
-  authToken?: string;
-  selectedKafkaInstance?: string;
+  authToken?: Promise<string>;
+  basePath?: string;
+  selectedKafkaInstance?: KafkaRequest;
   selectedCluster?: string;
   connectorType?: any;
   connectorData?: any;
@@ -13,10 +15,7 @@ export const configuratorMachine = Machine<ConfiguratorContext>(
   {
     id: 'connector-configurator',
     initial: 'selectKafka',
-    context: {
-      authToken: 'asdasdasd',
-      selectedKafkaInstance: undefined,
-    },
+    context: {},
     states: {
       selectKafka: {
         invoke: {
@@ -24,14 +23,17 @@ export const configuratorMachine = Machine<ConfiguratorContext>(
           src: kafkaInstancesMachine,
           data: context => ({
             authToken: context.authToken,
+            basePath: context.basePath,
             selectedInstance: context.selectedKafkaInstance,
           }),
+          onError: {
+            actions: (_context, event) => console.error(event.data.message)
+          }
         },
         on: {
-          selectedKafkaInstance: {
+          selectedInstanceChange: {
             actions: assign({
-              selectedKafkaInstance: (_context, event) =>
-                event.selectedInstance,
+              selectedKafkaInstance: (_context, event) => event.selectedInstance
             }),
           },
           next: {
