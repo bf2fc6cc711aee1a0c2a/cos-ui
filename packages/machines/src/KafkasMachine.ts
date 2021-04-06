@@ -79,9 +79,9 @@ const notifyParent = sendParent<Context, selectInstanceEvent, selectedInstanceCh
   selectedInstance: context.selectedInstance!,
 }))
 
-export const kafkaInstancesMachine = createMachine<Context, Event, State>(
+export const kafkasMachine = createMachine<Context, Event, State>(
   {
-    id: 'kafka-instances',
+    id: 'kafkas',
     initial: 'loading',
     states: {
       loading: {

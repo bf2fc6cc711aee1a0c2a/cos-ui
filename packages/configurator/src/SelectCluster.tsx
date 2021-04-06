@@ -12,28 +12,28 @@ import {
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { useActor } from '@xstate/react';
 import { ActorRefFrom } from 'xstate';
-import { kafkasMachine } from '@kas-connectors/machines';
+import { clustersMachine } from '@kas-connectors/machines';
 import React from 'react';
 
 const EMPTY_KEY = '__empty__';
 
-export type SelectKafkaInstanceProps = {
-  actor: ActorRefFrom<typeof kafkasMachine>;
+export type SelectClusterProps = {
+  actor: ActorRefFrom<typeof clustersMachine>;
 };
 
-export function SelectKafkaInstance({ actor }: SelectKafkaInstanceProps) {
+export function SelectCluster({ actor }: SelectClusterProps) {
   const [state, send] = useActor(actor);
   const [toggled, setToggled] = useState(false);
 
   const onToggle = () => setToggled(!toggled);
   const onSelect = (_event: any, value: string | SelectOptionObject) => {
-    send({ type: 'selectInstance', selectedInstance: value as string });
+    send({ type: 'selectCluster', selectedCluster: value as string });
     onToggle();
   };
 
   const instancesWithEmpty = [
     { id: EMPTY_KEY, name: 'Please select an instance' },
-    ...(state.context.instances?.items || []).map(i => ({ id: i.id, name: i.name })),
+    ...(state.context.clusters?.items || []).map(i => ({ id: i.id, name: i.metadata?.name || `Cluster ${i.id}` })),
   ];
 
   switch (true) {
@@ -58,17 +58,17 @@ export function SelectKafkaInstance({ actor }: SelectKafkaInstanceProps) {
     default:
       return (
         <div>
-          <Title headingLevel="h2" id="select-kafka-instance-title">
-            Select Kafka instance
+          <Title headingLevel="h2" id="select-cluster-title">
+            Select OCM Cluster
           </Title>
           <Select
             variant={SelectVariant.single}
             aria-label="Select Input"
             onToggle={onToggle}
             onSelect={onSelect}
-            selections={state.context.selectedInstance?.id || EMPTY_KEY}
+            selections={state.context.selectedCluster?.id || EMPTY_KEY}
             isOpen={toggled}
-            aria-labelledby={'select-kafka-instance-title'}
+            aria-labelledby={'select-cluster-title'}
           >
             {instancesWithEmpty.map((i, idx) => (
               <SelectOption

@@ -1,13 +1,15 @@
-import { KafkaRequest } from '@kas-connectors/api';
+import { KafkaRequest, ConnectorCluster, ConnectorType } from '@kas-connectors/api';
 import { Machine, assign } from 'xstate';
-import { kafkaInstancesMachine } from './KafkaInstancesMachine';
+import { kafkasMachine } from './KafkasMachine';
+import { clustersMachine } from './ClustersMachine';
+import { connectorsMachine } from './ConnectorsMachine';
 
 type ConfiguratorContext = {
   authToken?: Promise<string>;
   basePath?: string;
   selectedKafkaInstance?: KafkaRequest;
-  selectedCluster?: string;
-  connectorType?: any;
+  selectedCluster?: ConnectorCluster;
+  selectedConnector?: ConnectorType;
   connectorData?: any;
 };
 
@@ -20,7 +22,7 @@ export const configuratorMachine = Machine<ConfiguratorContext>(
       selectKafka: {
         invoke: {
           id: 'selectKafkaInstance',
-          src: kafkaInstancesMachine,
+          src: kafkasMachine,
           data: context => ({
             authToken: context.authToken,
             basePath: context.basePath,
@@ -43,13 +45,47 @@ export const configuratorMachine = Machine<ConfiguratorContext>(
         },
       },
       selectCluster: {
+        invoke: {
+          id: 'selectCluster',
+          src: clustersMachine,
+          data: context => ({
+            authToken: context.authToken,
+            basePath: context.basePath,
+            selectedCluster: context.selectedCluster,
+          }),
+          onError: {
+            actions: (_context, event) => console.error(event.data.message)
+          }
+        },
         on: {
+          selectedClusterChange: {
+            actions: assign({
+              selectedCluster: (_context, event) => event.selectedCluster
+            }),
+          },
           next: { target: 'selectConnector', cond: 'isClusterSelected' },
           prev: 'selectKafka',
         },
       },
       selectConnector: {
+        invoke: {
+          id: 'selectConnector',
+          src: connectorsMachine,
+          data: context => ({
+            authToken: context.authToken,
+            basePath: context.basePath,
+            selectedConnector: context.selectedConnector,
+          }),
+          onError: {
+            actions: (_context, event) => console.error(event.data.message)
+          }
+        },
         on: {
+          selectedConnectorChange: {
+            actions: assign({
+              selectedConnector: (_context, event) => event.selectedConnector
+            }),
+          },
           next: { target: 'configureConnector', cond: 'isConnectorSelected' },
           prev: 'selectCluster',
         },
@@ -89,7 +125,7 @@ export const configuratorMachine = Machine<ConfiguratorContext>(
       isKafkaInstanceSelected: context =>
         context.selectedKafkaInstance !== undefined,
       isClusterSelected: context => context.selectedCluster !== undefined,
-      isConnectorSelected: context => context.connectorType !== undefined,
+      isConnectorSelected: context => context.selectedConnector !== undefined,
       isConnectorConfigured: context => context.connectorData !== undefined,
     },
   }

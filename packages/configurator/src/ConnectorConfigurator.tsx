@@ -3,10 +3,14 @@ import { ActorRefFrom } from 'xstate';
 import { useMachine } from '@xstate/react';
 import {
   configuratorMachine,
-  kafkaInstancesMachine,
+  kafkasMachine,
+  clustersMachine,
+  connectorsMachine
 } from '@kas-connectors/machines';
 import { UncontrolledWizard } from './UncontrolledWizard';
 import { SelectKafkaInstance } from './SelectKafkaInstance';
+import { SelectCluster } from './SelectCluster';
+import { SelectConnector } from './SelectConnector';
 
 type ConnectorConfiguratorProps = {
   authToken?: Promise<string>;
@@ -30,7 +34,7 @@ export function ConnectorConfigurator({ authToken, basePath }: ConnectorConfigur
         <SelectKafkaInstance
           actor={
             state.children.selectKafkaInstance as ActorRefFrom<
-              typeof kafkaInstancesMachine
+              typeof kafkasMachine
             >
           }
         />
@@ -43,7 +47,15 @@ export function ConnectorConfigurator({ authToken, basePath }: ConnectorConfigur
     {
       name: 'Select OCM cluster',
       isActive: state.matches('selectCluster'),
-      component: <p>Clusters</p>,
+      component: (
+        <SelectCluster
+          actor={
+            state.children.selectCluster as ActorRefFrom<
+              typeof clustersMachine
+            >
+          }
+        />        
+      ),
       canJumpTo:
         configuratorMachine.transition(state, 'jumpToSelectCluster').changed ||
         state.matches('selectCluster'),
@@ -52,7 +64,15 @@ export function ConnectorConfigurator({ authToken, basePath }: ConnectorConfigur
     {
       name: 'Connector',
       isActive: state.matches('selectConnector'),
-      component: <p>Connector</p>,
+      component: (
+        <SelectConnector
+        actor={
+          state.children.selectConnector as ActorRefFrom<
+            typeof connectorsMachine
+          >
+        }
+      />        
+      ),
       canJumpTo:
         configuratorMachine.transition(state, 'jumpToSelectConnector')
           .changed || state.matches('selectConnector'),

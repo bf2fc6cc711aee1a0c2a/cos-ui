@@ -1,4 +1,4 @@
-
-
 export * from "./ConfiguratorMachine";
-export * from "./KafkaInstancesMachine";
+export * from "./KafkasMachine";
+export * from "./ClustersMachine";
+export * from "./ConnectorsMachine";
