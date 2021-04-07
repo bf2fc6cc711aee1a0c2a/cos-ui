@@ -1,0 +1,3 @@
+{
+  "debezium-postgres-source": {"http://..../config.js"
+}

@@ -4,7 +4,7 @@ import '@patternfly/react-core/dist/styles/base.css';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Spinner } from '@patternfly/react-core';
-import { ConnectorConfigurator } from '@kas-connectors/configurator';
+import { CreationWizard } from '@kas-connectors/configurator';
 import { getKeycloakInstance } from './auth/keycloak/keycloakAuth';
 import { AuthContext } from './auth/AuthContext';
 import {
@@ -16,7 +16,7 @@ import Keycloak from 'keycloak-js';
 let keycloak: Keycloak.KeycloakInstance | undefined;
 
 inspect({
-  iframe: () => document.querySelector('iframe[data-xstate]'),
+  iframe: false
 });
 
 const App = () => {
@@ -37,18 +37,18 @@ const App = () => {
     <KeycloakContext.Provider value={{ keycloak, profile: keycloak?.profile }}>
       <KeycloakAuthProvider>
         <div data-test-id="zop">
-          <ConnectedConnectorConfigurator />
+          <ConnectedCreationWizard />
         </div>
       </KeycloakAuthProvider>
     </KeycloakContext.Provider>
   );
 };
 
-const ConnectedConnectorConfigurator = () => {
+const ConnectedCreationWizard = () => {
   const authContext = React.useContext(AuthContext);
 
   return (
-    <ConnectorConfigurator authToken={authContext?.getToken} basePath={process.env.BASE_PATH} />
+    <CreationWizard authToken={authContext?.getToken} basePath={process.env.BASE_PATH} />
   )
 }
 

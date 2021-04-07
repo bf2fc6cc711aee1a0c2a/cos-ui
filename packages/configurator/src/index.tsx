@@ -1,1 +1,1 @@
-export * from "./ConnectorConfigurator";
+export * from "./CreationWizard";

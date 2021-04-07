@@ -1,132 +1,163 @@
-import { KafkaRequest, ConnectorCluster, ConnectorType } from '@kas-connectors/api';
-import { Machine, assign } from 'xstate';
-import { kafkasMachine } from './KafkasMachine';
-import { clustersMachine } from './ClustersMachine';
-import { connectorsMachine } from './ConnectorsMachine';
+import { createElement, FunctionComponent } from 'react';
+import { ComponentType } from 'react';
+import { ConnectorType } from '@kas-connectors/api';
+import { assign, createMachine, DoneInvokeEvent, sendParent } from 'xstate';
 
-type ConfiguratorContext = {
-  authToken?: Promise<string>;
-  basePath?: string;
-  selectedKafkaInstance?: KafkaRequest;
-  selectedCluster?: ConnectorCluster;
-  selectedConnector?: ConnectorType;
-  connectorData?: any;
+export type ConnectorConfiguratorProps = {
+  activeStep: number;
+  connector: ConnectorType;
+  // internalState: any; // ???
+  configuration: any;
+  onChange: (configuration: any, isValid: boolean) => void;
 };
 
-export const configuratorMachine = Machine<ConfiguratorContext>(
+type ConnectorConfigurator = {
+  steps: string[];
+  configurator: ComponentType<ConnectorConfiguratorProps>;
+};
+
+type ConnectorConfiguratorType = ConnectorConfigurator | null;
+
+const fetchConfigurator = (
+  connector: ConnectorType
+): Promise<ConnectorConfiguratorType> => {
+  const SampleMultiStepConfigurator: FunctionComponent<ConnectorConfiguratorProps> = props =>
+    createElement('p', null, "Active step ", `${props.activeStep}`, " of ", props.connector.id);
+
+  switch (connector.id) {
+    case 'aws-kinesis-source':
+      // this will come from a remote entry point, eg. debezium
+      return Promise.resolve({
+        steps: ['First step', 'Second step', 'Third step'],
+        configurator: SampleMultiStepConfigurator,
+      });
+    default:
+      return Promise.resolve(null);
+  }
+};
+
+type Context = {
+  authToken?: Promise<string>;
+  basePath?: string;
+  connector: ConnectorType;
+  configuration?: any;
+  isValid?: boolean;
+  Configurator: ComponentType<ConnectorConfiguratorProps> | false;
+  steps?: string[] | false;
+  activeStep?: number;
+  error?: string;
+};
+
+type State =
+  | {
+      value: 'loading';
+      context: Context;
+    }
+  | {
+      value: 'success';
+      context: Context & {
+        steps: string[] | false;
+        Configurator: ComponentType<ConnectorConfiguratorProps> | false;
+        activeStep: number;
+        configuration: any;
+        isValid: boolean;
+        error: undefined;
+      };
+    }
+  | {
+      value: 'failure';
+      context: Context & {
+        error: string;
+      };
+    };
+
+type configurationChangeEvent = {
+  type: 'configurationChange';
+  configuration: any;
+  isValid: boolean;
+};
+
+type configurationChangedEvent = {
+  type: 'configurationChange';
+  configuration: any;
+};
+
+type Event = configurationChangeEvent;
+
+const fetchSuccess = assign<
+  Context,
+  DoneInvokeEvent<ConnectorConfiguratorType>
+>((_context, event) =>
+  event.data
+    ? {
+        steps: event.data.steps,
+        Configurator: event.data.configurator,
+        activeStep: 0
+      }
+    : { steps: false, Configurator: false }
+);
+const fetchFailure = assign<Context, DoneInvokeEvent<string>>({
+  error: (_context, event) => event.data,
+});
+const configurationChange = assign<Context, configurationChangeEvent>(
+  (_context, event) => ({
+    configuration: event.configuration,
+    isValid: event.isValid
+  })
+);
+
+const notifyChangeToParent = sendParent<
+  Context,
+  configurationChangeEvent,
+  configurationChangedEvent
+>(context => ({
+  type: 'configurationChange',
+  configuration: context.isValid ? context.configuration : undefined,
+}));
+
+export const configuratorMachine = createMachine<Context, Event, State>(
   {
-    id: 'connector-configurator',
-    initial: 'selectKafka',
-    context: {},
+    id: 'configurator',
+    initial: 'loading',
     states: {
-      selectKafka: {
+      loading: {
         invoke: {
-          id: 'selectKafkaInstance',
-          src: kafkasMachine,
-          data: context => ({
-            authToken: context.authToken,
-            basePath: context.basePath,
-            selectedInstance: context.selectedKafkaInstance,
-          }),
+          id: 'fetchConfigurator',
+          src: context => fetchConfigurator(context.connector),
+          onDone: {
+            target: 'success',
+            actions: fetchSuccess,
+          },
           onError: {
-            actions: (_context, event) => console.error(event.data.message)
-          }
-        },
-        on: {
-          selectedInstanceChange: {
-            actions: assign({
-              selectedKafkaInstance: (_context, event) => event.selectedInstance
-            }),
-          },
-          next: {
-            target: 'selectCluster',
-            cond: 'isKafkaInstanceSelected',
+            target: 'failure',
+            actions: fetchFailure,
           },
         },
       },
-      selectCluster: {
-        invoke: {
-          id: 'selectCluster',
-          src: clustersMachine,
-          data: context => ({
-            authToken: context.authToken,
-            basePath: context.basePath,
-            selectedCluster: context.selectedCluster,
-          }),
-          onError: {
-            actions: (_context, event) => console.error(event.data.message)
-          }
-        },
+      failure: {
+        entry: sendParent(context => ({
+          type: 'loaded',
+          steps: context.steps
+        }))
+      },
+      success: {
+        entry: sendParent(context => ({
+          type: 'loaded',
+          steps: context.steps
+        })),
         on: {
-          selectedClusterChange: {
-            actions: assign({
-              selectedCluster: (_context, event) => event.selectedCluster
-            }),
+          configurationChange: {
+            target: 'success',
+            actions: ['configurationChange', 'notifyChangeToParent'],
           },
-          next: { target: 'selectConnector', cond: 'isClusterSelected' },
-          prev: 'selectKafka',
         },
       },
-      selectConnector: {
-        invoke: {
-          id: 'selectConnector',
-          src: connectorsMachine,
-          data: context => ({
-            authToken: context.authToken,
-            basePath: context.basePath,
-            selectedConnector: context.selectedConnector,
-          }),
-          onError: {
-            actions: (_context, event) => console.error(event.data.message)
-          }
-        },
-        on: {
-          selectedConnectorChange: {
-            actions: assign({
-              selectedConnector: (_context, event) => event.selectedConnector
-            }),
-          },
-          next: { target: 'configureConnector', cond: 'isConnectorSelected' },
-          prev: 'selectCluster',
-        },
-      },
-      configureConnector: {
-        on: {
-          next: { target: 'reviewConfiguration', cond: 'isConnectorConfigured' },
-          prev: 'selectConnector',
-        },
-      },
-      reviewConfiguration: {
-        on: {
-          next: 'complete',
-          prev: 'configureConnector',
-        },
-      },
-      complete: {
-        type: 'final',
-      },
-    },
-    on: {
-      jumpToSelectKafka: 'selectKafka',
-      jumpToSelectCluster: {
-        target: 'selectCluster',
-        cond: 'isKafkaInstanceSelected',
-      },
-      jumpToSelectConnector: {
-        target: 'selectConnector',
-        cond: 'isClusterSelected',
-      },
-      jumpToConfigureConnector: { target: 'configureConnector', cond: 'isConnectorSelected' },
-      jumpToReviewConfiguration: { target: 'reviewConfiguration', cond: 'isConnectorConfigured' },
     },
   },
   {
-    guards: {
-      isKafkaInstanceSelected: context =>
-        context.selectedKafkaInstance !== undefined,
-      isClusterSelected: context => context.selectedCluster !== undefined,
-      isConnectorSelected: context => context.selectedConnector !== undefined,
-      isConnectorConfigured: context => context.connectorData !== undefined,
+    actions: {
+      configurationChange,
+      notifyChangeToParent
     },
   }
 );

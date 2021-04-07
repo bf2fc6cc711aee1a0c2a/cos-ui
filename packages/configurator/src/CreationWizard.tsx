@@ -2,28 +2,33 @@ import * as React from 'react';
 import { ActorRefFrom } from 'xstate';
 import { useMachine } from '@xstate/react';
 import {
-  configuratorMachine,
+  creationWizardMachine,
   kafkasMachine,
   clustersMachine,
-  connectorsMachine
+  connectorsMachine,
+  configuratorMachine,
 } from '@kas-connectors/machines';
 import { UncontrolledWizard } from './UncontrolledWizard';
 import { SelectKafkaInstance } from './SelectKafkaInstance';
 import { SelectCluster } from './SelectCluster';
 import { SelectConnector } from './SelectConnector';
+import { Configuration } from './Configuration';
 
 type ConnectorConfiguratorProps = {
   authToken?: Promise<string>;
   basePath?: string;
-}
+};
 
-export function ConnectorConfigurator({ authToken, basePath }: ConnectorConfiguratorProps) {
-  const [state, send] = useMachine(configuratorMachine, {
+export function CreationWizard({
+  authToken,
+  basePath,
+}: ConnectorConfiguratorProps) {
+  const [state, send] = useMachine(creationWizardMachine, {
     devTools: true,
     context: {
       authToken,
-      basePath
-    }
+      basePath,
+    },
   });
 
   const steps = [
@@ -40,9 +45,9 @@ export function ConnectorConfigurator({ authToken, basePath }: ConnectorConfigur
         />
       ),
       canJumpTo:
-        configuratorMachine.transition(state, 'jumpToSelectKafka').changed ||
+        creationWizardMachine.transition(state, 'jumpToSelectKafka').changed ||
         state.matches('selectKafka'),
-      enableNext: configuratorMachine.transition(state, 'next').changed,
+      enableNext: creationWizardMachine.transition(state, 'next').changed,
     },
     {
       name: 'Select OCM cluster',
@@ -50,49 +55,70 @@ export function ConnectorConfigurator({ authToken, basePath }: ConnectorConfigur
       component: (
         <SelectCluster
           actor={
-            state.children.selectCluster as ActorRefFrom<
-              typeof clustersMachine
-            >
+            state.children.selectCluster as ActorRefFrom<typeof clustersMachine>
           }
-        />        
+        />
       ),
       canJumpTo:
-        configuratorMachine.transition(state, 'jumpToSelectCluster').changed ||
-        state.matches('selectCluster'),
-      enableNext: configuratorMachine.transition(state, 'next').changed,
+        creationWizardMachine.transition(state, 'jumpToSelectCluster')
+          .changed || state.matches('selectCluster'),
+      enableNext: creationWizardMachine.transition(state, 'next').changed,
     },
     {
       name: 'Connector',
       isActive: state.matches('selectConnector'),
       component: (
         <SelectConnector
-        actor={
-          state.children.selectConnector as ActorRefFrom<
-            typeof connectorsMachine
-          >
-        }
-      />        
+          actor={
+            state.children.selectConnector as ActorRefFrom<
+              typeof connectorsMachine
+            >
+          }
+        />
       ),
       canJumpTo:
-        configuratorMachine.transition(state, 'jumpToSelectConnector')
+        creationWizardMachine.transition(state, 'jumpToSelectConnector')
           .changed || state.matches('selectConnector'),
-      enableNext: configuratorMachine.transition(state, 'next').changed,
+      enableNext: creationWizardMachine.transition(state, 'next').changed,
     },
     {
       name: 'Configuration',
       isActive: state.matches('configureConnector'),
-      component: <p>Configuration</p>,
+      component: (
+        <Configuration
+          actor={
+            state.children.configureConnector as ActorRefFrom<
+              typeof configuratorMachine
+            >
+          }
+        />
+      ),
       canJumpTo:
-        configuratorMachine.transition(state, 'jumpToConfigureConnector')
+        creationWizardMachine.transition(state, 'jumpToConfigureConnector')
           .changed || state.matches('configureConnector'),
-      enableNext: configuratorMachine.transition(state, 'next').changed,
+      steps: state.context.configurationSteps
+        ? state.context.configurationSteps.map((s, idx) => ({
+            id: idx,
+            name: s,
+            component: (
+              <Configuration
+                actor={
+                  state.children.configureConnector as ActorRefFrom<
+                    typeof configuratorMachine
+                  >
+                }
+              />
+            ),
+          }))
+        : undefined,
+      enableNext: creationWizardMachine.transition(state, 'next').changed,
     },
     {
       name: 'Review',
       isActive: state.matches('reviewConfiguration'),
       component: <p>Review</p>,
       canJumpTo:
-        configuratorMachine.transition(state, 'jumpToReviewConfiguration')
+        creationWizardMachine.transition(state, 'jumpToReviewConfiguration')
           .changed || state.matches('reviewConfiguration'),
       nextButtonText: 'Create connector',
     },
