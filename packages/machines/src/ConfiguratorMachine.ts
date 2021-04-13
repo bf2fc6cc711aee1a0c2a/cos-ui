@@ -1,13 +1,13 @@
 import { ComponentType } from 'react';
 import { ConnectorType } from '@kas-connectors/api';
-import { assign, Machine, DoneInvokeEvent, sendParent } from 'xstate';
+import { assign, DoneInvokeEvent, sendParent, createMachine } from 'xstate';
 
 export type ConnectorConfiguratorProps = {
   activeStep: number;
   connector: ConnectorType;
-  // internalState: any; // ???
-  configuration: any;
-  onChange: (configuration: any, isValid: boolean) => void;
+  // internalState: unknown; // ???
+  configuration: unknown;
+  onChange: (configuration: unknown, isValid: boolean) => void;
 };
 
 export type ConnectorConfigurator = {
@@ -22,7 +22,7 @@ type Context = {
   authToken?: Promise<string>;
   basePath?: string;
   connector: ConnectorType;
-  configuration?: any;
+  configuration?: unknown;
   isValid?: boolean;
   Configurator: ComponentType<ConnectorConfiguratorProps> | false;
   steps?: string[] | false;
@@ -30,32 +30,32 @@ type Context = {
   error?: string;
 };
 
-// type State =
-//   | {
-//       value: 'loading';
-//       context: Context;
-//     }
-//   | {
-//       value: 'success';
-//       context: Context & {
-//         steps: string[] | false;
-//         Configurator: ComponentType<ConnectorConfiguratorProps> | false;
-//         activeStep: number;
-//         configuration: any;
-//         isValid: boolean;
-//         error: undefined;
-//       };
-//     }
-//   | {
-//       value: 'failure';
-//       context: Context & {
-//         error: string;
-//       };
-//     };
+type State =
+  | {
+      value: 'loading';
+      context: Context;
+    }
+  | {
+      value: 'success';
+      context: Context & {
+        steps: string[] | false;
+        Configurator: ComponentType<ConnectorConfiguratorProps> | false;
+        activeStep: number;
+        configuration: unknown;
+        isValid: boolean;
+        error: undefined;
+      };
+    }
+  | {
+      value: 'failure';
+      context: Context & {
+        error: string;
+      };
+    };
 
 type configurationChangeEvent = {
   type: 'configurationChange';
-  configuration: any;
+  configuration: unknown;
   isValid: boolean;
 };
 
@@ -69,7 +69,7 @@ type nextStepEvent = {
 
 type configurationChangedEvent = {
   type: 'configurationChange';
-  configuration: any;
+  configuration: unknown;
 };
 
 type Event = prevStepEvent | nextStepEvent | configurationChangeEvent;
@@ -105,7 +105,7 @@ const notifyChangeToParent = sendParent<
   configuration: context.isValid ? context.configuration : undefined,
 }));
 
-export const configuratorMachine = Machine<Context, Event>(
+export const configuratorMachine = createMachine<Context, Event, State>(
   {
     id: 'configurator',
     initial: 'loading',

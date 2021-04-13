@@ -3,13 +3,13 @@ import {
   ConnectorCluster,
   ConnectorType,
 } from '@kas-connectors/api';
-import { Machine, assign, send } from 'xstate';
+import { createMachine, assign, send } from 'xstate';
 import { kafkasMachine } from './KafkasMachine';
 import { clustersMachine } from './ClustersMachine';
 import { connectorsMachine } from './ConnectorsMachine';
 import { configuratorMachine } from './ConfiguratorMachine';
 
-type CreationWizardContext = {
+type Context = {
   authToken?: Promise<string>;
   basePath?: string;
   selectedKafkaInstance?: KafkaRequest;
@@ -18,10 +18,128 @@ type CreationWizardContext = {
   configurationSteps?: string[] | false;
   activeConfigurationStep?: number;
   isConfigurationValid?: boolean;
-  connectorData?: any;
+  connectorData?: unknown;
 };
 
-export const creationWizardMachine = Machine<CreationWizardContext>(
+type State =
+  | {
+      value: 'selectKafka';
+      context: Context;
+    } & {
+      selectedKafkaInstance: undefined;
+      selectedCluster: undefined;
+      selectedConnector: undefined;
+      configurationSteps: undefined;
+      activeConfigurationStep: undefined;
+      isConfigurationValid: undefined;
+      connectorData: undefined;
+    }
+  | {
+      value: 'selectCluster';
+      context: Context & {
+        selectedKafkaInstance: KafkaRequest;
+        selectedCluster: undefined;
+        selectedConnector: undefined;
+        configurationSteps: undefined;
+        activeConfigurationStep: undefined;
+        isConfigurationValid: undefined;
+        connectorData: undefined;
+      };
+    }
+  | {
+      value: 'selectConnector';
+      context: Context & {
+        selectedKafkaInstance: KafkaRequest;
+        selectedCluster: ConnectorCluster;
+        selectedConnector: undefined;
+        configurationSteps: undefined;
+        activeConfigurationStep: undefined;
+        isConfigurationValid: undefined;
+        connectorData: undefined;
+      };
+    }
+  | {
+      value: 'configureConnector';
+      context: Context & {
+        selectedKafkaInstance: KafkaRequest;
+        selectedCluster: ConnectorCluster;
+        selectedConnector: ConnectorType;
+        configurationSteps: string[] | false;
+        activeConfigurationStep?: number;
+        isConfigurationValid: boolean;
+        connectorData: undefined;
+      };
+    }
+  | {
+      value: 'reviewConfiguration';
+      context: Context & {
+        selectedKafkaInstance: KafkaRequest;
+        selectedCluster: ConnectorCluster;
+        selectedConnector: ConnectorType;
+        configurationSteps: string[] | false;
+        activeConfigurationStep?: number;
+        isConfigurationValid: true;
+        connectorData: unknown;
+      };
+    }
+  ;
+
+type prevStepEvent = {
+  type: 'prev';
+};
+
+type nextStepEvent = {
+  type: 'next';
+};
+
+type selectedInstanceChangeEvent = {
+  type: 'selectedInstanceChange';
+  selectedInstance: KafkaRequest;
+};
+
+type selectedClusterChangeEvent = {
+  type: 'selectedClusterChange';
+  selectedCluster: ConnectorCluster;
+};
+
+type selectedConnectorChangeEvent = {
+  type: 'selectedConnectorChange';
+  selectedConnector: ConnectorType;
+};
+
+type configuratorLoadedEvent = {
+  type: 'loaded';
+  steps: string[] | false;
+  activeStep?: number;
+  isValid: boolean;
+};
+
+type configurationChangedEvent = {
+  type: 'configurationChange';
+  configuration: unknown;
+};
+
+type jumpToSelectKafkaEvent = { type: 'jumpToSelectKafka' };
+type jumpToSelectClusterEvent = { type: 'jumpToSelectCluster' };
+type jumpToSelectConnectorEvent = { type: 'jumpToSelectConnector' };
+type jumpToConfigureConnectorEvent = { type: 'jumpToConfigureConnector' };
+type jumpToReviewConfigurationEvent = { type: 'jumpToReviewConfiguration' };
+
+type Event =
+  | prevStepEvent
+  | nextStepEvent
+  | selectedInstanceChangeEvent
+  | selectedClusterChangeEvent
+  | selectedConnectorChangeEvent
+  | configuratorLoadedEvent
+  | configurationChangedEvent
+  | jumpToSelectKafkaEvent
+  | jumpToSelectClusterEvent
+  | jumpToSelectConnectorEvent
+  | jumpToConfigureConnectorEvent
+  | jumpToReviewConfigurationEvent;
+
+export const creationWizardMachine = createMachine<Context, Event, State>(
   {
     id: 'creationWizard',
     initial: 'selectKafka',
@@ -93,7 +211,7 @@ export const creationWizardMachine = Machine<CreationWizardContext>(
           selectedConnectorChange: {
             actions: assign((_context, event) => ({
               selectedConnector: event.selectedConnector,
-              connectorData: undefined
+              connectorData: undefined,
             })),
           },
           next: { target: 'configureConnector', cond: 'isConnectorSelected' },
@@ -134,8 +252,11 @@ export const creationWizardMachine = Machine<CreationWizardContext>(
             },
           ],
           prev: [
-            { actions: send('prev', { to: 'configureConnector'}), cond: 'areThereSubsteps' },
-            { target: 'selectConnector' }
+            {
+              actions: send('prev', { to: 'configureConnector' }),
+              cond: 'areThereSubsteps',
+            },
+            { target: 'selectConnector' },
           ],
         },
       },
@@ -179,12 +300,20 @@ export const creationWizardMachine = Machine<CreationWizardContext>(
         if (!context.configurationSteps) {
           return context.connectorData !== undefined;
         }
-        return context.connectorData !== undefined && context.activeConfigurationStep === (context.configurationSteps.length - 1) && context.isConfigurationValid === true;
+        return (
+          context.connectorData !== undefined &&
+          context.activeConfigurationStep ===
+            context.configurationSteps.length - 1 &&
+          context.isConfigurationValid === true
+        );
       },
-      areThereSubsteps: context => context.configurationSteps ? context.activeConfigurationStep! > 0 : false
+      areThereSubsteps: context =>
+        context.configurationSteps
+          ? context.activeConfigurationStep! > 0
+          : false,
     },
     services: {
-      makeConfiguratorMachine: () => configuratorMachine
-    }
+      makeConfiguratorMachine: () => configuratorMachine,
+    },
   }
 );

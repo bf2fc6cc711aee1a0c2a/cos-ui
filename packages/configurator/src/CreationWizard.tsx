@@ -183,7 +183,7 @@ export function CreationWizard({
       case 4:
         send('jumpToConfigureConnector');
         break;
-      case 5:
+      case (flattenedSteps.length - 1):
         send('jumpToReviewConfiguration');
         break;
     }
