@@ -7,14 +7,43 @@ import {
   clustersMachine,
   connectorsMachine,
   configuratorMachine,
+  ConnectorConfiguratorType, 
+  ConnectorConfiguratorProps
 } from '@kas-connectors/machines';
-import { UncontrolledWizard } from './UncontrolledWizard';
+import { ConnectorType } from "@kas-connectors/api";
+import { UncontrolledWizard, getFlattenedSteps, WizardStep } from './UncontrolledWizard';
 import { SelectKafkaInstance } from './SelectKafkaInstance';
 import { SelectCluster } from './SelectCluster';
 import { SelectConnector } from './SelectConnector';
 import { Configuration } from './Configuration';
 
-type ConnectorConfiguratorProps = {
+
+const SampleMultiStepConfigurator: React.FunctionComponent<ConnectorConfiguratorProps> = props => (
+  <div>
+    <p>Active step {props.activeStep} of {props.connector.id}</p>
+    <button onClick={() => props.onChange(props.activeStep === 2 ? {foo: "bar"} : undefined, true)}>Set valid</button>
+  </div>
+);
+
+const fetchConfigurator = (
+  connector: ConnectorType
+): Promise<ConnectorConfiguratorType> => {
+
+  switch (connector.id) {
+    case 'aws-kinesis-source':
+      // this will come from a remote entry point, eg. debezium
+      return Promise.resolve({
+        steps: ['First step', 'Second step', 'Third step'],
+        configurator: SampleMultiStepConfigurator,
+        isValid: false,
+        activeStep: 0
+      });
+    default:
+      return Promise.resolve(null);
+  }
+};
+
+type CreationWizardProps = {
   authToken?: Promise<string>;
   basePath?: string;
 };
@@ -22,13 +51,20 @@ type ConnectorConfiguratorProps = {
 export function CreationWizard({
   authToken,
   basePath,
-}: ConnectorConfiguratorProps) {
+}: CreationWizardProps) {
   const [state, send] = useMachine(creationWizardMachine, {
     devTools: true,
     context: {
       authToken,
       basePath,
     },
+    services: {
+      makeConfiguratorMachine: () => configuratorMachine.withConfig({
+        services: {
+          fetchConfigurator: (context) => fetchConfigurator(context.connector)
+        }
+      })
+    }
   });
 
   const steps = [
@@ -100,6 +136,8 @@ export function CreationWizard({
         ? state.context.configurationSteps.map((s, idx) => ({
             id: idx,
             name: s,
+            isActive: state.matches('configureConnector') && state.context.activeConfigurationStep === idx,
+            canJumpTo: state.context.activeConfigurationStep! >= idx,
             component: (
               <Configuration
                 actor={
@@ -124,7 +162,8 @@ export function CreationWizard({
     },
   ];
 
-  const currentStep = steps.findIndex(s => s.isActive) + 1;
+  const flattenedSteps = (getFlattenedSteps(steps) as Array<WizardStep & {isActive: boolean}>);
+  const currentStep = flattenedSteps.reduceRight<number>((idx, s, currentIdx) => (s.isActive && currentIdx > idx) ? currentIdx : idx, -1) + 1;
 
   const onNext = () => send('next');
   const onBack = () => send('prev');

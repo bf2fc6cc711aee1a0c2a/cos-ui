@@ -1,7 +1,6 @@
-import { createElement, FunctionComponent } from 'react';
 import { ComponentType } from 'react';
 import { ConnectorType } from '@kas-connectors/api';
-import { assign, createMachine, DoneInvokeEvent, sendParent } from 'xstate';
+import { assign, Machine, DoneInvokeEvent, sendParent } from 'xstate';
 
 export type ConnectorConfiguratorProps = {
   activeStep: number;
@@ -11,30 +10,13 @@ export type ConnectorConfiguratorProps = {
   onChange: (configuration: any, isValid: boolean) => void;
 };
 
-type ConnectorConfigurator = {
+export type ConnectorConfigurator = {
   steps: string[];
   configurator: ComponentType<ConnectorConfiguratorProps>;
+  isValid: boolean;
 };
 
-type ConnectorConfiguratorType = ConnectorConfigurator | null;
-
-const fetchConfigurator = (
-  connector: ConnectorType
-): Promise<ConnectorConfiguratorType> => {
-  const SampleMultiStepConfigurator: FunctionComponent<ConnectorConfiguratorProps> = props =>
-    createElement('p', null, "Active step ", `${props.activeStep}`, " of ", props.connector.id);
-
-  switch (connector.id) {
-    case 'aws-kinesis-source':
-      // this will come from a remote entry point, eg. debezium
-      return Promise.resolve({
-        steps: ['First step', 'Second step', 'Third step'],
-        configurator: SampleMultiStepConfigurator,
-      });
-    default:
-      return Promise.resolve(null);
-  }
-};
+export type ConnectorConfiguratorType = ConnectorConfigurator | null;
 
 type Context = {
   authToken?: Promise<string>;
@@ -48,28 +30,28 @@ type Context = {
   error?: string;
 };
 
-type State =
-  | {
-      value: 'loading';
-      context: Context;
-    }
-  | {
-      value: 'success';
-      context: Context & {
-        steps: string[] | false;
-        Configurator: ComponentType<ConnectorConfiguratorProps> | false;
-        activeStep: number;
-        configuration: any;
-        isValid: boolean;
-        error: undefined;
-      };
-    }
-  | {
-      value: 'failure';
-      context: Context & {
-        error: string;
-      };
-    };
+// type State =
+//   | {
+//       value: 'loading';
+//       context: Context;
+//     }
+//   | {
+//       value: 'success';
+//       context: Context & {
+//         steps: string[] | false;
+//         Configurator: ComponentType<ConnectorConfiguratorProps> | false;
+//         activeStep: number;
+//         configuration: any;
+//         isValid: boolean;
+//         error: undefined;
+//       };
+//     }
+//   | {
+//       value: 'failure';
+//       context: Context & {
+//         error: string;
+//       };
+//     };
 
 type configurationChangeEvent = {
   type: 'configurationChange';
@@ -77,12 +59,20 @@ type configurationChangeEvent = {
   isValid: boolean;
 };
 
+type prevStepEvent = {
+  type: 'prev';
+};
+
+type nextStepEvent = {
+  type: 'next';
+};
+
 type configurationChangedEvent = {
   type: 'configurationChange';
   configuration: any;
 };
 
-type Event = configurationChangeEvent;
+type Event = prevStepEvent | nextStepEvent | configurationChangeEvent;
 
 const fetchSuccess = assign<
   Context,
@@ -92,30 +82,30 @@ const fetchSuccess = assign<
     ? {
         steps: event.data.steps,
         Configurator: event.data.configurator,
-        activeStep: 0
+        isValid: event.data.isValid,
       }
     : { steps: false, Configurator: false }
 );
 const fetchFailure = assign<Context, DoneInvokeEvent<string>>({
   error: (_context, event) => event.data,
 });
-const configurationChange = assign<Context, configurationChangeEvent>(
+const configurationChange = assign<Context, Event>(
   (_context, event) => ({
-    configuration: event.configuration,
-    isValid: event.isValid
+    configuration: (event as configurationChangeEvent).configuration,
+    isValid: (event as configurationChangeEvent).isValid
   })
 );
 
 const notifyChangeToParent = sendParent<
   Context,
-  configurationChangeEvent,
+  Event,
   configurationChangedEvent
 >(context => ({
   type: 'configurationChange',
   configuration: context.isValid ? context.configuration : undefined,
 }));
 
-export const configuratorMachine = createMachine<Context, Event, State>(
+export const configuratorMachine = Machine<Context, Event>(
   {
     id: 'configurator',
     initial: 'loading',
@@ -123,7 +113,7 @@ export const configuratorMachine = createMachine<Context, Event, State>(
       loading: {
         invoke: {
           id: 'fetchConfigurator',
-          src: context => fetchConfigurator(context.connector),
+          src: 'fetchConfigurator',
           onDone: {
             target: 'success',
             actions: fetchSuccess,
@@ -137,15 +127,42 @@ export const configuratorMachine = createMachine<Context, Event, State>(
       failure: {
         entry: sendParent(context => ({
           type: 'loaded',
-          steps: context.steps
+          steps: context.steps,
+          activeStep: context.activeStep
         }))
       },
       success: {
-        entry: sendParent(context => ({
-          type: 'loaded',
-          steps: context.steps
-        })),
+        entry: [
+          assign(context => ({
+            activeStep: context.activeStep || 0
+          })),
+          sendParent(context => ({
+            type: 'loaded',
+            steps: context.steps,
+            activeStep: context.activeStep,
+            isValid: context.isValid,
+          }))
+        ],
         on: {
+          prev: {
+            target: 'success',
+            actions: [
+              assign(ctx => ({
+                activeStep: ctx.activeStep! - 1,
+                isValid: false
+              }))
+            ]
+          },
+          next: {
+            target: 'success',
+            cond: 'canGoNextStep',
+            actions: [
+              assign(ctx => ({
+                activeStep: ctx.activeStep! + 1,
+                isValid: false
+              }))
+            ]
+          },
           configurationChange: {
             target: 'success',
             actions: ['configurationChange', 'notifyChangeToParent'],
@@ -159,5 +176,8 @@ export const configuratorMachine = createMachine<Context, Event, State>(
       configurationChange,
       notifyChangeToParent
     },
+    guards: {
+      canGoNextStep: context => context.isValid === true
+    }
   }
 );

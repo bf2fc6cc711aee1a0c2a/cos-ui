@@ -1,8 +1,7 @@
 {
   "inputs": [
     { "inputFile": "./openapi/kas-fleet-manager.yaml"  },
-    { "inputFile": "./openapi/kas-fleet-manager-private.yaml" },
-    { "// inputFile": "./openapi/cluster_mgmt.json" }
+    { "inputFile": "./openapi/kas-fleet-manager-private.yaml" }
   ], 
   "output": "./mas-mock/merged-openapi.yaml"
 }

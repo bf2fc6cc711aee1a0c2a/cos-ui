@@ -3,6 +3,20 @@ import { css } from '@patternfly/react-styles';
 import styles from '@patternfly/react-styles/css/components/Wizard/wizard';
 import { WizardNavItemProps, PickOptional, KEY_CODES, WizardNav, WizardNavItem, WizardContextProvider, WizardHeader, WizardToggle, Modal, ModalVariant, Button, ButtonVariant } from '@patternfly/react-core';
 
+export function getFlattenedSteps(steps: WizardStep[]): WizardStep[] {
+  const flattenedSteps: WizardStep[] = [];
+  for (const step of steps) {
+    if (step.steps) {
+      for (const childStep of step.steps) {
+        flattenedSteps.push(childStep);
+      }
+    } else {
+      flattenedSteps.push(step);
+    }
+  }
+  return flattenedSteps;
+};
+
 export interface WizardStep {
   /** Optional identifier */
   id?: string | number;
@@ -192,17 +206,7 @@ export class UncontrolledWizard extends React.Component<WizardProps, WizardState
 
   private getFlattenedSteps = (): WizardStep[] => {
     const { steps } = this.props;
-    const flattenedSteps: WizardStep[] = [];
-    for (const step of steps) {
-      if (step.steps) {
-        for (const childStep of step.steps) {
-          flattenedSteps.push(childStep);
-        }
-      } else {
-        flattenedSteps.push(step);
-      }
-    }
-    return flattenedSteps;
+    return getFlattenedSteps(steps);
   };
 
   private getFlattenedStepsIndex = (flattenedSteps: WizardStep[], stepName: React.ReactNode): number => {
