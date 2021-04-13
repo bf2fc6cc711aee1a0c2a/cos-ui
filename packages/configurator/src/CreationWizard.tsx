@@ -137,7 +137,9 @@ export function CreationWizard({
             id: idx,
             name: s,
             isActive: state.matches('configureConnector') && state.context.activeConfigurationStep === idx,
-            canJumpTo: state.context.activeConfigurationStep! >= idx,
+            canJumpTo: creationWizardMachine.transition(state, { type:'jumpToConfigureConnector', subStep: idx })
+            .changed,
+            enableNext: (creationWizardMachine.transition(state, 'next').value === "reviewConfiguration") || state.context.isConfigurationValid,
             component: (
               <Configuration
                 actor={
@@ -183,9 +185,13 @@ export function CreationWizard({
       case 4:
         send('jumpToConfigureConnector');
         break;
-      case (flattenedSteps.length - 1):
+      case flattenedSteps.length:
         send('jumpToReviewConfiguration');
         break;
+      default:
+        if (stepIndex < flattenedSteps.length) {
+          send({ type: 'jumpToConfigureConnector', subStep: stepIndex - 4 })
+        }
     }
   };
   const goToStepById = (...args: any[]) => console.log('goToStepById', args);

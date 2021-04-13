@@ -22,7 +22,7 @@ type Context = {
 };
 
 type State =
-  | {
+  | ({
       value: 'selectKafka';
       context: Context;
     } & {
@@ -33,7 +33,7 @@ type State =
       activeConfigurationStep: undefined;
       isConfigurationValid: undefined;
       connectorData: undefined;
-    }
+    })
   | {
       value: 'selectCluster';
       context: Context & {
@@ -81,8 +81,7 @@ type State =
         isConfigurationValid: true;
         connectorData: unknown;
       };
-    }
-  ;
+    };
 
 type prevStepEvent = {
   type: 'prev';
@@ -122,7 +121,10 @@ type configurationChangedEvent = {
 type jumpToSelectKafkaEvent = { type: 'jumpToSelectKafka' };
 type jumpToSelectClusterEvent = { type: 'jumpToSelectCluster' };
 type jumpToSelectConnectorEvent = { type: 'jumpToSelectConnector' };
-type jumpToConfigureConnectorEvent = { type: 'jumpToConfigureConnector' };
+type jumpToConfigureConnectorEvent = {
+  type: 'jumpToConfigureConnector';
+  subStep?: number;
+};
 type jumpToReviewConfigurationEvent = { type: 'jumpToReviewConfiguration' };
 
 type Event =
@@ -212,6 +214,9 @@ export const creationWizardMachine = createMachine<Context, Event, State>(
             actions: assign((_context, event) => ({
               selectedConnector: event.selectedConnector,
               connectorData: undefined,
+              activeConfigurationStep: 0,
+              isConfigurationValid: false,
+              configurationSteps: false
             })),
           },
           next: { target: 'configureConnector', cond: 'isConnectorSelected' },
@@ -227,6 +232,7 @@ export const creationWizardMachine = createMachine<Context, Event, State>(
             basePath: context.basePath,
             connector: context.selectedConnector,
             activeStep: context.activeConfigurationStep,
+            configuration: context.connectorData
           }),
           onError: {
             actions: (_context, event) => console.error(event.data.message),
@@ -283,6 +289,9 @@ export const creationWizardMachine = createMachine<Context, Event, State>(
       jumpToConfigureConnector: {
         target: 'configureConnector',
         cond: 'isConnectorSelected',
+        actions: assign((_, event) => ({
+          activeConfigurationStep: event.subStep || 0
+        }))
       },
       jumpToReviewConfiguration: {
         target: 'reviewConfiguration',
@@ -295,16 +304,22 @@ export const creationWizardMachine = createMachine<Context, Event, State>(
       isKafkaInstanceSelected: context =>
         context.selectedKafkaInstance !== undefined,
       isClusterSelected: context => context.selectedCluster !== undefined,
-      isConnectorSelected: context => context.selectedConnector !== undefined,
+      isConnectorSelected: (context, event) => {
+        const subStep = (event as jumpToConfigureConnectorEvent).subStep;
+        if (subStep) {
+          return context.selectedConnector !== undefined && (context.connectorData !== undefined || subStep <= context.activeConfigurationStep!);
+        }
+        return context.selectedConnector !== undefined;
+      },
       isConnectorConfigured: context => {
         if (!context.configurationSteps) {
           return context.connectorData !== undefined;
         }
         return (
-          context.connectorData !== undefined &&
-          context.activeConfigurationStep ===
+          context.connectorData !== undefined ||
+          (context.activeConfigurationStep ===
             context.configurationSteps.length - 1 &&
-          context.isConfigurationValid === true
+            context.isConfigurationValid === true)
         );
       },
       areThereSubsteps: context =>
