@@ -39,8 +39,8 @@ export function Configuration({ actor }: ConfigurationProps) {
     default:
       return (
         <div>
-          <Title headingLevel="h2" id="select-kafka-instance-title">
-            Select Kafka instance
+          <Title headingLevel="h2" id="custom-configuration-title">
+            Connector Configuration
           </Title>
           {Configurator ? (
             <Configurator
