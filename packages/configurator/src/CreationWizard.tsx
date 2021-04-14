@@ -7,7 +7,7 @@ import {
   clustersMachine,
   connectorsMachine,
   configuratorMachine,
-  ConnectorConfiguratorType, 
+  ConnectorConfiguratorType,
   ConnectorConfiguratorProps
 } from '@kas-connectors/machines';
 import { ConnectorType } from "@kas-connectors/api";
@@ -16,6 +16,7 @@ import { SelectKafkaInstance } from './SelectKafkaInstance';
 import { SelectCluster } from './SelectCluster';
 import { SelectConnector } from './SelectConnector';
 import { Configuration } from './Configuration';
+import { DebeziumConfigurator } from './DebeziumConfigurator';
 
 
 const SampleMultiStepConfigurator: React.FunctionComponent<ConnectorConfiguratorProps> = props => (
@@ -35,6 +36,14 @@ const fetchConfigurator = (
       return Promise.resolve({
         steps: ['First step', 'Second step', 'Third step'],
         configurator: SampleMultiStepConfigurator,
+        isValid: false,
+        activeStep: 0
+      });
+    case 'aws-sqs-source-v1alpha1':
+      // this will come from a remote entry point, eg. debezium
+      return Promise.resolve({
+        steps: ['Properties', 'Filter Configuration', 'Data Options', 'Runtime Options'],
+        configurator: DebeziumConfigurator,
         isValid: false,
         activeStep: 0
       });
