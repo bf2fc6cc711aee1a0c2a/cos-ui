@@ -3,15 +3,13 @@ import {
   Configuration,
   DefaultApi,
   ConnectorClusterList,
-  ConnectorCluster
+  ConnectorCluster,
 } from '@kas-connectors/api';
-import { assign, createMachine, DoneInvokeEvent, sendParent } from 'xstate';
+import { assign, createMachine, createSchema, DoneInvokeEvent, sendParent } from 'xstate';
 import { escalate } from 'xstate/lib/actions';
+import { createModel } from 'xstate/lib/model';
 
 const fetchClusters = (accessToken?: Promise<string>, basePath?: string): Promise<AxiosResponse<ConnectorClusterList>> => {
-  // new Promise(resolve =>
-  //   setTimeout(() => resolve([{ id: 1, name: 'test' }]), 1000)
-  // );
   const apisService = new DefaultApi(
     new Configuration({
       accessToken,
@@ -29,58 +27,33 @@ type Context = {
   error?: Object;
 };
 
-type State =
-  | {
-      value: 'loading';
-      context: Context;
-    }
-  | {
-      value: 'success';
-      context: Context & {
-        clusters: ConnectorClusterList;
-        error: undefined;
-      };
-    }
-  | {
-      value: 'failure';
-      context: Context & {
-        clusters: undefined;
-        error: string;
-      };
-    };
-
-type selectClusterEvent = {
-  type: 'selectCluster';
-  selectedCluster: string;
+const clustersMachineSchema = {
+  context: createSchema<Context>(),
 };
 
-type selectedClusterChangedEvent = {
-  type: 'selectedClusterChange';
-  selectedCluster: ConnectorCluster;
-};
-
-type Event = selectClusterEvent;
-
-const fetchSuccess = assign<
-  Context,
-  DoneInvokeEvent<AxiosResponse<ConnectorClusterList>>
->({
-  clusters: (_context, event) => event.data.data,
-});
-const fetchFailure = assign<Context, DoneInvokeEvent<string>>({
-  error: (_context, event) => event.data,
-});
-const selectCluster = assign<Context, selectClusterEvent>({
-  selectedCluster: (context, event) =>
-    context.clusters?.items?.find(i => i.id == event.selectedCluster),
-});
-const notifyParent = sendParent<Context, selectClusterEvent, selectedClusterChangedEvent>(context => ({
-  type: 'selectedClusterChange',
-  selectedCluster: context.selectedCluster!,
-}))
-
-export const clustersMachine = createMachine<Context, Event, State>(
+const clustersMachineModel = createModel(
   {
+    authToken: undefined,
+    basePath: undefined,
+    clusters: undefined,
+    selectedCluster: undefined,
+    error: undefined,
+  } as Context,
+  {
+    events: {
+      selectCluster: (payload: { selectedCluster: string }) => ({
+        ...payload,
+      }),
+      selectedClusterChanged: (payload: {
+        selectedCluster: ConnectorCluster;
+      }) => ({ ...payload }),
+    },
+  }
+);
+
+export const clustersMachine = createMachine<typeof clustersMachineModel>(
+  {
+    schema: clustersMachineSchema,
     id: 'clusters',
     initial: 'loading',
     states: {
@@ -91,11 +64,18 @@ export const clustersMachine = createMachine<Context, Event, State>(
             fetchClusters(context.authToken, context.basePath),
           onDone: {
             target: 'success',
-            actions: fetchSuccess,
+            actions: assign<
+            Context,
+            DoneInvokeEvent<AxiosResponse<ConnectorClusterList>>
+          >({
+            clusters: (_context, event) => event.data.data,
+          }),
           },
           onError: {
             target: 'failure',
-            actions: fetchFailure,
+            actions: assign<Context, DoneInvokeEvent<string>>({
+              error: (_context, event) => event.data,
+            }),
           },
         },
       },
@@ -117,8 +97,14 @@ export const clustersMachine = createMachine<Context, Event, State>(
   },
   {
     actions: {
-      selectCluster,
-      notifyParent
+      selectCluster: assign({
+        selectedCluster: (context, event) =>
+          context.clusters?.items?.find(i => i.id == event.selectedCluster),
+      }),
+      notifyParent: sendParent(context => ({
+        type: 'selectedClusterChange',
+        selectedCluster: context.selectedCluster,
+      }))
     },
   }
 );

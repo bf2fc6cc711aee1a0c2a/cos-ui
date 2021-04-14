@@ -3,11 +3,12 @@ import {
   ConnectorCluster,
   ConnectorType,
 } from '@kas-connectors/api';
-import { createMachine, assign, send } from 'xstate';
+import { createMachine, assign, send, createSchema } from 'xstate';
 import { kafkasMachine } from './KafkasMachine';
 import { clustersMachine } from './ClustersMachine';
 import { connectorsMachine } from './ConnectorsMachine';
 import { configuratorMachine } from './ConfiguratorMachine';
+import { createModel } from 'xstate/lib/model';
 
 type Context = {
   authToken?: Promise<string>;
@@ -21,128 +22,36 @@ type Context = {
   connectorData?: unknown;
 };
 
-type State =
-  | ({
-      value: 'selectKafka';
-      context: Context;
-    } & {
-      selectedKafkaInstance: undefined;
-      selectedCluster: undefined;
-      selectedConnector: undefined;
-      configurationSteps: undefined;
-      activeConfigurationStep: undefined;
-      isConfigurationValid: undefined;
-      connectorData: undefined;
-    })
-  | {
-      value: 'selectCluster';
-      context: Context & {
-        selectedKafkaInstance: KafkaRequest;
-        selectedCluster: undefined;
-        selectedConnector: undefined;
-        configurationSteps: undefined;
-        activeConfigurationStep: undefined;
-        isConfigurationValid: undefined;
-        connectorData: undefined;
-      };
-    }
-  | {
-      value: 'selectConnector';
-      context: Context & {
-        selectedKafkaInstance: KafkaRequest;
-        selectedCluster: ConnectorCluster;
-        selectedConnector: undefined;
-        configurationSteps: undefined;
-        activeConfigurationStep: undefined;
-        isConfigurationValid: undefined;
-        connectorData: undefined;
-      };
-    }
-  | {
-      value: 'configureConnector';
-      context: Context & {
-        selectedKafkaInstance: KafkaRequest;
-        selectedCluster: ConnectorCluster;
-        selectedConnector: ConnectorType;
-        configurationSteps: string[] | false;
-        activeConfigurationStep?: number;
-        isConfigurationValid: boolean;
-        connectorData: undefined;
-      };
-    }
-  | {
-      value: 'reviewConfiguration';
-      context: Context & {
-        selectedKafkaInstance: KafkaRequest;
-        selectedCluster: ConnectorCluster;
-        selectedConnector: ConnectorType;
-        configurationSteps: string[] | false;
-        activeConfigurationStep?: number;
-        isConfigurationValid: true;
-        connectorData: unknown;
-      };
-    };
-
-type prevStepEvent = {
-  type: 'prev';
+const creationWizardMachineSchema = {
+  context: createSchema<Context>(),
 };
 
-type nextStepEvent = {
-  type: 'next';
-};
-
-type selectedInstanceChangeEvent = {
-  type: 'selectedInstanceChange';
-  selectedInstance: KafkaRequest;
-};
-
-type selectedClusterChangeEvent = {
-  type: 'selectedClusterChange';
-  selectedCluster: ConnectorCluster;
-};
-
-type selectedConnectorChangeEvent = {
-  type: 'selectedConnectorChange';
-  selectedConnector: ConnectorType;
-};
-
-type configuratorLoadedEvent = {
-  type: 'loaded';
-  steps: string[] | false;
-  activeStep?: number;
-  isValid: boolean;
-};
-
-type configurationChangedEvent = {
-  type: 'configurationChange';
-  configuration: unknown;
-};
-
-type jumpToSelectKafkaEvent = { type: 'jumpToSelectKafka' };
-type jumpToSelectClusterEvent = { type: 'jumpToSelectCluster' };
-type jumpToSelectConnectorEvent = { type: 'jumpToSelectConnector' };
-type jumpToConfigureConnectorEvent = {
-  type: 'jumpToConfigureConnector';
-  subStep?: number;
-};
-type jumpToReviewConfigurationEvent = { type: 'jumpToReviewConfiguration' };
-
-type Event =
-  | prevStepEvent
-  | nextStepEvent
-  | selectedInstanceChangeEvent
-  | selectedClusterChangeEvent
-  | selectedConnectorChangeEvent
-  | configuratorLoadedEvent
-  | configurationChangedEvent
-  | jumpToSelectKafkaEvent
-  | jumpToSelectClusterEvent
-  | jumpToSelectConnectorEvent
-  | jumpToConfigureConnectorEvent
-  | jumpToReviewConfigurationEvent;
-
-export const creationWizardMachine = createMachine<Context, Event, State>(
+const creationWizardMachineModel = createModel(
   {
+  } as Context,
+  {
+    events: {
+      prev: (payload: {}) => ({ ...payload}),
+      next: (payload: {}) => ({ ...payload}),
+      selectedInstanceChange: (payload: { selectedInstance: KafkaRequest }) => ({ ...payload}),
+      selectedClusterChange: (payload: { selectedCluster: ConnectorCluster }) => ({ ...payload}),
+      selectedConnectorChange: (payload: { selectedConnector: ConnectorType }) => ({ ...payload}),
+      loaded: (payload: { steps: string[] | false;
+        activeStep?: number;
+        isValid: boolean; }) => ({ ...payload}),
+      configurationChange: (payload: { configuration: unknown; }) => ({ ...payload}),
+      jumpToSelectKafka: (payload: {}) => ({ ...payload}),
+      jumpToSelectCluster: (payload: {}) => ({ ...payload}),
+      jumpToSelectConnector: (payload: {}) => ({ ...payload}),
+      jumpToConfigureConnector: (payload: { subStep?: number; }) => ({ ...payload}),
+      jumpToReviewConfiguration: (payload: {}) => ({ ...payload}),
+    },
+  }
+);
+
+export const creationWizardMachine = createMachine<typeof creationWizardMachineModel>(
+  {
+    schema: creationWizardMachineSchema,
     id: 'creationWizard',
     initial: 'selectKafka',
     context: {},
@@ -305,7 +214,7 @@ export const creationWizardMachine = createMachine<Context, Event, State>(
         context.selectedKafkaInstance !== undefined,
       isClusterSelected: context => context.selectedCluster !== undefined,
       isConnectorSelected: (context, event) => {
-        const subStep = (event as jumpToConfigureConnectorEvent).subStep;
+        const subStep = (event as { subStep?: number}).subStep;
         if (subStep) {
           return context.selectedConnector !== undefined && (context.connectorData !== undefined || subStep <= context.activeConfigurationStep!);
         }
@@ -323,8 +232,8 @@ export const creationWizardMachine = createMachine<Context, Event, State>(
         );
       },
       areThereSubsteps: context =>
-        context.configurationSteps
-          ? context.activeConfigurationStep! > 0
+        context.configurationSteps && context.activeConfigurationStep
+          ? context.activeConfigurationStep > 0
           : false,
     },
     services: {

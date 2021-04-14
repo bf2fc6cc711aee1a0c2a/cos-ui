@@ -1,6 +1,12 @@
 import { ComponentType } from 'react';
 import { ConnectorType } from '@kas-connectors/api';
-import { assign, DoneInvokeEvent, sendParent, createMachine } from 'xstate';
+import {
+  assign,
+  sendParent,
+  createMachine,
+  createSchema,
+} from 'xstate';
+import { createModel } from 'xstate/lib/model';
 
 export type ConnectorConfiguratorProps = {
   activeStep: number;
@@ -30,83 +36,39 @@ type Context = {
   error?: string;
 };
 
-type State =
-  | {
-      value: 'loading';
-      context: Context;
-    }
-  | {
-      value: 'success';
-      context: Context & {
-        steps: string[] | false;
-        Configurator: ComponentType<ConnectorConfiguratorProps> | false;
-        activeStep: number;
+const configuratorMachineSchema = {
+  context: createSchema<Context>(),
+};
+
+const configuratorMachineModel = createModel(
+  {
+    authToken: undefined,
+    basePath: undefined,
+    connector: { id: 'something', name: 'something', version: '0.1' },
+    configuration: undefined,
+    isValid: undefined,
+    Configurator: false,
+    steps: undefined,
+    activeStep: undefined,
+    error: undefined,
+  } as Context,
+  {
+    events: {
+      prev: () => ({}),
+      next: () => ({}),
+      configurationChange: (payload: {
         configuration: unknown;
         isValid: boolean;
-        error: undefined;
-      };
-    }
-  | {
-      value: 'failure';
-      context: Context & {
-        error: string;
-      };
-    };
-
-type configurationChangeEvent = {
-  type: 'configurationChange';
-  configuration: unknown;
-  isValid: boolean;
-};
-
-type prevStepEvent = {
-  type: 'prev';
-};
-
-type nextStepEvent = {
-  type: 'next';
-};
-
-type configurationChangedEvent = {
-  type: 'configurationChange';
-  configuration: unknown;
-};
-
-type Event = prevStepEvent | nextStepEvent | configurationChangeEvent;
-
-const fetchSuccess = assign<
-  Context,
-  DoneInvokeEvent<ConnectorConfiguratorType>
->((_context, event) =>
-  event.data
-    ? {
-        steps: event.data.steps,
-        Configurator: event.data.configurator,
-        isValid: event.data.isValid,
-      }
-    : { steps: false, Configurator: false }
-);
-const fetchFailure = assign<Context, DoneInvokeEvent<string>>({
-  error: (_context, event) => event.data,
-});
-const configurationChange = assign<Context, Event>(
-  (_context, event) => ({
-    configuration: (event as configurationChangeEvent).configuration,
-    isValid: (event as configurationChangeEvent).isValid
-  })
+      }) => ({ ...payload }),
+    },
+  }
 );
 
-const notifyChangeToParent = sendParent<
-  Context,
-  Event,
-  configurationChangedEvent
->(context => ({
-  type: 'configurationChange',
-  configuration: context.isValid ? context.configuration : undefined,
-}));
-
-export const configuratorMachine = createMachine<Context, Event, State>(
+export const configuratorMachine = createMachine<
+  typeof configuratorMachineModel
+>(
   {
+    schema: configuratorMachineSchema,
     id: 'configurator',
     initial: 'loading',
     states: {
@@ -116,11 +78,21 @@ export const configuratorMachine = createMachine<Context, Event, State>(
           src: 'fetchConfigurator',
           onDone: {
             target: 'success',
-            actions: fetchSuccess,
+            actions: assign((_context, event) =>
+              event.data
+                ? {
+                    steps: event.data.steps,
+                    Configurator: event.data.configurator,
+                    isValid: event.data.isValid,
+                  }
+                : { steps: false, Configurator: false }
+            ),
           },
           onError: {
             target: 'failure',
-            actions: fetchFailure,
+            actions: assign({
+              error: (_context, event) => event.data,
+            }),
           },
         },
       },
@@ -128,30 +100,31 @@ export const configuratorMachine = createMachine<Context, Event, State>(
         entry: sendParent(context => ({
           type: 'loaded',
           steps: context.steps,
-          activeStep: context.activeStep
-        }))
+          activeStep: context.activeStep,
+        })),
       },
       success: {
         entry: [
           assign(context => ({
-            activeStep: context.activeStep || 0
+            activeStep: context.activeStep || 0,
           })),
           sendParent(context => ({
             type: 'loaded',
             steps: context.steps,
             activeStep: context.activeStep,
             isValid: context.isValid,
-          }))
+          })),
         ],
         on: {
           prev: {
             target: 'success',
+            cond: 'areThereSubsteps',
             actions: [
               assign(ctx => ({
                 activeStep: ctx.activeStep! - 1,
-                isValid: false
-              }))
-            ]
+                isValid: false,
+              })),
+            ],
           },
           next: {
             target: 'success',
@@ -159,25 +132,37 @@ export const configuratorMachine = createMachine<Context, Event, State>(
             actions: [
               assign(ctx => ({
                 activeStep: ctx.activeStep! + 1,
-                isValid: false
-              }))
-            ]
+                isValid: false,
+              })),
+            ],
           },
           configurationChange: {
             target: 'success',
-            actions: ['configurationChange', 'notifyChangeToParent'],
+            actions: [
+              assign((_context, event) => ({
+                configuration: event.configuration,
+                isValid: event.isValid,
+              })),
+              sendParent(context => ({
+                type: 'configurationChange',
+                configuration: context.isValid
+                  ? context.configuration
+                  : undefined,
+              })),
+            ],
           },
         },
       },
     },
   },
   {
-    actions: {
-      configurationChange,
-      notifyChangeToParent
-    },
     guards: {
-      canGoNextStep: context => context.isValid === true
-    }
+      canGoNextStep: context => context.isValid === true,
+      areThereSubsteps: context =>
+        context.activeStep && context.steps
+          ? context.activeStep > 0
+          : false,
+
+    },
   }
 );

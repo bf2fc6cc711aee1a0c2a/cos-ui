@@ -5,13 +5,11 @@ import {
   ConnectorTypeList,
   ConnectorType
 } from '@kas-connectors/api';
-import { assign, createMachine, DoneInvokeEvent, sendParent } from 'xstate';
+import { assign, createMachine, createSchema, DoneInvokeEvent, sendParent } from 'xstate';
 import { escalate } from 'xstate/lib/actions';
+import { createModel } from 'xstate/lib/model';
 
 const fetchConnectors = (accessToken?: Promise<string>, basePath?: string): Promise<AxiosResponse<ConnectorTypeList>> => {
-  // new Promise(resolve =>
-  //   setTimeout(() => resolve([{ id: 1, name: 'test' }]), 1000)
-  // );
   const apisService = new DefaultApi(
     new Configuration({
       accessToken,
@@ -29,58 +27,33 @@ type Context = {
   error?: Object;
 };
 
-type State =
-  | {
-      value: 'loading';
-      context: Context;
-    }
-  | {
-      value: 'success';
-      context: Context & {
-        connectors: ConnectorTypeList;
-        error: undefined;
-      };
-    }
-  | {
-      value: 'failure';
-      context: Context & {
-        connectors: undefined;
-        error: string;
-      };
-    };
-
-type selectConnectorEvent = {
-  type: 'selectConnector';
-  selectedConnector: string;
+const connectorsMachineSchema = {
+  context: createSchema<Context>(),
 };
 
-type selectedConnectorChangedEvent = {
-  type: 'selectedConnectorChange';
-  selectedConnector: ConnectorType;
-};
-
-type Event = selectConnectorEvent;
-
-const fetchSuccess = assign<
-  Context,
-  DoneInvokeEvent<AxiosResponse<ConnectorTypeList>>
->({
-  connectors: (_context, event) => event.data.data,
-});
-const fetchFailure = assign<Context, DoneInvokeEvent<string>>({
-  error: (_context, event) => event.data,
-});
-const selectConnector = assign<Context, selectConnectorEvent>({
-  selectedConnector: (context, event) =>
-    context.connectors?.items?.find(i => i.id == event.selectedConnector),
-});
-const notifyParent = sendParent<Context, selectConnectorEvent, selectedConnectorChangedEvent>(context => ({
-  type: 'selectedConnectorChange',
-  selectedConnector: context.selectedConnector!,
-}))
-
-export const connectorsMachine = createMachine<Context, Event, State>(
+const connectorsMachineModel = createModel(
   {
+    authToken: undefined,
+    basePath: undefined,
+    connectors: undefined,
+    selectedConnector: undefined,
+    error: undefined,
+  } as Context,
+  {
+    events: {
+      selectConnector: (payload: { selectedConnector: string }) => ({
+        ...payload,
+      }),
+      selectedConnectorChanged: (payload: {
+        selectedConnector: ConnectorType;
+      }) => ({ ...payload }),
+    },
+  }
+);
+
+export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
+  {
+    schema: connectorsMachineSchema,
     id: 'connectors',
     initial: 'loading',
     states: {
@@ -91,11 +64,18 @@ export const connectorsMachine = createMachine<Context, Event, State>(
             fetchConnectors(context.authToken, context.basePath),
           onDone: {
             target: 'success',
-            actions: fetchSuccess,
+            actions: assign<
+            Context,
+            DoneInvokeEvent<AxiosResponse<ConnectorTypeList>>
+          >({
+            connectors: (_context, event) => event.data.data,
+          }),
           },
           onError: {
             target: 'failure',
-            actions: fetchFailure,
+            actions: assign<Context, DoneInvokeEvent<string>>({
+              error: (_context, event) => event.data,
+            }),
           },
         },
       },
@@ -117,8 +97,14 @@ export const connectorsMachine = createMachine<Context, Event, State>(
   },
   {
     actions: {
-      selectConnector,
-      notifyParent
+      selectConnector: assign({
+        selectedConnector: (context, event) =>
+          context.connectors?.items?.find(i => i.id == event.selectedConnector),
+      }),
+      notifyParent: sendParent(context => ({
+        type: 'selectedConnectorChange',
+        selectedConnector: context.selectedConnector,
+      }))
     },
   }
 );

@@ -5,13 +5,20 @@ import {
   KafkaRequest,
   KafkaRequestList,
 } from '@kas-connectors/api';
-import { assign, createMachine, DoneInvokeEvent, sendParent } from 'xstate';
+import {
+  assign,
+  createMachine,
+  createSchema,
+  DoneInvokeEvent,
+  sendParent,
+} from 'xstate';
 import { escalate } from 'xstate/lib/actions';
+import { createModel } from 'xstate/lib/model';
 
-const fetchKafkaInstances = (accessToken?: Promise<string>, basePath?: string) => {
-  // new Promise(resolve =>
-  //   setTimeout(() => resolve([{ id: 1, name: 'test' }]), 1000)
-  // );
+const fetchKafkaInstances = (
+  accessToken?: Promise<string>,
+  basePath?: string
+) => {
   const apisService = new DefaultApi(
     new Configuration({
       accessToken,
@@ -29,58 +36,33 @@ type Context = {
   error?: Object;
 };
 
-type State =
-  | {
-      value: 'loading';
-      context: Context;
-    }
-  | {
-      value: 'success';
-      context: Context & {
-        instances: KafkaRequestList;
-        error: undefined;
-      };
-    }
-  | {
-      value: 'failure';
-      context: Context & {
-        instances: undefined;
-        error: string;
-      };
-    };
-
-type selectInstanceEvent = {
-  type: 'selectInstance';
-  selectedInstance: string;
+const kafkasMachineSchema = {
+  context: createSchema<Context>(),
 };
 
-type selectedInstanceChangedEvent = {
-  type: 'selectedInstanceChange';
-  selectedInstance: KafkaRequest;
-};
-
-type Event = selectInstanceEvent;
-
-const fetchSuccess = assign<
-  Context,
-  DoneInvokeEvent<AxiosResponse<KafkaRequestList>>
->({
-  instances: (_context, event) => event.data.data,
-});
-const fetchFailure = assign<Context, DoneInvokeEvent<string>>({
-  error: (_context, event) => event.data,
-});
-const selectInstance = assign<Context, selectInstanceEvent>({
-  selectedInstance: (context, event) =>
-    context.instances?.items.find(i => i.id == event.selectedInstance),
-});
-const notifyParent = sendParent<Context, selectInstanceEvent, selectedInstanceChangedEvent>(context => ({
-  type: 'selectedInstanceChange',
-  selectedInstance: context.selectedInstance!,
-}))
-
-export const kafkasMachine = createMachine<Context, Event, State>(
+const kafkasMachineModel = createModel(
   {
+    authToken: undefined,
+    basePath: undefined,
+    instances: undefined,
+    selectedInstance: undefined,
+    error: undefined,
+  } as Context,
+  {
+    events: {
+      selectInstance: (payload: { selectedInstance: string }) => ({
+        ...payload,
+      }),
+      selectedInstanceChanged: (payload: {
+        selectedInstance: KafkaRequest;
+      }) => ({ ...payload }),
+    },
+  }
+);
+
+export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
+  {
+    schema: kafkasMachineSchema,
     id: 'kafkas',
     initial: 'loading',
     states: {
@@ -91,11 +73,18 @@ export const kafkasMachine = createMachine<Context, Event, State>(
             fetchKafkaInstances(context.authToken, context.basePath),
           onDone: {
             target: 'success',
-            actions: fetchSuccess,
+            actions: assign<
+              Context,
+              DoneInvokeEvent<AxiosResponse<KafkaRequestList>>
+            >({
+              instances: (_context, event) => event.data.data,
+            }),
           },
           onError: {
             target: 'failure',
-            actions: fetchFailure,
+            actions: assign<Context, DoneInvokeEvent<string>>({
+              error: (_context, event) => event.data,
+            }),
           },
         },
       },
@@ -106,10 +95,7 @@ export const kafkasMachine = createMachine<Context, Event, State>(
         on: {
           selectInstance: {
             target: 'success',
-            actions: [
-              'selectInstance',
-              'notifyParent',
-            ],
+            actions: ['selectInstance', 'notifyParent'],
           },
         },
       },
@@ -117,8 +103,14 @@ export const kafkasMachine = createMachine<Context, Event, State>(
   },
   {
     actions: {
-      selectInstance,
-      notifyParent
+      selectInstance: assign({
+        selectedInstance: (context, event) =>
+          context.instances?.items.find(i => i.id == event.selectedInstance),
+      }),
+      notifyParent: sendParent(context => ({
+        type: 'selectedInstanceChange',
+        selectedInstance: context.selectedInstance!,
+      })),
     },
   }
 );
