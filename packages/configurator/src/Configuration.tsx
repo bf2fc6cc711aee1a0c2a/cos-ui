@@ -1,7 +1,11 @@
 import {
   EmptyState,
   EmptyStateIcon,
+  PageSection,
+  PageSectionVariants,
   Spinner,
+  Text,
+  TextContent,
   Title,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
@@ -38,23 +42,32 @@ export function Configuration({ actor }: ConfigurationProps) {
       );
     default:
       return (
-        <div>
-          <Title headingLevel="h2" id="custom-configuration-title">
-            Connector Configuration
-          </Title>
-          {Configurator ? (
-            <Configurator
-              activeStep={activeStep!}
-              configuration={configuration}
-              connector={connector}
-              onChange={(configuration, isValid) =>
-                send({ type: 'configurationChange', configuration, isValid })
-              }
-            />
-          ) : (
-            <p>TODO json-schema based form</p>
-          )}
-        </div>
+        <PageSection padding={{ default: 'noPadding' }}>
+          <PageSection variant={PageSectionVariants.light}>
+            <TextContent>
+              <Text component="h1" id="select-kafka-instance-title">
+                Connector Configuration
+              </Text>
+              <Text component="p">
+                This is a demo that showcases Patternfly Cards.
+              </Text>
+            </TextContent>
+          </PageSection>
+          <PageSection isFilled style={{ minHeight: 600 }}>
+            {Configurator ? (
+              <Configurator
+                activeStep={activeStep!}
+                configuration={configuration}
+                connector={connector}
+                onChange={(configuration, isValid) =>
+                  send({ type: 'configurationChange', configuration, isValid })
+                }
+              />
+            ) : (
+              <p>TODO json-schema based form</p>
+            )}
+          </PageSection>
+        </PageSection>
       );
   }
 }

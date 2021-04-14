@@ -218,7 +218,7 @@ export function CreationWizard({
       goToStep={goToStep}
       goToStepById={goToStepById}
       goToStepByName={goToStepByName}
-      height={600}
+      hasNoBodyPadding={true}
     />
   );
 }

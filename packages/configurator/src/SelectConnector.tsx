@@ -1,16 +1,20 @@
-import { useState } from 'react';
 import {
-  DataList,
-  DataListCell,
-  DataListItem,
-  DataListItemCells,
-  DataListItemRow,
+  Card,
+  CardBody,
+  CardHeader,
+  CardTitle,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
   EmptyState,
   EmptyStateIcon,
+  Gallery,
+  PageSection,
+  PageSectionVariants,
   Spinner,
   Text,
   TextContent,
-  TextVariants,
   Title,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
@@ -25,12 +29,9 @@ export type SelectConnectorProps = {
 
 export function SelectConnector({ actor }: SelectConnectorProps) {
   const [state, send] = useActor(actor);
-  const [toggled, setToggled] = useState(false);
 
-  const onToggle = () => setToggled(!toggled);
-  const onSelect = (id: string) => {
-    send({ type: 'selectConnector', selectedConnector: id });
-    onToggle();
+  const onSelect = (selectedConnector: string) => {
+    send({ type: 'selectConnector', selectedConnector });
   };
 
   switch (true) {
@@ -54,40 +55,56 @@ export function SelectConnector({ actor }: SelectConnectorProps) {
       );
     default:
       return (
-        <div>
-          <Title headingLevel="h2" id="select-kafka-instance-title">
-            Select connector
-          </Title>
-          <DataList
-            aria-label="Select connector"
-            selectedDataListItemId={state.context.selectedConnector?.id}
-            onSelectDataListItem={onSelect}
-          >
-            {state.context.connectors?.items.map(type => (
-              <DataListItem
-                aria-labelledby="simple-item1"
-                key={type.id}
-                id={type.id}
-              >
-                <DataListItemRow>
-                  <DataListItemCells
-                    dataListCells={[
-                      <DataListCell key="logo" isFilled={false}>
-                        <img src="https://placekitten.com/50/50" />
-                      </DataListCell>,
-                      <DataListCell key="secondary content" isFilled>
-                        <TextContent>
-                          <Text component={TextVariants.h5}>{type.name}</Text>
-                          <Text>{type.description}</Text>
-                        </TextContent>
-                      </DataListCell>,
-                    ]}
-                  />
-                </DataListItemRow>
-              </DataListItem>
-            ))}
-          </DataList>
-        </div>
+        <PageSection padding={{ default: 'noPadding' }}>
+          <PageSection variant={PageSectionVariants.light}>
+            <TextContent>
+              <Text component="h1" id="select-kafka-instance-title">
+                Select connector
+              </Text>
+              <Text component="p">
+                This is a demo that showcases Patternfly Cards.
+              </Text>
+            </TextContent>
+          </PageSection>
+          <PageSection isFilled>
+            <Gallery hasGutter>
+              {state.context.connectors?.items.map(c => (
+                <Card
+                  isHoverable
+                  key={c.id}
+                  isSelectable
+                  isSelected={state.context.selectedConnector?.id === c.id}
+                  onClick={() => onSelect(c.id!)}
+                >
+                  <CardHeader>
+                    <CardTitle>{c.name}</CardTitle>
+                  </CardHeader>
+                  <CardBody>
+                    <DescriptionList>
+                      <DescriptionListGroup>
+                        <DescriptionListDescription>
+                          {c.description}
+                        </DescriptionListDescription>
+                      </DescriptionListGroup>
+                      <DescriptionListGroup>
+                        <DescriptionListTerm>Version</DescriptionListTerm>
+                        <DescriptionListDescription>
+                          {c.version}
+                        </DescriptionListDescription>
+                      </DescriptionListGroup>
+                      <DescriptionListGroup>
+                        <DescriptionListTerm>ID</DescriptionListTerm>
+                        <DescriptionListDescription>
+                          {c.id}
+                        </DescriptionListDescription>
+                      </DescriptionListGroup>
+                    </DescriptionList>
+                  </CardBody>
+                </Card>
+              ))}
+            </Gallery>
+          </PageSection>
+        </PageSection>
       );
   }
 }

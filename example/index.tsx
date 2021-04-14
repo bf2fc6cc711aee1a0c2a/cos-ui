@@ -3,7 +3,7 @@ import 'react-app-polyfill/ie11';
 import '@patternfly/react-core/dist/styles/base.css';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Spinner } from '@patternfly/react-core';
+import { Page, Spinner } from '@patternfly/react-core';
 import { CreationWizard } from '@kas-connectors/configurator';
 import { getKeycloakInstance } from './auth/keycloak/keycloakAuth';
 import { AuthContext } from './auth/AuthContext';
@@ -36,9 +36,9 @@ const App = () => {
   return (
     <KeycloakContext.Provider value={{ keycloak, profile: keycloak?.profile }}>
       <KeycloakAuthProvider>
-        <div data-test-id="zop">
+        <Page>
           <ConnectedCreationWizard />
-        </div>
+        </Page>
       </KeycloakAuthProvider>
     </KeycloakContext.Provider>
   );

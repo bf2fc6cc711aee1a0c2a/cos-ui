@@ -1,12 +1,20 @@
-import { useState } from 'react';
 import {
+  Card,
+  CardBody,
+  CardHeader,
+  CardTitle,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
   EmptyState,
   EmptyStateIcon,
-  Select,
-  SelectOption,
-  SelectOptionObject,
-  SelectVariant,
+  Gallery,
+  PageSection,
+  PageSectionVariants,
   Spinner,
+  Text,
+  TextContent,
   Title,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
@@ -15,26 +23,16 @@ import { ActorRefFrom } from 'xstate';
 import { kafkasMachine } from '@kas-connectors/machines';
 import React from 'react';
 
-const EMPTY_KEY = '__empty__';
-
 export type SelectKafkaInstanceProps = {
   actor: ActorRefFrom<typeof kafkasMachine>;
 };
 
 export function SelectKafkaInstance({ actor }: SelectKafkaInstanceProps) {
   const [state, send] = useActor(actor);
-  const [toggled, setToggled] = useState(false);
 
-  const onToggle = () => setToggled(!toggled);
-  const onSelect = (_event: any, value: string | SelectOptionObject) => {
-    send({ type: 'selectInstance', selectedInstance: value as string });
-    onToggle();
+  const onSelect = (selectedInstance: string) => {
+    send({ type: 'selectInstance', selectedInstance });
   };
-
-  const instancesWithEmpty = [
-    { id: EMPTY_KEY, name: 'Please select an instance' },
-    ...(state.context.instances?.items || []).map(i => ({ id: i.id, name: i.name })),
-  ];
 
   switch (true) {
     case state.matches('loading'):
@@ -57,30 +55,57 @@ export function SelectKafkaInstance({ actor }: SelectKafkaInstanceProps) {
       );
     default:
       return (
-        <div>
-          <Title headingLevel="h2" id="select-kafka-instance-title">
-            Select Kafka instance
-          </Title>
-          <Select
-            variant={SelectVariant.single}
-            aria-label="Select Input"
-            onToggle={onToggle}
-            onSelect={onSelect}
-            selections={state.context.selectedInstance?.id || EMPTY_KEY}
-            isOpen={toggled}
-            aria-labelledby={'select-kafka-instance-title'}
-          >
-            {instancesWithEmpty.map((i, idx) => (
-              <SelectOption
-                key={idx}
-                value={i.id}
-                isPlaceholder={i.id === EMPTY_KEY}
-              >
-                {i.name}
-              </SelectOption>
-            ))}
-          </Select>
-        </div>
+        <PageSection padding={{ default: 'noPadding' }}>
+          <PageSection variant={PageSectionVariants.light}>
+            <TextContent>
+              <Text component="h1" id="select-kafka-instance-title">
+                Select Kafka instance
+              </Text>
+              <Text component="p">
+                This is a demo that showcases Patternfly Cards.
+              </Text>
+            </TextContent>
+          </PageSection>
+          <PageSection isFilled>
+            <Gallery hasGutter>
+              {state.context.instances?.items.map(i => (
+                <Card
+                  isHoverable
+                  key={i.id}
+                  isSelectable
+                  isSelected={state.context.selectedInstance?.id === i.id}
+                  onClick={() => onSelect(i.id!)}
+                >
+                  <CardHeader>
+                    <CardTitle>{i.name}</CardTitle>
+                  </CardHeader>
+                  <CardBody>
+                    <DescriptionList>
+                      <DescriptionListGroup>
+                        <DescriptionListTerm>Region</DescriptionListTerm>
+                        <DescriptionListDescription>
+                          {i.region}
+                        </DescriptionListDescription>
+                      </DescriptionListGroup>
+                      <DescriptionListGroup>
+                        <DescriptionListTerm>Owner</DescriptionListTerm>
+                        <DescriptionListDescription>
+                          {i.owner}
+                        </DescriptionListDescription>
+                      </DescriptionListGroup>
+                      <DescriptionListGroup>
+                        <DescriptionListTerm>Created</DescriptionListTerm>
+                        <DescriptionListDescription>
+                          {i.created_at}
+                        </DescriptionListDescription>
+                      </DescriptionListGroup>
+                    </DescriptionList>
+                  </CardBody>
+                </Card>
+              ))}
+            </Gallery>
+          </PageSection>
+        </PageSection>
       );
   }
 }
