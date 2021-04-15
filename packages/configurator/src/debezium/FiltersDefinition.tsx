@@ -6,8 +6,7 @@ export interface IFilterDefinitionProps {
   onChange: (configuration: unknown, isValid: boolean) => void;
 }
 
-export const FilterDefinition: React.FC<IFilterDefinitionProps> = (props) => {
-
+export const FilterDefinition: React.FC<IFilterDefinitionProps> = props => {
   const [filterValue, setFilterValue] = React.useState('');
   const handleFilterChange = (value: React.SetStateAction<string>) => {
     // TODO: update the configuration
@@ -36,4 +35,4 @@ export const FilterDefinition: React.FC<IFilterDefinitionProps> = (props) => {
       </Form>
     </div>
   );
-}
+};

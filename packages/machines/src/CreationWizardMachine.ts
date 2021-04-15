@@ -7,7 +7,10 @@ import { createMachine, assign, send, createSchema } from 'xstate';
 import { kafkasMachine } from './KafkasMachine';
 import { clustersMachine } from './ClustersMachine';
 import { connectorsMachine } from './ConnectorsMachine';
-import { configuratorLoaderMachine, ConnectorConfiguratorType } from './ConfiguratorLoaderMachine';
+import {
+  configuratorLoaderMachine,
+  ConnectorConfiguratorType,
+} from './ConfiguratorLoaderMachine';
 import { multistepConfiguratorMachine } from './MultistepConfiguratorMachine';
 import { createModel } from 'xstate/lib/model';
 
@@ -38,8 +41,8 @@ const creationWizardMachineModel = createModel({} as Context, {
     jumpToSelectKafka: () => ({}),
     jumpToSelectCluster: () => ({}),
     jumpToSelectConnector: () => ({}),
-    jumpToConfigureConnector: ({ subStep}: { subStep?: number }) => ({
-      subStep
+    jumpToConfigureConnector: ({ subStep }: { subStep?: number }) => ({
+      subStep,
     }),
     jumpToReviewConfiguration: () => ({}),
   },
@@ -200,7 +203,7 @@ export const creationWizardMachine = createMachine<
                 target: 'multistepConfigurator',
                 cond: context => context.configurationSteps !== false,
               },
-              { target: 'simpleConfigurator' }
+              { target: 'simpleConfigurator' },
             ],
           },
           multistepConfigurator: {
@@ -217,19 +220,18 @@ export const creationWizardMachine = createMachine<
               onDone: {
                 target: '#creationWizard.reviewConfiguration',
                 actions: assign((_, event) => ({
-                  connectorData: event.data.configuration || true
+                  connectorData: event.data.configuration || true,
                 })),
               },
               onError: {
-                actions: (_context, event) =>
-                  console.error(event.data.message),
+                actions: (_context, event) => console.error(event.data.message),
               },
             },
             states: {
               configuring: {
                 on: {
-                  isValid: 'valid'
-                },    
+                  isValid: 'valid',
+                },
               },
               valid: {
                 on: {
@@ -237,8 +239,8 @@ export const creationWizardMachine = createMachine<
                   next: {
                     actions: send('next', { to: 'multistepConfiguratorRef' }),
                   },
-                },    
-              }
+                },
+              },
             },
             on: {
               prev: [
@@ -249,9 +251,11 @@ export const creationWizardMachine = createMachine<
                 { target: '#creationWizard.selectConnector' },
               ],
               changedStep: {
-                actions: assign({ activeConfigurationStep: (_, event) => event.step })
-              }
-            },    
+                actions: assign({
+                  activeConfigurationStep: (_, event) => event.step,
+                }),
+              },
+            },
           },
           simpleConfigurator: {
             on: {
@@ -262,7 +266,7 @@ export const creationWizardMachine = createMachine<
                 // },
                 { target: '#creationWizard.selectConnector' },
               ],
-            },    
+            },
           },
         },
       },
@@ -326,7 +330,7 @@ export const creationWizardMachine = createMachine<
             context.isConfigurationValid === true)
         );
       },
-      areThereSubsteps: context => context.activeConfigurationStep! > 0
+      areThereSubsteps: context => context.activeConfigurationStep! > 0,
     },
     services: {
       makeConfiguratorLoaderMachine: () => configuratorLoaderMachine,

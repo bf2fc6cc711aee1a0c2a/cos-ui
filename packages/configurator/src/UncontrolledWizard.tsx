@@ -1,7 +1,20 @@
 import * as React from 'react';
 import { css } from '@patternfly/react-styles';
 import styles from '@patternfly/react-styles/css/components/Wizard/wizard';
-import { WizardNavItemProps, PickOptional, KEY_CODES, WizardNav, WizardNavItem, WizardContextProvider, WizardHeader, WizardToggle, Modal, ModalVariant, Button, ButtonVariant } from '@patternfly/react-core';
+import {
+  WizardNavItemProps,
+  PickOptional,
+  KEY_CODES,
+  WizardNav,
+  WizardNavItem,
+  WizardContextProvider,
+  WizardHeader,
+  WizardToggle,
+  Modal,
+  ModalVariant,
+  Button,
+  ButtonVariant,
+} from '@patternfly/react-core';
 
 export function getFlattenedSteps(steps: WizardStep[]): WizardStep[] {
   const flattenedSteps: WizardStep[] = [];
@@ -15,7 +28,7 @@ export function getFlattenedSteps(steps: WizardStep[]): WizardStep[] {
     }
   }
   return flattenedSteps;
-};
+}
 
 export interface WizardStep {
   /** Optional identifier */
@@ -31,7 +44,9 @@ export interface WizardStep {
   /** Sub steps */
   steps?: WizardStep[];
   /** Props to pass to the WizardNavItem */
-  stepNavItemProps?: React.HTMLProps<HTMLButtonElement | HTMLAnchorElement> | WizardNavItemProps;
+  stepNavItemProps?:
+    | React.HTMLProps<HTMLButtonElement | HTMLAnchorElement>
+    | WizardNavItemProps;
   /** (Unused if footer is controlled) Can change the Next button text. If nextButtonText is also set for the Wizard, this step specific one overrides it. */
   nextButtonText?: React.ReactNode;
   /** (Unused if footer is controlled) The condition needed to enable the Next button */
@@ -90,9 +105,9 @@ export interface WizardProps extends React.HTMLProps<HTMLDivElement> {
   onNext: () => void;
   /** (Unused if footer is controlled) Callback function after Back button is clicked */
   onBack: () => void;
-  goToStep: (index: number) => void,
-  goToStepById: (id: number | string) => void,
-  goToStepByName: (name: string) => void,
+  goToStep: (index: number) => void;
+  goToStepById: (id: number | string) => void;
+  goToStepByName: (name: string) => void;
   /** (Unused if footer is controlled) The Next button text */
   nextButtonText?: React.ReactNode;
   /** (Unused if footer is controlled) The Back button text */
@@ -111,7 +126,10 @@ interface WizardState {
   isNavOpen: boolean;
 }
 
-export class UncontrolledWizard extends React.Component<WizardProps, WizardState> {
+export class UncontrolledWizard extends React.Component<
+  WizardProps,
+  WizardState
+> {
   static displayName = 'Wizard';
   private static currentId = 0;
   static defaultProps: PickOptional<WizardProps> = {
@@ -133,7 +151,7 @@ export class UncontrolledWizard extends React.Component<WizardProps, WizardState
     height: undefined,
     footer: undefined,
     appendTo: undefined,
-    isOpen: undefined
+    isOpen: undefined,
   };
   private titleId: string;
   private descriptionId: string;
@@ -142,10 +160,11 @@ export class UncontrolledWizard extends React.Component<WizardProps, WizardState
     super(props);
     const newId = UncontrolledWizard.currentId++;
     this.titleId = props.titleId || `pf-wizard-title-${newId}`;
-    this.descriptionId = props.descriptionId || `pf-wizard-description-${newId}`;
+    this.descriptionId =
+      props.descriptionId || `pf-wizard-description-${newId}`;
 
     this.state = {
-      isNavOpen: false
+      isNavOpen: false,
     };
   }
 
@@ -158,7 +177,6 @@ export class UncontrolledWizard extends React.Component<WizardProps, WizardState
       }
     }
   };
-
 
   // private goToStep = (step: number): void => {
   //   const { onGoToStep } = this.props;
@@ -209,7 +227,10 @@ export class UncontrolledWizard extends React.Component<WizardProps, WizardState
     return getFlattenedSteps(steps);
   };
 
-  private getFlattenedStepsIndex = (flattenedSteps: WizardStep[], stepName: React.ReactNode): number => {
+  private getFlattenedStepsIndex = (
+    flattenedSteps: WizardStep[],
+    stepName: React.ReactNode
+  ): number => {
     for (let i = 0; i < flattenedSteps.length; i++) {
       if (flattenedSteps[i].name === stepName) {
         return i + 1;
@@ -224,7 +245,10 @@ export class UncontrolledWizard extends React.Component<WizardProps, WizardState
     for (let i = 0; i < steps.length; i++) {
       if (steps[i].steps) {
         for (let j = 0; j < steps[i].steps!.length; j++) {
-          steps[i].steps![j] = Object.assign({ canJumpTo: true }, steps[i].steps![j]);
+          steps[i].steps![j] = Object.assign(
+            { canJumpTo: true },
+            steps[i].steps![j]
+          );
         }
       }
       steps[i] = Object.assign({ canJumpTo: true }, steps[i]);
@@ -257,7 +281,7 @@ export class UncontrolledWizard extends React.Component<WizardProps, WizardState
     const {
       /* eslint-disable @typescript-eslint/no-unused-vars */
       width,
-      
+
       height,
       title,
       description,
@@ -291,23 +315,28 @@ export class UncontrolledWizard extends React.Component<WizardProps, WizardState
       /* eslint-enable @typescript-eslint/no-unused-vars */
     } = this.props;
     const flattenedSteps = this.getFlattenedSteps();
-    const adjustedStep = flattenedSteps.length < currentStep ? flattenedSteps.length : currentStep;
+    const adjustedStep =
+      flattenedSteps.length < currentStep ? flattenedSteps.length : currentStep;
     const activeStep = flattenedSteps[adjustedStep - 1];
     const computedSteps: WizardStep[] = this.initSteps(steps);
     const firstStep = activeStep === flattenedSteps[0];
-    const isValid = activeStep && activeStep.enableNext !== undefined ? activeStep.enableNext : true;
+    const isValid =
+      activeStep && activeStep.enableNext !== undefined
+        ? activeStep.enableNext
+        : true;
     const nav = (isWizardNavOpen: boolean) => {
       const wizNavAProps = {
         isOpen: isWizardNavOpen,
         'aria-label': navAriaLabel,
-        'aria-labelledby': (title || navAriaLabelledBy) && (navAriaLabelledBy || this.titleId)
+        'aria-labelledby':
+          (title || navAriaLabelledBy) && (navAriaLabelledBy || this.titleId),
       };
       return (
         <WizardNav {...wizNavAProps}>
           {computedSteps.map((step, index) => {
             if (step.isFinishedStep) {
               // Don't show finished step in the side nav
-              return;
+              return null;
             }
             let enabled;
             let navItemStep;
@@ -323,7 +352,10 @@ export class UncontrolledWizard extends React.Component<WizardProps, WizardState
                   canJumpToParent = true;
                 }
               }
-              navItemStep = this.getFlattenedStepsIndex(flattenedSteps, step.steps[0].name);
+              navItemStep = this.getFlattenedStepsIndex(
+                flattenedSteps,
+                step.steps[0].name
+              );
               return (
                 <WizardNavItem
                   key={index}
@@ -334,29 +366,37 @@ export class UncontrolledWizard extends React.Component<WizardProps, WizardState
                   onNavItemClick={goToStep}
                 >
                   <WizardNav {...wizNavAProps} returnList>
-                    {step.steps.map((childStep: WizardStep, indexChild: number) => {
-                      if (childStep.isFinishedStep) {
-                        // Don't show finished step in the side nav
-                        return;
+                    {step.steps.map(
+                      (childStep: WizardStep, indexChild: number) => {
+                        if (childStep.isFinishedStep) {
+                          // Don't show finished step in the side nav
+                          return null;
+                        }
+                        navItemStep = this.getFlattenedStepsIndex(
+                          flattenedSteps,
+                          childStep.name
+                        );
+                        enabled = childStep.canJumpTo;
+                        return (
+                          <WizardNavItem
+                            key={`child_${indexChild}`}
+                            content={childStep.name}
+                            isCurrent={activeStep.name === childStep.name}
+                            isDisabled={!enabled}
+                            step={navItemStep}
+                            onNavItemClick={goToStep}
+                          />
+                        );
                       }
-                      navItemStep = this.getFlattenedStepsIndex(flattenedSteps, childStep.name);
-                      enabled = childStep.canJumpTo;
-                      return (
-                        <WizardNavItem
-                          key={`child_${indexChild}`}
-                          content={childStep.name}
-                          isCurrent={activeStep.name === childStep.name}
-                          isDisabled={!enabled}
-                          step={navItemStep}
-                          onNavItemClick={goToStep}
-                        />
-                      );
-                    })}
+                    )}
                   </WizardNav>
                 </WizardNavItem>
               );
             }
-            navItemStep = this.getFlattenedStepsIndex(flattenedSteps, step.name);
+            navItemStep = this.getFlattenedStepsIndex(
+              flattenedSteps,
+              step.name
+            );
             enabled = step.canJumpTo;
             return (
               <WizardNavItem
@@ -380,19 +420,23 @@ export class UncontrolledWizard extends React.Component<WizardProps, WizardState
       onNext,
       onBack,
       onClose,
-      activeStep
+      activeStep,
     };
 
     const divStyles = {
       ...(height ? { height } : {}),
-      ...(width ? { width } : {})
+      ...(width ? { width } : {}),
     };
 
     const wizard = (
       <WizardContextProvider value={context}>
         <div
           {...rest}
-          className={css(styles.wizard, activeStep && activeStep.isFinishedStep && 'pf-m-finished', className)}
+          className={css(
+            styles.wizard,
+            activeStep && activeStep.isFinishedStep && 'pf-m-finished',
+            className
+          )}
           style={Object.keys(divStyles).length ? divStyles : undefined}
         >
           {title && (
@@ -409,7 +453,10 @@ export class UncontrolledWizard extends React.Component<WizardProps, WizardState
           <WizardToggle
             mainAriaLabel={mainAriaLabel}
             isInPage={isOpen === undefined}
-            mainAriaLabelledBy={(title || mainAriaLabelledBy) && (mainAriaLabelledBy || this.titleId)}
+            mainAriaLabelledBy={
+              (title || mainAriaLabelledBy) &&
+              (mainAriaLabelledBy || this.titleId)
+            }
             isNavOpen={this.state.isNavOpen}
             onNavToggle={isNavOpen => this.setState({ isNavOpen })}
             nav={nav}
@@ -419,11 +466,20 @@ export class UncontrolledWizard extends React.Component<WizardProps, WizardState
           >
             {footer || (
               <footer className={css(styles.wizardFooter)}>
-                <Button variant={ButtonVariant.primary} type="submit" onClick={onNext} isDisabled={!isValid}>
+                <Button
+                  variant={ButtonVariant.primary}
+                  type="submit"
+                  onClick={onNext}
+                  isDisabled={!isValid}
+                >
                   {nextButtonText}
                 </Button>
                 {!activeStep.hideBackButton && (
-                  <Button variant={ButtonVariant.secondary} onClick={onBack} className={css(firstStep && 'pf-m-disabled')}>
+                  <Button
+                    variant={ButtonVariant.secondary}
+                    onClick={onBack}
+                    className={css(firstStep && 'pf-m-disabled')}
+                  >
                     {backButtonText}
                   </Button>
                 )}

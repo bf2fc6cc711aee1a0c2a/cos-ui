@@ -6,8 +6,7 @@ export interface IPropertiesProps {
   onChange: (configuration: unknown, isValid: boolean) => void;
 }
 
-export const Properties: React.FC<IPropertiesProps> = (props) => {
-
+export const Properties: React.FC<IPropertiesProps> = props => {
   const [urlValue, setUrlValue] = React.useState('');
   const handleUrlChange = (value: React.SetStateAction<string>) => {
     // TODO: update the configuration
@@ -33,4 +32,4 @@ export const Properties: React.FC<IPropertiesProps> = (props) => {
       </Form>
     </div>
   );
-}
+};

@@ -10,18 +10,22 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { useSelector } from '@xstate/react';
-import { ConnectorConfiguratorProps, ConnectorConfiguratorType, MultistepConfiguratorActorRef } from '@kas-connectors/machines';
+import {
+  ConnectorConfiguratorProps,
+  ConnectorConfiguratorType,
+  MultistepConfiguratorActorRef,
+} from '@kas-connectors/machines';
 import React from 'react';
 import { useCreationWizardMachineService } from './CreationWizardContext';
 
-const MultistepConfiguration: React.FunctionComponent<{ 
-  Configurator: ConnectorConfiguratorType,
-  actor: MultistepConfiguratorActorRef 
+const MultistepConfiguration: React.FunctionComponent<{
+  Configurator: ConnectorConfiguratorType;
+  actor: MultistepConfiguratorActorRef;
 }> = ({ actor, Configurator }) => {
   const { activeStep, configuration, connector } = useSelector(
     actor,
     React.useCallback(
-      (state: typeof actor.state) => ({        
+      (state: typeof actor.state) => ({
         connector: state.context.connector,
         activeStep: state.context.activeStep,
         configuration: state.context.configuration,
@@ -39,8 +43,8 @@ const MultistepConfiguration: React.FunctionComponent<{
         actor.send({ type: 'change', configuration, isValid })
       }
     />
-  )
-}
+  );
+};
 
 export type ConfigurationProps = {
   Configurator: React.ComponentType<ConnectorConfiguratorProps> | false;
@@ -48,14 +52,21 @@ export type ConfigurationProps = {
 
 export function Configuration() {
   const service = useCreationWizardMachineService();
-  const { isLoading, hasErrors, Configurator, multistepConfiguratorRef } = useSelector(
+  const {
+    isLoading,
+    hasErrors,
+    Configurator,
+    multistepConfiguratorRef,
+  } = useSelector(
     service,
     React.useCallback(
-      (state: typeof service.state) => ({        
+      (state: typeof service.state) => ({
         isLoading: state.matches({ configureConnector: 'loadConfigurator' }),
-        hasErrors: state.matches('failure'),        
+        hasErrors: state.matches('failure'),
         Configurator: state.context.Configurator!,
-        multistepConfiguratorRef: state.children.multistepConfiguratorRef as MultistepConfiguratorActorRef | undefined,
+        multistepConfiguratorRef: state.children.multistepConfiguratorRef as
+          | MultistepConfiguratorActorRef
+          | undefined,
       }),
       [service]
     )
@@ -94,7 +105,12 @@ export function Configuration() {
             </TextContent>
           </PageSection>
           <PageSection isFilled style={{ minHeight: 400 }}>
-            {multistepConfiguratorRef && <MultistepConfiguration actor={multistepConfiguratorRef} Configurator={Configurator} /> }
+            {multistepConfiguratorRef && (
+              <MultistepConfiguration
+                actor={multistepConfiguratorRef}
+                Configurator={Configurator}
+              />
+            )}
           </PageSection>
         </PageSection>
       );

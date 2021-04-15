@@ -101,7 +101,7 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
           selectConnector: {
             target: 'valid',
             actions: 'selectConnector',
-            cond: (_, event) => event.selectedConnector !== undefined
+            cond: (_, event) => event.selectedConnector !== undefined,
           },
         },
       },
@@ -118,7 +118,7 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
           },
           confirm: {
             target: 'done',
-            cond: 'connectorSelected'
+            cond: 'connectorSelected',
           },
         },
       },
@@ -136,7 +136,7 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
         selectedConnector: (context, event) => {
           if (event.type === 'selectConnector') {
             return context.connectors?.items?.find(
-              i => i.id == event.selectedConnector
+              i => i.id === event.selectedConnector
             );
           }
           return context.selectedConnector;

@@ -21,7 +21,7 @@ import {
   useCreationWizardMachineService,
 } from './CreationWizardContext';
 
-function getKafkaInstanceStep() {
+function useKafkaInstanceStep() {
   const service = useCreationWizardMachineService();
   const { isActive, actor, canJumpTo, enableNext } = useSelector(
     service,
@@ -48,9 +48,16 @@ function getKafkaInstanceStep() {
   };
 }
 
-function getConfigurationStep() {
+function useConfigurationStep() {
   const service = useCreationWizardMachineService();
-  const { isActive, activeStep, canJumpTo, canJumpToStep, enableNext, steps } = useSelector(
+  const {
+    isActive,
+    activeStep,
+    canJumpTo,
+    canJumpToStep,
+    enableNext,
+    steps,
+  } = useSelector(
     service,
     React.useCallback(
       (state: typeof service.state) => ({
@@ -61,10 +68,11 @@ function getConfigurationStep() {
         enableNext: creationWizardMachine.transition(state, 'next').changed,
         steps: state.context.configurationSteps,
         activeStep: state.context.activeConfigurationStep,
-        canJumpToStep: (idx: number) => creationWizardMachine.transition(state, {
-          type: 'jumpToConfigureConnector',
-          subStep: idx,
-        }).changed,
+        canJumpToStep: (idx: number) =>
+          creationWizardMachine.transition(state, {
+            type: 'jumpToConfigureConnector',
+            subStep: idx,
+          }).changed,
       }),
       [service]
     )
@@ -73,25 +81,25 @@ function getConfigurationStep() {
     name: 'Configuration',
     isActive,
     canJumpTo,
-    steps: steps ? steps.map((step, idx) => ({
-      name: step,
-      isActive:
-        isActive &&
-        activeStep === idx,
-      canJumpTo: canJumpToStep(idx),
-      enableNext,
-      component: <Configuration />
-    })) : undefined,
+    steps: steps
+      ? steps.map((step, idx) => ({
+          name: step,
+          isActive: isActive && activeStep === idx,
+          canJumpTo: canJumpToStep(idx),
+          enableNext,
+          component: <Configuration />,
+        }))
+      : undefined,
     enableNext,
-    component: <Configuration />
+    component: <Configuration />,
   };
 }
 
 const ConnectedCreationWizard: React.FunctionComponent = () => {
   const service = useCreationWizardMachineService();
   const [state, send] = useService(service);
-  const kafkaInstanceStep = getKafkaInstanceStep();
-  const configurationStep = getConfigurationStep();
+  const kafkaInstanceStep = useKafkaInstanceStep();
+  const configurationStep = useConfigurationStep();
   const steps = [
     kafkaInstanceStep,
     {
@@ -130,7 +138,7 @@ const ConnectedCreationWizard: React.FunctionComponent = () => {
     {
       name: 'Review',
       isActive: state.matches('reviewConfiguration'),
-      component: <p style={{height: 400}}>Review</p>,
+      component: <p style={{ height: 400 }}>Review</p>,
       canJumpTo:
         creationWizardMachine.transition(state, 'jumpToReviewConfiguration')
           .changed || state.matches('reviewConfiguration'),

@@ -110,7 +110,7 @@ export const clustersMachine = createMachine<typeof clustersMachineModel>(
           selectCluster: {
             target: 'verify',
             actions: 'selectCluster',
-            cond: (_, event) => event.selectedCluster !== undefined
+            cond: (_, event) => event.selectedCluster !== undefined,
           },
           deselectCluster: {
             target: 'verify',
@@ -118,7 +118,7 @@ export const clustersMachine = createMachine<typeof clustersMachineModel>(
           },
           confirm: {
             target: 'done',
-            cond: 'clusterSelected'
+            cond: 'clusterSelected',
           },
         },
       },
@@ -135,7 +135,9 @@ export const clustersMachine = createMachine<typeof clustersMachineModel>(
       selectCluster: assign({
         selectedCluster: (context, event) => {
           if (event.type === 'selectCluster') {
-            return context.clusters?.items?.find(i => i.id == event.selectedCluster);
+            return context.clusters?.items?.find(
+              i => i.id === event.selectedCluster
+            );
           }
           return context.selectedCluster;
         },

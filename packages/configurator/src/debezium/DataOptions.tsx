@@ -6,8 +6,7 @@ export interface IDataOptionsProps {
   onChange: (configuration: unknown, isValid: boolean) => void;
 }
 
-export const DataOptions: React.FC<IDataOptionsProps> = (props) => {
-
+export const DataOptions: React.FC<IDataOptionsProps> = props => {
   const [dataPropValue, setDataPropValue] = React.useState('');
   const handleDataPropertyChange = (value: React.SetStateAction<string>) => {
     // TODO: update the configuration
@@ -36,4 +35,4 @@ export const DataOptions: React.FC<IDataOptionsProps> = (props) => {
       </Form>
     </div>
   );
-}
+};

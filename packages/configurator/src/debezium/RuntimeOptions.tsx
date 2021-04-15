@@ -6,13 +6,12 @@ export interface IRuntimeOptionsProps {
   onChange: (configuration: unknown, isValid: boolean) => void;
 }
 
-export const RuntimeOptions: React.FC<IRuntimeOptionsProps> = (props) => {
-
+export const RuntimeOptions: React.FC<IRuntimeOptionsProps> = props => {
   const [runtimePropValue, setRuntimePropValue] = React.useState('');
   const handleRuntimePropChange = (value: React.SetStateAction<string>) => {
     // TODO: update the configuration, provide config pairs back to the configurator
     setRuntimePropValue(value);
-    props.onChange({foo: "bar"}, true);
+    props.onChange({ foo: 'bar' }, true);
   };
 
   React.useEffect(() => {
@@ -36,4 +35,4 @@ export const RuntimeOptions: React.FC<IRuntimeOptionsProps> = (props) => {
       </Form>
     </div>
   );
-}
+};

@@ -1,5 +1,11 @@
 import { ConnectorType } from '@kas-connectors/api';
-import { ActorRefFrom, assign, createMachine, createSchema, sendParent } from 'xstate';
+import {
+  ActorRefFrom,
+  assign,
+  createMachine,
+  createSchema,
+  sendParent,
+} from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 type Context = {
@@ -71,22 +77,22 @@ export const multistepConfiguratorMachine = createMachine<
           determineStep: {
             always: [
               { target: '#valid.lastStep', cond: 'isLastStep' },
-              { target: '#valid.hasNextStep' }
+              { target: '#valid.hasNextStep' },
             ],
           },
           hasNextStep: {
             on: {
               next: {
                 target: '#configurator.configuring',
-                actions: ['nextStep', 'changedStep']
+                actions: ['nextStep', 'changedStep'],
               },
-            },    
+            },
           },
           lastStep: {
             on: {
-              next: '#configurator.configured'
-            }
-          }
+              next: '#configurator.configured',
+            },
+          },
         },
       },
       configured: {
@@ -97,12 +103,9 @@ export const multistepConfiguratorMachine = createMachine<
     on: {
       prev: {
         target: 'configuring',
-        actions: [
-          'prevStep',
-          'changedStep'
-        ]
-      }
-    }
+        actions: ['prevStep', 'changedStep'],
+      },
+    },
   },
   {
     actions: {
@@ -122,13 +125,18 @@ export const multistepConfiguratorMachine = createMachine<
             }
           : {}
       ),
-      changedStep: sendParent(context => ({ type: 'changedStep', step: context.activeStep })),
+      changedStep: sendParent(context => ({
+        type: 'changedStep',
+        step: context.activeStep,
+      })),
     },
     guards: {
-      isLastStep: context => context.activeStep === (context.steps.length - 1),
+      isLastStep: context => context.activeStep === context.steps.length - 1,
       activeStepValid: context => context.isActiveStepValid,
     },
   }
 );
 
-export type MultistepConfiguratorActorRef = ActorRefFrom<typeof multistepConfiguratorMachine>;
+export type MultistepConfiguratorActorRef = ActorRefFrom<
+  typeof multistepConfiguratorMachine
+>;

@@ -105,7 +105,7 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
           selectInstance: {
             target: 'verify',
             actions: 'selectInstance',
-            cond: (_, event) => event.selectedInstance !== undefined
+            cond: (_, event) => event.selectedInstance !== undefined,
           },
           deselectInstance: {
             target: 'verify',
@@ -131,7 +131,7 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
         selectedInstance: (context, event) => {
           if (event.type === 'selectInstance') {
             return context.instances?.items.find(
-              i => i.id == event.selectedInstance
+              i => i.id === event.selectedInstance
             );
           }
           return context.selectedInstance;
