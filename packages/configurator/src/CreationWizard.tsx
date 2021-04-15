@@ -16,7 +16,7 @@ import { SelectKafkaInstance } from './SelectKafkaInstance';
 import { SelectCluster } from './SelectCluster';
 import { SelectConnector } from './SelectConnector';
 import { Configuration } from './Configuration';
-import { DebeziumConfigurator } from './DebeziumConfigurator';
+import { DebeziumConfigurator } from './debezium/DebeziumConfigurator';
 
 
 const SampleMultiStepConfigurator: React.FunctionComponent<ConnectorConfiguratorProps> = props => (
