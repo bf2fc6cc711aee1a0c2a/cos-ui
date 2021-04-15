@@ -5,14 +5,8 @@ import {
   KafkaRequest,
   KafkaRequestList,
 } from '@kas-connectors/api';
-import {
-  assign,
-  createMachine,
-  createSchema,
-  DoneInvokeEvent,
-  sendParent,
-} from 'xstate';
-import { escalate } from 'xstate/lib/actions';
+import { assign, createMachine, createSchema, DoneInvokeEvent } from 'xstate';
+import { escalate, sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
 const fetchKafkaInstances = (
@@ -53,9 +47,8 @@ const kafkasMachineModel = createModel(
       selectInstance: (payload: { selectedInstance: string }) => ({
         ...payload,
       }),
-      selectedInstanceChanged: (payload: {
-        selectedInstance: KafkaRequest;
-      }) => ({ ...payload }),
+      deselectInstance: () => ({}),
+      confirm: () => ({}),
     },
   }
 );
@@ -72,7 +65,7 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
           src: context =>
             fetchKafkaInstances(context.authToken, context.basePath),
           onDone: {
-            target: 'success',
+            target: 'verify',
             actions: assign<
               Context,
               DoneInvokeEvent<AxiosResponse<KafkaRequestList>>
@@ -91,12 +84,43 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
       failure: {
         entry: escalate(context => ({ message: context.error })),
       },
-      success: {
+      verify: {
+        always: [
+          { target: 'selecting', cond: 'noInstanceSelected' },
+          { target: 'valid', cond: 'instanceSelected' },
+        ],
+      },
+      selecting: {
+        entry: sendParent('isInvalid'),
         on: {
           selectInstance: {
-            target: 'success',
-            actions: ['selectInstance', 'notifyParent'],
+            target: 'valid',
+            actions: 'selectInstance',
           },
+        },
+      },
+      valid: {
+        entry: sendParent('isValid'),
+        on: {
+          selectInstance: {
+            target: 'verify',
+            actions: 'selectInstance',
+            cond: (_, event) => event.selectedInstance !== undefined
+          },
+          deselectInstance: {
+            target: 'verify',
+            actions: 'reset',
+          },
+          confirm: {
+            target: 'done',
+            cond: 'instanceSelected',
+          },
+        },
+      },
+      done: {
+        type: 'final',
+        data: {
+          selectedInstance: (context: Context) => context.selectedInstance,
         },
       },
     },
@@ -104,13 +128,25 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
   {
     actions: {
       selectInstance: assign({
-        selectedInstance: (context, event) =>
-          context.instances?.items.find(i => i.id == event.selectedInstance),
+        selectedInstance: (context, event) => {
+          if (event.type === 'selectInstance') {
+            return context.instances?.items.find(
+              i => i.id == event.selectedInstance
+            );
+          }
+          return context.selectedInstance;
+        },
       }),
-      notifyParent: sendParent(context => ({
-        type: 'selectedInstanceChange',
-        selectedInstance: context.selectedInstance!,
-      })),
+      reset: assign({
+        selectedInstance: (context, event) =>
+          event.type === 'deselectInstance'
+            ? undefined
+            : context.selectedInstance,
+      }),
+    },
+    guards: {
+      instanceSelected: context => context.selectedInstance !== undefined,
+      noInstanceSelected: context => context.selectedInstance === undefined,
     },
   }
 );

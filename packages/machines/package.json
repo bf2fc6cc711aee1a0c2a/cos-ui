@@ -19,7 +19,7 @@
     "@kas-connectors/api": "^0.0.1",
     "axios": "^0.21.1",
     "tslib": "^2.0.0",
-    "xstate": "^4.17.0"
+    "xstate": "^4.17.1"
   },
   "publishConfig": {
     "access": "public"

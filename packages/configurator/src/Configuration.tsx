@@ -9,20 +9,60 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
-import { useActor } from '@xstate/react';
-import { ActorRefFrom } from 'xstate';
-import { configuratorMachine } from '@kas-connectors/machines';
+import { useSelector } from '@xstate/react';
+import { ConnectorConfiguratorProps, ConnectorConfiguratorType, MultistepConfiguratorActorRef } from '@kas-connectors/machines';
 import React from 'react';
+import { useCreationWizardMachineService } from './CreationWizardContext';
+
+const MultistepConfiguration: React.FunctionComponent<{ 
+  Configurator: ConnectorConfiguratorType,
+  actor: MultistepConfiguratorActorRef 
+}> = ({ actor, Configurator }) => {
+  const { activeStep, configuration, connector } = useSelector(
+    actor,
+    React.useCallback(
+      (state: typeof actor.state) => ({        
+        connector: state.context.connector,
+        activeStep: state.context.activeStep,
+        configuration: state.context.configuration,
+      }),
+      [actor]
+    )
+  );
+
+  return (
+    <Configurator
+      activeStep={activeStep!}
+      configuration={configuration}
+      connector={connector}
+      onChange={(configuration, isValid) =>
+        actor.send({ type: 'change', configuration, isValid })
+      }
+    />
+  )
+}
 
 export type ConfigurationProps = {
-  actor: ActorRefFrom<typeof configuratorMachine>;
+  Configurator: React.ComponentType<ConnectorConfiguratorProps> | false;
 };
 
-export function Configuration({ actor }: ConfigurationProps) {
-  const [state, send] = useActor(actor);
-  const { Configurator, activeStep, connector, configuration } = state.context;
+export function Configuration() {
+  const service = useCreationWizardMachineService();
+  const { isLoading, hasErrors, Configurator, multistepConfiguratorRef } = useSelector(
+    service,
+    React.useCallback(
+      (state: typeof service.state) => ({        
+        isLoading: state.matches({ configureConnector: 'loadConfigurator' }),
+        hasErrors: state.matches('failure'),        
+        Configurator: state.context.Configurator!,
+        multistepConfiguratorRef: state.children.multistepConfiguratorRef as MultistepConfiguratorActorRef | undefined,
+      }),
+      [service]
+    )
+  );
+
   switch (true) {
-    case state.matches('loading'):
+    case isLoading:
       return (
         <EmptyState>
           <EmptyStateIcon variant="container" component={Spinner} />
@@ -31,7 +71,7 @@ export function Configuration({ actor }: ConfigurationProps) {
           </Title>
         </EmptyState>
       );
-    case state.matches('failure'):
+    case hasErrors:
       return (
         <EmptyState>
           <EmptyStateIcon icon={ExclamationCircleIcon} />
@@ -53,19 +93,8 @@ export function Configuration({ actor }: ConfigurationProps) {
               </Text>
             </TextContent>
           </PageSection>
-          <PageSection isFilled style={{ minHeight: 600 }}>
-            {Configurator ? (
-              <Configurator
-                activeStep={activeStep!}
-                configuration={configuration}
-                connector={connector}
-                onChange={(configuration, isValid) =>
-                  send({ type: 'configurationChange', configuration, isValid })
-                }
-              />
-            ) : (
-              <p>TODO json-schema based form</p>
-            )}
+          <PageSection isFilled style={{ minHeight: 400 }}>
+            {multistepConfiguratorRef && <MultistepConfiguration actor={multistepConfiguratorRef} Configurator={Configurator} /> }
           </PageSection>
         </PageSection>
       );

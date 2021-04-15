@@ -3,20 +3,29 @@ import {
   Configuration,
   DefaultApi,
   ConnectorTypeList,
-  ConnectorType
+  ConnectorType,
 } from '@kas-connectors/api';
-import { assign, createMachine, createSchema, DoneInvokeEvent, sendParent } from 'xstate';
+import {
+  assign,
+  createMachine,
+  createSchema,
+  DoneInvokeEvent,
+  sendParent,
+} from 'xstate';
 import { escalate } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
-const fetchConnectors = (accessToken?: Promise<string>, basePath?: string): Promise<AxiosResponse<ConnectorTypeList>> => {
+const fetchConnectors = (
+  accessToken?: Promise<string>,
+  basePath?: string
+): Promise<AxiosResponse<ConnectorTypeList>> => {
   const apisService = new DefaultApi(
     new Configuration({
       accessToken,
       basePath,
     })
   );
-  return apisService.listConnectorTypes()
+  return apisService.listConnectorTypes();
 };
 
 type Context = {
@@ -44,9 +53,8 @@ const connectorsMachineModel = createModel(
       selectConnector: (payload: { selectedConnector: string }) => ({
         ...payload,
       }),
-      selectedConnectorChanged: (payload: {
-        selectedConnector: ConnectorType;
-      }) => ({ ...payload }),
+      deselectConnector: () => ({}),
+      confirm: () => ({}),
     },
   }
 );
@@ -60,16 +68,15 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
       loading: {
         invoke: {
           id: 'fetchConnectors',
-          src: context =>
-            fetchConnectors(context.authToken, context.basePath),
+          src: context => fetchConnectors(context.authToken, context.basePath),
           onDone: {
-            target: 'success',
+            target: 'verify',
             actions: assign<
-            Context,
-            DoneInvokeEvent<AxiosResponse<ConnectorTypeList>>
-          >({
-            connectors: (_context, event) => event.data.data,
-          }),
+              Context,
+              DoneInvokeEvent<AxiosResponse<ConnectorTypeList>>
+            >({
+              connectors: (_context, event) => event.data.data,
+            }),
           },
           onError: {
             target: 'failure',
@@ -82,15 +89,43 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
       failure: {
         entry: escalate(context => ({ message: context.error })),
       },
-      success: {
+      verify: {
+        always: [
+          { target: 'selecting', cond: 'noConnectorSelected' },
+          { target: 'valid', cond: 'connectorSelected' },
+        ],
+      },
+      selecting: {
+        entry: sendParent('isInvalid'),
         on: {
           selectConnector: {
-            target: 'success',
-            actions: [
-              'selectConnector',
-              'notifyParent',
-            ],
+            target: 'valid',
+            actions: 'selectConnector',
+            cond: (_, event) => event.selectedConnector !== undefined
           },
+        },
+      },
+      valid: {
+        entry: sendParent('isValid'),
+        on: {
+          selectConnector: {
+            target: 'verify',
+            actions: 'selectConnector',
+          },
+          deselectConnector: {
+            target: 'verify',
+            actions: 'reset',
+          },
+          confirm: {
+            target: 'done',
+            cond: 'connectorSelected'
+          },
+        },
+      },
+      done: {
+        type: 'final',
+        data: {
+          selectedConnector: (context: Context) => context.selectedConnector,
         },
       },
     },
@@ -98,13 +133,25 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
   {
     actions: {
       selectConnector: assign({
-        selectedConnector: (context, event) =>
-          context.connectors?.items?.find(i => i.id == event.selectedConnector),
+        selectedConnector: (context, event) => {
+          if (event.type === 'selectConnector') {
+            return context.connectors?.items?.find(
+              i => i.id == event.selectedConnector
+            );
+          }
+          return context.selectedConnector;
+        },
       }),
-      notifyParent: sendParent(context => ({
-        type: 'selectedConnectorChange',
-        selectedConnector: context.selectedConnector,
-      }))
+      reset: assign({
+        selectedConnector: (context, event) =>
+          event.type === 'deselectConnector'
+            ? undefined
+            : context.selectedConnector,
+      }),
+    },
+    guards: {
+      connectorSelected: context => context.selectedConnector !== undefined,
+      noConnectorSelected: context => context.selectedConnector === undefined,
     },
   }
 );

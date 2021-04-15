@@ -5,18 +5,27 @@ import {
   ConnectorClusterList,
   ConnectorCluster,
 } from '@kas-connectors/api';
-import { assign, createMachine, createSchema, DoneInvokeEvent, sendParent } from 'xstate';
+import {
+  assign,
+  createMachine,
+  createSchema,
+  DoneInvokeEvent,
+  sendParent,
+} from 'xstate';
 import { escalate } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
-const fetchClusters = (accessToken?: Promise<string>, basePath?: string): Promise<AxiosResponse<ConnectorClusterList>> => {
+const fetchClusters = (
+  accessToken?: Promise<string>,
+  basePath?: string
+): Promise<AxiosResponse<ConnectorClusterList>> => {
   const apisService = new DefaultApi(
     new Configuration({
       accessToken,
       basePath,
     })
   );
-  return apisService.listConnectorClusters("???");
+  return apisService.listConnectorClusters('???');
 };
 
 type Context = {
@@ -44,9 +53,8 @@ const clustersMachineModel = createModel(
       selectCluster: (payload: { selectedCluster: string }) => ({
         ...payload,
       }),
-      selectedClusterChanged: (payload: {
-        selectedCluster: ConnectorCluster;
-      }) => ({ ...payload }),
+      deselectCluster: () => ({}),
+      confirm: () => ({}),
     },
   }
 );
@@ -60,16 +68,15 @@ export const clustersMachine = createMachine<typeof clustersMachineModel>(
       loading: {
         invoke: {
           id: 'fetchClusters',
-          src: context =>
-            fetchClusters(context.authToken, context.basePath),
+          src: context => fetchClusters(context.authToken, context.basePath),
           onDone: {
-            target: 'success',
+            target: 'verify',
             actions: assign<
-            Context,
-            DoneInvokeEvent<AxiosResponse<ConnectorClusterList>>
-          >({
-            clusters: (_context, event) => event.data.data,
-          }),
+              Context,
+              DoneInvokeEvent<AxiosResponse<ConnectorClusterList>>
+            >({
+              clusters: (_context, event) => event.data.data,
+            }),
           },
           onError: {
             target: 'failure',
@@ -82,15 +89,43 @@ export const clustersMachine = createMachine<typeof clustersMachineModel>(
       failure: {
         entry: escalate(context => ({ message: context.error })),
       },
-      success: {
+      verify: {
+        always: [
+          { target: 'selecting', cond: 'noClusterSelected' },
+          { target: 'valid', cond: 'clusterSelected' },
+        ],
+      },
+      selecting: {
+        entry: sendParent('isInvalid'),
         on: {
           selectCluster: {
-            target: 'success',
-            actions: [
-              'selectCluster',
-              'notifyParent',
-            ],
+            target: 'valid',
+            actions: 'selectCluster',
           },
+        },
+      },
+      valid: {
+        entry: sendParent('isValid'),
+        on: {
+          selectCluster: {
+            target: 'verify',
+            actions: 'selectCluster',
+            cond: (_, event) => event.selectedCluster !== undefined
+          },
+          deselectCluster: {
+            target: 'verify',
+            actions: 'reset',
+          },
+          confirm: {
+            target: 'done',
+            cond: 'clusterSelected'
+          },
+        },
+      },
+      done: {
+        type: 'final',
+        data: {
+          selectedCluster: (context: Context) => context.selectedCluster,
         },
       },
     },
@@ -98,13 +133,23 @@ export const clustersMachine = createMachine<typeof clustersMachineModel>(
   {
     actions: {
       selectCluster: assign({
-        selectedCluster: (context, event) =>
-          context.clusters?.items?.find(i => i.id == event.selectedCluster),
+        selectedCluster: (context, event) => {
+          if (event.type === 'selectCluster') {
+            return context.clusters?.items?.find(i => i.id == event.selectedCluster);
+          }
+          return context.selectedCluster;
+        },
       }),
-      notifyParent: sendParent(context => ({
-        type: 'selectedClusterChange',
-        selectedCluster: context.selectedCluster,
-      }))
+      reset: assign({
+        selectedCluster: (context, event) =>
+          event.type === 'deselectCluster'
+            ? undefined
+            : context.selectedCluster,
+      }),
+    },
+    guards: {
+      clusterSelected: context => context.selectedCluster !== undefined,
+      noClusterSelected: context => context.selectedCluster === undefined,
     },
   }
 );
