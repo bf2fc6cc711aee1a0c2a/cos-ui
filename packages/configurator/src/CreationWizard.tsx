@@ -19,6 +19,7 @@ import {
   CreationWizardMachineProvider,
   useCreationWizardMachineService,
 } from './CreationWizardContext';
+import { Review } from './Review';
 
 function useKafkaInstanceStep() {
   const service = useCreationWizardMachineService();
@@ -133,7 +134,7 @@ const ConnectedCreationWizard: React.FunctionComponent = () => {
     {
       name: 'Review',
       isActive: state.matches('reviewConfiguration'),
-      component: <p style={{ height: 400 }}>Review</p>,
+      component: <Review />,
       canJumpTo:
         creationWizardMachine.transition(state, 'jumpToReviewConfiguration')
           .changed || state.matches('reviewConfiguration'),

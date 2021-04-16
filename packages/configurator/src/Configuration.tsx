@@ -1,20 +1,17 @@
 import {
-  EmptyState,
-  EmptyStateIcon,
-  PageSection,
-  PageSectionVariants,
-  Spinner,
-  Text,
-  TextContent,
-  Title,
-} from '@patternfly/react-core';
-import { ExclamationCircleIcon } from '@patternfly/react-icons';
-import { useSelector } from '@xstate/react';
-import {
   ConnectorConfiguratorProps,
   ConnectorConfiguratorType,
   MultistepConfiguratorActorRef,
 } from '@kas-connectors/machines';
+import {
+  EmptyState,
+  EmptyStateIcon,
+  PageSection,
+  Spinner,
+  Title,
+} from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
+import { useSelector } from '@xstate/react';
 import React from 'react';
 import { useCreationWizardMachineService } from './CreationWizardContext';
 
@@ -93,25 +90,13 @@ export function Configuration() {
       );
     default:
       return (
-        <PageSection padding={{ default: 'noPadding' }}>
-          <PageSection variant={PageSectionVariants.light}>
-            <TextContent>
-              <Text component="h1" id="select-kafka-instance-title">
-                Connector Configuration
-              </Text>
-              <Text component="p">
-                This is a demo that showcases Patternfly Cards.
-              </Text>
-            </TextContent>
-          </PageSection>
-          <PageSection isFilled style={{ minHeight: 400 }}>
-            {multistepConfiguratorRef && (
-              <MultistepConfiguration
-                actor={multistepConfiguratorRef}
-                Configurator={Configurator}
-              />
-            )}
-          </PageSection>
+        <PageSection variant="light">
+          {multistepConfiguratorRef && (
+            <MultistepConfiguration
+              actor={multistepConfiguratorRef}
+              Configurator={Configurator}
+            />
+          )}
         </PageSection>
       );
   }

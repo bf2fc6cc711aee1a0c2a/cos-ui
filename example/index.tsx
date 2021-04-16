@@ -48,7 +48,7 @@ const ConnectedCreationWizard = () => {
   const authContext = React.useContext(AuthContext);
 
   return (
-    <CreationWizard authToken={authContext?.getToken} basePath={process.env.BASE_PATH} />
+    <CreationWizard authToken={authContext?.getToken ? authContext.getToken() : Promise.resolve('')} basePath={process.env.BASE_PATH} />
   )
 }
 

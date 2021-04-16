@@ -272,12 +272,8 @@ export const creationWizardMachine = createMachine<
       },
       reviewConfiguration: {
         on: {
-          next: 'complete',
           prev: 'configureConnector',
         },
-      },
-      complete: {
-        type: 'final',
       },
     },
     on: {
