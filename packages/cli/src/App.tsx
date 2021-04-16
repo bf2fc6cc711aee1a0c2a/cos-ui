@@ -44,14 +44,23 @@ const SelectKafkaInstance: FunctionComponent<SelectKafkaInstanceProps> = ({
           <Box marginBottom={1}>
             <Text bold>Select a Kafka instance</Text>
           </Box>
-          <SelectInput<string>
-            items={items}
-            initialIndex={initialIndex}
-            onSelect={item => {
-              send({ type: 'selectInstance', selectedInstance: item.value });
-              send({ type: 'confirm' });
-            }}
-          />
+          {items.length > 0 ? (
+            <SelectInput<string>
+              items={items}
+              initialIndex={initialIndex}
+              onSelect={item => {
+                send({ type: 'selectInstance', selectedInstance: item.value });
+                send({ type: 'confirm' });
+              }}
+            />
+          ) : (
+            <Box flexDirection="column">
+              <Text color="red">No Kafka instance available</Text>
+              <Text>
+                Please visit https://cloud.redhat.com/beta/application-services/openshift-streams to create a new instance.
+              </Text>
+            </Box>
+          )}
         </Box>
       );
   }
@@ -130,7 +139,10 @@ const SelectConnector: FunctionComponent<SelectConnectorProps> = ({
             items={items}
             initialIndex={initialIndex}
             onSelect={item => {
-              send({ type: 'selectConnector', selectedConnector: item.value });
+              send({
+                type: 'selectConnector',
+                selectedConnector: item.value,
+              });
               send({ type: 'confirm' });
             }}
           />
