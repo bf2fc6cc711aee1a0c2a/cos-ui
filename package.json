@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "lerna": "lerna",
-    "start": "lerna run start --stream --parallel",
+    "start": "lerna run start --stream --parallel --ignore @kas-connectors/cli",
     "test": "lerna run test --",
     "lint": "lerna run lint -- --fix",
     "build": "lerna run build",
