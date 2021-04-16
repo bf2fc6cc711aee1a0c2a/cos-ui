@@ -19,12 +19,11 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { useActor } from '@xstate/react';
-import { ActorRefFrom } from 'xstate';
-import { kafkasMachine } from '@kas-connectors/machines';
+import { KafkaMachineActorRef } from '@kas-connectors/machines';
 import React from 'react';
 
 export type SelectKafkaInstanceProps = {
-  actor: ActorRefFrom<typeof kafkasMachine>;
+  actor: KafkaMachineActorRef;
 };
 
 export function SelectKafkaInstance({ actor }: SelectKafkaInstanceProps) {

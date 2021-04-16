@@ -5,7 +5,7 @@ import {
   KafkaRequest,
   KafkaRequestList,
 } from '@kas-connectors/api';
-import { assign, createMachine, createSchema, DoneInvokeEvent } from 'xstate';
+import { ActorRefFrom, assign, createMachine, createSchema, DoneInvokeEvent } from 'xstate';
 import { escalate, sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
@@ -150,3 +150,5 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
     },
   }
 );
+
+export type KafkaMachineActorRef = ActorRefFrom<typeof kafkasMachine>;

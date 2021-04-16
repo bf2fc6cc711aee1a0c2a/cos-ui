@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { ActorRefFrom } from 'xstate';
 import { useSelector, useService } from '@xstate/react';
 import {
   creationWizardMachine,
-  kafkasMachine,
-  clustersMachine,
-  connectorsMachine,
+  KafkaMachineActorRef,
+  ConnectorsMachineActorRef,
+  ClusterMachineActorRef,
 } from '@kas-connectors/machines';
 import {
   UncontrolledWizard,
@@ -28,9 +27,7 @@ function useKafkaInstanceStep() {
     React.useCallback(
       (state: typeof service.state) => ({
         isActive: state.matches('selectKafka'),
-        actor: state.children.selectKafkaInstance as ActorRefFrom<
-          typeof kafkasMachine
-        >,
+        actor: state.children.selectKafkaInstance as KafkaMachineActorRef,
         canJumpTo:
           creationWizardMachine.transition(state, 'jumpToSelectKafka')
             .changed || state.matches('selectKafka'),
@@ -108,7 +105,7 @@ const ConnectedCreationWizard: React.FunctionComponent = () => {
       component: (
         <SelectCluster
           actor={
-            state.children.selectCluster as ActorRefFrom<typeof clustersMachine>
+            state.children.selectCluster as ClusterMachineActorRef
           }
         />
       ),
@@ -123,9 +120,7 @@ const ConnectedCreationWizard: React.FunctionComponent = () => {
       component: (
         <SelectConnector
           actor={
-            state.children.selectConnector as ActorRefFrom<
-              typeof connectorsMachine
-            >
+            state.children.selectConnector as ConnectorsMachineActorRef
           }
         />
       ),

@@ -6,6 +6,7 @@ import {
   ConnectorType,
 } from '@kas-connectors/api';
 import {
+  ActorRefFrom,
   assign,
   createMachine,
   createSchema,
@@ -155,3 +156,5 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
     },
   }
 );
+
+export type ConnectorsMachineActorRef = ActorRefFrom<typeof connectorsMachine>;

@@ -6,6 +6,7 @@ import {
   ConnectorCluster,
 } from '@kas-connectors/api';
 import {
+  ActorRefFrom,
   assign,
   createMachine,
   createSchema,
@@ -155,3 +156,5 @@ export const clustersMachine = createMachine<typeof clustersMachineModel>(
     },
   }
 );
+
+export type ClusterMachineActorRef = ActorRefFrom<typeof clustersMachine>;

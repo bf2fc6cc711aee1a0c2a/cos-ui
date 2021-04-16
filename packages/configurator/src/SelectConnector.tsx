@@ -1,3 +1,4 @@
+import { ConnectorsMachineActorRef } from '@kas-connectors/machines';
 import {
   Card,
   CardBody,
@@ -19,12 +20,10 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { useActor } from '@xstate/react';
-import { ActorRefFrom } from 'xstate';
-import { connectorsMachine } from '@kas-connectors/machines';
 import React from 'react';
 
 export type SelectConnectorProps = {
-  actor: ActorRefFrom<typeof connectorsMachine>;
+  actor: ConnectorsMachineActorRef;
 };
 
 export function SelectConnector({ actor }: SelectConnectorProps) {
