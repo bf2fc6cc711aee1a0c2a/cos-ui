@@ -9,8 +9,8 @@ export interface IDebeziumConfiguratorProps {
   activeStep: number;
   connector: ConnectorType;
   // internalState: unknown; // ???
-  configuration: unknown;
-  onChange: (configuration: unknown, isValid: boolean) => void;
+  configuration: Map<string,unknown>;
+  onChange: (configuration: Map<string,unknown>, isValid: boolean) => void;
 }
 
 export const DebeziumConfigurator: React.FC<IDebeziumConfiguratorProps> = props => {
@@ -25,7 +25,7 @@ export const DebeziumConfigurator: React.FC<IDebeziumConfiguratorProps> = props 
         return (
           <Properties
             configuration={props.configuration}
-            onChange={(conf: unknown, status: boolean) =>
+            onChange={(conf: Map<string,unknown>, status: boolean) =>
               props.onChange(conf, status)
             }
           ></Properties>
@@ -34,7 +34,7 @@ export const DebeziumConfigurator: React.FC<IDebeziumConfiguratorProps> = props 
         return (
           <FilterDefinition
             configuration={props.configuration}
-            onChange={(conf: unknown, status: boolean) =>
+            onChange={(conf: Map<string,unknown>, status: boolean) =>
               props.onChange(conf, status)
             }
           ></FilterDefinition>
@@ -43,7 +43,7 @@ export const DebeziumConfigurator: React.FC<IDebeziumConfiguratorProps> = props 
         return (
           <DataOptions
             configuration={props.configuration}
-            onChange={(conf: unknown, status: boolean) =>
+            onChange={(conf: Map<string,unknown>, status: boolean) =>
               props.onChange(conf, status)
             }
           ></DataOptions>
@@ -52,7 +52,7 @@ export const DebeziumConfigurator: React.FC<IDebeziumConfiguratorProps> = props 
         return (
           <RuntimeOptions
             configuration={props.configuration}
-            onChange={(conf: unknown, status: boolean) =>
+            onChange={(conf: Map<string,unknown>, status: boolean) =>
               props.onChange(conf, status)
             }
           ></RuntimeOptions>

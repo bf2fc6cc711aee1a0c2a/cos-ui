@@ -2,20 +2,38 @@ import React from 'react';
 import { Form, FormGroup, TextInput, Title } from '@patternfly/react-core';
 
 export interface IDataOptionsProps {
-  configuration: unknown;
-  onChange: (configuration: unknown, isValid: boolean) => void;
+  configuration: Map<string, unknown>;
+  onChange: (configuration: Map<string, unknown>, isValid: boolean) => void;
 }
 
 export const DataOptions: React.FC<IDataOptionsProps> = props => {
-  const [dataPropValue, setDataPropValue] = React.useState('');
-  const handleDataPropertyChange = (value: React.SetStateAction<string>) => {
-    // TODO: update the configuration
+  const [dataPropValue, setDataPropValue] = React.useState<string>('');
+  const handleDataPropertyChange = (
+    value: string,
+    event: React.FormEvent<HTMLInputElement>
+  ) => {
     setDataPropValue(value);
-    props.onChange(undefined, true);
+    setConfiguratorValue(props.configuration, event.currentTarget.name, value);
+  };
+
+  const setConfiguratorValue = (
+    config: Map<string, unknown>,
+    key: string,
+    value: React.SetStateAction<string>
+  ) => {
+    const configCopy = config
+      ? new Map<string, unknown>(config)
+      : new Map<string, unknown>();
+    configCopy.set(key, value);
+    props.onChange(configCopy, value !== '');
   };
 
   React.useEffect(() => {
-    props.onChange(undefined, true);
+    // TODO: Keys will be extracted from the configuration (properties needed on this step)
+    if (props.configuration && props.configuration.has('data-prop')) {
+      setDataPropValue(props.configuration.get('data-prop') as string);
+    }
+    props.onChange(props.configuration, true);
   }, []);
 
   return (

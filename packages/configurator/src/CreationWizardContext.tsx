@@ -91,7 +91,7 @@ const SampleMultiStepConfigurator: React.FunctionComponent<ConnectorConfigurator
     <button
       onClick={() =>
         props.onChange(
-          props.activeStep === 2 ? { foo: 'bar' } : undefined,
+          new Map(),
           true
         )
       }
