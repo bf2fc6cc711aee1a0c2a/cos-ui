@@ -62,12 +62,6 @@ export const multistepConfiguratorMachine = createMachine<
       configuring: {
         entry: sendParent('isInvalid'),
         always: [{ target: 'valid', cond: 'activeStepValid' }],
-        on: {
-          change: {
-            target: 'configuring',
-            actions: 'change',
-          },
-        },
       },
       valid: {
         id: 'valid',
@@ -101,6 +95,10 @@ export const multistepConfiguratorMachine = createMachine<
       },
     },
     on: {
+      change: {
+        target: 'configuring',
+        actions: 'change',
+      },
       prev: {
         target: 'configuring',
         actions: ['prevStep', 'changedStep'],
