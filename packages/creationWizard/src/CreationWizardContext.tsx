@@ -3,12 +3,10 @@ import { useInterpret } from '@xstate/react';
 import { Interpreter, StateMachine } from 'xstate';
 import {
   configuratorLoaderMachine,
-  ConnectorConfiguratorProps,
   ConnectorConfiguratorResponse,
   creationWizardMachine,
 } from '@kas-connectors/machines';
 import { ConnectorType } from '@kas-connectors/api';
-import { DebeziumConfigurator } from './debezium/DebeziumConfigurator';
 
 export type InterpreterFrom<
   T extends StateMachine<any, any, any, any>
@@ -41,12 +39,14 @@ export const useCreationWizardMachineService = () => {
 type CreationWizardMachineProviderPropsType = {
   authToken?: Promise<string>;
   basePath?: string;
+  fetchConfigurator: (connector: ConnectorType) => Promise<ConnectorConfiguratorResponse>;
 };
 
 export const CreationWizardMachineProvider: React.FunctionComponent<CreationWizardMachineProviderPropsType> = ({
   children,
   authToken,
   basePath,
+  fetchConfigurator
 }) => {
   const makeConfiguratorLoaderMachine = React.useCallback(
     () =>
@@ -83,49 +83,20 @@ export const CreationWizardMachineProvider: React.FunctionComponent<CreationWiza
 
 // WARNING: from this line below is all placeholder code that will be removed
 
-const SampleMultiStepConfigurator: React.FunctionComponent<ConnectorConfiguratorProps> = props => (
-  <div>
-    <p>
-      Active step {props.activeStep} of {props.connector.id}
-    </p>
-    <button
-      onClick={() =>
-        props.onChange(
-          new Map(),
-          true
-        )
-      }
-    >
-      Set valid
-    </button>
-  </div>
-);
-
-const fetchConfigurator = (
-  connector: ConnectorType
-): Promise<ConnectorConfiguratorResponse> => {
-  switch (connector.id) {
-    case 'aws-kinesis-source':
-      // this will come from a remote entry point, eg. debezium
-      return Promise.resolve({
-        steps: ['First step', 'Second step', 'Third step'],
-        Configurator: SampleMultiStepConfigurator,
-      });
-    case 'aws-sqs-source-v1alpha1':
-      // this will come from a remote entry point, eg. debezium
-      return Promise.resolve({
-        steps: [
-          'Properties',
-          'Filter Configuration',
-          'Data Options',
-          'Runtime Options',
-        ],
-        Configurator: DebeziumConfigurator,
-      });
-    default:
-      return Promise.resolve({
-        steps: false,
-        Configurator: () => <p>TODO: json-schema based configurator</p>,
-      });
-  }
-};
+// const SampleMultiStepConfigurator: React.FunctionComponent<ConnectorConfiguratorProps> = props => (
+//   <div>
+//     <p>
+//       Active step {props.activeStep} of {props.connector.id}
+//     </p>
+//     <button
+//       onClick={() =>
+//         props.onChange(
+//           props.activeStep === 2 ? { foo: 'bar' } : undefined,
+//           true
+//         )
+//       }
+//     >
+//       Set valid
+//     </button>
+//   </div>
+// );

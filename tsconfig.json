@@ -8,7 +8,7 @@
     "paths": {
       "@kas-connectors/api": ["packages/api/src"],
       "@kas-connectors/machines": ["packages/machines/src"],
-      "@kas-connectors/configurator": ["packages/configurator/src"],
+      "@kas-connectors/creationWizard": ["packages/creationWizard/src"],
       "@kas-connectors/cli": ["packages/cli/src"],
       "$test/*": ["test/*"]
     }

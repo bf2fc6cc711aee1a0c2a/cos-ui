@@ -1,5 +1,5 @@
 {
-  "name": "@kas-connectors/configurator",
+  "name": "@kas-connectors/creationWizard",
   "version": "0.0.2",
   "repository": {
     "type": "git",
@@ -21,16 +21,16 @@
     "dist"
   ],
   "peerDependencies": {
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0"
-  },
-  "dependencies": {
-    "@kas-connectors/machines": "^0.0.1",
     "@patternfly/react-core": "^4.87.2",
     "@patternfly/react-icons": "^4.7.11",
     "@patternfly/react-styles": "^4.7.8",
     "@xstate/react": "^1.3.1",
-    "xstate": "^4.17.1",
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0",
+    "xstate": "^4.17.1"
+  },
+  "dependencies": {
+    "@kas-connectors/machines": "^0.0.1",
     "tslib": "^2.0.0"
   },
   "publishConfig": {

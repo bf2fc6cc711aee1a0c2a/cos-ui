@@ -4,7 +4,7 @@ import '@patternfly/react-core/dist/styles/base.css';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Page, Spinner } from '@patternfly/react-core';
-import { CreationWizard } from '@kas-connectors/configurator';
+import { CreationWizard } from '@kas-connectors/creationWizard';
 import { getKeycloakInstance } from './auth/keycloak/keycloakAuth';
 import { AuthContext } from './auth/AuthContext';
 import {

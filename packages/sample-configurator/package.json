@@ -1,0 +1,21 @@
+{
+  "name": "@kas-connectors/sample-configurator",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@kas-connectors/machines": "0.0.1"
+  },
+  "peerDependencies": {
+    "@patternfly/react-core": "^4.87.2",
+    "@patternfly/react-icons": "^4.7.11",
+    "@patternfly/react-styles": "^4.7.8",
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0"
+  },
+  "scripts": {
+    "start": "webpack-cli serve",
+    "build": "webpack --mode production",
+    "serve": "serve dist -p 3001",
+    "clean": "rm -rf dist"
+  }
+}

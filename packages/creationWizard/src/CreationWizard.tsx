@@ -16,7 +16,6 @@ import { SelectCluster } from './SelectCluster';
 import { SelectConnector } from './SelectConnector';
 import { Configuration } from './Configuration';
 import {
-  CreationWizardMachineProvider,
   useCreationWizardMachineService,
 } from './CreationWizardContext';
 import { Review } from './Review';
@@ -93,7 +92,7 @@ function useConfigurationStep() {
   };
 }
 
-const ConnectedCreationWizard: React.FunctionComponent = () => {
+export const CreationWizard: React.FunctionComponent = () => {
   const service = useCreationWizardMachineService();
   const [state, send] = useService(service);
   const kafkaInstanceStep = useKafkaInstanceStep();
@@ -198,16 +197,3 @@ const ConnectedCreationWizard: React.FunctionComponent = () => {
     />
   );
 };
-
-type CreationWizardProps = {
-  authToken?: Promise<string>;
-  basePath?: string;
-};
-
-export function CreationWizard({ authToken, basePath }: CreationWizardProps) {
-  return (
-    <CreationWizardMachineProvider authToken={authToken} basePath={basePath}>
-      <ConnectedCreationWizard />
-    </CreationWizardMachineProvider>
-  );
-}

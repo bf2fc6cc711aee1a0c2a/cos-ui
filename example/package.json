@@ -13,7 +13,7 @@
     "react-app-polyfill": "^1.0.0"
   },
   "alias": {
-    "@kas-connectors/configurator": "../packages/configurator",
+    "@kas-connectors/creationWizard": "../packages/creationWizard",
     "react": "../node_modules/react",
     "react-dom": "../node_modules/react-dom/profiling",
     "xstate": "../node_modules/xstate",
