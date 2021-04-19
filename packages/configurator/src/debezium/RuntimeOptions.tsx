@@ -2,20 +2,39 @@ import React from 'react';
 import { Form, FormGroup, TextInput, Title } from '@patternfly/react-core';
 
 export interface IRuntimeOptionsProps {
-  configuration: unknown;
-  onChange: (configuration: unknown, isValid: boolean) => void;
+  configuration: Map<string, unknown>;
+  onChange: (configuration: Map<string, unknown>, isValid: boolean) => void;
 }
 
 export const RuntimeOptions: React.FC<IRuntimeOptionsProps> = props => {
-  const [runtimePropValue, setRuntimePropValue] = React.useState('');
-  const handleRuntimePropChange = (value: React.SetStateAction<string>) => {
+  const [runtimePropValue, setRuntimePropValue] = React.useState<string>('');
+  const handleRuntimePropChange = (
+    value: React.SetStateAction<string>,
+    event: React.FormEvent<HTMLInputElement>
+  ) => {
     // TODO: update the configuration, provide config pairs back to the configurator
     setRuntimePropValue(value);
-    props.onChange({ foo: 'bar' }, true);
+    setConfiguratorValue(props.configuration, event.currentTarget.name, value);
+  };
+
+  const setConfiguratorValue = (
+    config: Map<string, unknown>,
+    key: string,
+    value: React.SetStateAction<string>
+  ) => {
+    const configCopy = config
+      ? new Map<string, unknown>(config)
+      : new Map<string, unknown>();
+    configCopy.set(key, value);
+    props.onChange(configCopy, value !== '');
   };
 
   React.useEffect(() => {
-    props.onChange(undefined, true);
+    // TODO: Keys will be extracted from the configuration (properties needed on this step)
+    if (props.configuration && props.configuration.has('runtime-prop')) {
+      setRuntimePropValue(props.configuration.get('runtime-prop') as string);
+    }
+    props.onChange(props.configuration, true);
   }, []);
 
   return (
