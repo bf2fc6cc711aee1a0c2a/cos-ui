@@ -11,8 +11,10 @@
     "@patternfly/react-core": "^4.87.2",
     "@patternfly/react-icons": "^4.7.11",
     "@patternfly/react-styles": "^4.7.8",
+    "@patternfly/react-table": "^4.24.1",
     "react": "^16.8.0",
-    "react-dom": "^16.8.0"
+    "react-dom": "^16.8.0",
+    "react-router-dom": "^5.2.0"
   },
   "scripts": {
     "start": "webpack-cli serve",
