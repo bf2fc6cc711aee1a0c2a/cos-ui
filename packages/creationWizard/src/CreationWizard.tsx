@@ -15,9 +15,7 @@ import { SelectKafkaInstance } from './SelectKafkaInstance';
 import { SelectCluster } from './SelectCluster';
 import { SelectConnector } from './SelectConnector';
 import { Configuration } from './Configuration';
-import {
-  useCreationWizardMachineService,
-} from './CreationWizardContext';
+import { useCreationWizardMachineService } from './CreationWizardContext';
 import { Review } from './Review';
 
 function useKafkaInstanceStep() {
@@ -104,9 +102,7 @@ export const CreationWizard: React.FunctionComponent = () => {
       isActive: state.matches('selectCluster'),
       component: (
         <SelectCluster
-          actor={
-            state.children.selectCluster as ClusterMachineActorRef
-          }
+          actor={state.children.selectCluster as ClusterMachineActorRef}
         />
       ),
       canJumpTo:
@@ -119,9 +115,7 @@ export const CreationWizard: React.FunctionComponent = () => {
       isActive: state.matches('selectConnector'),
       component: (
         <SelectConnector
-          actor={
-            state.children.selectConnector as ConnectorsMachineActorRef
-          }
+          actor={state.children.selectConnector as ConnectorsMachineActorRef}
         />
       ),
       canJumpTo:

@@ -57,7 +57,9 @@ const SelectKafkaInstance: FunctionComponent<SelectKafkaInstanceProps> = ({
             <Box flexDirection="column">
               <Text color="red">No Kafka instance available</Text>
               <Text>
-                Please visit https://cloud.redhat.com/beta/application-services/openshift-streams to create a new instance.
+                Please visit
+                https://cloud.redhat.com/beta/application-services/openshift-streams
+                to create a new instance.
               </Text>
             </Box>
           )}

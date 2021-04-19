@@ -191,7 +191,9 @@ export function SelectCluster({ actor }: SelectClusterProps) {
             <Gallery hasGutter>
               {state.context.clusters?.items
                 .filter(i =>
-                  searchValue !== '' ? i.metadata!.name!.includes(searchValue) : true
+                  searchValue !== ''
+                    ? i.metadata!.name!.includes(searchValue)
+                    : true
                 )
                 .map(i => (
                   <Card

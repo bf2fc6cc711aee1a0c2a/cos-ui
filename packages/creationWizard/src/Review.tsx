@@ -1,8 +1,4 @@
-import {
-  PageSection,
-  Text,
-  TextArea
-} from '@patternfly/react-core';
+import { PageSection, Text, TextArea } from '@patternfly/react-core';
 import { useService } from '@xstate/react';
 import React from 'react';
 import { useCreationWizardMachineService } from './CreationWizardContext';

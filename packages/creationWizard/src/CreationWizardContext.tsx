@@ -39,14 +39,16 @@ export const useCreationWizardMachineService = () => {
 type CreationWizardMachineProviderPropsType = {
   authToken?: Promise<string>;
   basePath?: string;
-  fetchConfigurator: (connector: ConnectorType) => Promise<ConnectorConfiguratorResponse>;
+  fetchConfigurator: (
+    connector: ConnectorType
+  ) => Promise<ConnectorConfiguratorResponse>;
 };
 
 export const CreationWizardMachineProvider: React.FunctionComponent<CreationWizardMachineProviderPropsType> = ({
   children,
   authToken,
   basePath,
-  fetchConfigurator
+  fetchConfigurator,
 }) => {
   const makeConfiguratorLoaderMachine = React.useCallback(
     () =>
@@ -55,7 +57,7 @@ export const CreationWizardMachineProvider: React.FunctionComponent<CreationWiza
           fetchConfigurator: context => fetchConfigurator(context.connector),
         },
       }),
-    []
+    [fetchConfigurator]
   );
   const service = useInterpret(
     creationWizardMachine,

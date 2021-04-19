@@ -2,26 +2,29 @@ import React from 'react';
 import { Form, FormGroup, TextInput, Title } from '@patternfly/react-core';
 
 export interface IFilterDefinitionProps {
-  configuration: Map<string,unknown>;
-  onChange: (configuration: Map<string,unknown>, isValid: boolean) => void;
+  configuration: Map<string, unknown>;
+  onChange: (configuration: Map<string, unknown>, isValid: boolean) => void;
 }
 
 export const FilterDefinition: React.FC<IFilterDefinitionProps> = props => {
   const [filterValue, setFilterValue] = React.useState<string>('');
-  const handleFilterChange = (value: React.SetStateAction<string>, event: React.FormEvent<HTMLInputElement>) => {
+  const handleFilterChange = (
+    value: React.SetStateAction<string>,
+    event: React.FormEvent<HTMLInputElement>
+  ) => {
     // TODO: update the configuration
     setFilterValue(value);
     setConfiguratorValue(props.configuration, event.currentTarget.name, value);
   };
 
   const setConfiguratorValue = (
-    config: Map<string,unknown>,
+    config: Map<string, unknown>,
     key: string,
     value: React.SetStateAction<string>
   ) => {
     const configCopy = config
-      ? new Map<string,unknown>(config)
-      : new Map<string,unknown>();
+      ? new Map<string, unknown>(config)
+      : new Map<string, unknown>();
     configCopy.set(key, value);
     props.onChange(configCopy, value !== '');
   };
