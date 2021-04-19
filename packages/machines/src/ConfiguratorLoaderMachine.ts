@@ -7,8 +7,8 @@ import { escalate } from 'xstate/lib/actions';
 export type ConnectorConfiguratorProps = {
   activeStep: number;
   connector: ConnectorType;
-  configuration: Map<string,unknown> | unknown;
-  onChange: (configuration: Map<string,unknown> | unknown, isValid: boolean) => void;
+  configuration: Map<string,unknown>;
+  onChange: (configuration: Map<string,unknown>, isValid: boolean) => void;
 };
 
 export type ConnectorConfiguratorType = ComponentType<
