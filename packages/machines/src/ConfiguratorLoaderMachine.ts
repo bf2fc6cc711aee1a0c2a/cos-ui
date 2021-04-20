@@ -11,9 +11,10 @@ export type ConnectorConfiguratorProps = {
   onChange: (configuration: Map<string, unknown>, isValid: boolean) => void;
 };
 
-export type ConnectorConfiguratorType = ComponentType<
+export type ConnectorConfiguratorComponent = ComponentType<
   ConnectorConfiguratorProps
 >;
+export type ConnectorConfiguratorType = ConnectorConfiguratorComponent | false;
 
 export type ConnectorConfiguratorResponse = {
   Configurator: ConnectorConfiguratorType;

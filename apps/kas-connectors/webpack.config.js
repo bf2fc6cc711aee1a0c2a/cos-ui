@@ -23,6 +23,7 @@ module.exports = {
     port: 1337,
     https: true,
     allowedHosts: ['prod.foo.redhat.com'],
+    historyApiFallback: true,
   },
   output: {
     filename: '[name].bundle.js',

@@ -1,6 +1,6 @@
 import {
+  ConnectorConfiguratorComponent,
   ConnectorConfiguratorProps,
-  ConnectorConfiguratorType,
   MultistepConfiguratorActorRef,
 } from '@kas-connectors/machines';
 import {
@@ -16,7 +16,7 @@ import React, { ComponentType, FunctionComponent, useCallback } from 'react';
 import { useCreationWizardMachineService } from './CreationWizardContext';
 
 const MultistepConfiguration: FunctionComponent<{
-  Configurator: ConnectorConfiguratorType;
+  Configurator: ConnectorConfiguratorComponent;
   actor: MultistepConfiguratorActorRef;
 }> = ({ actor, Configurator }) => {
   const { activeStep, configuration, connector } = useSelector(
@@ -91,12 +91,13 @@ export function Configuration() {
     default:
       return (
         <PageSection variant="light">
-          {multistepConfiguratorRef && (
+          {multistepConfiguratorRef && Configurator && (
             <MultistepConfiguration
               actor={multistepConfiguratorRef}
               Configurator={Configurator}
             />
           )}
+          {!multistepConfiguratorRef && <>TODO json-schema based form</>}
         </PageSection>
       );
   }
