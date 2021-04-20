@@ -1,8 +1,11 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
-const { ModuleFederationPlugin } = require("webpack").container;
-const path = require("path");
-const deps = require("./package.json").peerDependencies;
+const { ModuleFederationPlugin } = require('webpack').container;
+const path = require('path');
+const {
+  peerDependencies: dependencies,
+  federatedModuleName,
+} = require('./package.json');
 
 const BG_IMAGES_DIRNAME = 'bgimages';
 const useContentHash = true; // TODO figure out if needed
@@ -12,21 +15,22 @@ module.exports = {
     // we add an entrypoint with the same name as our name in ModuleFederationPlugin.
     // This merges the two "chunks" together. When a remoteEntry is placed on the page,
     // the code in this kas-connectors entrypoint will execute as part of the remoteEntry startup.
-    main: "./src/index.tsx",
+    main: './src/index.tsx',
   },
-  mode: "development",
+  mode: 'development',
   devServer: {
-    contentBase: path.join(__dirname, "dist"),
+    contentBase: path.join(__dirname, 'dist'),
     port: 1337,
     https: true,
-    allowedHosts: ['prod.foo.redhat.com']
+    allowedHosts: ['prod.foo.redhat.com'],
   },
   output: {
-    // public path can be what it normally is, not a absolute, hardcoded url
-    publicPath: "auto",
+    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+    clean: true,
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js"],
+    extensions: ['.ts', '.tsx', '.js'],
   },
   module: {
     rules: [
@@ -34,12 +38,12 @@ module.exports = {
         test: /\.s[ac]ss$/i,
         use: [
           // Creates `style` nodes from JS strings
-          "style-loader",
+          'style-loader',
           // Translates CSS into CommonJS
-          "css-loader",
+          'css-loader',
           // Compiles Sass to CSS
-          "sass-loader",
-        ]
+          'sass-loader',
+        ],
       },
       {
         test: /\.css$/,
@@ -47,28 +51,46 @@ module.exports = {
           path.resolve(__dirname, 'src'),
           path.resolve(__dirname, '../../node_modules/patternfly'),
           path.resolve(__dirname, '../../node_modules/@patternfly/patternfly'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/react-styles/css'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/react-core/dist/styles/base.css'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css')
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/react-styles/css'
+          ),
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/react-core/dist/styles/base.css'
+          ),
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'
+          ),
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'
+          ),
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'
+          ),
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css'
+          ),
         ],
-        use: ["style-loader", "css-loader"]
+        use: ['style-loader', 'css-loader'],
       },
       {
         test: /bootstrap\.tsx$/,
-        loader: "bundle-loader",
+        loader: 'bundle-loader',
         options: {
           lazy: true,
         },
       },
       {
         test: /\.tsx?$/,
-        loader: "babel-loader",
+        loader: 'babel-loader',
         exclude: /node_modules/,
         options: {
-          presets: ["@babel/preset-react", "@babel/preset-typescript"],
+          presets: ['@babel/preset-react', '@babel/preset-typescript'],
         },
       },
       {
@@ -77,10 +99,22 @@ module.exports = {
         // if they live under a 'fonts' or 'pficon' directory
         include: [
           path.resolve(__dirname, '../../node_modules/patternfly/dist/fonts'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/react-core/dist/styles/assets/fonts'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/react-core/dist/styles/assets/pficon'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/patternfly/assets/fonts'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/patternfly/assets/pficon')
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/react-core/dist/styles/assets/fonts'
+          ),
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/react-core/dist/styles/assets/pficon'
+          ),
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/patternfly/assets/fonts'
+          ),
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/patternfly/assets/pficon'
+          ),
         ],
         use: {
           loader: 'file-loader',
@@ -88,9 +122,9 @@ module.exports = {
             // Limit at 50k. larger files emited into separate files
             limit: 5000,
             outputPath: 'fonts',
-            name: useContentHash ? '[contenthash].[ext]' : '[name].[ext]'
-          }
-        }
+            name: useContentHash ? '[contenthash].[ext]' : '[name].[ext]',
+          },
+        },
       },
       {
         test: /\.svg$/,
@@ -101,10 +135,10 @@ module.exports = {
             options: {
               limit: 5000,
               outputPath: 'svgs',
-              name: useContentHash ? '[contenthash].[ext]' : '[name].[ext]'
-            }
-          }
-        ]
+              name: useContentHash ? '[contenthash].[ext]' : '[name].[ext]',
+            },
+          },
+        ],
       },
       {
         test: /\.svg$/,
@@ -113,35 +147,52 @@ module.exports = {
         include: input => input.indexOf(BG_IMAGES_DIRNAME) > -1,
         use: {
           loader: 'svg-url-loader',
-          options: {}
-        }
+          options: {},
+        },
       },
       {
         test: /\.svg$/,
         // only process SVG modules with this loader when they don't live under a 'bgimages',
         // 'fonts', or 'pficon' directory, those are handled with other loaders
-        include: input => (
-          (input.indexOf(BG_IMAGES_DIRNAME) === -1) &&
-          (input.indexOf('fonts') === -1) &&
-          (input.indexOf('background-filter') === -1) &&
-          (input.indexOf('pficon') === -1)
-        ),
+        include: input =>
+          input.indexOf(BG_IMAGES_DIRNAME) === -1 &&
+          input.indexOf('fonts') === -1 &&
+          input.indexOf('background-filter') === -1 &&
+          input.indexOf('pficon') === -1,
         use: {
           loader: 'raw-loader',
-          options: {}
-        }
+          options: {},
+        },
       },
       {
         test: /\.(jpg|jpeg|png|gif)$/i,
         include: [
           path.resolve(__dirname, 'src'),
           path.resolve(__dirname, '../../node_modules/patternfly'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/patternfly/assets/images'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/react-styles/css/assets/images'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/react-core/dist/styles/assets/images'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css/assets/images'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css/assets/images'),
-          path.resolve(__dirname, '../../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css/assets/images')
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/patternfly/assets/images'
+          ),
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/react-styles/css/assets/images'
+          ),
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/react-core/dist/styles/assets/images'
+          ),
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css/assets/images'
+          ),
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css/assets/images'
+          ),
+          path.resolve(
+            __dirname,
+            '../../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css/assets/images'
+          ),
         ],
         use: [
           {
@@ -149,11 +200,11 @@ module.exports = {
             options: {
               limit: 5000,
               outputPath: 'images',
-              name: useContentHash ? '[contenthash].[ext]' : '[name].[ext]'
-            }
-          }
-        ]
-      }
+              name: useContentHash ? '[contenthash].[ext]' : '[name].[ext]',
+            },
+          },
+        ],
+      },
     ],
   },
   plugins: [
@@ -161,18 +212,42 @@ module.exports = {
       systemvars: true,
     }),
     new ModuleFederationPlugin({
-      name: "kas-connectors",
+      name: 'kas-connectors',
       remotes: {
         // will be dynamic
       },
       shared: {
-        react: { singleton: true, requiredVersion: deps.react },
-        "react-dom": { singleton: true, requiredVersion: deps["react-dom"] },
+        ...dependencies,
+        react: { singleton: true, requiredVersion: dependencies.react },
+        'react-dom': {
+          singleton: true,
+          requiredVersion: dependencies['react-dom'],
+        },
+      },
+    }),
+    new ModuleFederationPlugin({
+      name: federatedModuleName,
+      filename: 'remoteEntry.js',
+      exposes: {
+        './OpenshiftManagedConnectors': './src/federated',
+      },
+      shared: {
+        ...dependencies,
+        react: {
+          eager: true,
+          singleton: true,
+          requiredVersion: dependencies['react'],
+        },
+        'react-dom': {
+          eager: true,
+          singleton: true,
+          requiredVersion: dependencies['react-dom'],
+        },
       },
     }),
     new HtmlWebpackPlugin({
-      template: "./public/index.html",
-      excludeChunks: ["kas-connectors"],
+      template: './public/index.html',
+      excludeChunks: ['kas-connectors'],
     }),
   ],
 };

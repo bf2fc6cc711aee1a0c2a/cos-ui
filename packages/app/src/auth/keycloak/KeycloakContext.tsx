@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { createContext, FunctionComponent } from 'react';
 import { KeycloakInstance, KeycloakProfile } from 'keycloak-js';
 import { getKeyCloakToken, getParsedKeyCloakToken } from './keycloakAuth';
 import { AuthContext, IAuthContext } from '../AuthContext';
@@ -9,9 +9,9 @@ export interface IKeycloakContext {
   profile?: KeycloakProfile | undefined
 }
 
-export const KeycloakContext = React.createContext<IKeycloakContext>({ keycloak: undefined });
+export const KeycloakContext = createContext<IKeycloakContext>({ keycloak: undefined });
 
-export const KeycloakAuthProvider: React.FunctionComponent = (props) => {
+export const KeycloakAuthProvider: FunctionComponent = (props) => {
 
   const getUsername = () => {
     return getParsedKeyCloakToken().then(token => (token as any)['username']);

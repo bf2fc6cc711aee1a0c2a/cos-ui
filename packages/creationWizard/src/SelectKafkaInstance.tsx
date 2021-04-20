@@ -33,7 +33,7 @@ import {
 } from '@patternfly/react-icons';
 import { useActor } from '@xstate/react';
 import { KafkaMachineActorRef } from '@kas-connectors/machines';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 
 const defaultPerPageOptions = [
   {
@@ -56,22 +56,22 @@ export type SelectKafkaInstanceProps = {
 
 export function SelectKafkaInstance({ actor }: SelectKafkaInstanceProps) {
   const [state, send] = useActor(actor);
-  const [searchValue, setSearchValue] = React.useState('');
-  const [statuses, setStatuses] = React.useState<string[]>([
+  const [searchValue, setSearchValue] = useState('');
+  const [statuses, setStatuses] = useState<string[]>([
     'Pending',
     'Created',
     'Cancelled',
   ]);
-  const [statusesToggled, setStatusesToggled] = React.useState(false);
-  const clearAllFilters = React.useCallback(() => {
+  const [statusesToggled, setStatusesToggled] = useState(false);
+  const clearAllFilters = useCallback(() => {
     setSearchValue('');
     setStatuses([]);
   }, []);
-  const toggleStatuses = React.useCallback(
+  const toggleStatuses = useCallback(
     () => setStatusesToggled(prev => !prev),
     []
   );
-  const onSelectStatus = React.useCallback(
+  const onSelectStatus = useCallback(
     (_, status) =>
       setStatuses(prev =>
         prev.includes(status)
@@ -111,7 +111,7 @@ export function SelectKafkaInstance({ actor }: SelectKafkaInstanceProps) {
         <SelectOption key="statusCancelled" value="Cancelled" />,
       ];
       const toggleGroupItems = (
-        <React.Fragment>
+        <>
           <ToolbarItem>
             <InputGroup>
               <TextInput
@@ -150,7 +150,7 @@ export function SelectKafkaInstance({ actor }: SelectKafkaInstanceProps) {
               </Select>
             </ToolbarFilter>
           </ToolbarGroup>
-        </React.Fragment>
+        </>
       );
       const toolbarItems = (
         <>

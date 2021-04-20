@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { FunctionComponent, ReactNode, useState } from 'react';
 import {
   Nav,
   NavList,
@@ -13,13 +13,13 @@ import { NavLink, useHistory } from 'react-router-dom';
 import logo from './Patternfly-Logo.svg';
 
 interface IAppLayout {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-export const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
-  const [isNavOpen, setIsNavOpen] = React.useState(true);
-  const [isMobileView, setIsMobileView] = React.useState(true);
-  const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
+export const AppLayout: FunctionComponent<IAppLayout> = ({ children }) => {
+  const [isNavOpen, setIsNavOpen] = useState(true);
+  const [isMobileView, setIsMobileView] = useState(true);
+  const [isNavOpenMobile, setIsNavOpenMobile] = useState(false);
 
   const onNavToggleMobile = () => {
     setIsNavOpenMobile(!isNavOpenMobile);

@@ -12,16 +12,16 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { useSelector } from '@xstate/react';
-import React from 'react';
+import React, { ComponentType, FunctionComponent, useCallback } from 'react';
 import { useCreationWizardMachineService } from './CreationWizardContext';
 
-const MultistepConfiguration: React.FunctionComponent<{
+const MultistepConfiguration: FunctionComponent<{
   Configurator: ConnectorConfiguratorType;
   actor: MultistepConfiguratorActorRef;
 }> = ({ actor, Configurator }) => {
   const { activeStep, configuration, connector } = useSelector(
     actor,
-    React.useCallback(
+    useCallback(
       (state: typeof actor.state) => ({
         connector: state.context.connector,
         activeStep: state.context.activeStep,
@@ -44,7 +44,7 @@ const MultistepConfiguration: React.FunctionComponent<{
 };
 
 export type ConfigurationProps = {
-  Configurator: React.ComponentType<ConnectorConfiguratorProps> | false;
+  Configurator: ComponentType<ConnectorConfiguratorProps> | false;
 };
 
 export function Configuration() {
@@ -56,7 +56,7 @@ export function Configuration() {
     multistepConfiguratorRef,
   } = useSelector(
     service,
-    React.useCallback(
+    useCallback(
       (state: typeof service.state) => ({
         isLoading: state.matches({ configureConnector: 'loadConfigurator' }),
         hasErrors: state.matches('failure'),

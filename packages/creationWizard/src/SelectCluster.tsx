@@ -33,7 +33,7 @@ import {
 } from '@patternfly/react-icons';
 import { useActor } from '@xstate/react';
 import { ClusterMachineActorRef } from '@kas-connectors/machines';
-import React from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 
 const defaultPerPageOptions = [
   {
@@ -56,22 +56,22 @@ export type SelectClusterProps = {
 
 export function SelectCluster({ actor }: SelectClusterProps) {
   const [state, send] = useActor(actor);
-  const [searchValue, setSearchValue] = React.useState('');
-  const [statuses, setStatuses] = React.useState<string[]>([
+  const [searchValue, setSearchValue] = useState('');
+  const [statuses, setStatuses] = useState<string[]>([
     'Pending',
     'Created',
     'Cancelled',
   ]);
-  const [statusesToggled, setStatusesToggled] = React.useState(false);
-  const clearAllFilters = React.useCallback(() => {
+  const [statusesToggled, setStatusesToggled] = useState(false);
+  const clearAllFilters = useCallback(() => {
     setSearchValue('');
     setStatuses([]);
   }, []);
-  const toggleStatuses = React.useCallback(
+  const toggleStatuses = useCallback(
     () => setStatusesToggled(prev => !prev),
     []
   );
-  const onSelectStatus = React.useCallback(
+  const onSelectStatus = useCallback(
     (_, status) =>
       setStatuses(prev =>
         prev.includes(status)
@@ -110,7 +110,7 @@ export function SelectCluster({ actor }: SelectClusterProps) {
         <SelectOption key="statusCancelled" value="Cancelled" />,
       ];
       const toggleGroupItems = (
-        <React.Fragment>
+        <Fragment>
           <ToolbarItem>
             <InputGroup>
               <TextInput
@@ -149,7 +149,7 @@ export function SelectCluster({ actor }: SelectClusterProps) {
               </Select>
             </ToolbarFilter>
           </ToolbarGroup>
-        </React.Fragment>
+        </Fragment>
       );
       const toolbarItems = (
         <>

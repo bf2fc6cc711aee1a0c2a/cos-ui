@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useContext } from 'react';
 import {
   CreationWizard,
   CreationWizardMachineProvider
@@ -7,7 +7,7 @@ import { AuthContext } from './auth/AuthContext';
 import { fetchConfigurator } from './FederatedConfigurator';
 
 export const ConnectedCreationWizard = () => {
-  const authContext = React.useContext(AuthContext);
+  const authContext = useContext(AuthContext);
 
   return (
     <CreationWizardMachineProvider

@@ -1,10 +1,10 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-undef */
-import React from 'react';
+import React, { ComponentType, LazyExoticComponent } from 'react';
 import { ConnectorType } from '@kas-connectors/api';
 import { ConnectorConfiguratorResponse } from '@kas-connectors/machines';
 
-export type FederatedConfiguratorConfig = { steps: string[], Configurator: React.LazyExoticComponent<React.ComponentType<any>>};
+export type FederatedConfiguratorConfig = { steps: string[], Configurator: LazyExoticComponent<ComponentType<any>>};
 type FederatedConfigurationConfigModule = { default: FederatedConfiguratorConfig }
 
 export async function loadFederatedConfigurator(scope: string, module: string): Promise<FederatedConfiguratorConfig> {

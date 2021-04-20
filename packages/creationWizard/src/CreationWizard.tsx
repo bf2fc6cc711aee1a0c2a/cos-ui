@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { FunctionComponent, useCallback } from 'react';
 import { useSelector, useService } from '@xstate/react';
 import {
   creationWizardMachine,
@@ -22,7 +22,7 @@ function useKafkaInstanceStep() {
   const service = useCreationWizardMachineService();
   const { isActive, actor, canJumpTo, enableNext } = useSelector(
     service,
-    React.useCallback(
+    useCallback(
       (state: typeof service.state) => ({
         isActive: state.matches('selectKafka'),
         actor: state.children.selectKafkaInstance as KafkaMachineActorRef,
@@ -54,7 +54,7 @@ function useConfigurationStep() {
     steps,
   } = useSelector(
     service,
-    React.useCallback(
+    useCallback(
       (state: typeof service.state) => ({
         isActive: state.matches('configureConnector'),
         canJumpTo:
@@ -90,7 +90,7 @@ function useConfigurationStep() {
   };
 }
 
-export const CreationWizard: React.FunctionComponent = () => {
+export const CreationWizard: FunctionComponent = () => {
   const service = useCreationWizardMachineService();
   const [state, send] = useService(service);
   const kafkaInstanceStep = useKafkaInstanceStep();

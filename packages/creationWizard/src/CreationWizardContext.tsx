@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { createContext, FunctionComponent, useCallback, useContext } from 'react';
 import { useInterpret } from '@xstate/react';
 import { Interpreter, StateMachine } from 'xstate';
 import {
@@ -22,12 +22,12 @@ export type InterpreterFrom<
 type InterpretType = InterpreterFrom<typeof creationWizardMachine>;
 type CreationWizardMachineServiceType = InterpretType | null;
 
-const CreationWizardMachineService = React.createContext<
+const CreationWizardMachineService = createContext<
   CreationWizardMachineServiceType
 >(null);
 
 export const useCreationWizardMachineService = () => {
-  const service = React.useContext(CreationWizardMachineService);
+  const service = useContext(CreationWizardMachineService);
   if (!service) {
     throw new Error(
       `useCreationWizardMachineService() must be used in a child of <CreationWizardMachineProvider>`
@@ -44,13 +44,13 @@ type CreationWizardMachineProviderPropsType = {
   ) => Promise<ConnectorConfiguratorResponse>;
 };
 
-export const CreationWizardMachineProvider: React.FunctionComponent<CreationWizardMachineProviderPropsType> = ({
+export const CreationWizardMachineProvider: FunctionComponent<CreationWizardMachineProviderPropsType> = ({
   children,
   authToken,
   basePath,
   fetchConfigurator,
 }) => {
-  const makeConfiguratorLoaderMachine = React.useCallback(
+  const makeConfiguratorLoaderMachine = useCallback(
     () =>
       configuratorLoaderMachine.withConfig({
         services: {
@@ -85,7 +85,7 @@ export const CreationWizardMachineProvider: React.FunctionComponent<CreationWiza
 
 // WARNING: from this line below is all placeholder code that will be removed
 
-// const SampleMultiStepConfigurator: React.FunctionComponent<ConnectorConfiguratorProps> = props => (
+// const SampleMultiStepConfigurator: FunctionComponent<ConnectorConfiguratorProps> = props => (
 //   <div>
 //     <p>
 //       Active step {props.activeStep} of {props.connector.id}

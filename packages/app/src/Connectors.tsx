@@ -1,7 +1,7 @@
-import * as React from 'react';
+import React, { FunctionComponent } from 'react';
 import { Table, TableHeader, TableBody } from '@patternfly/react-table';
 
-export const Connectors: React.FunctionComponent = () => {
+export const Connectors: FunctionComponent = () => {
   const columns = ['Repositories', 'Branches', 'Pull requests', 'Workspaces', 'Last commit'];
   const rows = [
     ['Repository one', 'Branch one', 'PR one', 'Workspace one', 'Commit one'],

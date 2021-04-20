@@ -33,7 +33,7 @@ import {
   SearchIcon,
 } from '@patternfly/react-icons';
 import { useActor } from '@xstate/react';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 
 const defaultPerPageOptions = [
   {
@@ -56,18 +56,18 @@ export type SelectConnectorProps = {
 
 export function SelectConnector({ actor }: SelectConnectorProps) {
   const [state, send] = useActor(actor);
-  const [searchValue, setSearchValue] = React.useState('');
-  const [types, setTypes] = React.useState<string[]>(['Sink', 'Source']);
-  const [typesToggled, setTypesToggled] = React.useState(false);
-  const clearAllFilters = React.useCallback(() => {
+  const [searchValue, setSearchValue] = useState('');
+  const [types, setTypes] = useState<string[]>(['Sink', 'Source']);
+  const [typesToggled, setTypesToggled] = useState(false);
+  const clearAllFilters = useCallback(() => {
     setSearchValue('');
     setTypes([]);
   }, []);
-  const toggleTypes = React.useCallback(
+  const toggleTypes = useCallback(
     () => setTypesToggled(prev => !prev),
     []
   );
-  const onSelectType = React.useCallback(
+  const onSelectType = useCallback(
     (_, status) =>
       setTypes(prev =>
         prev.includes(status)
@@ -105,7 +105,7 @@ export function SelectConnector({ actor }: SelectConnectorProps) {
         <SelectOption key="Source" value="Source" />,
       ];
       const toggleGroupItems = (
-        <React.Fragment>
+        <>
           <ToolbarItem>
             <InputGroup>
               <TextInput
@@ -144,7 +144,7 @@ export function SelectConnector({ actor }: SelectConnectorProps) {
               </Select>
             </ToolbarFilter>
           </ToolbarGroup>
-        </React.Fragment>
+        </>
       );
       const toolbarItems = (
         <>

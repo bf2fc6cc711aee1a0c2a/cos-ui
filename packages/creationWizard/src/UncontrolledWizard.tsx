@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { Component, HTMLProps, ReactNode } from 'react';
 import { css } from '@patternfly/react-styles';
 import styles from '@patternfly/react-styles/css/components/Wizard/wizard';
 import {
@@ -34,7 +34,7 @@ export interface WizardStep {
   /** Optional identifier */
   id?: string | number;
   /** The name of the step */
-  name: React.ReactNode;
+  name: ReactNode;
   /** The component to render in the main body */
   component?: any;
   /** Setting to true hides the side nav and footer */
@@ -45,10 +45,10 @@ export interface WizardStep {
   steps?: WizardStep[];
   /** Props to pass to the WizardNavItem */
   stepNavItemProps?:
-    | React.HTMLProps<HTMLButtonElement | HTMLAnchorElement>
+    | HTMLProps<HTMLButtonElement | HTMLAnchorElement>
     | WizardNavItemProps;
   /** (Unused if footer is controlled) Can change the Next button text. If nextButtonText is also set for the Wizard, this step specific one overrides it. */
-  nextButtonText?: React.ReactNode;
+  nextButtonText?: ReactNode;
   /** (Unused if footer is controlled) The condition needed to enable the Next button */
   enableNext?: boolean;
   /** (Unused if footer is controlled) True to hide the Cancel button */
@@ -58,11 +58,11 @@ export interface WizardStep {
 }
 
 export type WizardStepFunctionType = (
-  newStep: { id?: string | number; name: React.ReactNode },
-  prevStep: { prevId?: string | number; prevName: React.ReactNode }
+  newStep: { id?: string | number; name: ReactNode },
+  prevStep: { prevId?: string | number; prevName: ReactNode }
 ) => void;
 
-export interface WizardProps extends React.HTMLProps<HTMLDivElement> {
+export interface WizardProps extends HTMLProps<HTMLDivElement> {
   /** Custom width of the wizard */
   width?: number | string;
   /** Custom height of the wizard */
@@ -74,7 +74,7 @@ export interface WizardProps extends React.HTMLProps<HTMLDivElement> {
   /** An optional id for the description */
   descriptionId?: string;
   /** The wizard description */
-  description?: React.ReactNode;
+  description?: ReactNode;
   /** Flag indicating whether the close button should be in the header */
   hideClose?: boolean;
   /** Callback function to close the wizard */
@@ -98,7 +98,7 @@ export interface WizardProps extends React.HTMLProps<HTMLDivElement> {
   /** Can remove the default padding around the main body content by setting this to true */
   hasNoBodyPadding?: boolean;
   /** (Use to control the footer) Passing in a footer component lets you control the buttons yourself */
-  footer?: React.ReactNode;
+  footer?: ReactNode;
   /** (Unused if footer is controlled) Callback function to save at the end of the wizard, if not specified uses onClose */
   onSave: () => void;
   /** (Unused if footer is controlled) Callback function after Next button is clicked */
@@ -109,11 +109,11 @@ export interface WizardProps extends React.HTMLProps<HTMLDivElement> {
   goToStepById: (id: number | string) => void;
   goToStepByName: (name: string) => void;
   /** (Unused if footer is controlled) The Next button text */
-  nextButtonText?: React.ReactNode;
+  nextButtonText?: ReactNode;
   /** (Unused if footer is controlled) The Back button text */
-  backButtonText?: React.ReactNode;
+  backButtonText?: ReactNode;
   /** (Unused if footer is controlled) The Cancel button text */
-  cancelButtonText?: React.ReactNode;
+  cancelButtonText?: ReactNode;
   /** (Unused if footer is controlled) aria-label for the close button */
   closeButtonAriaLabel?: string;
   /** The parent container to append the modal to. Defaults to document.body */
@@ -126,7 +126,7 @@ interface WizardState {
   isNavOpen: boolean;
 }
 
-export class UncontrolledWizard extends React.Component<
+export class UncontrolledWizard extends Component<
   WizardProps,
   WizardState
 > {
@@ -229,7 +229,7 @@ export class UncontrolledWizard extends React.Component<
 
   private getFlattenedStepsIndex = (
     flattenedSteps: WizardStep[],
-    stepName: React.ReactNode
+    stepName: ReactNode
   ): number => {
     for (let i = 0; i < flattenedSteps.length; i++) {
       if (flattenedSteps[i].name === stepName) {
