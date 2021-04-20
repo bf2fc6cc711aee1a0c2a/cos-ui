@@ -9,18 +9,25 @@
   },
   "dependencies": {
     "@xstate/inspect": "^0.4.1",
-    "keycloak-js": "^9.0.0",
     "react-app-polyfill": "^1.0.0"
   },
   "alias": {
-    "@kas-connectors/configurator": "../packages/configurator",
+    "@kas-connectors/api": "../packages/api",
+    "@kas-connectors/app": "../packages/app",
+    "@kas-connectors/creation-wizard": "../packages/creationWizard",
+    "@kas-connectors/machines": "../packages/machines",
+
+    "@patternfly/react-core": "../node_modules/@patternfly/react-core",
+    "@patternfly/react-icons": "../node_modules/@patternfly/react-icons",
+    "@patternfly/react-styles": "../node_modules/@patternfly/react-styles",
+    "@patternfly/react-table": "../node_modules/@patternfly/react-table",    
+    "axios": "../node_modules/axios",
+    "keycloak-js": "../node_modules/keycloak-js",
     "react": "../node_modules/react",
     "react-dom": "../node_modules/react-dom/profiling",
-    "xstate": "../node_modules/xstate",
-    "@patternfly/react-core": "../node_modules/@patternfly/react-core",
-    "@patternfly/react-styles": "../node_modules/@patternfly/react-styles",
     "@xstate/react": "../node_modules/@xstate/react",
-    "scheduler/tracing": "../node_modules/scheduler/tracing-profiling"
+    "react-router-dom": "../node_modules/react-router-dom",
+    "xstate": "../node_modules/xstate"
   },
   "devDependencies": {
     "@types/react": "^16.9.11",

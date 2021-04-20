@@ -13,7 +13,7 @@ type Context = {
   steps: string[];
   activeStep: number;
   isActiveStepValid: boolean;
-  configuration: Map<string,unknown>;
+  configuration: Map<string, unknown>;
 };
 
 const multistepConfiguratorMachineSchema = {
@@ -35,7 +35,7 @@ const multistepConfiguratorMachineModel = createModel(
         configuration,
         isValid,
       }: {
-        configuration: Map<string,unknown>;
+        configuration: Map<string, unknown>;
         isValid: boolean;
       }) => ({ configuration, isValid }),
       next: () => ({}),
@@ -57,7 +57,7 @@ export const multistepConfiguratorMachine = createMachine<
       steps: ['one', 'two', 'three'],
       activeStep: 0,
       isActiveStepValid: false,
-      configuration: new Map()
+      configuration: new Map(),
     },
     states: {
       configuring: {

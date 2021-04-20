@@ -1,10 +1,10 @@
 {
-  "name": "@kas-connectors/machines",
+  "name": "@kas-connectors/creation-wizard",
   "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mono/mono.git",
-    "directory": "packages/machines"
+    "directory": "packages/creationWizard"
   },
   "scripts": {
     "start": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
@@ -14,19 +14,24 @@
     "prepublish": "npm run build"
   },
   "main": "dist/index.js",
-  "module": "dist/machines.esm.js",
+  "module": "dist/configurator.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "README.md",
     "dist"
   ],
-  "dependencies": {
-    "@kas-connectors/api": "^0.0.1",
-    "tslib": "^2.0.0"
-  },
   "peerDependencies": {
-    "axios": "^0.21.1",
+    "@patternfly/react-core": "^4.87.2",
+    "@patternfly/react-icons": "^4.7.11",
+    "@patternfly/react-styles": "^4.7.8",
+    "@xstate/react": "^1.3.1",
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0",
     "xstate": "^4.17.1"
+  },
+  "dependencies": {
+    "@kas-connectors/machines": "^0.0.1",
+    "tslib": "^2.0.0"
   },
   "publishConfig": {
     "access": "public"
