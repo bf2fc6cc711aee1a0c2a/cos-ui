@@ -1,6 +1,11 @@
 {
   "name": "@kas-connectors/machines",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mono/mono.git",
+    "directory": "packages/machines"
+  },
   "scripts": {
     "start": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
     "build": "tsdx build --tsconfig tsconfig.build.json",
@@ -17,10 +22,10 @@
   ],
   "dependencies": {
     "@kas-connectors/api": "^0.0.1",
-    "axios": "^0.21.1",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
+    "axios": "^0.21.1",
     "xstate": "^4.17.1"
   },
   "publishConfig": {

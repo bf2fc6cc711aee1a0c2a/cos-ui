@@ -10,7 +10,7 @@ import {
   PageHeaderTools,
 } from '@patternfly/react-core';
 import { NavLink, useHistory } from 'react-router-dom';
-import logo from './bgimages/Patternfly-Logo.svg';
+import logo from './Patternfly-Logo.svg';
 
 interface IAppLayout {
   children: React.ReactNode;

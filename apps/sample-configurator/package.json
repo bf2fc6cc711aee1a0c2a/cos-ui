@@ -1,5 +1,5 @@
 {
-  "name": "@kas-connectors/sample-configurator",
+  "name": "@kas-connectors-apps/sample-configurator",
   "version": "0.0.0",
   "private": true,
   "dependencies": {
@@ -13,7 +13,7 @@
     "react-dom": "^16.8.0"
   },
   "scripts": {
-    "start": "webpack-cli serve",
+    "start": "webpack serve",
     "build": "webpack --mode production",
     "serve": "serve dist -p 3001",
     "clean": "rm -rf dist"

@@ -1,15 +1,28 @@
 {
   "extends": "./tsconfig.build.json",
-  "include": ["packages", "types", "scripts", "example"],
+  "include": [
+    "packages",
+    "types",
+    "scripts",
+    "example",
+    "apps"
+  ],
   "compilerOptions": {
     "allowJs": false,
     "baseUrl": ".",
     "typeRoots": ["./node_modules/@types", "./types"],
     "paths": {
       "@kas-connectors/api": ["packages/api/src"],
+      "@kas-connectors/app": ["packages/app/src"],
+      "@kas-connectors/creation-wizard": ["packages/creationWizard/src"],
       "@kas-connectors/machines": ["packages/machines/src"],
-      "@kas-connectors/creationWizard": ["packages/creationWizard/src"],
-      "@kas-connectors/cli": ["packages/cli/src"],
+
+      "@kas-connectors-apps/cli": ["apps/cli/src"],
+      "@kas-connectors-apps/kas-connectors": ["apps/kas-connectors/src"],
+      "@kas-connectors-apps/sample-configurator": [
+        "apps/sample-configurator/src"
+      ],
+
       "$test/*": ["test/*"]
     }
   }
