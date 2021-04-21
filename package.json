@@ -12,6 +12,7 @@
     "@patternfly/react-icons": "^4.7.11",
     "@patternfly/react-styles": "^4.7.8",
     "@patternfly/react-table": "^4.24.1",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.4.3",
     "@rollup/plugin-url": "6.0.0",
     "@svgr/rollup": "^5.5.0",
     "@types/react": "^16.9.43",
@@ -32,6 +33,7 @@
     "raw-loader": "^4.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-refresh": "^0.10.0",
     "react-router-dom": "^5.2.0",
     "sass-loader": "^10.1.0",
     "serve": "11.3.2",
@@ -43,7 +45,7 @@
     "url-loader": "^4.1.1",
     "webpack": "5.33.2",
     "webpack-cli": "4.6.0",
-    "webpack-dev-server": "^3.11.2",
+    "webpack-dev-server": "^4.0.0-beta.2",
     "xstate": "^4.17.1"
   },
   "workspaces": [

@@ -42,8 +42,7 @@ You can test the module federation runing the fully featured application.
 yarn start:app:federated
 ```
 
-This will start the `kas-connectors` app on `https://prod.foo.redhat.com:1337/`. If you have lerna running watch in parallel mode in one terminal, and then you run the federated modules app, changes *will not* be automatically
-detected. Refresh the app manually to get the latest changes.
+This will start the `kas-connectors` app on `https://prod.foo.redhat.com:1337/`. If you have lerna running watch in parallel mode in one terminal, and then you run the federated modules app, your application will hot reload when you make changes to any imported module whose source is inside of `packages/*/src/*`. Note that to accomplish this, each package's `start` command passes TDSX the `--noClean` flag. This prevents Parcel from exploding between rebuilds because of File Not Found errors. Debugging capabilities are limited to the compiled output of the packages. It's suggested to use the example/playground app to have access to the full sourcemaps.
 
 <!-- 
 ### Running Cypress

@@ -1,3 +1,5 @@
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 const { ModuleFederationPlugin } = require('webpack').container;
@@ -7,6 +9,7 @@ const {
   federatedModuleName,
 } = require('./package.json');
 
+const enableReactFastRefresh = process.env.NODE_ENV !== 'production';
 const BG_IMAGES_DIRNAME = 'bgimages';
 const useContentHash = true; // TODO figure out if needed
 
@@ -20,11 +23,11 @@ module.exports = {
   mode: 'development',
   devtool: 'eval',
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
     port: 1337,
     https: true,
-    allowedHosts: ['prod.foo.redhat.com'],
+    host: 'prod.foo.redhat.com',
     historyApiFallback: true,
+    hot: true,
   },
   output: {
     filename: '[name].bundle.js',
@@ -93,6 +96,9 @@ module.exports = {
         exclude: /node_modules/,
         options: {
           presets: ['@babel/preset-react', '@babel/preset-typescript'],
+          plugins: [
+            enableReactFastRefresh && require.resolve('react-refresh/babel'),
+          ].filter(Boolean),
         },
       },
       {
@@ -232,7 +238,8 @@ module.exports = {
         },
       },
     }),
-    new ModuleFederationPlugin({
+    // hmr isn't compatible with federated modules, yet
+    !enableReactFastRefresh && new ModuleFederationPlugin({
       name: federatedModuleName,
       filename: 'remoteEntry.js',
       exposes: {
@@ -256,5 +263,7 @@ module.exports = {
       template: './public/index.html',
       excludeChunks: ['kas-connectors'],
     }),
-  ],
+    enableReactFastRefresh && new webpack.HotModuleReplacementPlugin(),
+    enableReactFastRefresh && new ReactRefreshWebpackPlugin(),
+  ].filter(Boolean),
 };

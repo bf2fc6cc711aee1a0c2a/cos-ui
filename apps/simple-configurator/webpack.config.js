@@ -7,7 +7,6 @@ module.exports = {
   entry: "./src/index",
   mode: "development",
   devServer: {
-    contentBase: path.join(__dirname, "dist"),
     port: 3003,
   },
   output: {
