@@ -3,9 +3,8 @@ import {
   Button,
   ButtonVariant,
   InputGroup,
-  Level,
-  LevelItem,
   PageSection,
+  TextContent,
   TextInput,
   Title,
   Toolbar,
@@ -22,13 +21,11 @@ export const AppRoutes: FunctionComponent = () => {
     <Switch>
       <Route path={'/'} exact>
         <PageSection variant={'light'}>
-          <Level>
-            <LevelItem>
-              <Title headingLevel="h1" size="lg">
-                Managed Connectors
-              </Title>
-            </LevelItem>
-          </Level>
+          <TextContent>
+            <Title headingLevel="h1">
+              Managed Connectors
+            </Title>
+          </TextContent>
         </PageSection>
         <PageSection variant={'light'} padding={{ default: 'noPadding' }}>
           <Toolbar id="toolbar">
