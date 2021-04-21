@@ -34,7 +34,7 @@ type Context = {
   basePath?: string;
   connectors?: ConnectorTypeList;
   selectedConnector?: ConnectorType;
-  error?: Object;
+  error?: string;
 };
 
 const connectorsMachineSchema = {

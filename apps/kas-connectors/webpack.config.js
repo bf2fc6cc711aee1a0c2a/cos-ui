@@ -18,6 +18,7 @@ module.exports = {
     main: './src/index.tsx',
   },
   mode: 'development',
+  devtool: 'eval',
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
     port: 1337,
@@ -93,6 +94,11 @@ module.exports = {
         options: {
           presets: ['@babel/preset-react', '@babel/preset-typescript'],
         },
+      },
+      {
+        test: /\.js$/,
+        enforce: 'pre',
+        use: ['source-map-loader'],
       },
       {
         test: /\.(svg|ttf|eot|woff|woff2)$/,

@@ -4,9 +4,11 @@ import { ComponentType, LazyExoticComponent } from 'react';
 import { ConnectorType } from '@kas-connectors/api';
 import {
   ConnectorConfiguratorResponse,
-  federatedConfiguratorsMachine,
+  makeFetchMachine,
 } from '@kas-connectors/machines';
 import { interpret } from 'xstate';
+
+type FederatedModuleConfigurationType = { remoteEntry: string; scope: string; module: string };
 
 export type FederatedConfiguratorConfig = {
   steps: string[];
@@ -26,9 +28,10 @@ export const fetchConfigurator = async (
   });
   return new Promise(resolve => {
     interpret(
-      federatedConfiguratorsMachine.withContext({
-        configUrl,
-        connector,
+      makeFetchMachine<FederatedModuleConfigurationType>().withConfig({
+        services: {
+          fetchService: () => fetchFederatedModulesConfiguration(configUrl, connector),
+        },
       })
     )
       .onDone(async event => {
@@ -45,6 +48,57 @@ export const fetchConfigurator = async (
   });
 };
 
+const isValidConf = (maybeConf?: any) =>
+  maybeConf &&
+  maybeConf.remoteEntry &&
+  typeof maybeConf.remoteEntry === 'string' &&
+  maybeConf.scope &&
+  typeof maybeConf.scope === 'string' &&
+  maybeConf.module &&
+  typeof maybeConf.module === 'string';
+
+
+const fetchFederatedModulesConfiguration = async (
+  configUrl: string,
+  connector: ConnectorType,
+): Promise<FederatedModuleConfigurationType> => {
+  const config = await (await fetch(configUrl)).json();
+  console.log(
+    'Fetched federated configurator remotes configuration',
+    config
+  );
+  const maybeConfiguration = config[connector.id!];
+  console.log(
+    `Candidate configuration for "${connector.id}"`,
+    maybeConfiguration
+  );
+  if (!maybeConfiguration) {
+    console.log(
+      "Couldn't find any configuration for the requested connector"
+    );
+    return Promise.reject();
+  }
+  if (isValidConf(maybeConfiguration[connector.version])) {
+    const conf = maybeConfiguration[connector.version];
+    console.log(
+      `Found a configuration for connector version "${connector.version}"`,
+      conf
+    );
+    return conf;
+  }
+  if (isValidConf(maybeConfiguration)) {
+    console.log(
+      'Found a generic configuration for the connector',
+      maybeConfiguration
+    );
+    return maybeConfiguration;
+  }
+  console.log(
+    "Couldn't find a valid configuration for the requested connector"
+  );
+  return Promise.reject();
+}
+
 export const injectFederatedModuleScript = async (url: string) => {
   return new Promise<void>((resolve, reject) => {
     const element = document.createElement('script');
@@ -54,7 +108,7 @@ export const injectFederatedModuleScript = async (url: string) => {
     element.async = true;
 
     element.onload = () => {
-      console.log(`Dynamic federated module Loaded: ${url}`);
+      console.log(`Dynamic federated module loaded: ${url}`);
       document.head.removeChild(element);
       resolve();
     };

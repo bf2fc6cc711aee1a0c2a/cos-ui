@@ -1,0 +1,56 @@
+import { assign, createMachine, createSchema } from 'xstate';
+import { createModel } from 'xstate/lib/model';
+
+type Context<T> = {
+  data?: T;
+  error?: string;
+};
+
+export function makeFetchMachine<T>() {
+  const fetchMachineSchema = {
+    context: createSchema<Context<T>>(),
+  };
+
+  const fetchMachineModel = createModel({
+    data: undefined,
+    error: undefined,
+  } as Context<T>);
+
+  return createMachine<
+    typeof fetchMachineModel
+  >(
+    {
+      schema: fetchMachineSchema,
+      id: 'fetchMachine',
+      context: {},
+      initial: 'loading',
+      states: {
+        loading: {
+          invoke: {
+            id: 'fetchService',
+            src: 'fetchService',
+            onDone: {
+              target: 'success',
+              actions: assign((_context, event) => ({
+                data: event.data,
+              })),
+            },
+            onError: {
+              target: 'failure',
+              actions: assign({
+                error: (_context, event) => event.data,
+              }),
+            },
+          },
+        },
+        failure: {
+          type: 'final',
+        },
+        success: {
+          type: 'final',
+          data: ({ data }: Context<T>) => ({ ...data }),
+        },
+      },
+    }
+  );
+}
