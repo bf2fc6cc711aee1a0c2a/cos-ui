@@ -1,5 +1,5 @@
 {
-  "name": "@kas-connectors-apps/sample-configurator",
+  "name": "@kas-connectors-apps/simple-configurator",
   "version": "0.0.0",
   "private": true,
   "dependencies": {

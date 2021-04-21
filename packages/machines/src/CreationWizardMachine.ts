@@ -11,7 +11,7 @@ import {
   configuratorLoaderMachine,
   ConnectorConfiguratorType,
 } from './ConfiguratorLoaderMachine';
-import { multistepConfiguratorMachine } from './MultistepConfiguratorMachine';
+import { configuratorMachine } from './ConfiguratorMachine';
 import { createModel } from 'xstate/lib/model';
 
 type Context = {
@@ -186,7 +186,7 @@ export const creationWizardMachine = createMachine<
                 connector: context.selectedConnector,
               }),
               onDone: {
-                target: 'selectConfigurator',
+                target: 'configure',
                 actions: assign((_context, event) => ({
                   Configurator: event.data.Configurator,
                   configurationSteps: event.data.steps,
@@ -197,25 +197,17 @@ export const creationWizardMachine = createMachine<
               },
             },
           },
-          selectConfigurator: {
-            always: [
-              {
-                target: 'multistepConfigurator',
-                cond: context => context.configurationSteps !== false,
-              },
-              { target: 'simpleConfigurator' },
-            ],
-          },
-          multistepConfigurator: {
-            id: 'multistepConfigurator',
+          configure: {
+            id: 'configure',
             initial: 'configuring',
             invoke: {
-              id: 'multistepConfiguratorRef',
-              src: multistepConfiguratorMachine,
+              id: 'configuratorRef',
+              src: configuratorMachine,
               data: context => ({
                 connector: context.selectedConnector,
-                steps: context.configurationSteps,
-                activeStep: context.activeConfigurationStep,
+                configuration: context.connectorData,
+                steps: context.configurationSteps || ['single step'],
+                activeStep: context.activeConfigurationStep || 0,
               }),
               onDone: {
                 target: '#creationWizard.reviewConfiguration',
@@ -237,7 +229,7 @@ export const creationWizardMachine = createMachine<
                 on: {
                   isInvalid: 'configuring',
                   next: {
-                    actions: send('next', { to: 'multistepConfiguratorRef' }),
+                    actions: send('next', { to: 'configuratorRef' }),
                   },
                 },
               },
@@ -245,7 +237,7 @@ export const creationWizardMachine = createMachine<
             on: {
               prev: [
                 {
-                  actions: send('prev', { to: 'multistepConfiguratorRef' }),
+                  actions: send('prev', { to: 'configuratorRef' }),
                   cond: 'areThereSubsteps',
                 },
                 { target: '#creationWizard.selectConnector' },
@@ -256,18 +248,7 @@ export const creationWizardMachine = createMachine<
                 }),
               },
             },
-          },
-          simpleConfigurator: {
-            on: {
-              prev: [
-                // {
-                //   actions: send('prev', { to: 'configureConnector' }),
-                //   cond: 'areThereSubsteps',
-                // },
-                { target: '#creationWizard.selectConnector' },
-              ],
-            },
-          },
+          }
         },
       },
       reviewConfiguration: {

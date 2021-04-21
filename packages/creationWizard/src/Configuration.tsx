@@ -1,7 +1,7 @@
 import {
   ConnectorConfiguratorComponent,
   ConnectorConfiguratorProps,
-  MultistepConfiguratorActorRef,
+  ConfiguratorActorRef,
 } from '@kas-connectors/machines';
 import {
   EmptyState,
@@ -15,9 +15,9 @@ import { useSelector } from '@xstate/react';
 import React, { ComponentType, FunctionComponent, useCallback } from 'react';
 import { useCreationWizardMachineService } from './CreationWizardContext';
 
-const MultistepConfiguration: FunctionComponent<{
+const ConnectedCustomConfigurator: FunctionComponent<{
   Configurator: ConnectorConfiguratorComponent;
-  actor: MultistepConfiguratorActorRef;
+  actor: ConfiguratorActorRef;
 }> = ({ actor, Configurator }) => {
   const { activeStep, configuration, connector } = useSelector(
     actor,
@@ -33,7 +33,7 @@ const MultistepConfiguration: FunctionComponent<{
 
   return (
     <Configurator
-      activeStep={activeStep!}
+      activeStep={activeStep}
       configuration={configuration}
       connector={connector}
       onChange={(configuration, isValid) =>
@@ -47,24 +47,30 @@ export type ConfigurationProps = {
   Configurator: ComponentType<ConnectorConfiguratorProps> | false;
 };
 
-export function Configuration() {
+export const Configuration: FunctionComponent = () => {
   const service = useCreationWizardMachineService();
   const {
     isLoading,
     hasErrors,
     Configurator,
-    multistepConfiguratorRef,
+    configuratorRef,
+    hasCustomConfigurator,
   } = useSelector(
     service,
     useCallback(
-      (state: typeof service.state) => ({
-        isLoading: state.matches({ configureConnector: 'loadConfigurator' }),
-        hasErrors: state.matches('failure'),
-        Configurator: state.context.Configurator!,
-        multistepConfiguratorRef: state.children.multistepConfiguratorRef as
-          | MultistepConfiguratorActorRef
-          | undefined,
-      }),
+      (state: typeof service.state) => {
+        const isLoading = state.matches({ configureConnector: 'loadConfigurator' });
+        const hasErrors = state.matches('failure');
+        const hasCustomConfigurator = state.context.Configurator !== false && state.context.Configurator !== undefined;
+        return {
+          isLoading,
+          hasErrors,
+          hasCustomConfigurator,
+          configuration: state.context.connectorData,
+          Configurator: state.context.Configurator,
+          configuratorRef: state.children.configuratorRef as ConfiguratorActorRef,
+        };
+      },
       [service]
     )
   );
@@ -88,17 +94,20 @@ export function Configuration() {
           </Title>
         </EmptyState>
       );
+    case hasCustomConfigurator:
+      return (
+        <PageSection variant="light">
+          <ConnectedCustomConfigurator
+            actor={configuratorRef}
+            Configurator={Configurator as ConnectorConfiguratorComponent}
+          />
+        </PageSection>
+      );
     default:
       return (
         <PageSection variant="light">
-          {multistepConfiguratorRef && Configurator && (
-            <MultistepConfiguration
-              actor={multistepConfiguratorRef}
-              Configurator={Configurator}
-            />
-          )}
-          {!multistepConfiguratorRef && <>TODO json-schema based form</>}
+          TODO: json-schema based form
         </PageSection>
-      );
+      )
   }
-}
+};

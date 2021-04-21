@@ -20,7 +20,7 @@
       "@kas-connectors-apps/cli": ["apps/cli/src"],
       "@kas-connectors-apps/kas-connectors": ["apps/kas-connectors/src"],
       "@kas-connectors-apps/sample-configurator": [
-        "apps/sample-configurator/src"
+        "apps/multistep-configurator/src"
       ],
 
       "$test/*": ["test/*"]

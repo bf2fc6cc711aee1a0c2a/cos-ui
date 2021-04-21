@@ -4,4 +4,4 @@ export * from './ConnectorsMachine';
 export * from './CreationWizardMachine';
 export * from './FederatedConfiguratorsMachine';
 export * from './KafkasMachine';
-export * from './MultistepConfiguratorMachine';
+export * from './ConfiguratorMachine';

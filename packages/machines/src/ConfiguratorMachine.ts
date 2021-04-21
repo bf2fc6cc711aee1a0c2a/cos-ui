@@ -16,11 +16,11 @@ type Context = {
   configuration: Map<string, unknown>;
 };
 
-const multistepConfiguratorMachineSchema = {
+const configuratorMachineSchema = {
   context: createSchema<Context>(),
 };
 
-const multistepConfiguratorMachineModel = createModel(
+const configuratorMachineModel = createModel(
   {
     connector: { id: 'something', name: 'something', version: '0.1' },
     steps: [],
@@ -45,11 +45,11 @@ const multistepConfiguratorMachineModel = createModel(
   }
 );
 
-export const multistepConfiguratorMachine = createMachine<
-  typeof multistepConfiguratorMachineModel
+export const configuratorMachine = createMachine<
+  typeof configuratorMachineModel
 >(
   {
-    schema: multistepConfiguratorMachineSchema,
+    schema: configuratorMachineSchema,
     id: 'configurator',
     initial: 'configuring',
     context: {
@@ -136,6 +136,6 @@ export const multistepConfiguratorMachine = createMachine<
   }
 );
 
-export type MultistepConfiguratorActorRef = ActorRefFrom<
-  typeof multistepConfiguratorMachine
+export type ConfiguratorActorRef = ActorRefFrom<
+  typeof configuratorMachine
 >;

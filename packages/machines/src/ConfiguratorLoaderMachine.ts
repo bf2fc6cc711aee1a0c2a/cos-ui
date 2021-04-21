@@ -5,9 +5,9 @@ import { createModel } from 'xstate/lib/model';
 import { escalate } from 'xstate/lib/actions';
 
 export type ConnectorConfiguratorProps = {
-  activeStep: number;
+  activeStep?: number;
   connector: ConnectorType;
-  configuration: Map<string, unknown>;
+  configuration?: unknown;
   onChange: (configuration: Map<string, unknown>, isValid: boolean) => void;
 };
 
