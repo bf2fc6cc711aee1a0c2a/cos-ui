@@ -6,19 +6,14 @@ import {
   Level,
   LevelItem,
   PageSection,
-
   TextInput,
   Title,
   Toolbar,
   ToolbarContent,
-  ToolbarItem
+  ToolbarItem,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import {
-  Switch,
-  Route,
-  NavLink
-} from 'react-router-dom';
+import { Switch, Route, NavLink } from 'react-router-dom';
 import { Connectors } from './Connectors';
 import { ConnectedCreationWizard } from './ConnectedCreationWizard';
 
@@ -44,7 +39,8 @@ export const AppRoutes: FunctionComponent = () => {
                     name="textInput1"
                     id="textInput1"
                     type="search"
-                    aria-label="search input example" />
+                    aria-label="search input example"
+                  />
                   <Button
                     variant={ButtonVariant.control}
                     aria-label="search button for search input"

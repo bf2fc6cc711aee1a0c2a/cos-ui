@@ -1,4 +1,9 @@
-import React, { createContext, FunctionComponent, useCallback, useContext } from 'react';
+import React, {
+  createContext,
+  FunctionComponent,
+  useCallback,
+  useContext,
+} from 'react';
 import { useInterpret } from '@xstate/react';
 import { Interpreter, StateMachine } from 'xstate';
 import {

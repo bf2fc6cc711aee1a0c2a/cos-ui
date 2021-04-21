@@ -12,7 +12,7 @@ export let keycloak: Keycloak.KeycloakInstance | undefined;
 export const getKeycloakInstance = async () => {
   if (!keycloak) await init();
   return keycloak;
-}
+};
 
 /**
  * Initiate keycloak instance.
@@ -24,21 +24,23 @@ export const getKeycloakInstance = async () => {
 export const init = async () => {
   try {
     keycloak = new (Keycloak as any)({
-      "realm": "redhat-external",
-      "url": "https://sso.redhat.com/auth/",
-      "clientId": "cloud-services",
+      realm: 'redhat-external',
+      url: 'https://sso.redhat.com/auth/',
+      clientId: 'cloud-services',
     });
     if (keycloak) {
       await keycloak.init({
-        onLoad: 'login-required'
+        onLoad: 'login-required',
       });
     }
-  } catch(e) {
+  } catch (e) {
     keycloak = undefined;
-    console.warn('Auth: Unable to initialize keycloak. Client side will not be configured to use authentication', e);
+    console.warn(
+      'Auth: Unable to initialize keycloak. Client side will not be configured to use authentication',
+      e
+    );
   }
-}
-
+};
 
 /**
  * This function keeps getting called by wslink
@@ -52,10 +54,9 @@ export const init = async () => {
 export const getAuthHeader = async () => {
   if (!keycloak) return '';
   return {
-    'authorization': `Bearer ${await getKeyCloakToken()}`
+    authorization: `Bearer ${await getKeyCloakToken()}`,
   };
 };
-
 
 /**
  * Use keycloak update token function to retrieve
@@ -70,7 +71,7 @@ export const getKeyCloakToken = async (): Promise<string> => {
   if (keycloak?.token) return keycloak.token;
   console.error('No keycloak token available');
   return 'foo';
-}
+};
 
 /**
  * Use keycloak update token function to retrieve
@@ -85,7 +86,7 @@ export const getParsedKeyCloakToken = async (): Promise<Keycloak.KeycloakTokenPa
   if (keycloak?.tokenParsed) return keycloak.tokenParsed;
   console.error('No keycloak token available');
   return {} as Keycloak.KeycloakTokenParsed;
-}
+};
 
 /**
  * logout of keycloak, clear cache and offline store then redirect to
@@ -95,8 +96,10 @@ export const getParsedKeyCloakToken = async (): Promise<Keycloak.KeycloakTokenPa
  * @param client offix client
  *
  */
-export const logout = async (keycloak: Keycloak.KeycloakInstance | undefined) => {
+export const logout = async (
+  keycloak: Keycloak.KeycloakInstance | undefined
+) => {
   if (keycloak) {
     await keycloak.logout();
   }
-}
+};

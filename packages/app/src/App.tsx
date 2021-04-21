@@ -1,12 +1,8 @@
 import '@patternfly/react-core/dist/styles/base.css';
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import {
-  Spinner,
-} from '@patternfly/react-core';
+import { Spinner } from '@patternfly/react-core';
 import Keycloak from 'keycloak-js';
-import {
-  BrowserRouter as Router,
-} from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { getKeycloakInstance } from './auth/keycloak/keycloakAuth';
 import {
   KeycloakAuthProvider,
@@ -39,5 +35,3 @@ export const App: FunctionComponent = () => {
     </KeycloakContext.Provider>
   );
 };
-
-

@@ -63,10 +63,7 @@ export function SelectConnector({ actor }: SelectConnectorProps) {
     setSearchValue('');
     setTypes([]);
   }, []);
-  const toggleTypes = useCallback(
-    () => setTypesToggled(prev => !prev),
-    []
-  );
+  const toggleTypes = useCallback(() => setTypesToggled(prev => !prev), []);
   const onSelectType = useCallback(
     (_, status) =>
       setTypes(prev =>

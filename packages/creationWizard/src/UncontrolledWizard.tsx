@@ -126,10 +126,7 @@ interface WizardState {
   isNavOpen: boolean;
 }
 
-export class UncontrolledWizard extends Component<
-  WizardProps,
-  WizardState
-> {
+export class UncontrolledWizard extends Component<WizardProps, WizardState> {
   static displayName = 'Wizard';
   private static currentId = 0;
   static defaultProps: PickOptional<WizardProps> = {

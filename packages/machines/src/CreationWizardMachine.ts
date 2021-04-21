@@ -248,7 +248,7 @@ export const creationWizardMachine = createMachine<
                 }),
               },
             },
-          }
+          },
         },
       },
       reviewConfiguration: {

@@ -136,6 +136,4 @@ export const configuratorMachine = createMachine<
   }
 );
 
-export type ConfiguratorActorRef = ActorRefFrom<
-  typeof configuratorMachine
->;
+export type ConfiguratorActorRef = ActorRefFrom<typeof configuratorMachine>;

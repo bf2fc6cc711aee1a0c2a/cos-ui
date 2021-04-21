@@ -59,16 +59,21 @@ export const Configuration: FunctionComponent = () => {
     service,
     useCallback(
       (state: typeof service.state) => {
-        const isLoading = state.matches({ configureConnector: 'loadConfigurator' });
+        const isLoading = state.matches({
+          configureConnector: 'loadConfigurator',
+        });
         const hasErrors = state.matches('failure');
-        const hasCustomConfigurator = state.context.Configurator !== false && state.context.Configurator !== undefined;
+        const hasCustomConfigurator =
+          state.context.Configurator !== false &&
+          state.context.Configurator !== undefined;
         return {
           isLoading,
           hasErrors,
           hasCustomConfigurator,
           configuration: state.context.connectorData,
           Configurator: state.context.Configurator,
-          configuratorRef: state.children.configuratorRef as ConfiguratorActorRef,
+          configuratorRef: state.children
+            .configuratorRef as ConfiguratorActorRef,
         };
       },
       [service]
@@ -105,9 +110,7 @@ export const Configuration: FunctionComponent = () => {
       );
     default:
       return (
-        <PageSection variant="light">
-          TODO: json-schema based form
-        </PageSection>
-      )
+        <PageSection variant="light">TODO: json-schema based form</PageSection>
+      );
   }
 };

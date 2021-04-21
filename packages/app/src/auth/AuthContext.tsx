@@ -1,8 +1,8 @@
-import {createContext} from 'react';
+import { createContext } from 'react';
 
 export interface IAuthContext {
-  getToken: () => Promise<string>
-  getUsername: () => Promise<string>
+  getToken: () => Promise<string>;
+  getUsername: () => Promise<string>;
 }
 
 export const AuthContext = createContext<IAuthContext | undefined>(undefined);

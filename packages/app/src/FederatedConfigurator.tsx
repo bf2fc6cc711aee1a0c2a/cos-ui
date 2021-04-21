@@ -20,8 +20,11 @@ export const fetchConfigurator = async (
   connector: ConnectorType,
   configUrl: string
 ): Promise<ConnectorConfiguratorResponse> => {
-  const defaultConfig = Promise.resolve<ConnectorConfiguratorResponse>({ steps: false, Configurator: false });
-  return new Promise((resolve) => {
+  const defaultConfig = Promise.resolve<ConnectorConfiguratorResponse>({
+    steps: false,
+    Configurator: false,
+  });
+  return new Promise(resolve => {
     interpret(
       federatedConfiguratorsMachine.withContext({
         configUrl,

@@ -45,7 +45,12 @@ export const AppLayout: FunctionComponent<IAppLayout> = ({ children }) => {
   );
 
   const Navigation = (
-    <Nav id="nav-primary-simple" role="navigation" theme="dark" aria-label={'global'}>
+    <Nav
+      id="nav-primary-simple"
+      role="navigation"
+      theme="dark"
+      aria-label={'global'}
+    >
       <NavList id="nav-list-simple">
         <NavItem id={'connectors'}>
           <NavLink to={'/'} activeClassName="pf-m-current">
@@ -55,8 +60,16 @@ export const AppLayout: FunctionComponent<IAppLayout> = ({ children }) => {
       </NavList>
     </Nav>
   );
-  const Sidebar = <PageSidebar theme="dark" nav={Navigation} isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen} />;
-  const PageSkipToContent = <SkipToContent href="#primary-app-container">Skip to content</SkipToContent>;
+  const Sidebar = (
+    <PageSidebar
+      theme="dark"
+      nav={Navigation}
+      isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen}
+    />
+  );
+  const PageSkipToContent = (
+    <SkipToContent href="#primary-app-container">Skip to content</SkipToContent>
+  );
   return (
     <Page
       mainContainerId="primary-app-container"
