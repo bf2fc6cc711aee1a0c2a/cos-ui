@@ -208,7 +208,7 @@ export const creationWizardMachine = createMachine<
                 configuration: context.connectorData,
                 steps: context.configurationSteps || ['single step'],
                 activeStep: context.activeConfigurationStep || 0,
-                isActiveStepValid: context.connectorData !== false
+                isActiveStepValid: context.connectorData !== false,
               }),
               onDone: {
                 target: '#creationWizard.reviewConfiguration',

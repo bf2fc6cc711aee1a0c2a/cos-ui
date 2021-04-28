@@ -22,9 +22,7 @@ export const AppRoutes: FunctionComponent = () => {
       <Route path={'/'} exact>
         <PageSection variant={'light'}>
           <TextContent>
-            <Title headingLevel="h1">
-              Managed Connectors
-            </Title>
+            <Title headingLevel="h1">Managed Connectors</Title>
           </TextContent>
         </PageSection>
         <PageSection variant={'light'} padding={{ default: 'noPadding' }}>

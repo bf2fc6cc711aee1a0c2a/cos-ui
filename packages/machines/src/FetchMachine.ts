@@ -16,41 +16,37 @@ export function makeFetchMachine<T>() {
     error: undefined,
   } as Context<T>);
 
-  return createMachine<
-    typeof fetchMachineModel
-  >(
-    {
-      schema: fetchMachineSchema,
-      id: 'fetchMachine',
-      context: {},
-      initial: 'loading',
-      states: {
-        loading: {
-          invoke: {
-            id: 'fetchService',
-            src: 'fetchService',
-            onDone: {
-              target: 'success',
-              actions: assign((_context, event) => ({
-                data: event.data,
-              })),
-            },
-            onError: {
-              target: 'failure',
-              actions: assign({
-                error: (_context, event) => event.data,
-              }),
-            },
+  return createMachine<typeof fetchMachineModel>({
+    schema: fetchMachineSchema,
+    id: 'fetchMachine',
+    context: {},
+    initial: 'loading',
+    states: {
+      loading: {
+        invoke: {
+          id: 'fetchService',
+          src: 'fetchService',
+          onDone: {
+            target: 'success',
+            actions: assign((_context, event) => ({
+              data: event.data,
+            })),
+          },
+          onError: {
+            target: 'failure',
+            actions: assign({
+              error: (_context, event) => event.data,
+            }),
           },
         },
-        failure: {
-          type: 'final',
-        },
-        success: {
-          type: 'final',
-          data: ({ data }: Context<T>) => ({ ...data }),
-        },
       },
-    }
-  );
+      failure: {
+        type: 'final',
+      },
+      success: {
+        type: 'final',
+        data: ({ data }: Context<T>) => ({ ...data }),
+      },
+    },
+  });
 }

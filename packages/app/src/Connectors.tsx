@@ -10,11 +10,39 @@ import { NavLink } from 'react-router-dom';
 import CubeIcon from '@patternfly/react-icons/dist/js/icons/cube-icon';
 
 const KafkaConnectors: FunctionComponent = () => {
-  const columns = ["Connector", "Version", "Owner", "Time Created", "Time Updated", "Status"]
+  const columns = [
+    'Connector',
+    'Version',
+    'Owner',
+    'Time Created',
+    'Time Updated',
+    'Status',
+  ];
   const rows = [
-    ["foo", "v1.0.1", "rforina", "2021/04/02 12:43:32", "2021/04/02 15:43:32", "Running"],
-    ["bar", "v1.0.2", "foobar", "2021/04/02 12:43:32", "2021/04/02 15:43:32", "Created"],
-    ["baz", "v0.0.7", "zomg", "2021/04/02 12:43:32", "2021/04/02 15:43:32", "Deleted"],
+    [
+      'foo',
+      'v1.0.1',
+      'rforina',
+      '2021/04/02 12:43:32',
+      '2021/04/02 15:43:32',
+      'Running',
+    ],
+    [
+      'bar',
+      'v1.0.2',
+      'foobar',
+      '2021/04/02 12:43:32',
+      '2021/04/02 15:43:32',
+      'Created',
+    ],
+    [
+      'baz',
+      'v0.0.7',
+      'zomg',
+      '2021/04/02 12:43:32',
+      '2021/04/02 15:43:32',
+      'Deleted',
+    ],
   ];
   return (
     <Table
@@ -29,9 +57,8 @@ const KafkaConnectors: FunctionComponent = () => {
       <TableHeader />
       <TableBody />
     </Table>
-  )
-}
-
+  );
+};
 
 export const Connectors: FunctionComponent = () => {
   const columns = [
@@ -56,7 +83,11 @@ export const Connectors: FunctionComponent = () => {
           props: { component: 'th' },
         },
         {
-          title: <><CubeIcon /> 3</>,
+          title: (
+            <>
+              <CubeIcon /> 3
+            </>
+          ),
           props: { isOpen: true, ariaControls: 'compound-expansion-table-1' },
         },
         'AWS',
@@ -91,7 +122,11 @@ export const Connectors: FunctionComponent = () => {
       cells: [
         { title: <a href="#">foo-bar</a>, props: { component: 'th' } },
         {
-          title: <><CubeIcon /> 3</>,
+          title: (
+            <>
+              <CubeIcon /> 3
+            </>
+          ),
           props: { isOpen: true, ariaControls: 'compound-expansion-table-2' },
         },
         'AWS',

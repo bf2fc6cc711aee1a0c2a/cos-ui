@@ -8,7 +8,11 @@ import {
 } from '@kas-connectors/machines';
 import { interpret } from 'xstate';
 
-type FederatedModuleConfigurationType = { remoteEntry: string; scope: string; module: string };
+type FederatedModuleConfigurationType = {
+  remoteEntry: string;
+  scope: string;
+  module: string;
+};
 
 export type FederatedConfiguratorConfig = {
   steps: string[];
@@ -30,7 +34,8 @@ export const fetchConfigurator = async (
     interpret(
       makeFetchMachine<FederatedModuleConfigurationType>().withConfig({
         services: {
-          fetchService: () => fetchFederatedModulesConfiguration(configUrl, connector),
+          fetchService: () =>
+            fetchFederatedModulesConfiguration(configUrl, connector),
         },
       })
     )
@@ -57,25 +62,19 @@ const isValidConf = (maybeConf?: any) =>
   maybeConf.module &&
   typeof maybeConf.module === 'string';
 
-
 const fetchFederatedModulesConfiguration = async (
   configUrl: string,
-  connector: ConnectorType,
+  connector: ConnectorType
 ): Promise<FederatedModuleConfigurationType> => {
   const config = await (await fetch(configUrl)).json();
-  console.log(
-    'Fetched federated configurator remotes configuration',
-    config
-  );
+  console.log('Fetched federated configurator remotes configuration', config);
   const maybeConfiguration = config[connector.id!];
   console.log(
     `Candidate configuration for "${connector.id}"`,
     maybeConfiguration
   );
   if (!maybeConfiguration) {
-    console.log(
-      "Couldn't find any configuration for the requested connector"
-    );
+    console.log("Couldn't find any configuration for the requested connector");
     return Promise.reject();
   }
   if (isValidConf(maybeConfiguration[connector.version])) {
@@ -97,7 +96,7 @@ const fetchFederatedModulesConfiguration = async (
     "Couldn't find a valid configuration for the requested connector"
   );
   return Promise.reject();
-}
+};
 
 export const injectFederatedModuleScript = async (url: string) => {
   return new Promise<void>((resolve, reject) => {
