@@ -17,6 +17,7 @@ import { SelectConnector } from './SelectConnector';
 import { Configuration } from './Configuration';
 import { useCreationWizardMachineService } from './CreationWizardContext';
 import { Review } from './Review';
+import { StepErrorBoundary } from './StepErrorBoundary';
 
 function useKafkaInstanceStep() {
   const service = useCreationWizardMachineService();
@@ -37,7 +38,11 @@ function useKafkaInstanceStep() {
   return {
     name: 'Select Kafka instance',
     isActive,
-    component: <SelectKafkaInstance actor={actor} />,
+    component: (
+      <StepErrorBoundary>
+        <SelectKafkaInstance actor={actor} />
+      </StepErrorBoundary>
+    ),
     canJumpTo,
     enableNext,
   };
@@ -82,11 +87,19 @@ function useConfigurationStep() {
           isActive: isActive && activeStep === idx,
           canJumpTo: canJumpToStep(idx),
           enableNext,
-          component: <Configuration />,
+          component: (
+            <StepErrorBoundary>
+              <Configuration />
+            </StepErrorBoundary>
+          ),
         }))
       : undefined,
     enableNext,
-    component: <Configuration />,
+    component: (
+      <StepErrorBoundary>
+        <Configuration />
+      </StepErrorBoundary>
+    ),
   };
 }
 
@@ -101,9 +114,11 @@ export const CreationWizard: FunctionComponent = () => {
       name: 'Select OCM cluster',
       isActive: state.matches('selectCluster'),
       component: (
-        <SelectCluster
-          actor={state.children.selectCluster as ClusterMachineActorRef}
-        />
+        <StepErrorBoundary>
+          <SelectCluster
+            actor={state.children.selectCluster as ClusterMachineActorRef}
+          />
+        </StepErrorBoundary>
       ),
       canJumpTo:
         creationWizardMachine.transition(state, 'jumpToSelectCluster')
@@ -114,9 +129,11 @@ export const CreationWizard: FunctionComponent = () => {
       name: 'Connector',
       isActive: state.matches('selectConnector'),
       component: (
-        <SelectConnector
-          actor={state.children.selectConnector as ConnectorsMachineActorRef}
-        />
+        <StepErrorBoundary>
+          <SelectConnector
+            actor={state.children.selectConnector as ConnectorsMachineActorRef}
+          />
+        </StepErrorBoundary>
       ),
       canJumpTo:
         creationWizardMachine.transition(state, 'jumpToSelectConnector')
@@ -127,7 +144,11 @@ export const CreationWizard: FunctionComponent = () => {
     {
       name: 'Review',
       isActive: state.matches('reviewConfiguration'),
-      component: <Review />,
+      component: (
+        <StepErrorBoundary>
+          <Review />
+        </StepErrorBoundary>
+      ),
       canJumpTo:
         creationWizardMachine.transition(state, 'jumpToReviewConfiguration')
           .changed || state.matches('reviewConfiguration'),

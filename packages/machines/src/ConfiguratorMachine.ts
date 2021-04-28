@@ -13,7 +13,7 @@ type Context = {
   steps: string[];
   activeStep: number;
   isActiveStepValid: boolean;
-  configuration: Map<string, unknown>;
+  configuration: unknown;
 };
 
 const configuratorMachineSchema = {
@@ -26,7 +26,7 @@ const configuratorMachineModel = createModel(
     steps: [],
     activeStep: 0,
     isActiveStepValid: false,
-    configuration: new Map(),
+    configuration: undefined,
   } as Context,
   {
     events: {
@@ -35,7 +35,7 @@ const configuratorMachineModel = createModel(
         configuration,
         isValid,
       }: {
-        configuration: Map<string, unknown>;
+        configuration: unknown;
         isValid: boolean;
       }) => ({ configuration, isValid }),
       next: () => ({}),
@@ -57,7 +57,7 @@ export const configuratorMachine = createMachine<
       steps: ['one', 'two', 'three'],
       activeStep: 0,
       isActiveStepValid: false,
-      configuration: new Map(),
+      configuration: undefined,
     },
     states: {
       configuring: {

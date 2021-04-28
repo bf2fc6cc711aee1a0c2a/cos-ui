@@ -12,6 +12,7 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { useSelector } from '@xstate/react';
+import { JsonSchemaConfigurator } from '@kas-connectors/json-schema-configurator';
 import React, { ComponentType, FunctionComponent, useCallback } from 'react';
 import { useCreationWizardMachineService } from './CreationWizardContext';
 
@@ -36,6 +37,31 @@ const ConnectedCustomConfigurator: FunctionComponent<{
       activeStep={activeStep}
       configuration={configuration}
       connector={connector}
+      onChange={(configuration, isValid) =>
+        actor.send({ type: 'change', configuration, isValid })
+      }
+    />
+  );
+};
+
+const ConnectedJsonSchemaConfigurator: FunctionComponent<{
+  actor: ConfiguratorActorRef;
+}> = ({ actor }) => {
+  const { configuration, connector } = useSelector(
+    actor,
+    useCallback(
+      (state: typeof actor.state) => ({
+        connector: state.context.connector,
+        configuration: state.context.configuration,
+      }),
+      [actor]
+    )
+  );
+
+  return (
+    <JsonSchemaConfigurator
+      schema={connector.json_schema!}
+      configuration={configuration || {}}
       onChange={(configuration, isValid) =>
         actor.send({ type: 'change', configuration, isValid })
       }
@@ -110,7 +136,9 @@ export const Configuration: FunctionComponent = () => {
       );
     default:
       return (
-        <PageSection variant="light">TODO: json-schema based form</PageSection>
+        <PageSection variant="light">
+          <ConnectedJsonSchemaConfigurator actor={configuratorRef} />
+        </PageSection>
       );
   }
 };

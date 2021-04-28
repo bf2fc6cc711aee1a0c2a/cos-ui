@@ -1,10 +1,10 @@
 {
-  "name": "@kas-connectors/creation-wizard",
+  "name": "@kas-connectors/json-schema-configurator",
   "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mono/mono.git",
-    "directory": "packages/creationWizard"
+    "directory": "packages/jsonSchemaConfigurator"
   },
   "scripts": {
     "start": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
@@ -14,7 +14,7 @@
     "prepublish": "npm run build"
   },
   "main": "dist/index.js",
-  "module": "dist/creationWizard.esm.js",
+  "module": "dist/json-schema-configurator.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "README.md",
@@ -25,13 +25,14 @@
     "@patternfly/react-icons": "^4.7.11",
     "@patternfly/react-styles": "^4.7.8",
     "@xstate/react": "^1.3.1",
+    "ajv": "^8.2.0",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
-    "react-error-boundary": "^3.1.1",
-    "xstate": "^4.17.1"
+    "uniforms": "^3.4.0",
+    "uniforms-bridge-json-schema": "^3.4.0",
+    "uniforms-patternfly": "4.2.2-fix"
   },
   "dependencies": {
-    "@kas-connectors/json-schema-configurator": "^0.0.1",
     "@kas-connectors/machines": "^0.0.1",
     "tslib": "^2.0.0"
   },
