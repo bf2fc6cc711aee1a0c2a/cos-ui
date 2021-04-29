@@ -47,7 +47,7 @@
     "typescript": "^3.9.7",
     "uniforms": "^3.4.0",
     "uniforms-bridge-json-schema": "^3.4.0",
-    "uniforms-patternfly": "file:.yalc/uniforms-patternfly",
+    "uniforms-patternfly": "^4.3.1",
     "url-loader": "^4.1.1",
     "webpack": "5.33.2",
     "webpack-cli": "4.6.0",

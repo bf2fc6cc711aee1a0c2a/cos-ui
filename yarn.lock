@@ -13904,8 +13904,10 @@ uniforms-bridge-json-schema@^3.4.0:
     tslib "^1.10.0"
     uniforms "^3.4.0"
 
-"uniforms-patternfly@file:.yalc/uniforms-patternfly":
-  version "4.2.2-fix-65385f0b"
+uniforms-patternfly@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/uniforms-patternfly/-/uniforms-patternfly-4.3.1.tgz#79a4bf3810aab27b478116cab18d0eab06a6a4bb"
+  integrity sha512-I9B2NAxmUxVC/fnu4QjuvzMSD61G7WdJc6eD3uvXtBL3G6dM5TMSPP9S2PW9R5YSrvALegTDyMOeNpfiV9gd3Q==
 
 uniforms@^3.4.0:
   version "3.4.0"

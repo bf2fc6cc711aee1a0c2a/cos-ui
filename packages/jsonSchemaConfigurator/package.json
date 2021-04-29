@@ -30,7 +30,7 @@
     "react-dom": "^16.8.0",
     "uniforms": "^3.4.0",
     "uniforms-bridge-json-schema": "^3.4.0",
-    "uniforms-patternfly": "4.2.2-fix"
+    "uniforms-patternfly": "^4.3.1"
   },
   "dependencies": {
     "@kas-connectors/machines": "^0.0.1",
