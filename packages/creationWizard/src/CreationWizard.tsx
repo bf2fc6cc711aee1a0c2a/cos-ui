@@ -5,7 +5,7 @@ import {
   KafkaMachineActorRef,
   ConnectorsMachineActorRef,
   ClusterMachineActorRef,
-} from '@kas-connectors/machines';
+} from '@cos-ui/machines';
 import {
   UncontrolledWizard,
   getFlattenedSteps,

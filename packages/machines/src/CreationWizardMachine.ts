@@ -2,7 +2,7 @@ import {
   KafkaRequest,
   ConnectorCluster,
   ConnectorType,
-} from '@kas-connectors/api';
+} from '@cos-ui/api';
 import { createMachine, assign, send, createSchema } from 'xstate';
 import { kafkasMachine } from './KafkasMachine';
 import { clustersMachine } from './ClustersMachine';

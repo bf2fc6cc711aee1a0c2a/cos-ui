@@ -1,4 +1,4 @@
-# @kas-connectors monorepo
+# @cos-ui monorepo
 
 ## Usage
 

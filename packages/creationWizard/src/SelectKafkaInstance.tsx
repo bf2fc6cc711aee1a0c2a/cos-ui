@@ -32,7 +32,7 @@ import {
   SearchIcon,
 } from '@patternfly/react-icons';
 import { useActor } from '@xstate/react';
-import { KafkaMachineActorRef } from '@kas-connectors/machines';
+import { KafkaMachineActorRef } from '@cos-ui/machines';
 import React, { useCallback, useState } from 'react';
 
 const defaultPerPageOptions = [

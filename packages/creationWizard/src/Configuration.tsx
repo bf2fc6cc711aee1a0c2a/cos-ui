@@ -2,7 +2,7 @@ import {
   ConnectorConfiguratorComponent,
   ConnectorConfiguratorProps,
   ConfiguratorActorRef,
-} from '@kas-connectors/machines';
+} from '@cos-ui/machines';
 import {
   EmptyState,
   EmptyStateIcon,
@@ -12,7 +12,7 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { useSelector } from '@xstate/react';
-import { JsonSchemaConfigurator } from '@kas-connectors/json-schema-configurator';
+import { JsonSchemaConfigurator } from '@cos-ui/json-schema-configurator';
 import React, { ComponentType, FunctionComponent, useCallback } from 'react';
 import { useCreationWizardMachineService } from './CreationWizardContext';
 

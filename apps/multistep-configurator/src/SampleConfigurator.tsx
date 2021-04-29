@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ConnectorConfiguratorProps } from '@kas-connectors/machines';
+import { ConnectorConfiguratorProps } from '@cos-ui/machines';
 
 export const SampleConfigurator: React.FunctionComponent<ConnectorConfiguratorProps> = ({
   activeStep,

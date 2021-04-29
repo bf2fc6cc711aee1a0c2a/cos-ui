@@ -1,4 +1,4 @@
-import { ConnectorConfiguratorResponse } from '@kas-connectors/machines';
+import { ConnectorConfiguratorResponse } from '@cos-ui/machines';
 import { SampleConfigurator } from './SampleConfigurator';
 
 const config: ConnectorConfiguratorResponse = {

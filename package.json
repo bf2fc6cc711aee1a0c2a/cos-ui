@@ -60,20 +60,20 @@
   ],
   "scripts": {
     "lerna": "lerna",
-    "start": "lerna run start --stream --parallel --scope @kas-connectors/*",
+    "start": "lerna run start --stream --parallel --scope @cos-ui/*",
     "test": "lerna run test --",
     "lint": "lerna run lint -- --fix",
     "build": "lerna run build",
     "prepublish": "yarn run api:generate && lerna run prepublish",
     "start:app:example": "yarn run build && yarn --cwd example && yarn --cwd example start",
-    "start:app:federated": "lerna run start --stream --parallel --scope @kas-connectors-apps/* --ignore @kas-connectors-apps/cli",
+    "start:app:federated": "lerna run start --stream --parallel --scope @cos-ui-apps/* --ignore @cos-ui-apps/cli",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
     "changeset": "changeset",
     "release": "changeset publish",
     "version:canary": "changeset version --snapshot canary",
     "release:canary": "changeset publish --tag canary",
-    "api:generate": "openapi-merge-cli && openapi-generator-cli generate -i mas-mock/merged-openapi.yaml -g typescript-axios -o packages/api --additional-properties=ngVersion=6.1.7,npmName=@kas-connectors/api,supportsES6=true,withInterfaces=true --skip-validate-spec"
+    "api:generate": "openapi-merge-cli && openapi-generator-cli generate -i mas-mock/merged-openapi.yaml -g typescript-axios -o packages/api --additional-properties=ngVersion=6.1.7,npmName=@cos-ui/api,supportsES6=true,withInterfaces=true --skip-validate-spec"
   },
   "dependencies": {},
   "resolutions": {

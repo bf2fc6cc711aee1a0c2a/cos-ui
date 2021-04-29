@@ -1,5 +1,5 @@
 {
-  "name": "@kas-connectors/json-schema-configurator",
+  "name": "@cos-ui/json-schema-configurator",
   "version": "0.0.1",
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
     "uniforms-patternfly": "^4.3.1"
   },
   "dependencies": {
-    "@kas-connectors/machines": "^0.0.1",
+    "@cos-ui/machines": "^0.0.1",
     "tslib": "^2.0.0"
   },
   "publishConfig": {

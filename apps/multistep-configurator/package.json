@@ -1,9 +1,9 @@
 {
-  "name": "@kas-connectors-apps/multistep-configurator",
+  "name": "@cos-ui-apps/multistep-configurator",
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@kas-connectors/machines": "0.0.1"
+    "@cos-ui/machines": "0.0.1"
   },
   "peerDependencies": {
     "@patternfly/react-core": "^4.87.2",

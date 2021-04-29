@@ -12,14 +12,14 @@
     "baseUrl": ".",
     "typeRoots": ["./node_modules/@types", "./types"],
     "paths": {
-      "@kas-connectors/api": ["packages/api/src"],
-      "@kas-connectors/app": ["packages/app/src"],
-      "@kas-connectors/creation-wizard": ["packages/creationWizard/src"],
-      "@kas-connectors/machines": ["packages/machines/src"],
+      "@cos-ui/api": ["packages/api/src"],
+      "@cos-ui/app": ["packages/app/src"],
+      "@cos-ui/creation-wizard": ["packages/creationWizard/src"],
+      "@cos-ui/machines": ["packages/machines/src"],
 
-      "@kas-connectors-apps/cli": ["apps/cli/src"],
-      "@kas-connectors-apps/kas-connectors": ["apps/kas-connectors/src"],
-      "@kas-connectors-apps/sample-configurator": [
+      "@cos-ui-apps/cli": ["apps/cli/src"],
+      "@cos-ui-apps/kas-connectors": ["apps/kas-connectors/src"],
+      "@cos-ui-apps/sample-configurator": [
         "apps/multistep-configurator/src"
       ],
 

@@ -1,4 +1,4 @@
-import { ConnectorsMachineActorRef } from '@kas-connectors/machines';
+import { ConnectorsMachineActorRef } from '@cos-ui/machines';
 import {
   Button,
   Card,

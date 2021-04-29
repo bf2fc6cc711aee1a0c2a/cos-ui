@@ -1,5 +1,5 @@
 {
-  "name": "@kas-connectors/creation-wizard",
+  "name": "@cos-ui/creation-wizard",
   "version": "0.0.1",
   "repository": {
     "type": "git",
@@ -31,8 +31,8 @@
     "xstate": "^4.17.1"
   },
   "dependencies": {
-    "@kas-connectors/json-schema-configurator": "^0.0.1",
-    "@kas-connectors/machines": "^0.0.1",
+    "@cos-ui/json-schema-configurator": "^0.0.1",
+    "@cos-ui/machines": "^0.0.1",
     "tslib": "^2.0.0"
   },
   "publishConfig": {

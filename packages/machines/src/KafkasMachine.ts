@@ -4,7 +4,7 @@ import {
   DefaultApi,
   KafkaRequest,
   KafkaRequestList,
-} from '@kas-connectors/api';
+} from '@cos-ui/api';
 import {
   ActorRefFrom,
   assign,

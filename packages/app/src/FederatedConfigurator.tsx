@@ -1,11 +1,11 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-undef */
 import { ComponentType, LazyExoticComponent } from 'react';
-import { ConnectorType } from '@kas-connectors/api';
+import { ConnectorType } from '@cos-ui/api';
 import {
   ConnectorConfiguratorResponse,
   makeFetchMachine,
-} from '@kas-connectors/machines';
+} from '@cos-ui/machines';
 import { interpret } from 'xstate';
 
 type FederatedModuleConfigurationType = {

@@ -1,5 +1,5 @@
 {
-  "name": "@kas-connectors/example",
+  "name": "@cos-ui/example",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -12,10 +12,10 @@
     "react-app-polyfill": "^1.0.0"
   },
   "alias": {
-    "@kas-connectors/api": "../packages/api",
-    "@kas-connectors/app": "../packages/app",
-    "@kas-connectors/creation-wizard": "../packages/creationWizard",
-    "@kas-connectors/machines": "../packages/machines",
+    "@cos-ui/api": "../packages/api",
+    "@cos-ui/app": "../packages/app",
+    "@cos-ui/creation-wizard": "../packages/creationWizard",
+    "@cos-ui/machines": "../packages/machines",
 
     "@patternfly/react-core": "../node_modules/@patternfly/react-core",
     "@patternfly/react-icons": "../node_modules/@patternfly/react-icons",

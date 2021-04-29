@@ -4,7 +4,7 @@ import {
   DefaultApi,
   ConnectorClusterList,
   ConnectorCluster,
-} from '@kas-connectors/api';
+} from '@cos-ui/api';
 import {
   ActorRefFrom,
   assign,

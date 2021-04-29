@@ -1,14 +1,14 @@
 {
-  "name": "@kas-connectors/api",
+  "name": "@cos-ui/api",
   "version": "0.0.1",
-  "description": "OpenAPI client for @kas-connectors/api",
+  "description": "OpenAPI client for @cos-ui/api",
   "author": "OpenAPI-Generator Contributors",
   "keywords": [
     "axios",
     "typescript",
     "openapi-client",
     "openapi-generator",
-    "@kas-connectors/api"
+    "@cos-ui/api"
   ],
   "license": "Unlicense",
   "main": "./dist/index.js",

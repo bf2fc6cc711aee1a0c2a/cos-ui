@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useInterpret } from '@xstate/react';
 import { Interpreter, StateMachine } from 'xstate';
-import { creationWizardMachine } from '@kas-connectors/machines';
+import { creationWizardMachine } from '@cos-ui/machines';
 
 export type InterpreterFrom<
   T extends StateMachine<any, any, any, any>

@@ -10,8 +10,8 @@ import {
   configuratorLoaderMachine,
   ConnectorConfiguratorResponse,
   creationWizardMachine,
-} from '@kas-connectors/machines';
-import { ConnectorType } from '@kas-connectors/api';
+} from '@cos-ui/machines';
+import { ConnectorType } from '@cos-ui/api';
 
 export type InterpreterFrom<
   T extends StateMachine<any, any, any, any>

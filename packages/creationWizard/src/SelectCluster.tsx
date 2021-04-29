@@ -32,7 +32,7 @@ import {
   SearchIcon,
 } from '@patternfly/react-icons';
 import { useActor } from '@xstate/react';
-import { ClusterMachineActorRef } from '@kas-connectors/machines';
+import { ClusterMachineActorRef } from '@cos-ui/machines';
 import React, { Fragment, useCallback, useState } from 'react';
 
 const defaultPerPageOptions = [

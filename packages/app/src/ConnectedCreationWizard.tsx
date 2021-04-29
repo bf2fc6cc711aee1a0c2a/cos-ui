@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import {
   CreationWizard,
   CreationWizardMachineProvider,
-} from '@kas-connectors/creation-wizard';
+} from '@cos-ui/creation-wizard';
 import { AuthContext } from './auth/AuthContext';
 import { fetchConfigurator } from './FederatedConfigurator';
 

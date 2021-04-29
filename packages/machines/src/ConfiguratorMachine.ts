@@ -1,4 +1,4 @@
-import { ConnectorType } from '@kas-connectors/api';
+import { ConnectorType } from '@cos-ui/api';
 import {
   ActorRefFrom,
   assign,

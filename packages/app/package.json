@@ -1,5 +1,5 @@
 {
-  "name": "@kas-connectors/app",
+  "name": "@cos-ui/app",
   "version": "0.0.1",
   "repository": {
     "type": "git",
@@ -21,8 +21,8 @@
     "dist"
   ],
   "dependencies": {
-    "@kas-connectors/api": "0.0.1",
-    "@kas-connectors/creation-wizard": "0.0.1",
+    "@cos-ui/api": "0.0.1",
+    "@cos-ui/creation-wizard": "0.0.1",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {

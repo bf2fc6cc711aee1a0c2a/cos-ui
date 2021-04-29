@@ -5,12 +5,12 @@ import {
   KafkaMachineActorRef,
   ClusterMachineActorRef,
   ConnectorsMachineActorRef,
-} from '@kas-connectors/machines';
+} from '@cos-ui/machines';
 import {
   ConnectorCluster,
   ConnectorType,
   KafkaRequest,
-} from '@kas-connectors/api';
+} from '@cos-ui/api';
 import { Box, Text, useApp, useInput } from 'ink';
 import Spinner from 'ink-spinner';
 import SelectInput from 'ink-select-input';

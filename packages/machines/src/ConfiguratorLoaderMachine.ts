@@ -1,5 +1,5 @@
 import { ComponentType } from 'react';
-import { ConnectorType } from '@kas-connectors/api';
+import { ConnectorType } from '@cos-ui/api';
 import { assign, createMachine, createSchema } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 import { escalate } from 'xstate/lib/actions';
