@@ -103,7 +103,15 @@ function useConfigurationStep() {
   };
 }
 
-export const CreationWizard: FunctionComponent = () => {
+export type CreationWizardProps = {
+  onClose: () => void;
+  onSave: () => void;
+};
+
+export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
+  onClose,
+  onSave,
+}) => {
   const service = useCreationWizardMachineService();
   const [state, send] = useService(service);
   const kafkaInstanceStep = useKafkaInstanceStep();
@@ -166,10 +174,14 @@ export const CreationWizard: FunctionComponent = () => {
       -1
     ) + 1;
 
-  const onNext = () => send('next');
+  const onNext = () => {
+    if (state.matches('reviewConfiguration')) {
+      onSave();
+    } else {
+      send('next');
+    }
+  };
   const onBack = () => send('prev');
-  const onClose = () => false;
-  const onSave = () => false;
   const goToStep = (stepIndex: number) => {
     switch (stepIndex) {
       case 1:
@@ -204,7 +216,7 @@ export const CreationWizard: FunctionComponent = () => {
       onNext={onNext}
       onBack={onBack}
       onClose={onClose}
-      onSave={onSave}
+      onSave={() => false}
       goToStep={goToStep}
       goToStepById={goToStepById}
       goToStepByName={goToStepByName}

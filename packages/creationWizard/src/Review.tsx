@@ -9,7 +9,10 @@ export function Review() {
   return (
     <PageSection variant="light">
       <Text component="h2">Please review the configuration data.</Text>
-      <TextArea>{JSON.stringify(state.context.connectorData)}</TextArea>
+      <TextArea
+        id="connector-configuration-review"
+        value={JSON.stringify(state.context.connectorData)}
+      />
     </PageSection>
   );
 }

@@ -469,7 +469,7 @@ export class UncontrolledWizard extends Component<WizardProps, WizardState> {
                   onClick={onNext}
                   isDisabled={!isValid}
                 >
-                  {nextButtonText}
+                  {(activeStep && activeStep.nextButtonText) || nextButtonText}
                 </Button>
                 {!activeStep.hideBackButton && (
                   <Button

@@ -1,12 +1,16 @@
-import React, { useContext } from 'react';
+import React, { FunctionComponent, useContext } from 'react';
 import {
   CreationWizard,
   CreationWizardMachineProvider,
+  CreationWizardProps,
 } from '@cos-ui/creation-wizard';
 import { AuthContext } from './auth/AuthContext';
 import { fetchConfigurator } from './FederatedConfigurator';
 
-export const ConnectedCreationWizard = () => {
+export const ConnectedCreationWizard: FunctionComponent<CreationWizardProps> = ({
+  onClose,
+  onSave,
+}) => {
   const authContext = useContext(AuthContext);
 
   return (
@@ -23,7 +27,7 @@ export const ConnectedCreationWizard = () => {
         )
       }
     >
-      <CreationWizard />
+      <CreationWizard onClose={onClose} onSave={onSave} />
     </CreationWizardMachineProvider>
   );
 };

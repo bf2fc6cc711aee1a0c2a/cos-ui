@@ -12,11 +12,13 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import { Switch, Route, NavLink } from 'react-router-dom';
+import { Switch, Route, NavLink, useHistory } from 'react-router-dom';
 import { Connectors } from './Connectors';
 import { ConnectedCreationWizard } from './ConnectedCreationWizard';
 
 export const AppRoutes: FunctionComponent = () => {
+  const history = useHistory();
+  const goToConnectorsList = () => history.push('/');
   return (
     <Switch>
       <Route path={'/'} exact>
@@ -59,7 +61,10 @@ export const AppRoutes: FunctionComponent = () => {
       </Route>
       <Route path={'/create-connector'}>
         <PageSection padding={{ default: 'noPadding' }}>
-          <ConnectedCreationWizard />
+          <ConnectedCreationWizard
+            onClose={goToConnectorsList}
+            onSave={goToConnectorsList}
+          />
         </PageSection>
       </Route>
     </Switch>

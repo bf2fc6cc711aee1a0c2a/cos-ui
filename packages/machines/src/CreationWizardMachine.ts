@@ -1,8 +1,4 @@
-import {
-  KafkaRequest,
-  ConnectorCluster,
-  ConnectorType,
-} from '@cos-ui/api';
+import { KafkaRequest, ConnectorCluster, ConnectorType } from '@cos-ui/api';
 import { createMachine, assign, send, createSchema } from 'xstate';
 import { kafkasMachine } from './KafkasMachine';
 import { clustersMachine } from './ClustersMachine';
@@ -73,11 +69,10 @@ export const creationWizardMachine = createMachine<
               selectedKafkaInstance: (_, event) => event.data.selectedInstance,
             }),
           },
-          onError: {
-            actions: (_context, event) => console.error(event.data.message),
-          },
+          onError: '.error',
         },
         states: {
+          error: {},
           selecting: {
             on: {
               isValid: 'valid',
@@ -109,11 +104,10 @@ export const creationWizardMachine = createMachine<
               selectedCluster: (_, event) => event.data.selectedCluster,
             }),
           },
-          onError: {
-            actions: (_context, event) => console.error(event.data.message),
-          },
+          onError: '.error',
         },
         states: {
+          error: {},
           selecting: {
             on: {
               isValid: 'valid',
@@ -152,11 +146,10 @@ export const creationWizardMachine = createMachine<
               configurationSteps: false,
             })),
           },
-          onError: {
-            actions: (_context, event) => console.error(event.data.message),
-          },
+          onError: '.error',
         },
         states: {
+          error: {},
           selecting: {
             on: {
               isValid: 'valid',
@@ -255,7 +248,11 @@ export const creationWizardMachine = createMachine<
       reviewConfiguration: {
         on: {
           prev: 'configureConnector',
+          next: 'saving',
         },
+      },
+      saving: {
+        type: 'final',
       },
     },
     on: {

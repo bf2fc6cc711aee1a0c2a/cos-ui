@@ -6,7 +6,7 @@
     "scripts",
     "example",
     "apps"
-  ],
+, "packages/creationWizard/jest.config.js.js", "jest.config.js"  ],
   "compilerOptions": {
     "allowJs": false,
     "baseUrl": ".",
@@ -19,7 +19,10 @@
 
       "@cos-ui-apps/cli": ["apps/cli/src"],
       "@cos-ui-apps/kas-connectors": ["apps/kas-connectors/src"],
-      "@cos-ui-apps/sample-configurator": [
+      "@cos-ui-apps/simple-configurator": [
+        "apps/simple-configurator/src"
+      ],
+      "@cos-ui-apps/multistep-configurator": [
         "apps/multistep-configurator/src"
       ],
 

@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/accessible-emoji */
 import React, { FunctionComponent } from 'react';
 import { useMachineService } from './Context';
 import { useService, useActor } from '@xstate/react';
@@ -6,11 +7,7 @@ import {
   ClusterMachineActorRef,
   ConnectorsMachineActorRef,
 } from '@cos-ui/machines';
-import {
-  ConnectorCluster,
-  ConnectorType,
-  KafkaRequest,
-} from '@cos-ui/api';
+import { ConnectorCluster, ConnectorType, KafkaRequest } from '@cos-ui/api';
 import { Box, Text, useApp, useInput } from 'ink';
 import Spinner from 'ink-spinner';
 import SelectInput from 'ink-select-input';

@@ -79,6 +79,7 @@ export const Connectors: FunctionComponent = () => {
       isOpen: true,
       cells: [
         {
+          // eslint-disable-next-line jsx-a11y/anchor-is-valid
           title: <a href="#">some-istance-name</a>,
           props: { component: 'th' },
         },
@@ -120,6 +121,7 @@ export const Connectors: FunctionComponent = () => {
     {
       isOpen: true,
       cells: [
+        // eslint-disable-next-line jsx-a11y/anchor-is-valid
         { title: <a href="#">foo-bar</a>, props: { component: 'th' } },
         {
           title: (

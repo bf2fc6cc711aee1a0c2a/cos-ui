@@ -75,11 +75,11 @@ export const CreationWizardMachineProvider: FunctionComponent<CreationWizardMach
       services: {
         makeConfiguratorLoaderMachine,
       },
-    },
-    state => {
-      // subscribes to state changes
-      console.log(state.value);
     }
+    // state => {
+    //   // subscribes to state changes
+    //   console.log(state.value);
+    // }
   );
   return (
     <CreationWizardMachineService.Provider value={service}>
