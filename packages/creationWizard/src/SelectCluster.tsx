@@ -209,12 +209,6 @@ export function SelectCluster({ actor }: SelectClusterProps) {
                     <CardBody>
                       <DescriptionList>
                         <DescriptionListGroup>
-                          <DescriptionListTerm>Group</DescriptionListTerm>
-                          <DescriptionListDescription>
-                            {i.metadata?.group}
-                          </DescriptionListDescription>
-                        </DescriptionListGroup>
-                        <DescriptionListGroup>
                           <DescriptionListTerm>Owner</DescriptionListTerm>
                           <DescriptionListDescription>
                             {i.metadata?.owner}

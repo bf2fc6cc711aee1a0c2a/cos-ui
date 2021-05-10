@@ -1,15 +1,21 @@
 {
-  "extends": "./tsconfig.build.json",
-  "include": [
-    "packages",
-    "types",
-    "scripts",
-    "example",
-    "apps"
-, "packages/creationWizard/jest.config.js.js", "jest.config.js"  ],
+  "include": ["packages", "types", "scripts", "example", "apps"],
   "compilerOptions": {
     "allowJs": false,
     "baseUrl": ".",
+    "module": "esnext",
+    "lib": ["dom", "esnext"],
+    "importHelpers": true,
+    "declaration": false,
+    "sourceMap": false,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "jsx": "react",
+    "esModuleInterop": true,
     "typeRoots": ["./node_modules/@types", "./types"],
     "paths": {
       "@cos-ui/api": ["packages/api/src"],
@@ -18,10 +24,8 @@
       "@cos-ui/machines": ["packages/machines/src"],
 
       "@cos-ui-apps/cli": ["apps/cli/src"],
-      "@cos-ui-apps/kas-connectors": ["apps/kas-connectors/src"],
-      "@cos-ui-apps/simple-configurator": [
-        "apps/simple-configurator/src"
-      ],
+      "@cos-ui-apps/cos-ui": ["apps/cos-ui/src"],
+      "@cos-ui-apps/simple-configurator": ["apps/simple-configurator/src"],
       "@cos-ui-apps/multistep-configurator": [
         "apps/multistep-configurator/src"
       ],

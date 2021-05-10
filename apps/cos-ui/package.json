@@ -1,6 +1,6 @@
 {
-  "name": "@cos-ui-apps/kas-connectors",
-  "federatedModuleName": "kasConnectors",
+  "name": "@cos-ui-apps/cos-ui",
+  "federatedModuleName": "cos",
   "version": "0.0.0",
   "private": true,
   "dependencies": {
@@ -21,8 +21,9 @@
     "xstate": "^4.17.1"
   },
   "scripts": {
-    "start": "webpack serve",
-    "build": "webpack --mode production",
+    "start:federate": "webpack serve --host localhost --port 9002",
+    "start": "webpack serve --https --host prod.foo.redhat.com --port 1337 --hot",
+    "build": "FEDERATE=1 webpack --mode production",
     "serve": "serve dist -p 3001",
     "clean": "rm -rf dist"
   }

@@ -10,4 +10,9 @@ module.exports = {
       './__mocks__/fileMock.js'
     ),
   },
+  globals: {
+    'ts-jest': {
+      tsConfig: 'tsconfig.test.json',
+    },
+  },
 };

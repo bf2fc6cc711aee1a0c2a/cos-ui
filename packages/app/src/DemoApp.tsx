@@ -1,5 +1,9 @@
-import '@patternfly/react-core/dist/styles/base.css';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { Spinner } from '@patternfly/react-core';
 import Keycloak from 'keycloak-js';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -9,11 +13,12 @@ import {
   KeycloakContext,
 } from './auth/keycloak/KeycloakContext';
 import { AppLayout } from './AppLayout';
-import { AppRoutes } from './AppRoutes';
+import { Routes } from './Routes';
+import { AuthContext } from './auth/AuthContext';
 
 let keycloak: Keycloak.KeycloakInstance | undefined;
 
-export const App: FunctionComponent = () => {
+export const DemoApp: FunctionComponent = () => {
   const [initialized, setInitialized] = useState(false);
 
   // Initialize the client
@@ -29,9 +34,23 @@ export const App: FunctionComponent = () => {
     <KeycloakContext.Provider value={{ keycloak, profile: keycloak?.profile }}>
       <KeycloakAuthProvider>
         <Router>
-          <AppLayout>{initialized ? <AppRoutes /> : <Spinner />}</AppLayout>
+          <AppLayout>
+            {initialized ? <ConnectedRoutes /> : <Spinner />}
+          </AppLayout>
         </Router>
       </KeycloakAuthProvider>
     </KeycloakContext.Provider>
+  );
+};
+
+const ConnectedRoutes = () => {
+  const authContext = useContext(AuthContext);
+
+  return (
+    <Routes
+      getToken={
+        authContext?.getToken ? authContext.getToken() : Promise.resolve('')
+      }
+    />
   );
 };

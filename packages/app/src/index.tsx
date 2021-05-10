@@ -1,2 +1,2 @@
-export * from './App';
-export * from './AppRoutes';
+export * from './DemoApp';
+export * from './FederatedApp';

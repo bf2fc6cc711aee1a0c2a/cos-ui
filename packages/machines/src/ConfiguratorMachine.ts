@@ -22,7 +22,12 @@ const configuratorMachineSchema = {
 
 const configuratorMachineModel = createModel(
   {
-    connector: { id: 'something', name: 'something', version: '0.1' },
+    connector: {
+      id: 'something',
+      name: 'something',
+      version: '0.1',
+      json_schema: {},
+    },
     steps: [],
     activeStep: 0,
     isActiveStepValid: false,
@@ -53,7 +58,12 @@ export const configuratorMachine = createMachine<
     id: 'configurator',
     initial: 'configuring',
     context: {
-      connector: { id: 'something', name: 'something', version: '0.1' },
+      connector: {
+        id: 'something',
+        name: 'something',
+        version: '0.1',
+        json_schema: {},
+      },
       steps: ['one', 'two', 'three'],
       activeStep: 0,
       isActiveStepValid: false,

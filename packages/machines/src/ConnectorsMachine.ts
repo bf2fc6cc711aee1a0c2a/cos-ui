@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios';
 import {
   Configuration,
-  DefaultApi,
+  ConnectorTypesApi,
   ConnectorTypeList,
   ConnectorType,
 } from '@cos-ui/api';
@@ -20,7 +20,7 @@ const fetchConnectors = (
   accessToken?: Promise<string>,
   basePath?: string
 ): Promise<AxiosResponse<ConnectorTypeList>> => {
-  const apisService = new DefaultApi(
+  const apisService = new ConnectorTypesApi(
     new Configuration({
       accessToken,
       basePath,

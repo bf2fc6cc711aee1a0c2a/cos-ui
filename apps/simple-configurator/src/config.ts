@@ -3,7 +3,7 @@ import { SimpleConfigurator } from './SimpleConfigurator';
 
 const config: ConnectorConfiguratorResponse = {
   steps: false,
-  Configurator: SimpleConfigurator
+  Configurator: SimpleConfigurator,
 };
 
 export default config;

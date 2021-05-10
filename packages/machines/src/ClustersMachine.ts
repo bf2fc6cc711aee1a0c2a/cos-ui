@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios';
 import {
   Configuration,
-  DefaultApi,
+  ConnectorClustersApi,
   ConnectorClusterList,
   ConnectorCluster,
 } from '@cos-ui/api';
@@ -20,13 +20,13 @@ const fetchClusters = (
   accessToken?: Promise<string>,
   basePath?: string
 ): Promise<AxiosResponse<ConnectorClusterList>> => {
-  const apisService = new DefaultApi(
+  const apisService = new ConnectorClustersApi(
     new Configuration({
       accessToken,
       basePath,
     })
   );
-  return apisService.listConnectorClusters('???');
+  return apisService.listConnectorClusters();
 };
 
 type Context = {

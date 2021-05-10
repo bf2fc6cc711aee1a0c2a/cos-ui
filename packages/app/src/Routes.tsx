@@ -13,10 +13,18 @@ import {
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { Switch, Route, NavLink, useHistory } from 'react-router-dom';
+import {
+  CreationWizard,
+  CreationWizardMachineProvider,
+} from '@cos-ui/creation-wizard';
 import { Connectors } from './Connectors';
-import { ConnectedCreationWizard } from './ConnectedCreationWizard';
+import { fetchConfigurator } from './FederatedConfigurator';
 
-export const AppRoutes: FunctionComponent = () => {
+type RoutesProps = {
+  getToken: Promise<string>;
+};
+
+export const Routes: FunctionComponent<RoutesProps> = ({ getToken }) => {
   const history = useHistory();
   const goToConnectorsList = () => history.push('/');
   return (
@@ -61,10 +69,22 @@ export const AppRoutes: FunctionComponent = () => {
       </Route>
       <Route path={'/create-connector'}>
         <PageSection padding={{ default: 'noPadding' }}>
-          <ConnectedCreationWizard
-            onClose={goToConnectorsList}
-            onSave={goToConnectorsList}
-          />
+          <CreationWizardMachineProvider
+            authToken={getToken}
+            basePath={process.env.BASE_PATH}
+            fetchConfigurator={connector =>
+              fetchConfigurator(
+                connector,
+                process.env.FEDERATED_CONFIGURATORS_CONFIG_URL ||
+                  'federated-configurators.json'
+              )
+            }
+          >
+            <CreationWizard
+              onClose={goToConnectorsList}
+              onSave={goToConnectorsList}
+            />
+          </CreationWizardMachineProvider>
         </PageSection>
       </Route>
     </Switch>
