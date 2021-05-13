@@ -1,21 +1,9 @@
 {
+  "extends": "./tsconfig.build.json",
   "include": ["packages", "types", "scripts", "example", "apps"],
   "compilerOptions": {
     "allowJs": false,
-    "baseUrl": ".",
-    "module": "esnext",
-    "lib": ["dom", "esnext"],
-    "importHelpers": true,
-    "declaration": false,
-    "sourceMap": false,
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
-    "jsx": "react",
-    "esModuleInterop": true,
+    "baseUrl": ".",    
     "typeRoots": ["./node_modules/@types", "./types"],
     "paths": {
       "@cos-ui/api": ["packages/api/src"],

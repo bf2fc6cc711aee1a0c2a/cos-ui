@@ -1,4 +1,4 @@
-import { ConnectorsMachineActorRef } from '@cos-ui/machines';
+import { ConnectorTypesMachineActorRef } from '@cos-ui/machines';
 import {
   Button,
   Card,
@@ -51,7 +51,7 @@ const defaultPerPageOptions = [
 ];
 
 export type SelectConnectorProps = {
-  actor: ConnectorsMachineActorRef;
+  actor: ConnectorTypesMachineActorRef;
 };
 
 export function SelectConnector({ actor }: SelectConnectorProps) {

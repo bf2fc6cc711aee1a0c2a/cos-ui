@@ -2,7 +2,7 @@ import { KafkaRequest, ConnectorCluster, ConnectorType } from '@cos-ui/api';
 import { createMachine, assign, send, createSchema } from 'xstate';
 import { kafkasMachine } from './KafkasMachine';
 import { clustersMachine } from './ClustersMachine';
-import { connectorsMachine } from './ConnectorsMachine';
+import { connectorTypesMachine } from './ConnectorTypesMachine';
 import {
   configuratorLoaderMachine,
   ConnectorConfiguratorType,
@@ -130,7 +130,7 @@ export const creationWizardMachine = createMachine<
         initial: 'selecting',
         invoke: {
           id: 'selectConnector',
-          src: connectorsMachine,
+          src: connectorTypesMachine,
           data: context => ({
             authToken: context.authToken,
             basePath: context.basePath,

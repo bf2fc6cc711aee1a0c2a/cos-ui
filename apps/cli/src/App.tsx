@@ -5,7 +5,7 @@ import { useService, useActor } from '@xstate/react';
 import {
   KafkaMachineActorRef,
   ClusterMachineActorRef,
-  ConnectorsMachineActorRef,
+  ConnectorTypesMachineActorRef,
 } from '@cos-ui/machines';
 import { ConnectorCluster, ConnectorType, KafkaRequest } from '@cos-ui/api';
 import { Box, Text, useApp, useInput } from 'ink';
@@ -106,7 +106,7 @@ const SelectCluster: FunctionComponent<SelectClusterProps> = ({ actor }) => {
 };
 
 export type SelectConnectorProps = {
-  actor: ConnectorsMachineActorRef;
+  actor: ConnectorTypesMachineActorRef;
 };
 
 const SelectConnector: FunctionComponent<SelectConnectorProps> = ({
@@ -233,7 +233,9 @@ export const App: FunctionComponent = () => {
         )}
         {state.matches('selectConnector') && (
           <SelectConnector
-            actor={state.children.selectConnector as ConnectorsMachineActorRef}
+            actor={
+              state.children.selectConnector as ConnectorTypesMachineActorRef
+            }
           />
         )}
         {state.matches('configureConnector') && <Text>TODO 😅</Text>}

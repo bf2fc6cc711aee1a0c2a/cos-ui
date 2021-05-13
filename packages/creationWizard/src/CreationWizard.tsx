@@ -3,7 +3,7 @@ import { useSelector, useService } from '@xstate/react';
 import {
   creationWizardMachine,
   KafkaMachineActorRef,
-  ConnectorsMachineActorRef,
+  ConnectorTypesMachineActorRef,
   ClusterMachineActorRef,
 } from '@cos-ui/machines';
 import {
@@ -139,7 +139,9 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
       component: (
         <StepErrorBoundary>
           <SelectConnector
-            actor={state.children.selectConnector as ConnectorsMachineActorRef}
+            actor={
+              state.children.selectConnector as ConnectorTypesMachineActorRef
+            }
           />
         </StepErrorBoundary>
       ),

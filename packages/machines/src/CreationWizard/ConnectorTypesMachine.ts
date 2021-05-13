@@ -16,7 +16,7 @@ import {
 import { escalate } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
-const fetchConnectors = (
+const fetchConnectorTypes = (
   accessToken?: Promise<string>,
   basePath?: string
 ): Promise<AxiosResponse<ConnectorTypeList>> => {
@@ -37,11 +37,11 @@ type Context = {
   error?: string;
 };
 
-const connectorsMachineSchema = {
+const connectorTypesMachineSchema = {
   context: createSchema<Context>(),
 };
 
-const connectorsMachineModel = createModel(
+const connectorTypesMachineModel = createModel(
   {
     authToken: undefined,
     basePath: undefined,
@@ -60,16 +60,19 @@ const connectorsMachineModel = createModel(
   }
 );
 
-export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
+export const connectorTypesMachine = createMachine<
+  typeof connectorTypesMachineModel
+>(
   {
-    schema: connectorsMachineSchema,
+    schema: connectorTypesMachineSchema,
     id: 'connectors',
     initial: 'loading',
     states: {
       loading: {
         invoke: {
           id: 'fetchConnectors',
-          src: context => fetchConnectors(context.authToken, context.basePath),
+          src: context =>
+            fetchConnectorTypes(context.authToken, context.basePath),
           onDone: {
             target: 'verify',
             actions: assign<
@@ -157,4 +160,6 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
   }
 );
 
-export type ConnectorsMachineActorRef = ActorRefFrom<typeof connectorsMachine>;
+export type ConnectorTypesMachineActorRef = ActorRefFrom<
+  typeof connectorTypesMachine
+>;
