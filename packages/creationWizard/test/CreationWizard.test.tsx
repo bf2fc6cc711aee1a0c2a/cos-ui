@@ -11,6 +11,7 @@ import {
   screen,
   waitFor,
   act,
+  configure,
 } from '@testing-library/react';
 // import { assert } from 'chai';
 import { createModel } from '@xstate/test';
@@ -124,7 +125,7 @@ const testMachine = Machine({
     },
     error: {
       meta: {
-        test: () => waitFor(() => expect(screen.getByText('Error message'))),
+        test: () => waitFor(() => expect(screen.getByText('No results found'))),
       },
     },
   },
@@ -135,6 +136,17 @@ const testMachine = Machine({
 
 describe('@cos-ui/creationWizard', () => {
   describe('CreationWizard', () => {
+    configure({
+      getElementError: (message, container) => {
+        // eslint-disable-next-line testing-library/no-node-access
+        const wizardBody = container.querySelector('.pf-c-wizard__main-body');
+        const newMessage = [message, wizardBody?.textContent]
+          .filter(Boolean)
+          .join('\n\n');
+        return new Error(newMessage);
+      },
+    });
+
     describe('Happy path', () => {
       const testModel = createModel(testMachine).withEvents({
         clickOnDisabledNext: () => {

@@ -62,6 +62,10 @@ export const creationWizardMachine = createMachine<
             authToken: context.authToken,
             basePath: context.basePath,
             selectedInstance: context.selectedKafkaInstance,
+            request: {
+              page: 1,
+              size: 10,
+            },
           }),
           onDone: {
             target: 'selectCluster',

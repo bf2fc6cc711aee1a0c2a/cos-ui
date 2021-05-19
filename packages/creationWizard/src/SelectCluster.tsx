@@ -26,14 +26,11 @@ import {
   ToolbarItem,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
-import {
-  ExclamationCircleIcon,
-  FilterIcon,
-  SearchIcon,
-} from '@patternfly/react-icons';
+import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 import { useActor } from '@xstate/react';
 import { ClusterMachineActorRef } from '@cos-ui/machines';
 import React, { Fragment, useCallback, useState } from 'react';
+import { NoMatchFound } from './NoMatchFound';
 
 const defaultPerPageOptions = [
   {
@@ -95,14 +92,7 @@ export function SelectCluster({ actor }: SelectClusterProps) {
         </EmptyState>
       );
     case state.matches('failure'):
-      return (
-        <EmptyState>
-          <EmptyStateIcon icon={ExclamationCircleIcon} />
-          <Title size="lg" headingLevel="h4">
-            Error message
-          </Title>
-        </EmptyState>
-      );
+      return <NoMatchFound />;
     default:
       const statusMenuItems = [
         <SelectOption key="statusPending" value="Pending" />,

@@ -27,13 +27,10 @@ import {
   ToolbarItem,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
-import {
-  ExclamationCircleIcon,
-  FilterIcon,
-  SearchIcon,
-} from '@patternfly/react-icons';
+import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 import { useActor } from '@xstate/react';
 import React, { useCallback, useState } from 'react';
+import { NoMatchFound } from './NoMatchFound';
 
 const defaultPerPageOptions = [
   {
@@ -88,14 +85,7 @@ export function SelectConnector({ actor }: SelectConnectorProps) {
         </EmptyState>
       );
     case state.matches('failure'):
-      return (
-        <EmptyState>
-          <EmptyStateIcon icon={ExclamationCircleIcon} />
-          <Title size="lg" headingLevel="h4">
-            Error message
-          </Title>
-        </EmptyState>
-      );
+      return <NoMatchFound />;
     default:
       const typeMenuItems = [
         <SelectOption key="Sink" value="Sink" />,

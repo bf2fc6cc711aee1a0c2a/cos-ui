@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Kafka Service Fleet Manager
- * Kafka Service Fleet Manager is a Rest API to manage kafka instances and connectors.
+ * Connector Service Fleet Manager
+ * Connector Service Fleet Manager is a Rest API to manage connectors.
  *
  * The version of the OpenAPI document: 0.0.1
  * 
@@ -317,6 +317,12 @@ export interface Connector {
      * @type {string}
      * @memberof Connector
      */
+    channel?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Connector
+     */
     desired_state?: string;
     /**
      * 
@@ -355,6 +361,12 @@ export interface ConnectorAllOf {
      * @memberof ConnectorAllOf
      */
     connector_spec?: object;
+    /**
+     * 
+     * @type {string}
+     * @memberof ConnectorAllOf
+     */
+    channel?: string;
     /**
      * 
      * @type {string}
@@ -549,329 +561,6 @@ export interface ConnectorClusterListAllOf {
     items?: Array<ConnectorCluster>;
 }
 /**
- * Schema for the request to update a data plane cluster\'s status
- * @export
- * @interface ConnectorClusterStatus
- */
-export interface ConnectorClusterStatus {
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorClusterStatus
-     */
-    phase?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorClusterStatus
-     */
-    version?: string;
-    /**
-     * 
-     * @type {Array<MetaV1Condition>}
-     * @memberof ConnectorClusterStatus
-     */
-    conditions?: Array<MetaV1Condition>;
-    /**
-     * the list of installed operators
-     * @type {Array<ConnectorClusterStatusOperators>}
-     * @memberof ConnectorClusterStatus
-     */
-    operators?: Array<ConnectorClusterStatusOperators>;
-}
-/**
- * 
- * @export
- * @interface ConnectorClusterStatusOperators
- */
-export interface ConnectorClusterStatusOperators {
-    /**
-     * the id of the operator
-     * @type {string}
-     * @memberof ConnectorClusterStatusOperators
-     */
-    id?: string;
-    /**
-     * the version of the operator
-     * @type {string}
-     * @memberof ConnectorClusterStatusOperators
-     */
-    version?: string;
-    /**
-     * the namespace to which the operator has been installed
-     * @type {string}
-     * @memberof ConnectorClusterStatusOperators
-     */
-    namespace?: string;
-    /**
-     * the status of the operator
-     * @type {string}
-     * @memberof ConnectorClusterStatusOperators
-     */
-    status?: string;
-}
-/**
- * Holds the deployment configuration of a connector
- * @export
- * @interface ConnectorDeployment
- */
-export interface ConnectorDeployment {
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorDeployment
-     */
-    id?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorDeployment
-     */
-    kind?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorDeployment
-     */
-    href?: string;
-    /**
-     * 
-     * @type {ConnectorDeploymentAllOfMetadata}
-     * @memberof ConnectorDeployment
-     */
-    metadata?: ConnectorDeploymentAllOfMetadata;
-    /**
-     * 
-     * @type {ConnectorDeploymentSpec}
-     * @memberof ConnectorDeployment
-     */
-    spec?: ConnectorDeploymentSpec;
-    /**
-     * 
-     * @type {ConnectorDeploymentStatus}
-     * @memberof ConnectorDeployment
-     */
-    status?: ConnectorDeploymentStatus;
-}
-/**
- * 
- * @export
- * @interface ConnectorDeploymentAllOf
- */
-export interface ConnectorDeploymentAllOf {
-    /**
-     * 
-     * @type {ConnectorDeploymentAllOfMetadata}
-     * @memberof ConnectorDeploymentAllOf
-     */
-    metadata?: ConnectorDeploymentAllOfMetadata;
-    /**
-     * 
-     * @type {ConnectorDeploymentSpec}
-     * @memberof ConnectorDeploymentAllOf
-     */
-    spec?: ConnectorDeploymentSpec;
-    /**
-     * 
-     * @type {ConnectorDeploymentStatus}
-     * @memberof ConnectorDeploymentAllOf
-     */
-    status?: ConnectorDeploymentStatus;
-}
-/**
- * 
- * @export
- * @interface ConnectorDeploymentAllOfMetadata
- */
-export interface ConnectorDeploymentAllOfMetadata {
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorDeploymentAllOfMetadata
-     */
-    created_at?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorDeploymentAllOfMetadata
-     */
-    updated_at?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ConnectorDeploymentAllOfMetadata
-     */
-    resource_version?: number;
-}
-/**
- * 
- * @export
- * @interface ConnectorDeploymentList
- */
-export interface ConnectorDeploymentList {
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorDeploymentList
-     */
-    kind: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ConnectorDeploymentList
-     */
-    page: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof ConnectorDeploymentList
-     */
-    size: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof ConnectorDeploymentList
-     */
-    total: number;
-    /**
-     * 
-     * @type {Array<ConnectorDeployment>}
-     * @memberof ConnectorDeploymentList
-     */
-    items: Array<ConnectorDeployment>;
-}
-/**
- * 
- * @export
- * @interface ConnectorDeploymentListAllOf
- */
-export interface ConnectorDeploymentListAllOf {
-    /**
-     * 
-     * @type {Array<ConnectorDeployment>}
-     * @memberof ConnectorDeploymentListAllOf
-     */
-    items?: Array<ConnectorDeployment>;
-}
-/**
- * Holds the deployment specification of a connector
- * @export
- * @interface ConnectorDeploymentSpec
- */
-export interface ConnectorDeploymentSpec {
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorDeploymentSpec
-     */
-    connector_meta_image?: string;
-    /**
-     * 
-     * @type {{ [key: string]: string; }}
-     * @memberof ConnectorDeploymentSpec
-     */
-    connector_type_annotations?: { [key: string]: string; };
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorDeploymentSpec
-     */
-    connector_id?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ConnectorDeploymentSpec
-     */
-    connector_resource_version?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorDeploymentSpec
-     */
-    kafka_id?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorDeploymentSpec
-     */
-    connector_type_id?: string;
-    /**
-     * 
-     * @type {object}
-     * @memberof ConnectorDeploymentSpec
-     */
-    connector_spec?: object;
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorDeploymentSpec
-     */
-    desired_state?: string;
-}
-/**
- * The status of connector deployment
- * @export
- * @interface ConnectorDeploymentStatus
- */
-export interface ConnectorDeploymentStatus {
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorDeploymentStatus
-     */
-    phase?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ConnectorDeploymentStatus
-     */
-    resource_version?: number;
-    /**
-     * 
-     * @type {Array<MetaV1Condition>}
-     * @memberof ConnectorDeploymentStatus
-     */
-    conditions?: Array<MetaV1Condition>;
-}
-/**
- * 
- * @export
- * @interface ConnectorDeploymentWatchEvent
- */
-export interface ConnectorDeploymentWatchEvent {
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorDeploymentWatchEvent
-     */
-    type: string;
-    /**
-     * 
-     * @type {Error}
-     * @memberof ConnectorDeploymentWatchEvent
-     */
-    error?: Error;
-    /**
-     * 
-     * @type {ConnectorDeployment}
-     * @memberof ConnectorDeploymentWatchEvent
-     */
-    object?: ConnectorDeployment;
-}
-/**
- * 
- * @export
- * @interface ConnectorDeploymentWatchEventAllOf
- */
-export interface ConnectorDeploymentWatchEventAllOf {
-    /**
-     * 
-     * @type {ConnectorDeployment}
-     * @memberof ConnectorDeploymentWatchEventAllOf
-     */
-    object?: ConnectorDeployment;
-}
-/**
  * 
  * @export
  * @interface ConnectorList
@@ -922,49 +611,6 @@ export interface ConnectorListAllOf {
     items?: Array<Connector>;
 }
 /**
- * ConnectorReifyRequest is used to create ConnectorDeploymentSpec objects
- * @export
- * @interface ConnectorReifyRequest
- */
-export interface ConnectorReifyRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorReifyRequest
-     */
-    connector_id?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ConnectorReifyRequest
-     */
-    resource_version?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorReifyRequest
-     */
-    kafka_id?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ConnectorReifyRequest
-     */
-    cluster_id?: string;
-    /**
-     * 
-     * @type {ConnectorClusterStatus}
-     * @memberof ConnectorReifyRequest
-     */
-    cluster_status?: ConnectorClusterStatus;
-    /**
-     * 
-     * @type {object}
-     * @memberof ConnectorReifyRequest
-     */
-    connector_spec?: object;
-}
-/**
  * Represents a connector type supported by the API
  * @export
  * @interface ConnectorType
@@ -1000,6 +646,12 @@ export interface ConnectorType {
      * @memberof ConnectorType
      */
     version: string;
+    /**
+     * Version of the connector type.
+     * @type {Array<string>}
+     * @memberof ConnectorType
+     */
+    channels?: Array<string>;
     /**
      * A description of the connector.
      * @type {string}
@@ -1053,6 +705,12 @@ export interface ConnectorTypeAllOf {
      * @memberof ConnectorTypeAllOf
      */
     version?: string;
+    /**
+     * Version of the connector type.
+     * @type {Array<string>}
+     * @memberof ConnectorTypeAllOf
+     */
+    channels?: Array<string>;
     /**
      * A description of the connector.
      * @type {string}
@@ -1139,328 +797,72 @@ export interface ConnectorTypeListAllOf {
     items?: Array<ConnectorType>;
 }
 /**
- * Schema for the request to update a data plane cluster\'s status
- * @export
- * @interface DataPlaneClusterUpdateStatusRequest
- */
-export interface DataPlaneClusterUpdateStatusRequest {
-    /**
-     * The cluster data plane conditions
-     * @type {Array<DataPlaneClusterUpdateStatusRequestConditions>}
-     * @memberof DataPlaneClusterUpdateStatusRequest
-     */
-    conditions?: Array<DataPlaneClusterUpdateStatusRequestConditions>;
-    /**
-     * 
-     * @type {DataPlaneClusterUpdateStatusRequestTotal}
-     * @memberof DataPlaneClusterUpdateStatusRequest
-     */
-    total?: DataPlaneClusterUpdateStatusRequestTotal;
-    /**
-     * 
-     * @type {DataPlaneClusterUpdateStatusRequestTotal}
-     * @memberof DataPlaneClusterUpdateStatusRequest
-     */
-    remaining?: DataPlaneClusterUpdateStatusRequestTotal;
-    /**
-     * 
-     * @type {DataPlaneClusterUpdateStatusRequestNodeInfo}
-     * @memberof DataPlaneClusterUpdateStatusRequest
-     */
-    nodeInfo?: DataPlaneClusterUpdateStatusRequestNodeInfo;
-    /**
-     * 
-     * @type {DataPlaneClusterUpdateStatusRequestResizeInfo}
-     * @memberof DataPlaneClusterUpdateStatusRequest
-     */
-    resizeInfo?: DataPlaneClusterUpdateStatusRequestResizeInfo;
-}
-/**
  * 
  * @export
- * @interface DataPlaneClusterUpdateStatusRequestConditions
+ * @interface Error1
  */
-export interface DataPlaneClusterUpdateStatusRequestConditions {
+export interface Error1 {
     /**
      * 
      * @type {string}
-     * @memberof DataPlaneClusterUpdateStatusRequestConditions
+     * @memberof Error1
      */
-    type?: string;
+    id?: string;
     /**
      * 
      * @type {string}
-     * @memberof DataPlaneClusterUpdateStatusRequestConditions
+     * @memberof Error1
+     */
+    kind?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Error1
+     */
+    href?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Error1
+     */
+    code?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Error1
      */
     reason?: string;
     /**
      * 
      * @type {string}
-     * @memberof DataPlaneClusterUpdateStatusRequestConditions
+     * @memberof Error1
      */
-    message?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof DataPlaneClusterUpdateStatusRequestConditions
-     */
-    status?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof DataPlaneClusterUpdateStatusRequestConditions
-     */
-    lastTransitionTime?: string;
+    operation_id?: string;
 }
 /**
  * 
  * @export
- * @interface DataPlaneClusterUpdateStatusRequestNodeInfo
+ * @interface Error1AllOf
  */
-export interface DataPlaneClusterUpdateStatusRequestNodeInfo {
-    /**
-     * 
-     * @type {number}
-     * @memberof DataPlaneClusterUpdateStatusRequestNodeInfo
-     */
-    ceiling?: number | null;
-    /**
-     * 
-     * @type {number}
-     * @memberof DataPlaneClusterUpdateStatusRequestNodeInfo
-     */
-    floor?: number | null;
-    /**
-     * 
-     * @type {number}
-     * @memberof DataPlaneClusterUpdateStatusRequestNodeInfo
-     */
-    current?: number | null;
-    /**
-     * 
-     * @type {number}
-     * @memberof DataPlaneClusterUpdateStatusRequestNodeInfo
-     */
-    currentWorkLoadMinimum?: number | null;
-}
-/**
- * 
- * @export
- * @interface DataPlaneClusterUpdateStatusRequestResizeInfo
- */
-export interface DataPlaneClusterUpdateStatusRequestResizeInfo {
-    /**
-     * 
-     * @type {number}
-     * @memberof DataPlaneClusterUpdateStatusRequestResizeInfo
-     */
-    nodeDelta?: number | null;
-    /**
-     * 
-     * @type {DataPlaneClusterUpdateStatusRequestResizeInfoDelta}
-     * @memberof DataPlaneClusterUpdateStatusRequestResizeInfo
-     */
-    delta?: DataPlaneClusterUpdateStatusRequestResizeInfoDelta | null;
-}
-/**
- * 
- * @export
- * @interface DataPlaneClusterUpdateStatusRequestResizeInfoDelta
- */
-export interface DataPlaneClusterUpdateStatusRequestResizeInfoDelta {
+export interface Error1AllOf {
     /**
      * 
      * @type {string}
-     * @memberof DataPlaneClusterUpdateStatusRequestResizeInfoDelta
+     * @memberof Error1AllOf
      */
-    ingressEgressThroughputPerSec?: string | null;
-    /**
-     * 
-     * @type {number}
-     * @memberof DataPlaneClusterUpdateStatusRequestResizeInfoDelta
-     */
-    connections?: number | null;
+    code?: string;
     /**
      * 
      * @type {string}
-     * @memberof DataPlaneClusterUpdateStatusRequestResizeInfoDelta
+     * @memberof Error1AllOf
      */
-    dataRetentionSize?: string | null;
-    /**
-     * 
-     * @type {number}
-     * @memberof DataPlaneClusterUpdateStatusRequestResizeInfoDelta
-     */
-    partitions?: number | null;
-}
-/**
- * 
- * @export
- * @interface DataPlaneClusterUpdateStatusRequestTotal
- */
-export interface DataPlaneClusterUpdateStatusRequestTotal {
+    reason?: string;
     /**
      * 
      * @type {string}
-     * @memberof DataPlaneClusterUpdateStatusRequestTotal
+     * @memberof Error1AllOf
      */
-    ingressEgressThroughputPerSec?: string | null;
-    /**
-     * 
-     * @type {number}
-     * @memberof DataPlaneClusterUpdateStatusRequestTotal
-     */
-    connections?: number | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof DataPlaneClusterUpdateStatusRequestTotal
-     */
-    dataRetentionSize?: string | null;
-    /**
-     * 
-     * @type {number}
-     * @memberof DataPlaneClusterUpdateStatusRequestTotal
-     */
-    partitions?: number | null;
-}
-/**
- * Schema of the status object for a Kafka cluster
- * @export
- * @interface DataPlaneKafkaStatus
- */
-export interface DataPlaneKafkaStatus {
-    /**
-     * The status conditions of a Kafka cluster
-     * @type {Array<DataPlaneClusterUpdateStatusRequestConditions>}
-     * @memberof DataPlaneKafkaStatus
-     */
-    conditions?: Array<DataPlaneClusterUpdateStatusRequestConditions>;
-    /**
-     * 
-     * @type {DataPlaneKafkaStatusCapacity}
-     * @memberof DataPlaneKafkaStatus
-     */
-    capacity?: DataPlaneKafkaStatusCapacity;
-    /**
-     * 
-     * @type {DataPlaneKafkaStatusVersions}
-     * @memberof DataPlaneKafkaStatus
-     */
-    versions?: DataPlaneKafkaStatusVersions;
-}
-/**
- * Capacity information of the data plane cluster
- * @export
- * @interface DataPlaneKafkaStatusCapacity
- */
-export interface DataPlaneKafkaStatusCapacity {
-    /**
-     * 
-     * @type {string}
-     * @memberof DataPlaneKafkaStatusCapacity
-     */
-    ingressEgressThroughputPerSec?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof DataPlaneKafkaStatusCapacity
-     */
-    totalMaxConnections?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof DataPlaneKafkaStatusCapacity
-     */
-    maxDataRetentionSize?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof DataPlaneKafkaStatusCapacity
-     */
-    maxPartitions?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof DataPlaneKafkaStatusCapacity
-     */
-    maxDataRetentionPeriod?: string;
-}
-/**
- * Version information related to a Kafka cluster
- * @export
- * @interface DataPlaneKafkaStatusVersions
- */
-export interface DataPlaneKafkaStatusVersions {
-    /**
-     * 
-     * @type {string}
-     * @memberof DataPlaneKafkaStatusVersions
-     */
-    kafka?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof DataPlaneKafkaStatusVersions
-     */
-    strimzi?: string;
-}
-/**
- * Configuration for the data plane cluster agent
- * @export
- * @interface DataplaneClusterAgentConfig
- */
-export interface DataplaneClusterAgentConfig {
-    /**
-     * 
-     * @type {DataplaneClusterAgentConfigSpec}
-     * @memberof DataplaneClusterAgentConfig
-     */
-    spec?: DataplaneClusterAgentConfigSpec;
-}
-/**
- * Data plane cluster agent spec
- * @export
- * @interface DataplaneClusterAgentConfigSpec
- */
-export interface DataplaneClusterAgentConfigSpec {
-    /**
-     * 
-     * @type {DataplaneClusterAgentConfigSpecObservability}
-     * @memberof DataplaneClusterAgentConfigSpec
-     */
-    observability?: DataplaneClusterAgentConfigSpecObservability;
-}
-/**
- * Observability configurations
- * @export
- * @interface DataplaneClusterAgentConfigSpecObservability
- */
-export interface DataplaneClusterAgentConfigSpecObservability {
-    /**
-     * 
-     * @type {string}
-     * @memberof DataplaneClusterAgentConfigSpecObservability
-     */
-    accessToken?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof DataplaneClusterAgentConfigSpecObservability
-     */
-    channel?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof DataplaneClusterAgentConfigSpecObservability
-     */
-    repository?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof DataplaneClusterAgentConfigSpecObservability
-     */
-    tag?: string;
+    operation_id?: string;
 }
 /**
  * 
@@ -1519,10 +921,10 @@ export interface ErrorList {
     total: number;
     /**
      * 
-     * @type {Array<Error>}
+     * @type {Array<Error1>}
      * @memberof ErrorList
      */
-    items: Array<Error>;
+    items: Array<Error1>;
 }
 /**
  * 
@@ -1532,10 +934,10 @@ export interface ErrorList {
 export interface ErrorListAllOf {
     /**
      * 
-     * @type {Array<Error>}
+     * @type {Array<Error1>}
      * @memberof ErrorListAllOf
      */
-    items?: Array<Error>;
+    items?: Array<Error1>;
 }
 /**
  * 
@@ -1841,364 +1243,33 @@ export interface List {
 /**
  * 
  * @export
- * @interface ListReference
+ * @interface List1
  */
-export interface ListReference {
+export interface List1 {
     /**
      * 
      * @type {string}
-     * @memberof ListReference
-     */
-    kind: string;
-}
-/**
- * 
- * @export
- * @interface ManagedKafka
- */
-export interface ManagedKafka {
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafka
-     */
-    id?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafka
-     */
-    kind?: string;
-    /**
-     * 
-     * @type {ManagedKafkaAllOfMetadata}
-     * @memberof ManagedKafka
-     */
-    metadata?: ManagedKafkaAllOfMetadata;
-    /**
-     * 
-     * @type {ManagedKafkaAllOfSpec}
-     * @memberof ManagedKafka
-     */
-    spec?: ManagedKafkaAllOfSpec;
-}
-/**
- * 
- * @export
- * @interface ManagedKafkaAllOf
- */
-export interface ManagedKafkaAllOf {
-    /**
-     * 
-     * @type {ManagedKafkaAllOfMetadata}
-     * @memberof ManagedKafkaAllOf
-     */
-    metadata?: ManagedKafkaAllOfMetadata;
-    /**
-     * 
-     * @type {ManagedKafkaAllOfSpec}
-     * @memberof ManagedKafkaAllOf
-     */
-    spec?: ManagedKafkaAllOfSpec;
-}
-/**
- * 
- * @export
- * @interface ManagedKafkaAllOfMetadata
- */
-export interface ManagedKafkaAllOfMetadata {
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaAllOfMetadata
-     */
-    name?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaAllOfMetadata
-     */
-    namespace?: string;
-    /**
-     * 
-     * @type {ManagedKafkaAllOfMetadataAnnotations}
-     * @memberof ManagedKafkaAllOfMetadata
-     */
-    annotations?: ManagedKafkaAllOfMetadataAnnotations;
-}
-/**
- * 
- * @export
- * @interface ManagedKafkaAllOfMetadataAnnotations
- */
-export interface ManagedKafkaAllOfMetadataAnnotations {
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaAllOfMetadataAnnotations
-     */
-    bf2_org_id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaAllOfMetadataAnnotations
-     */
-    bf2_org_placementId: string;
-}
-/**
- * 
- * @export
- * @interface ManagedKafkaAllOfSpec
- */
-export interface ManagedKafkaAllOfSpec {
-    /**
-     * 
-     * @type {ManagedKafkaCapacity}
-     * @memberof ManagedKafkaAllOfSpec
-     */
-    capacity?: ManagedKafkaCapacity;
-    /**
-     * 
-     * @type {ManagedKafkaAllOfSpecOauth}
-     * @memberof ManagedKafkaAllOfSpec
-     */
-    oauth?: ManagedKafkaAllOfSpecOauth;
-    /**
-     * 
-     * @type {ManagedKafkaAllOfSpecEndpoint}
-     * @memberof ManagedKafkaAllOfSpec
-     */
-    endpoint?: ManagedKafkaAllOfSpecEndpoint;
-    /**
-     * 
-     * @type {ManagedKafkaVersions}
-     * @memberof ManagedKafkaAllOfSpec
-     */
-    versions?: ManagedKafkaVersions;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ManagedKafkaAllOfSpec
-     */
-    deleted: boolean;
-}
-/**
- * 
- * @export
- * @interface ManagedKafkaAllOfSpecEndpoint
- */
-export interface ManagedKafkaAllOfSpecEndpoint {
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaAllOfSpecEndpoint
-     */
-    bootstrapServerHost?: string;
-    /**
-     * 
-     * @type {ManagedKafkaAllOfSpecEndpointTls}
-     * @memberof ManagedKafkaAllOfSpecEndpoint
-     */
-    tls?: ManagedKafkaAllOfSpecEndpointTls;
-}
-/**
- * 
- * @export
- * @interface ManagedKafkaAllOfSpecEndpointTls
- */
-export interface ManagedKafkaAllOfSpecEndpointTls {
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaAllOfSpecEndpointTls
-     */
-    cert?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaAllOfSpecEndpointTls
-     */
-    key?: string;
-}
-/**
- * 
- * @export
- * @interface ManagedKafkaAllOfSpecOauth
- */
-export interface ManagedKafkaAllOfSpecOauth {
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaAllOfSpecOauth
-     */
-    clientId?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaAllOfSpecOauth
-     */
-    clientSecret?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaAllOfSpecOauth
-     */
-    tokenEndpointURI?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaAllOfSpecOauth
-     */
-    jwksEndpointURI?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaAllOfSpecOauth
-     */
-    validIssuerEndpointURI?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaAllOfSpecOauth
-     */
-    userNameClaim?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaAllOfSpecOauth
-     */
-    tlsTrustedCertificate?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaAllOfSpecOauth
-     */
-    customClaimCheck?: string;
-}
-/**
- * 
- * @export
- * @interface ManagedKafkaCapacity
- */
-export interface ManagedKafkaCapacity {
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaCapacity
-     */
-    ingressEgressThroughputPerSec?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ManagedKafkaCapacity
-     */
-    totalMaxConnections?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaCapacity
-     */
-    maxDataRetentionSize?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ManagedKafkaCapacity
-     */
-    maxPartitions?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaCapacity
-     */
-    maxDataRetentionPeriod?: string;
-}
-/**
- * A list of ManagedKafka
- * @export
- * @interface ManagedKafkaList
- */
-export interface ManagedKafkaList {
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaList
+     * @memberof List1
      */
     kind: string;
     /**
      * 
-     * @type {Array<ManagedKafka>}
-     * @memberof ManagedKafkaList
+     * @type {number}
+     * @memberof List1
      */
-    items: Array<ManagedKafka>;
-}
-/**
- * 
- * @export
- * @interface ManagedKafkaListAllOf
- */
-export interface ManagedKafkaListAllOf {
+    page: number;
     /**
      * 
-     * @type {Array<ManagedKafka>}
-     * @memberof ManagedKafkaListAllOf
+     * @type {number}
+     * @memberof List1
      */
-    items?: Array<ManagedKafka>;
-}
-/**
- * 
- * @export
- * @interface ManagedKafkaVersions
- */
-export interface ManagedKafkaVersions {
+    size: number;
     /**
      * 
-     * @type {string}
-     * @memberof ManagedKafkaVersions
+     * @type {number}
+     * @memberof List1
      */
-    kafka?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ManagedKafkaVersions
-     */
-    strimzi?: string;
-}
-/**
- * 
- * @export
- * @interface MetaV1Condition
- */
-export interface MetaV1Condition {
-    /**
-     * 
-     * @type {string}
-     * @memberof MetaV1Condition
-     */
-    type?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof MetaV1Condition
-     */
-    reason?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof MetaV1Condition
-     */
-    message?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof MetaV1Condition
-     */
-    status?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof MetaV1Condition
-     */
-    lastTransitionTime?: string;
+    total: number;
 }
 /**
  * 
@@ -2367,25 +1438,6 @@ export interface ObjectReference {
      * @memberof ObjectReference
      */
     href?: string;
-}
-/**
- * 
- * @export
- * @interface PrivateObjectReference
- */
-export interface PrivateObjectReference {
-    /**
-     * 
-     * @type {string}
-     * @memberof PrivateObjectReference
-     */
-    id?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PrivateObjectReference
-     */
-    kind?: string;
 }
 /**
  * 
@@ -2760,421 +1812,6 @@ export interface VersionMetadataAllOf {
      */
     collections?: Array<ObjectReference>;
 }
-/**
- * 
- * @export
- * @interface WatchEvent
- */
-export interface WatchEvent {
-    /**
-     * 
-     * @type {string}
-     * @memberof WatchEvent
-     */
-    type: string;
-    /**
-     * 
-     * @type {Error}
-     * @memberof WatchEvent
-     */
-    error?: Error;
-    /**
-     * 
-     * @type {object}
-     * @memberof WatchEvent
-     */
-    object?: object | null;
-}
-
-/**
- * AgentClustersApi - axios parameter creator
- * @export
- */
-export const AgentClustersApiAxiosParamCreator = function (configuration?: Configuration) {
-    return {
-        /**
-         * 
-         * @summary Get the spec of the ManagedKafkaAgent CR spec
-         * @param {string} id The id of record
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getKafkaAgent: async (id: string, options: any = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getKafkaAgent', 'id', id)
-            const localVarPath = `/api/managed-services-api/v1/agent-clusters/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Bearer required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get the list of ManagedaKafkas for the specified agent cluster
-         * @param {string} id The id of record
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getKafkas: async (id: string, options: any = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getKafkas', 'id', id)
-            const localVarPath = `/api/managed-services-api/v1/agent-clusters/{id}/kafkas`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Bearer required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Update the status of an agent cluster
-         * @param {string} id The id of record
-         * @param {DataPlaneClusterUpdateStatusRequest} dataPlaneClusterUpdateStatusRequest Cluster status update data
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updateAgentClusterStatus: async (id: string, dataPlaneClusterUpdateStatusRequest: DataPlaneClusterUpdateStatusRequest, options: any = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('updateAgentClusterStatus', 'id', id)
-            // verify required parameter 'dataPlaneClusterUpdateStatusRequest' is not null or undefined
-            assertParamExists('updateAgentClusterStatus', 'dataPlaneClusterUpdateStatusRequest', dataPlaneClusterUpdateStatusRequest)
-            const localVarPath = `/api/managed-services-api/v1/agent-clusters/{id}/status`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Bearer required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(dataPlaneClusterUpdateStatusRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Update the status of Kafka clusters on an agent cluster
-         * @param {string} id The id of record
-         * @param {{ [key: string]: DataPlaneKafkaStatus; }} requestBody Kafka clusters status update data
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updateKafkaClusterStatus: async (id: string, requestBody: { [key: string]: DataPlaneKafkaStatus; }, options: any = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('updateKafkaClusterStatus', 'id', id)
-            // verify required parameter 'requestBody' is not null or undefined
-            assertParamExists('updateKafkaClusterStatus', 'requestBody', requestBody)
-            const localVarPath = `/api/managed-services-api/v1/agent-clusters/{id}/kafkas/status`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Bearer required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(requestBody, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-    }
-};
-
-/**
- * AgentClustersApi - functional programming interface
- * @export
- */
-export const AgentClustersApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = AgentClustersApiAxiosParamCreator(configuration)
-    return {
-        /**
-         * 
-         * @summary Get the spec of the ManagedKafkaAgent CR spec
-         * @param {string} id The id of record
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getKafkaAgent(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DataplaneClusterAgentConfig>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getKafkaAgent(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Get the list of ManagedaKafkas for the specified agent cluster
-         * @param {string} id The id of record
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getKafkas(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ManagedKafkaList>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getKafkas(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Update the status of an agent cluster
-         * @param {string} id The id of record
-         * @param {DataPlaneClusterUpdateStatusRequest} dataPlaneClusterUpdateStatusRequest Cluster status update data
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async updateAgentClusterStatus(id: string, dataPlaneClusterUpdateStatusRequest: DataPlaneClusterUpdateStatusRequest, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateAgentClusterStatus(id, dataPlaneClusterUpdateStatusRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Update the status of Kafka clusters on an agent cluster
-         * @param {string} id The id of record
-         * @param {{ [key: string]: DataPlaneKafkaStatus; }} requestBody Kafka clusters status update data
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async updateKafkaClusterStatus(id: string, requestBody: { [key: string]: DataPlaneKafkaStatus; }, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateKafkaClusterStatus(id, requestBody, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-    }
-};
-
-/**
- * AgentClustersApi - factory interface
- * @export
- */
-export const AgentClustersApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = AgentClustersApiFp(configuration)
-    return {
-        /**
-         * 
-         * @summary Get the spec of the ManagedKafkaAgent CR spec
-         * @param {string} id The id of record
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getKafkaAgent(id: string, options?: any): AxiosPromise<DataplaneClusterAgentConfig> {
-            return localVarFp.getKafkaAgent(id, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get the list of ManagedaKafkas for the specified agent cluster
-         * @param {string} id The id of record
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getKafkas(id: string, options?: any): AxiosPromise<ManagedKafkaList> {
-            return localVarFp.getKafkas(id, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Update the status of an agent cluster
-         * @param {string} id The id of record
-         * @param {DataPlaneClusterUpdateStatusRequest} dataPlaneClusterUpdateStatusRequest Cluster status update data
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updateAgentClusterStatus(id: string, dataPlaneClusterUpdateStatusRequest: DataPlaneClusterUpdateStatusRequest, options?: any): AxiosPromise<void> {
-            return localVarFp.updateAgentClusterStatus(id, dataPlaneClusterUpdateStatusRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Update the status of Kafka clusters on an agent cluster
-         * @param {string} id The id of record
-         * @param {{ [key: string]: DataPlaneKafkaStatus; }} requestBody Kafka clusters status update data
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updateKafkaClusterStatus(id: string, requestBody: { [key: string]: DataPlaneKafkaStatus; }, options?: any): AxiosPromise<void> {
-            return localVarFp.updateKafkaClusterStatus(id, requestBody, options).then((request) => request(axios, basePath));
-        },
-    };
-};
-
-/**
- * AgentClustersApi - interface
- * @export
- * @interface AgentClustersApi
- */
-export interface AgentClustersApiInterface {
-    /**
-     * 
-     * @summary Get the spec of the ManagedKafkaAgent CR spec
-     * @param {string} id The id of record
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AgentClustersApiInterface
-     */
-    getKafkaAgent(id: string, options?: any): AxiosPromise<DataplaneClusterAgentConfig>;
-
-    /**
-     * 
-     * @summary Get the list of ManagedaKafkas for the specified agent cluster
-     * @param {string} id The id of record
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AgentClustersApiInterface
-     */
-    getKafkas(id: string, options?: any): AxiosPromise<ManagedKafkaList>;
-
-    /**
-     * 
-     * @summary Update the status of an agent cluster
-     * @param {string} id The id of record
-     * @param {DataPlaneClusterUpdateStatusRequest} dataPlaneClusterUpdateStatusRequest Cluster status update data
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AgentClustersApiInterface
-     */
-    updateAgentClusterStatus(id: string, dataPlaneClusterUpdateStatusRequest: DataPlaneClusterUpdateStatusRequest, options?: any): AxiosPromise<void>;
-
-    /**
-     * 
-     * @summary Update the status of Kafka clusters on an agent cluster
-     * @param {string} id The id of record
-     * @param {{ [key: string]: DataPlaneKafkaStatus; }} requestBody Kafka clusters status update data
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AgentClustersApiInterface
-     */
-    updateKafkaClusterStatus(id: string, requestBody: { [key: string]: DataPlaneKafkaStatus; }, options?: any): AxiosPromise<void>;
-
-}
-
-/**
- * AgentClustersApi - object-oriented interface
- * @export
- * @class AgentClustersApi
- * @extends {BaseAPI}
- */
-export class AgentClustersApi extends BaseAPI implements AgentClustersApiInterface {
-    /**
-     * 
-     * @summary Get the spec of the ManagedKafkaAgent CR spec
-     * @param {string} id The id of record
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AgentClustersApi
-     */
-    public getKafkaAgent(id: string, options?: any) {
-        return AgentClustersApiFp(this.configuration).getKafkaAgent(id, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get the list of ManagedaKafkas for the specified agent cluster
-     * @param {string} id The id of record
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AgentClustersApi
-     */
-    public getKafkas(id: string, options?: any) {
-        return AgentClustersApiFp(this.configuration).getKafkas(id, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Update the status of an agent cluster
-     * @param {string} id The id of record
-     * @param {DataPlaneClusterUpdateStatusRequest} dataPlaneClusterUpdateStatusRequest Cluster status update data
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AgentClustersApi
-     */
-    public updateAgentClusterStatus(id: string, dataPlaneClusterUpdateStatusRequest: DataPlaneClusterUpdateStatusRequest, options?: any) {
-        return AgentClustersApiFp(this.configuration).updateAgentClusterStatus(id, dataPlaneClusterUpdateStatusRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Update the status of Kafka clusters on an agent cluster
-     * @param {string} id The id of record
-     * @param {{ [key: string]: DataPlaneKafkaStatus; }} requestBody Kafka clusters status update data
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AgentClustersApi
-     */
-    public updateKafkaClusterStatus(id: string, requestBody: { [key: string]: DataPlaneKafkaStatus; }, options?: any) {
-        return AgentClustersApiFp(this.configuration).updateKafkaClusterStatus(id, requestBody, options).then((request) => request(this.axios, this.basePath));
-    }
-}
-
 
 /**
  * ConnectorClustersApi - axios parameter creator
@@ -3195,7 +1832,7 @@ export const ConnectorClustersApiAxiosParamCreator = function (configuration?: C
             assertParamExists('createConnectorCluster', 'async', async)
             // verify required parameter 'connectorCluster' is not null or undefined
             assertParamExists('createConnectorCluster', 'connectorCluster', connectorCluster)
-            const localVarPath = `/api/managed-services-api/v1/kafka-connector-clusters`;
+            const localVarPath = `/api/connector_mgmt/v1/kafka-connector-clusters`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3239,7 +1876,7 @@ export const ConnectorClustersApiAxiosParamCreator = function (configuration?: C
         deleteConnectorCluster: async (connectorClusterId: string, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'connectorClusterId' is not null or undefined
             assertParamExists('deleteConnectorCluster', 'connectorClusterId', connectorClusterId)
-            const localVarPath = `/api/managed-services-api/v1/kafka-connector-clusters/{connector_cluster_id}`
+            const localVarPath = `/api/connector_mgmt/v1/kafka-connector-clusters/{connector_cluster_id}`
                 .replace(`{${"connector_cluster_id"}}`, encodeURIComponent(String(connectorClusterId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3277,7 +1914,7 @@ export const ConnectorClustersApiAxiosParamCreator = function (configuration?: C
         getConnectorCluster: async (connectorClusterId: string, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'connectorClusterId' is not null or undefined
             assertParamExists('getConnectorCluster', 'connectorClusterId', connectorClusterId)
-            const localVarPath = `/api/managed-services-api/v1/kafka-connector-clusters/{connector_cluster_id}`
+            const localVarPath = `/api/connector_mgmt/v1/kafka-connector-clusters/{connector_cluster_id}`
                 .replace(`{${"connector_cluster_id"}}`, encodeURIComponent(String(connectorClusterId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3315,7 +1952,7 @@ export const ConnectorClustersApiAxiosParamCreator = function (configuration?: C
         getConnectorClusterAddonParameters: async (connectorClusterId: string, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'connectorClusterId' is not null or undefined
             assertParamExists('getConnectorClusterAddonParameters', 'connectorClusterId', connectorClusterId)
-            const localVarPath = `/api/managed-services-api/v1/kafka-connector-clusters/{connector_cluster_id}/addon-parameters`
+            const localVarPath = `/api/connector_mgmt/v1/kafka-connector-clusters/{connector_cluster_id}/addon-parameters`
                 .replace(`{${"connector_cluster_id"}}`, encodeURIComponent(String(connectorClusterId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3352,7 +1989,7 @@ export const ConnectorClustersApiAxiosParamCreator = function (configuration?: C
          * @throws {RequiredError}
          */
         listConnectorClusters: async (page?: string, size?: string, options: any = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/managed-services-api/v1/kafka-connector-clusters`;
+            const localVarPath = `/api/connector_mgmt/v1/kafka-connector-clusters`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3651,448 +2288,6 @@ export class ConnectorClustersApi extends BaseAPI implements ConnectorClustersAp
 
 
 /**
- * ConnectorClustersAgentApi - axios parameter creator
- * @export
- */
-export const ConnectorClustersAgentApiAxiosParamCreator = function (configuration?: Configuration) {
-    return {
-        /**
-         * 
-         * @summary Returns a list of connector deployments assigned to the cluster.
-         * @param {string} connectorClusterId The id of the connector cluster
-         * @param {string} deploymentId The id of the deployment
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getClusterAsignedConnectorDeployments: async (connectorClusterId: string, deploymentId: string, options: any = {}): Promise<RequestArgs> => {
-            // verify required parameter 'connectorClusterId' is not null or undefined
-            assertParamExists('getClusterAsignedConnectorDeployments', 'connectorClusterId', connectorClusterId)
-            // verify required parameter 'deploymentId' is not null or undefined
-            assertParamExists('getClusterAsignedConnectorDeployments', 'deploymentId', deploymentId)
-            const localVarPath = `/api/managed-services-api/v1/kafka-connector-clusters/{connector_cluster_id}/deployments/{deployment_id}`
-                .replace(`{${"connector_cluster_id"}}`, encodeURIComponent(String(connectorClusterId)))
-                .replace(`{${"deployment_id"}}`, encodeURIComponent(String(deploymentId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Bearer required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Returns a list of connector deployments assigned to the cluster.
-         * @param {string} connectorClusterId The id of the connector cluster
-         * @param {string} [page] Page index
-         * @param {string} [size] Number of items in each page
-         * @param {number} [gtVersion] filters the connectors to those with a version greater than the given value
-         * @param {string} [watch] watch for changes to the resources and return them as a stream of watch events. Specify gt_version to specify the starting point.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        listClusterAsignedConnectorDeployments: async (connectorClusterId: string, page?: string, size?: string, gtVersion?: number, watch?: string, options: any = {}): Promise<RequestArgs> => {
-            // verify required parameter 'connectorClusterId' is not null or undefined
-            assertParamExists('listClusterAsignedConnectorDeployments', 'connectorClusterId', connectorClusterId)
-            const localVarPath = `/api/managed-services-api/v1/kafka-connector-clusters/{connector_cluster_id}/deployments`
-                .replace(`{${"connector_cluster_id"}}`, encodeURIComponent(String(connectorClusterId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Bearer required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (page !== undefined) {
-                localVarQueryParameter['page'] = page;
-            }
-
-            if (size !== undefined) {
-                localVarQueryParameter['size'] = size;
-            }
-
-            if (gtVersion !== undefined) {
-                localVarQueryParameter['gt_version'] = gtVersion;
-            }
-
-            if (watch !== undefined) {
-                localVarQueryParameter['watch'] = watch;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary update the connector deployment status
-         * @param {string} connectorClusterId The id of the connector cluster
-         * @param {string} deploymentId The id of the deployment
-         * @param {ConnectorDeploymentStatus} connectorDeploymentStatus 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updateConnectorDeploymentStatus: async (connectorClusterId: string, deploymentId: string, connectorDeploymentStatus: ConnectorDeploymentStatus, options: any = {}): Promise<RequestArgs> => {
-            // verify required parameter 'connectorClusterId' is not null or undefined
-            assertParamExists('updateConnectorDeploymentStatus', 'connectorClusterId', connectorClusterId)
-            // verify required parameter 'deploymentId' is not null or undefined
-            assertParamExists('updateConnectorDeploymentStatus', 'deploymentId', deploymentId)
-            // verify required parameter 'connectorDeploymentStatus' is not null or undefined
-            assertParamExists('updateConnectorDeploymentStatus', 'connectorDeploymentStatus', connectorDeploymentStatus)
-            const localVarPath = `/api/managed-services-api/v1/kafka-connector-clusters/{connector_cluster_id}/deployments/{deployment_id}/status`
-                .replace(`{${"connector_cluster_id"}}`, encodeURIComponent(String(connectorClusterId)))
-                .replace(`{${"deployment_id"}}`, encodeURIComponent(String(deploymentId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Bearer required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(connectorDeploymentStatus, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Update the status of a connector cluster
-         * @param {string} connectorClusterId The id of the connector cluster
-         * @param {ConnectorClusterStatus} connectorClusterStatus Cluster status update data
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updateKafkaConnectorClusterStatus: async (connectorClusterId: string, connectorClusterStatus: ConnectorClusterStatus, options: any = {}): Promise<RequestArgs> => {
-            // verify required parameter 'connectorClusterId' is not null or undefined
-            assertParamExists('updateKafkaConnectorClusterStatus', 'connectorClusterId', connectorClusterId)
-            // verify required parameter 'connectorClusterStatus' is not null or undefined
-            assertParamExists('updateKafkaConnectorClusterStatus', 'connectorClusterStatus', connectorClusterStatus)
-            const localVarPath = `/api/managed-services-api/v1/kafka-connector-clusters/{connector_cluster_id}/status`
-                .replace(`{${"connector_cluster_id"}}`, encodeURIComponent(String(connectorClusterId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Bearer required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(connectorClusterStatus, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-    }
-};
-
-/**
- * ConnectorClustersAgentApi - functional programming interface
- * @export
- */
-export const ConnectorClustersAgentApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = ConnectorClustersAgentApiAxiosParamCreator(configuration)
-    return {
-        /**
-         * 
-         * @summary Returns a list of connector deployments assigned to the cluster.
-         * @param {string} connectorClusterId The id of the connector cluster
-         * @param {string} deploymentId The id of the deployment
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getClusterAsignedConnectorDeployments(connectorClusterId: string, deploymentId: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ConnectorDeployment>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getClusterAsignedConnectorDeployments(connectorClusterId, deploymentId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Returns a list of connector deployments assigned to the cluster.
-         * @param {string} connectorClusterId The id of the connector cluster
-         * @param {string} [page] Page index
-         * @param {string} [size] Number of items in each page
-         * @param {number} [gtVersion] filters the connectors to those with a version greater than the given value
-         * @param {string} [watch] watch for changes to the resources and return them as a stream of watch events. Specify gt_version to specify the starting point.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async listClusterAsignedConnectorDeployments(connectorClusterId: string, page?: string, size?: string, gtVersion?: number, watch?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ConnectorDeploymentList>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listClusterAsignedConnectorDeployments(connectorClusterId, page, size, gtVersion, watch, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary update the connector deployment status
-         * @param {string} connectorClusterId The id of the connector cluster
-         * @param {string} deploymentId The id of the deployment
-         * @param {ConnectorDeploymentStatus} connectorDeploymentStatus 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async updateConnectorDeploymentStatus(connectorClusterId: string, deploymentId: string, connectorDeploymentStatus: ConnectorDeploymentStatus, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateConnectorDeploymentStatus(connectorClusterId, deploymentId, connectorDeploymentStatus, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Update the status of a connector cluster
-         * @param {string} connectorClusterId The id of the connector cluster
-         * @param {ConnectorClusterStatus} connectorClusterStatus Cluster status update data
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async updateKafkaConnectorClusterStatus(connectorClusterId: string, connectorClusterStatus: ConnectorClusterStatus, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateKafkaConnectorClusterStatus(connectorClusterId, connectorClusterStatus, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-    }
-};
-
-/**
- * ConnectorClustersAgentApi - factory interface
- * @export
- */
-export const ConnectorClustersAgentApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = ConnectorClustersAgentApiFp(configuration)
-    return {
-        /**
-         * 
-         * @summary Returns a list of connector deployments assigned to the cluster.
-         * @param {string} connectorClusterId The id of the connector cluster
-         * @param {string} deploymentId The id of the deployment
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getClusterAsignedConnectorDeployments(connectorClusterId: string, deploymentId: string, options?: any): AxiosPromise<ConnectorDeployment> {
-            return localVarFp.getClusterAsignedConnectorDeployments(connectorClusterId, deploymentId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Returns a list of connector deployments assigned to the cluster.
-         * @param {string} connectorClusterId The id of the connector cluster
-         * @param {string} [page] Page index
-         * @param {string} [size] Number of items in each page
-         * @param {number} [gtVersion] filters the connectors to those with a version greater than the given value
-         * @param {string} [watch] watch for changes to the resources and return them as a stream of watch events. Specify gt_version to specify the starting point.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        listClusterAsignedConnectorDeployments(connectorClusterId: string, page?: string, size?: string, gtVersion?: number, watch?: string, options?: any): AxiosPromise<ConnectorDeploymentList> {
-            return localVarFp.listClusterAsignedConnectorDeployments(connectorClusterId, page, size, gtVersion, watch, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary update the connector deployment status
-         * @param {string} connectorClusterId The id of the connector cluster
-         * @param {string} deploymentId The id of the deployment
-         * @param {ConnectorDeploymentStatus} connectorDeploymentStatus 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updateConnectorDeploymentStatus(connectorClusterId: string, deploymentId: string, connectorDeploymentStatus: ConnectorDeploymentStatus, options?: any): AxiosPromise<void> {
-            return localVarFp.updateConnectorDeploymentStatus(connectorClusterId, deploymentId, connectorDeploymentStatus, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Update the status of a connector cluster
-         * @param {string} connectorClusterId The id of the connector cluster
-         * @param {ConnectorClusterStatus} connectorClusterStatus Cluster status update data
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updateKafkaConnectorClusterStatus(connectorClusterId: string, connectorClusterStatus: ConnectorClusterStatus, options?: any): AxiosPromise<void> {
-            return localVarFp.updateKafkaConnectorClusterStatus(connectorClusterId, connectorClusterStatus, options).then((request) => request(axios, basePath));
-        },
-    };
-};
-
-/**
- * ConnectorClustersAgentApi - interface
- * @export
- * @interface ConnectorClustersAgentApi
- */
-export interface ConnectorClustersAgentApiInterface {
-    /**
-     * 
-     * @summary Returns a list of connector deployments assigned to the cluster.
-     * @param {string} connectorClusterId The id of the connector cluster
-     * @param {string} deploymentId The id of the deployment
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ConnectorClustersAgentApiInterface
-     */
-    getClusterAsignedConnectorDeployments(connectorClusterId: string, deploymentId: string, options?: any): AxiosPromise<ConnectorDeployment>;
-
-    /**
-     * 
-     * @summary Returns a list of connector deployments assigned to the cluster.
-     * @param {string} connectorClusterId The id of the connector cluster
-     * @param {string} [page] Page index
-     * @param {string} [size] Number of items in each page
-     * @param {number} [gtVersion] filters the connectors to those with a version greater than the given value
-     * @param {string} [watch] watch for changes to the resources and return them as a stream of watch events. Specify gt_version to specify the starting point.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ConnectorClustersAgentApiInterface
-     */
-    listClusterAsignedConnectorDeployments(connectorClusterId: string, page?: string, size?: string, gtVersion?: number, watch?: string, options?: any): AxiosPromise<ConnectorDeploymentList>;
-
-    /**
-     * 
-     * @summary update the connector deployment status
-     * @param {string} connectorClusterId The id of the connector cluster
-     * @param {string} deploymentId The id of the deployment
-     * @param {ConnectorDeploymentStatus} connectorDeploymentStatus 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ConnectorClustersAgentApiInterface
-     */
-    updateConnectorDeploymentStatus(connectorClusterId: string, deploymentId: string, connectorDeploymentStatus: ConnectorDeploymentStatus, options?: any): AxiosPromise<void>;
-
-    /**
-     * 
-     * @summary Update the status of a connector cluster
-     * @param {string} connectorClusterId The id of the connector cluster
-     * @param {ConnectorClusterStatus} connectorClusterStatus Cluster status update data
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ConnectorClustersAgentApiInterface
-     */
-    updateKafkaConnectorClusterStatus(connectorClusterId: string, connectorClusterStatus: ConnectorClusterStatus, options?: any): AxiosPromise<void>;
-
-}
-
-/**
- * ConnectorClustersAgentApi - object-oriented interface
- * @export
- * @class ConnectorClustersAgentApi
- * @extends {BaseAPI}
- */
-export class ConnectorClustersAgentApi extends BaseAPI implements ConnectorClustersAgentApiInterface {
-    /**
-     * 
-     * @summary Returns a list of connector deployments assigned to the cluster.
-     * @param {string} connectorClusterId The id of the connector cluster
-     * @param {string} deploymentId The id of the deployment
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ConnectorClustersAgentApi
-     */
-    public getClusterAsignedConnectorDeployments(connectorClusterId: string, deploymentId: string, options?: any) {
-        return ConnectorClustersAgentApiFp(this.configuration).getClusterAsignedConnectorDeployments(connectorClusterId, deploymentId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Returns a list of connector deployments assigned to the cluster.
-     * @param {string} connectorClusterId The id of the connector cluster
-     * @param {string} [page] Page index
-     * @param {string} [size] Number of items in each page
-     * @param {number} [gtVersion] filters the connectors to those with a version greater than the given value
-     * @param {string} [watch] watch for changes to the resources and return them as a stream of watch events. Specify gt_version to specify the starting point.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ConnectorClustersAgentApi
-     */
-    public listClusterAsignedConnectorDeployments(connectorClusterId: string, page?: string, size?: string, gtVersion?: number, watch?: string, options?: any) {
-        return ConnectorClustersAgentApiFp(this.configuration).listClusterAsignedConnectorDeployments(connectorClusterId, page, size, gtVersion, watch, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary update the connector deployment status
-     * @param {string} connectorClusterId The id of the connector cluster
-     * @param {string} deploymentId The id of the deployment
-     * @param {ConnectorDeploymentStatus} connectorDeploymentStatus 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ConnectorClustersAgentApi
-     */
-    public updateConnectorDeploymentStatus(connectorClusterId: string, deploymentId: string, connectorDeploymentStatus: ConnectorDeploymentStatus, options?: any) {
-        return ConnectorClustersAgentApiFp(this.configuration).updateConnectorDeploymentStatus(connectorClusterId, deploymentId, connectorDeploymentStatus, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Update the status of a connector cluster
-     * @param {string} connectorClusterId The id of the connector cluster
-     * @param {ConnectorClusterStatus} connectorClusterStatus Cluster status update data
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ConnectorClustersAgentApi
-     */
-    public updateKafkaConnectorClusterStatus(connectorClusterId: string, connectorClusterStatus: ConnectorClusterStatus, options?: any) {
-        return ConnectorClustersAgentApiFp(this.configuration).updateKafkaConnectorClusterStatus(connectorClusterId, connectorClusterStatus, options).then((request) => request(this.axios, this.basePath));
-    }
-}
-
-
-/**
  * ConnectorTypesApi - axios parameter creator
  * @export
  */
@@ -4100,7 +2295,7 @@ export const ConnectorTypesApiAxiosParamCreator = function (configuration?: Conf
     return {
         /**
          * 
-         * @summary Get a connector type by name and version
+         * @summary Get a connector type by id
          * @param {string} connectorTypeId The id of the connector type
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -4108,7 +2303,7 @@ export const ConnectorTypesApiAxiosParamCreator = function (configuration?: Conf
         getConnectorTypeByID: async (connectorTypeId: string, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'connectorTypeId' is not null or undefined
             assertParamExists('getConnectorTypeByID', 'connectorTypeId', connectorTypeId)
-            const localVarPath = `/api/managed-services-api/v1/kafka-connector-types/{connector_type_id}`
+            const localVarPath = `/api/connector_mgmt/v1/kafka-connector-types/{connector_type_id}`
                 .replace(`{${"connector_type_id"}}`, encodeURIComponent(String(connectorTypeId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4145,7 +2340,7 @@ export const ConnectorTypesApiAxiosParamCreator = function (configuration?: Conf
          * @throws {RequiredError}
          */
         listConnectorTypes: async (page?: string, size?: string, options: any = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/managed-services-api/v1/kafka-connector-types`;
+            const localVarPath = `/api/connector_mgmt/v1/kafka-connector-types`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4192,7 +2387,7 @@ export const ConnectorTypesApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Get a connector type by name and version
+         * @summary Get a connector type by id
          * @param {string} connectorTypeId The id of the connector type
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -4225,7 +2420,7 @@ export const ConnectorTypesApiFactory = function (configuration?: Configuration,
     return {
         /**
          * 
-         * @summary Get a connector type by name and version
+         * @summary Get a connector type by id
          * @param {string} connectorTypeId The id of the connector type
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -4255,7 +2450,7 @@ export const ConnectorTypesApiFactory = function (configuration?: Configuration,
 export interface ConnectorTypesApiInterface {
     /**
      * 
-     * @summary Get a connector type by name and version
+     * @summary Get a connector type by id
      * @param {string} connectorTypeId The id of the connector type
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -4285,7 +2480,7 @@ export interface ConnectorTypesApiInterface {
 export class ConnectorTypesApi extends BaseAPI implements ConnectorTypesApiInterface {
     /**
      * 
-     * @summary Get a connector type by name and version
+     * @summary Get a connector type by id
      * @param {string} connectorTypeId The id of the connector type
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -4329,7 +2524,7 @@ export const ConnectorsApiAxiosParamCreator = function (configuration?: Configur
             assertParamExists('createConnector', 'async', async)
             // verify required parameter 'connector' is not null or undefined
             assertParamExists('createConnector', 'connector', connector)
-            const localVarPath = `/api/managed-services-api/v1/kafka-connectors`;
+            const localVarPath = `/api/connector_mgmt/v1/kafka-connectors`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4374,7 +2569,7 @@ export const ConnectorsApiAxiosParamCreator = function (configuration?: Configur
         deleteConnector: async (connectorId: string, kafkaId?: string, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'connectorId' is not null or undefined
             assertParamExists('deleteConnector', 'connectorId', connectorId)
-            const localVarPath = `/api/managed-services-api/v1/kafkas-connectors/{connector_id}`
+            const localVarPath = `/api/connector_mgmt/v1/kafkas-connectors/{connector_id}`
                 .replace(`{${"connector_id"}}`, encodeURIComponent(String(connectorId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4417,7 +2612,7 @@ export const ConnectorsApiAxiosParamCreator = function (configuration?: Configur
         getConnector: async (connectorId: string, kafkaId?: string, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'connectorId' is not null or undefined
             assertParamExists('getConnector', 'connectorId', connectorId)
-            const localVarPath = `/api/managed-services-api/v1/kafkas-connectors/{connector_id}`
+            const localVarPath = `/api/connector_mgmt/v1/kafkas-connectors/{connector_id}`
                 .replace(`{${"connector_id"}}`, encodeURIComponent(String(connectorId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4459,7 +2654,7 @@ export const ConnectorsApiAxiosParamCreator = function (configuration?: Configur
          * @throws {RequiredError}
          */
         listConnectors: async (page?: string, size?: string, kafkaId?: string, options: any = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/managed-services-api/v1/kafka-connectors`;
+            const localVarPath = `/api/connector_mgmt/v1/kafka-connectors`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4512,7 +2707,7 @@ export const ConnectorsApiAxiosParamCreator = function (configuration?: Configur
             assertParamExists('patchConnector', 'connectorId', connectorId)
             // verify required parameter 'body' is not null or undefined
             assertParamExists('patchConnector', 'body', body)
-            const localVarPath = `/api/managed-services-api/v1/kafkas-connectors/{connector_id}`
+            const localVarPath = `/api/connector_mgmt/v1/kafkas-connectors/{connector_id}`
                 .replace(`{${"connector_id"}}`, encodeURIComponent(String(connectorId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4849,7 +3044,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             assertParamExists('createKafka', 'async', async)
             // verify required parameter 'kafkaRequestPayload' is not null or undefined
             assertParamExists('createKafka', 'kafkaRequestPayload', kafkaRequestPayload)
-            const localVarPath = `/api/managed-services-api/v1/kafkas`;
+            const localVarPath = `/api/kafkas_mgmt/v1/kafkas`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4893,7 +3088,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         createServiceAccount: async (serviceAccountRequest: ServiceAccountRequest, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'serviceAccountRequest' is not null or undefined
             assertParamExists('createServiceAccount', 'serviceAccountRequest', serviceAccountRequest)
-            const localVarPath = `/api/managed-services-api/v1/serviceaccounts`;
+            const localVarPath = `/api/kafkas_mgmt/v1/serviceaccounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4936,7 +3131,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             assertParamExists('deleteKafkaById', 'id', id)
             // verify required parameter 'async' is not null or undefined
             assertParamExists('deleteKafkaById', 'async', async)
-            const localVarPath = `/api/managed-services-api/v1/kafkas/{id}`
+            const localVarPath = `/api/kafkas_mgmt/v1/kafkas/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4978,7 +3173,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         deleteServiceAccount: async (id: string, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteServiceAccount', 'id', id)
-            const localVarPath = `/api/managed-services-api/v1/serviceaccounts/{id}`
+            const localVarPath = `/api/kafkas_mgmt/v1/serviceaccounts/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5016,7 +3211,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         getKafkaById: async (id: string, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getKafkaById', 'id', id)
-            const localVarPath = `/api/managed-services-api/v1/kafkas/{id}`
+            const localVarPath = `/api/kafkas_mgmt/v1/kafkas/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5055,7 +3250,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         getMetricsByInstantQuery: async (id: string, filters?: Array<string>, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getMetricsByInstantQuery', 'id', id)
-            const localVarPath = `/api/managed-services-api/v1/kafkas/{id}/metrics/query`
+            const localVarPath = `/api/kafkas_mgmt/v1/kafkas/{id}/metrics/query`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5104,7 +3299,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             assertParamExists('getMetricsByRangeQuery', 'duration', duration)
             // verify required parameter 'interval' is not null or undefined
             assertParamExists('getMetricsByRangeQuery', 'interval', interval)
-            const localVarPath = `/api/managed-services-api/v1/kafkas/{id}/metrics/query_range`
+            const localVarPath = `/api/kafkas_mgmt/v1/kafkas/{id}/metrics/query_range`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5154,7 +3349,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         getServiceAccountById: async (id: string, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getServiceAccountById', 'id', id)
-            const localVarPath = `/api/managed-services-api/v1/serviceaccounts/{id}`
+            const localVarPath = `/api/kafkas_mgmt/v1/serviceaccounts/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5194,7 +3389,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         listCloudProviderRegions: async (id: string, page?: string, size?: string, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('listCloudProviderRegions', 'id', id)
-            const localVarPath = `/api/managed-services-api/v1/cloud_providers/{id}/regions`
+            const localVarPath = `/api/kafkas_mgmt/v1/cloud_providers/{id}/regions`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5239,7 +3434,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @throws {RequiredError}
          */
         listCloudProviders: async (page?: string, size?: string, options: any = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/managed-services-api/v1/cloud_providers`;
+            const localVarPath = `/api/kafkas_mgmt/v1/cloud_providers`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5285,7 +3480,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @throws {RequiredError}
          */
         listKafkas: async (page?: string, size?: string, orderBy?: string, search?: string, options: any = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/managed-services-api/v1/kafkas`;
+            const localVarPath = `/api/kafkas_mgmt/v1/kafkas`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5335,7 +3530,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @throws {RequiredError}
          */
         listServiceAccounts: async (options: any = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/managed-services-api/v1/serviceaccounts`;
+            const localVarPath = `/api/kafkas_mgmt/v1/serviceaccounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5372,7 +3567,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         resetServiceAccountCreds: async (id: string, options: any = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('resetServiceAccountCreds', 'id', id)
-            const localVarPath = `/api/managed-services-api/v1/serviceaccounts/{id}/reset-credentials`
+            const localVarPath = `/api/kafkas_mgmt/v1/serviceaccounts/{id}/reset-credentials`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5407,7 +3602,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @throws {RequiredError}
          */
         serviceStatus: async (options: any = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/managed-services-api/v1/status`;
+            const localVarPath = `/api/kafkas_mgmt/v1/status`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5441,7 +3636,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @throws {RequiredError}
          */
         versionMetadata: async (options: any = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/managed-services-api/v1`;
+            const localVarPath = `/api/kafkas_mgmt/v1`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5505,7 +3700,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteKafkaById(id: string, async: boolean, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Error>> {
+        async deleteKafkaById(id: string, async: boolean, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Error1>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteKafkaById(id, async, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -5516,7 +3711,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteServiceAccount(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Error>> {
+        async deleteServiceAccount(id: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Error1>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteServiceAccount(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -5687,7 +3882,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteKafkaById(id: string, async: boolean, options?: any): AxiosPromise<Error> {
+        deleteKafkaById(id: string, async: boolean, options?: any): AxiosPromise<Error1> {
             return localVarFp.deleteKafkaById(id, async, options).then((request) => request(axios, basePath));
         },
         /**
@@ -5697,7 +3892,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteServiceAccount(id: string, options?: any): AxiosPromise<Error> {
+        deleteServiceAccount(id: string, options?: any): AxiosPromise<Error1> {
             return localVarFp.deleteServiceAccount(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -5856,7 +4051,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    deleteKafkaById(id: string, async: boolean, options?: any): AxiosPromise<Error>;
+    deleteKafkaById(id: string, async: boolean, options?: any): AxiosPromise<Error1>;
 
     /**
      * 
@@ -5866,7 +4061,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    deleteServiceAccount(id: string, options?: any): AxiosPromise<Error>;
+    deleteServiceAccount(id: string, options?: any): AxiosPromise<Error1>;
 
     /**
      * 

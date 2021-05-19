@@ -1,5 +1,11 @@
-import { interpret } from 'xstate';
-import { makePaginatedApiMachine, ApiCallback } from '../src';
+import { interpret, createMachine } from 'xstate';
+import { createModel } from 'xstate/lib/model';
+import {
+  makePaginatedApiMachine,
+  ApiCallback,
+  paginatedApiMachineEvents,
+} from '../src/PaginatedResponseMachine';
+
 describe('@cos-ui/machines', () => {
   describe('makePaginatedApiMachine', () => {
     beforeEach(jest.clearAllMocks);
@@ -7,14 +13,23 @@ describe('@cos-ui/machines', () => {
     const API_LATENCY = 1000;
     jest.useFakeTimers();
 
-    type TestType = Array<{ foo: string }>;
+    type TestType = { foo: string };
 
     const makeRequestData = (size: number) =>
       Array(size).fill({ foo: 'it works' });
 
-    const onLoadingSpy = jest.fn();
-    const onIdleSpy = jest.fn();
+    let loadingPayload: any = undefined;
+    let responsePayload: any = undefined;
     const onCancelTimerSpy = jest.fn();
+    const onLoadingSpy = jest.fn((_, { type, ...context }) => {
+      loadingPayload = context;
+    });
+    const onSuccessSpy = jest.fn((_, { type, ...context }) => {
+      responsePayload = context;
+    });
+    const onErrorSpy = jest.fn((_, { type, ...context }) => {
+      responsePayload = context;
+    });
 
     const testApi: ApiCallback<TestType> = jest.fn(
       (request, onSuccess, onError) => {
@@ -28,7 +43,7 @@ describe('@cos-ui/machines', () => {
               page: request.page,
               size: request.size,
               total: 100,
-              data: makeRequestData(request.size),
+              items: makeRequestData(request.size),
             });
             timer = undefined;
           }, API_LATENCY);
@@ -49,135 +64,203 @@ describe('@cos-ui/machines', () => {
       }
     );
 
-    const testMachine = makePaginatedApiMachine<TestType>(testApi);
+    const paginatedApiMachine = makePaginatedApiMachine<TestType>(testApi);
 
-    let state: any = [];
-    const testService = interpret(testMachine)
-      .onTransition(s => {
-        if (s.value === 'loading') onLoadingSpy();
-        if (s.value === 'idle') onIdleSpy();
-        state = s;
-      })
-      .start();
+    const testModel = createModel(
+      {},
+      {
+        events: {
+          success: () => ({}),
+          error: () => ({}),
+          ...paginatedApiMachineEvents,
+        },
+      }
+    );
 
-    it('starts uninitialized', () => {
-      expect(testService.initialState.value).toBe('idle');
-      expect(testService.initialState.context).toEqual({
-        request: { size: 0, page: 0 },
-        total: 0,
-      });
+    const ID = 'paginatedApiMachineId';
+
+    const testMachine = createMachine<typeof testModel>({
+      id: 'test-pagination',
+      initial: 'testing',
+      states: {
+        testing: {
+          invoke: {
+            id: ID,
+            src: paginatedApiMachine,
+            autoForward: true,
+          },
+        },
+      },
+      on: {
+        loading: { actions: onLoadingSpy },
+        success: { actions: onSuccessSpy },
+        error: { actions: onErrorSpy },
+      },
+    });
+
+    const testService = interpret(testMachine).start();
+
+    it('starts idle', () => {
       expect(testApi).not.toBeCalled();
+      expect(onCancelTimerSpy).toBeCalledTimes(0);
+      expect(onLoadingSpy).toBeCalledTimes(0);
+      expect(onSuccessSpy).toBeCalledTimes(0);
+      expect(onErrorSpy).toBeCalledTimes(0);
+    });
+
+    it("doesn't change page before getting a response", () => {
+      testService.send('nextPage');
+      jest.runAllTimers();
+      testService.send('prevPage');
+      jest.runAllTimers();
+      expect(responsePayload).toBeUndefined();
+      expect(testApi).toBeCalledTimes(0);
+      expect(onCancelTimerSpy).toBeCalledTimes(0);
+      expect(onLoadingSpy).toBeCalledTimes(0);
+      expect(onSuccessSpy).toBeCalledTimes(0);
+      expect(onErrorSpy).toBeCalledTimes(0);
     });
 
     it('can query', () => {
       testService.send('query', { page: 1, size: 3 });
       jest.runAllTimers();
-      expect(state.context).toEqual(
+      expect(loadingPayload).toEqual(
+        expect.objectContaining({ size: 3, page: 1 })
+      );
+      expect(responsePayload).toEqual(
         expect.objectContaining({
-          request: { size: 3, page: 1 },
           total: 100,
-          data: makeRequestData(3),
+          items: makeRequestData(3),
         })
       );
       expect(testApi).toBeCalledTimes(1);
-      expect(onIdleSpy).toBeCalledTimes(1);
-      expect(onLoadingSpy).toBeCalledTimes(1);
       expect(onCancelTimerSpy).toBeCalledTimes(0);
+      expect(onLoadingSpy).toBeCalledTimes(1);
+      expect(onSuccessSpy).toBeCalledTimes(1);
+      expect(onErrorSpy).toBeCalledTimes(0);
     });
 
     it('can fetch next page', () => {
       testService.send('nextPage');
       jest.runAllTimers();
-      expect(state.context).toEqual(
+      expect(loadingPayload).toEqual(
+        expect.objectContaining({ size: 3, page: 2 })
+      );
+      expect(responsePayload).toEqual(
         expect.objectContaining({
-          request: { size: 3, page: 2 },
           total: 100,
-          data: makeRequestData(3),
+          items: makeRequestData(3),
+          error: undefined,
         })
       );
       expect(testApi).toBeCalledTimes(1);
-      expect(onIdleSpy).toBeCalledTimes(1);
-      expect(onLoadingSpy).toBeCalledTimes(1);
       expect(onCancelTimerSpy).toBeCalledTimes(0);
+      expect(onLoadingSpy).toBeCalledTimes(1);
+      expect(onSuccessSpy).toBeCalledTimes(1);
+      expect(onErrorSpy).toBeCalledTimes(0);
     });
 
     it('properly sets an error on failed fetch', () => {
       testService.send('nextPage');
       jest.runAllTimers();
-      expect(state.context).toEqual(
+      expect(loadingPayload).toEqual(
+        expect.objectContaining({ size: 3, page: 3 })
+      );
+      expect(responsePayload).toEqual(
         expect.objectContaining({
-          request: { size: 3, page: 3 },
-          total: 100,
-          data: undefined,
           error: 'error message',
         })
       );
       expect(testApi).toBeCalledTimes(1);
-      expect(onIdleSpy).toBeCalledTimes(1);
-      expect(onLoadingSpy).toBeCalledTimes(1);
       expect(onCancelTimerSpy).toBeCalledTimes(0);
+      expect(onLoadingSpy).toBeCalledTimes(1);
+      expect(onSuccessSpy).toBeCalledTimes(0);
+      expect(onErrorSpy).toBeCalledTimes(1);
     });
 
     it('unset the error on a successive fetch', () => {
       testService.send('prevPage');
       jest.runAllTimers();
-      expect(state.context).toEqual(
+      expect(loadingPayload).toEqual(
+        expect.objectContaining({ size: 3, page: 2 })
+      );
+      expect(responsePayload).toEqual(
         expect.objectContaining({
-          request: { size: 3, page: 2 },
-          data: makeRequestData(3),
+          items: makeRequestData(3),
+          total: 100,
           error: undefined,
         })
       );
+      expect(testApi).toBeCalledTimes(1);
+      expect(onCancelTimerSpy).toBeCalledTimes(0);
+      expect(onLoadingSpy).toBeCalledTimes(1);
+      expect(onSuccessSpy).toBeCalledTimes(1);
+      expect(onErrorSpy).toBeCalledTimes(0);
     });
 
-    it('sets extra filters, previous page and size are kept', () => {
-      testService.send('query', { foo: 'test foo' });
+    it('query requires a full request object', () => {
+      testService.send('query', { page: 1, size: 4, foo: 'test foo' });
       jest.runAllTimers();
-      expect(state.context).toEqual(
+      expect(loadingPayload).toEqual(
+        expect.objectContaining({ page: 1, size: 4, foo: 'test foo' })
+      );
+      expect(responsePayload).toEqual(
         expect.objectContaining({
-          request: { page: 2, size: 3, foo: 'test foo' },
-          data: makeRequestData(3),
+          items: makeRequestData(4),
+          total: 100,
+          error: undefined,
         })
       );
       expect(testApi).toBeCalledTimes(1);
-      expect(onIdleSpy).toBeCalledTimes(1);
-      expect(onLoadingSpy).toBeCalledTimes(1);
       expect(onCancelTimerSpy).toBeCalledTimes(0);
+      expect(onLoadingSpy).toBeCalledTimes(1);
+      expect(onSuccessSpy).toBeCalledTimes(1);
+      expect(onErrorSpy).toBeCalledTimes(0);
     });
 
     it('previous filters are unset', () => {
       testService.send('query', { page: 1, size: 6 });
       jest.runAllTimers();
-      expect(state.context).toEqual(
+      expect(loadingPayload).toEqual(
+        expect.objectContaining({ page: 1, size: 6 })
+      );
+      expect(responsePayload).toEqual(
         expect.objectContaining({
-          request: { page: 1, size: 6 },
-          data: makeRequestData(6),
+          items: makeRequestData(6),
+          total: 100,
+          error: undefined,
         })
       );
       expect(testApi).toBeCalledTimes(1);
-      expect(onIdleSpy).toBeCalledTimes(1);
-      expect(onLoadingSpy).toBeCalledTimes(1);
       expect(onCancelTimerSpy).toBeCalledTimes(0);
+      expect(onLoadingSpy).toBeCalledTimes(1);
+      expect(onSuccessSpy).toBeCalledTimes(1);
+      expect(onErrorSpy).toBeCalledTimes(0);
     });
 
     it('cancels the running request if a new request is triggered', () => {
       testService.send('query', { page: 1, size: 6 });
-      jest.advanceTimersByTime(API_LATENCY / 2);
+      jest.advanceTimersByTime(API_LATENCY / 4);
       testService.send('query', { page: 4, size: 2 });
-      jest.advanceTimersByTime(API_LATENCY / 2);
+      jest.advanceTimersByTime(API_LATENCY / 4);
       testService.send('query', { page: 2, size: 2 });
-      jest.advanceTimersByTime(API_LATENCY);
+      jest.runAllTimers();
 
-      expect(state.context).toEqual(
+      expect(loadingPayload).toEqual(
+        expect.objectContaining({ page: 2, size: 2 })
+      );
+      expect(responsePayload).toEqual(
         expect.objectContaining({
-          request: { page: 2, size: 2 },
-          data: makeRequestData(2),
+          items: makeRequestData(2),
+          total: 100,
+          error: undefined,
         })
       );
       expect(testApi).toBeCalledTimes(3);
-      expect(onIdleSpy).toBeCalledTimes(1);
-      expect(onLoadingSpy).toBeCalledTimes(3);
       expect(onCancelTimerSpy).toBeCalledTimes(2);
+      expect(onLoadingSpy).toBeCalledTimes(3);
+      expect(onSuccessSpy).toBeCalledTimes(1);
+      expect(onErrorSpy).toBeCalledTimes(0);
     });
   });
 });

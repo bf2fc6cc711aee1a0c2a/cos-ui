@@ -32,7 +32,7 @@ const SelectKafkaInstance: FunctionComponent<SelectKafkaInstanceProps> = ({
     case state.matches('failure'):
       return <Text color="red">{state.context.error}</Text>;
     default:
-      const items = state.context.instances?.items.map(instanceToSelect) || [];
+      const items = state.context.instances?.items?.map(instanceToSelect) || [];
       const initialIndex = state.context.selectedInstance
         ? items.findIndex(i => i.value === state.context.selectedInstance?.id)
         : undefined;

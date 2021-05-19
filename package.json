@@ -10,6 +10,7 @@
     "@xstate/test": "^0.4.2",
     "ajv": "^8.2.0",
     "axios": "^0.21.1",
+    "lodash.debounce": "^4.0.8",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-error-boundary": "^3.1.1",
@@ -35,6 +36,7 @@
     "@testing-library/user-event": "^13.1.8",
     "@types/chai": "^4.2.17",
     "@types/jest": "^26.0.23",
+    "@types/lodash.debounce": "^4.0.6",
     "@types/react": "^16.9.43",
     "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.7",
@@ -52,9 +54,9 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-testing-library": "^4.1.2",
     "file-loader": "^6.1.1",
-    "keycloak-js": "^9.0.0",
     "html-webpack-plugin": "5.3.1",
     "jest-environment-jsdom-sixteen": "^2.0.0",
+    "keycloak-js": "^9.0.0",
     "lerna": "^3.15.0",
     "mini-css-extract-plugin": "^1.6.0",
     "openapi-merge-cli": "^1.1.29",
@@ -84,7 +86,8 @@
     "lint": "lerna run lint -- --fix",
     "build": "lerna run build",
     "prepublish": "yarn run api:generate && lerna run build",
-    "start:app:example": "yarn run build && yarn --cwd example && yarn --cwd example start",
+    "start:app:example": "yarn run build && yarn start:app:example:run",
+    "start:app:example:run": "yarn --cwd example && yarn --cwd example start",
     "start:app:with-sample-configurators": "lerna run start --stream --parallel --scope @cos-ui-apps/* --ignore @cos-ui-apps/cli",
     "start:federate": "lerna run start:federate --stream --parallel --scope @cos-ui-apps/cos-ui",
     "cypress": "cypress run",
@@ -93,7 +96,9 @@
     "release": "changeset publish",
     "version:canary": "changeset version --snapshot canary",
     "release:canary": "changeset publish --tag canary",
-    "api:generate": "openapi-merge-cli && openapi-generator-cli generate -i mas-mock/merged-openapi.yaml -g typescript-axios -o packages/api --additional-properties=ngVersion=6.1.7,npmName=@cos-ui/api,supportsES6=true,withInterfaces=true --skip-validate-spec && rimraf packages/api/dist"
+    "api:generate": "yarn run api:generate:merge && yarn run api:generate:build",
+    "api:generate:merge": "openapi-merge-cli && openapi-generator-cli generate -i mas-mock/merged-openapi.yaml -g typescript-axios -o packages/api --additional-properties=ngVersion=6.1.7,npmName=@cos-ui/api,supportsES6=true,withInterfaces=true --skip-validate-spec && rimraf packages/api/dist",
+    "api:generate:build": "lerna run build --scope @cos-ui/api"
   },
   "eslint": {
     "extends": [
