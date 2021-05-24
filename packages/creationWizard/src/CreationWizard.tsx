@@ -17,6 +17,7 @@ import { Configuration } from './Configuration';
 import { Review } from './Review';
 import { StepErrorBoundary } from './StepErrorBoundary';
 import './CreationWizard.css';
+import { useTranslation } from 'react-i18next';
 
 function useKafkaInstanceStep() {
   const service = useCreationWizardMachineService();
@@ -34,7 +35,7 @@ function useKafkaInstanceStep() {
     )
   );
   return {
-    name: 'Select Kafka instance',
+    name: 'Select kafka instance',
     isActive,
     component: (
       <StepErrorBoundary>
@@ -110,6 +111,8 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
   onClose,
   onSave,
 }) => {
+  const { t } = useTranslation();
+
   const service = useCreationWizardMachineService();
   const [state, send] = useService(service);
   const kafkaInstanceStep = useKafkaInstanceStep();
@@ -117,7 +120,7 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
   const steps = [
     kafkaInstanceStep,
     {
-      name: 'Select OCM cluster',
+      name: t('selectOcmCluster'),
       isActive: state.matches('selectCluster'),
       component: (
         <StepErrorBoundary>

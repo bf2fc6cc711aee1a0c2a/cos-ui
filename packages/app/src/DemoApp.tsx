@@ -15,6 +15,8 @@ import {
 import { AppLayout } from './AppLayout';
 import { CosUiRoutes } from './CosUiRoutes';
 import { AuthContext } from './auth/AuthContext';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n';
 
 let keycloak: Keycloak.KeycloakInstance | undefined;
 
@@ -31,15 +33,21 @@ export const DemoApp: FunctionComponent = () => {
   }, []);
 
   return (
-    <KeycloakContext.Provider value={{ keycloak, profile: keycloak?.profile }}>
-      <KeycloakAuthProvider>
-        <Router>
-          <AppLayout>
-            {initialized ? <ConnectedRoutes /> : <Spinner />}
-          </AppLayout>
-        </Router>
-      </KeycloakAuthProvider>
-    </KeycloakContext.Provider>
+    <I18nextProvider i18n={i18n}>
+      <KeycloakContext.Provider
+        value={{ keycloak, profile: keycloak?.profile }}
+      >
+        <KeycloakAuthProvider>
+          <Router>
+            <React.Suspense fallback={null}>
+              <AppLayout>
+                {initialized ? <ConnectedRoutes /> : <Spinner />}
+              </AppLayout>
+            </React.Suspense>
+          </Router>
+        </KeycloakAuthProvider>
+      </KeycloakContext.Provider>
+    </I18nextProvider>
   );
 };
 
