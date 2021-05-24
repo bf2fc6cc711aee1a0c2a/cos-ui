@@ -30,7 +30,7 @@ import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 import { useActor } from '@xstate/react';
 import { ClusterMachineActorRef } from '@cos-ui/machines';
 import React, { Fragment, useCallback, useState } from 'react';
-import { NoMatchFound } from './NoMatchFound';
+import { NoMatchFound } from '@cos-ui/utils';
 
 const defaultPerPageOptions = [
   {

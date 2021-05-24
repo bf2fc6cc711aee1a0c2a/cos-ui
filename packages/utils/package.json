@@ -1,10 +1,10 @@
 {
-  "name": "@cos-ui/machines",
+  "name": "@cos-ui/utils",
   "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mono/mono.git",
-    "directory": "packages/machines"
+    "directory": "packages/utils"
   },
   "scripts": {
     "start": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
@@ -14,19 +14,17 @@
     "prepublish": "npm run build"
   },
   "main": "dist/index.js",
-  "module": "dist/machines.esm.js",
+  "module": "dist/utils.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "README.md",
     "dist"
   ],
   "dependencies": {
-    "@cos-ui/api": "^0.0.1",
-    "@cos-ui/utils": "^0.0.1",
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
-    "axios": "^0.21.1",
+    "react": "^16.8.0",
     "xstate": "^4.17.1"
   },
   "publishConfig": {

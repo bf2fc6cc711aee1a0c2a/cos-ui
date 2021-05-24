@@ -1,76 +1,120 @@
-import { KafkaMachineActorRef, PaginatedApiRequest } from '@cos-ui/machines';
-import { Loading, NoMatchFound, useDebounce } from '@cos-ui/utils';
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
-  DescriptionList,
-  DescriptionListDescription,
-  DescriptionListGroup,
-  DescriptionListTerm,
-  Gallery,
-  InputGroup,
-  PageSection,
-  Pagination,
-  TextInput,
-  Toolbar,
-  ToolbarContent,
-  // ToolbarFilter,
-  ToolbarGroup,
-  ToolbarItem,
-  ToolbarToggleGroup,
-} from '@patternfly/react-core';
-import {
-  // ExclamationCircleIcon,
-  FilterIcon,
-  SearchIcon,
-} from '@patternfly/react-icons';
-import { useSelector } from '@xstate/react';
 import React, {
   FunctionComponent,
   useCallback,
   useEffect,
   useRef,
 } from 'react';
+import { Table, TableHeader, TableBody } from '@patternfly/react-table';
+import { useInterpret, useSelector } from '@xstate/react';
+import { makeConnectorsMachine, PaginatedApiRequest } from '@cos-ui/machines';
+import {
+  PageSection,
+  ToolbarItem,
+  InputGroup,
+  TextInput,
+  Button,
+  ToolbarToggleGroup,
+  ToolbarGroup,
+  Pagination,
+  Toolbar,
+  ToolbarContent,
+} from '@patternfly/react-core';
+import { SearchIcon, FilterIcon } from '@patternfly/react-icons';
+import { useDebounce, NoMatchFound, Loading } from '@cos-ui/utils';
+import { useAppContext } from './AppContext';
+import { InterpreterFrom } from 'xstate';
+import { NavLink } from 'react-router-dom';
 
-export type SelectKafkaInstanceProps = {
-  actor: KafkaMachineActorRef;
-};
-
-export function SelectKafkaInstance({ actor }: SelectKafkaInstanceProps) {
-  const { itemCount, request } = useSelector(
-    actor,
+export const ConnectorsPage: FunctionComponent = () => {
+  const { basePath, authToken } = useAppContext();
+  const service = useInterpret(makeConnectorsMachine({ authToken, basePath }));
+  const { request, itemCount } = useSelector(
+    service,
     useCallback(
-      (state: typeof actor.state) => ({
-        itemCount: state.context.instances?.total,
+      (state: typeof service.state) => ({
         request: state.context.request,
+        itemCount: state.context.connectors?.total,
       }),
-      [actor]
+      [service]
     )
   );
-
   return (
     <PageSection padding={{ default: 'noPadding' }}>
-      <KafkaToolbar
-        itemCount={itemCount}
+      <ConnectorsToolbar
         request={request}
-        onChange={request => actor.send({ type: 'query', ...request })}
+        itemCount={itemCount}
+        onChange={request => service.send({ type: 'query', ...request })}
       />
-      <PageSection isFilled>
-        <KafkasGallery actor={actor} />
-      </PageSection>
+      <ConnectorsTable service={service} />
     </PageSection>
   );
-}
+};
 
-type KafkaToolbarProps = {
+type ConnectorsTableProps = {
+  service: InterpreterFrom<ReturnType<typeof makeConnectorsMachine>>;
+};
+const ConnectorsTable: FunctionComponent<ConnectorsTableProps> = ({
+  service,
+}) => {
+  const { connectors, isLoading } = useSelector(
+    service,
+    useCallback(
+      (state: typeof service.state) => ({
+        connectors: state.context.connectors?.items || [],
+        isLoading: state.hasTag('loading'),
+      }),
+      [service]
+    )
+  );
+  switch (true) {
+    case isLoading:
+      return <Loading />;
+    case connectors.length === 0:
+      return (
+        <NoMatchFound
+          onClear={() => service.send({ type: 'query', page: 1, size: 10 })}
+        />
+      );
+    default:
+      const columns = [
+        'Connector',
+        'Version',
+        'Owner',
+        'Time Created',
+        'Time Updated',
+        'Status',
+      ];
+      const rows = connectors.map(c => [
+        c.metadata?.created_at,
+        c.metadata?.resource_version,
+        c.metadata?.owner,
+        c.metadata?.created_at,
+        c.metadata?.updated_at,
+        c.status,
+      ]);
+      return (
+        <Table
+          aria-label="Sortable Table"
+          variant={'compact'}
+          sortBy={{}}
+          onSort={() => false}
+          cells={columns}
+          rows={rows}
+          className="pf-m-no-border-rows"
+        >
+          <TableHeader />
+          <TableBody />
+        </Table>
+      );
+  }
+};
+
+type ConnectorsToolbarProps = {
   itemCount?: number;
   request: PaginatedApiRequest;
   onChange: (query: PaginatedApiRequest) => void;
 };
-const KafkaToolbar: FunctionComponent<KafkaToolbarProps> = ({
+const ConnectorsToolbar: FunctionComponent<ConnectorsToolbarProps> = ({
   itemCount = 0,
   request,
   onChange,
@@ -184,7 +228,12 @@ const KafkaToolbar: FunctionComponent<KafkaToolbarProps> = ({
       </ToolbarToggleGroup>
       <ToolbarGroup variant="icon-button-group">
         <ToolbarItem>
-          <Button variant="primary">Create Kafka Instance</Button>
+          <NavLink
+            className="pf-c-button pf-m-primary"
+            to={'/create-connector'}
+          >
+            Create Connector
+          </NavLink>
         </ToolbarItem>
       </ToolbarGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
@@ -213,74 +262,4 @@ const KafkaToolbar: FunctionComponent<KafkaToolbarProps> = ({
       <ToolbarContent>{toolbarItems}</ToolbarContent>
     </Toolbar>
   );
-};
-
-const KafkasGallery: FunctionComponent<SelectKafkaInstanceProps> = ({
-  actor,
-}) => {
-  const { kafkas, selectedId, isLoading } = useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => ({
-        kafkas: state.context.instances?.items || [],
-        selectedId: state.context.selectedInstance?.id,
-        isLoading: state.hasTag('loading'),
-      }),
-      [actor]
-    )
-  );
-  const onSelect = (selectedInstance: string) => {
-    actor.send({ type: 'selectInstance', selectedInstance });
-  };
-
-  switch (true) {
-    case isLoading:
-      return <Loading />;
-    case kafkas.length === 0:
-      return (
-        <NoMatchFound
-          onClear={() => actor.send({ type: 'query', page: 1, size: 10 })}
-        />
-      );
-    default:
-      return (
-        <Gallery hasGutter>
-          {kafkas.map(i => (
-            <Card
-              isHoverable
-              key={i.id}
-              isSelectable
-              isSelected={selectedId === i.id}
-              onClick={() => onSelect(i.id!)}
-            >
-              <CardHeader>
-                <CardTitle>{i.name}</CardTitle>
-              </CardHeader>
-              <CardBody>
-                <DescriptionList>
-                  <DescriptionListGroup>
-                    <DescriptionListTerm>Region</DescriptionListTerm>
-                    <DescriptionListDescription>
-                      {i.region}
-                    </DescriptionListDescription>
-                  </DescriptionListGroup>
-                  <DescriptionListGroup>
-                    <DescriptionListTerm>Owner</DescriptionListTerm>
-                    <DescriptionListDescription>
-                      {i.owner}
-                    </DescriptionListDescription>
-                  </DescriptionListGroup>
-                  <DescriptionListGroup>
-                    <DescriptionListTerm>Created</DescriptionListTerm>
-                    <DescriptionListDescription>
-                      {i.created_at}
-                    </DescriptionListDescription>
-                  </DescriptionListGroup>
-                </DescriptionList>
-              </CardBody>
-            </Card>
-          ))}
-        </Gallery>
-      );
-  }
 };

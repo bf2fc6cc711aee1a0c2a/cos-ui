@@ -30,7 +30,7 @@ import {
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 import { useActor } from '@xstate/react';
 import React, { useCallback, useState } from 'react';
-import { NoMatchFound } from './NoMatchFound';
+import { NoMatchFound } from '@cos-ui/utils';
 
 const defaultPerPageOptions = [
   {

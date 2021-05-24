@@ -5,24 +5,13 @@ import React, {
   useContext,
 } from 'react';
 import { useInterpret } from '@xstate/react';
-import { Interpreter, StateMachine } from 'xstate';
 import {
   configuratorLoaderMachine,
   ConnectorConfiguratorResponse,
   creationWizardMachine,
 } from '@cos-ui/machines';
 import { ConnectorType } from '@cos-ui/api';
-
-export type InterpreterFrom<
-  T extends StateMachine<any, any, any, any>
-> = T extends StateMachine<
-  infer TContext,
-  infer TStateSchema,
-  infer TEvent,
-  infer TTypestate
->
-  ? Interpreter<TContext, TStateSchema, TEvent, TTypestate>
-  : never;
+import { InterpreterFrom } from '@cos-ui/utils';
 
 type InterpretType = InterpreterFrom<typeof creationWizardMachine>;
 type CreationWizardMachineServiceType = InterpretType | null;
