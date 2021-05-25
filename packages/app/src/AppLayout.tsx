@@ -6,7 +6,6 @@ import {
   Page,
   PageHeader,
   PageSidebar,
-  SkipToContent,
   PageHeaderTools,
 } from '@patternfly/react-core';
 import { NavLink, useHistory } from 'react-router-dom';
@@ -67,9 +66,6 @@ export const AppLayout: FunctionComponent<IAppLayout> = ({ children }) => {
       isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen}
     />
   );
-  const PageSkipToContent = (
-    <SkipToContent href="#primary-app-container">Skip to content</SkipToContent>
-  );
   return (
     <Page
       mainContainerId="primary-app-container"
@@ -77,7 +73,6 @@ export const AppLayout: FunctionComponent<IAppLayout> = ({ children }) => {
       header={Header}
       sidebar={Sidebar}
       onPageResize={onPageResize}
-      skipToContent={PageSkipToContent}
     >
       {children}
     </Page>

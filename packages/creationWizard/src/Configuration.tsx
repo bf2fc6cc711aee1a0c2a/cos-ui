@@ -128,10 +128,12 @@ export const Configuration: FunctionComponent = () => {
     case hasCustomConfigurator:
       return (
         <PageSection variant="light">
-          <ConnectedCustomConfigurator
-            actor={configuratorRef}
-            Configurator={Configurator as ConnectorConfiguratorComponent}
-          />
+          <React.Suspense fallback={null}>
+            <ConnectedCustomConfigurator
+              actor={configuratorRef}
+              Configurator={Configurator as ConnectorConfiguratorComponent}
+            />
+          </React.Suspense>
         </PageSection>
       );
     default:
