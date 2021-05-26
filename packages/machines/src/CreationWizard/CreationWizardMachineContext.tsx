@@ -1,26 +1,21 @@
+import { ConnectorType } from '@cos-ui/api';
+import { useInterpret, useSelector } from '@xstate/react';
 import React, {
   createContext,
   FunctionComponent,
   useCallback,
   useContext,
 } from 'react';
-import { useInterpret, useSelector } from '@xstate/react';
-import { ConnectorType, KafkaRequest } from '@cos-ui/api';
+import { ClustersMachineActorRef } from './ClustersMachine';
 import {
   configuratorLoaderMachine,
   ConnectorConfiguratorResponse,
 } from './ConfiguratorLoaderMachine';
-import { KafkaMachineActorRef } from './types';
 import {
   creationWizardMachine,
   CreationWizardMachineInterpreterFromType,
 } from './CreationWizardMachine';
-import {
-  PaginatedApiActorType,
-  PaginatedApiRequest,
-  usePagination,
-} from '../shared';
-import { PAGINATED_MACHINE_ID } from '../ConnectorsMachine';
+import { KafkaMachineActorRef } from './KafkasMachine';
 
 const CreationWizardMachineService = createContext<
   CreationWizardMachineInterpreterFromType
@@ -95,49 +90,14 @@ export const useCreationWizardMachineKafkasActor = () => {
   );
 };
 
-export const useKafkasMachineIsReady = () => {
-  const actor = useCreationWizardMachineKafkasActor();
+export const useCreationWizardMachineClustersActor = () => {
+  const service = useCreationWizardMachineService();
   return useSelector(
-    actor,
+    service,
     useCallback(
-      (state: typeof actor.state) => {
-        return state.matches({ root: { api: 'ready' } });
-      },
-      [actor]
+      (state: typeof service.state) =>
+        state.children.selectCluster as ClustersMachineActorRef,
+      [service]
     )
   );
-};
-
-export const useKafkasMachine = () => {
-  const actor = useCreationWizardMachineKafkasActor();
-  const api = usePagination<KafkaRequest>(
-    actor.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType
-  );
-  const { selectedId } = useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => ({
-        selectedId: state.context.selectedInstance?.id,
-      }),
-      [actor]
-    )
-  );
-  const onSelect = useCallback(
-    (selectedInstance: string) => {
-      actor.send({ type: 'selectInstance', selectedInstance });
-    },
-    [actor]
-  );
-  const onQuery = useCallback(
-    (request: PaginatedApiRequest) => {
-      actor.send({ type: 'query', ...request });
-    },
-    [actor]
-  );
-  return {
-    ...api,
-    selectedId,
-    onSelect,
-    onQuery,
-  };
 };

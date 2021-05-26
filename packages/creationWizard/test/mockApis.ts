@@ -11,7 +11,9 @@ export function makeHappyPath() {
   mock
     .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10')
     .reply<KafkaRequestList>(200, kafkaInstances)
-    .onGet('/dummy/api/connector_mgmt/v1/kafka-connector-clusters')
+    .onGet(
+      '/dummy/api/connector_mgmt/v1/kafka-connector-clusters?page=1&size=10'
+    )
     .reply<ConnectorClusterList>(200, clusters)
     .onGet('/dummy/api/connector_mgmt/v1/kafka-connector-types')
     .reply<ConnectorTypeList>(200, connectors);
@@ -29,7 +31,9 @@ export function makeClusterError() {
   mock
     .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10')
     .reply<KafkaRequestList>(200, kafkaInstances)
-    .onGet('/dummy/api/connector_mgmt/v1/kafka-connector-clusters')
+    .onGet(
+      '/dummy/api/connector_mgmt/v1/kafka-connector-clusters?page=1&size=10'
+    )
     .reply(404);
   return mock;
 }
@@ -39,7 +43,9 @@ export function makeConnectorsError() {
   mock
     .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10')
     .reply<KafkaRequestList>(200, kafkaInstances)
-    .onGet('/dummy/api/connector_mgmt/v1/kafka-connector-clusters')
+    .onGet(
+      '/dummy/api/connector_mgmt/v1/kafka-connector-clusters?page=1&size=10'
+    )
     .reply<ConnectorClusterList>(200, clusters)
     .onGet('/dummy/api/connector_mgmt/v1/kafka-connector-types')
     .reply(404);
@@ -148,7 +154,7 @@ const clusters: ConnectorClusterList = {
       id: '1r9uyAjkDfKKOr5pOnZbfdzj23D',
       kind: 'ConnectorCluster',
       href:
-        '/api/connector_mgmt/v1/kafka-connector-clusters/1r9uyAjkDfKKOr5pOnZbfdzj23D',
+        '/api/connector_mgmt/v1/kafka-connector-clusters?page=1&size=10/1r9uyAjkDfKKOr5pOnZbfdzj23D',
       metadata: {
         owner: 'rforina',
         name: 'megalord',
@@ -161,7 +167,7 @@ const clusters: ConnectorClusterList = {
       id: '1qnpZvkkZerQwjRY52v4SC82YxA',
       kind: 'ConnectorCluster',
       href:
-        '/api/connector_mgmt/v1/kafka-connector-clusters/1qnpZvkkZerQwjRY52v4SC82YxA',
+        '/api/connector_mgmt/v1/kafka-connector-clusters?page=1&size=10/1qnpZvkkZerQwjRY52v4SC82YxA',
       metadata: {
         owner: 'rforina',
         name: 'string',

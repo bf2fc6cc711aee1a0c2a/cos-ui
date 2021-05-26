@@ -1,10 +1,8 @@
 /* eslint-disable testing-library/await-async-utils */
 /* eslint-disable testing-library/await-async-query */
 import React from 'react';
-import {
-  CreationWizard,
-  CreationWizardMachineProvider,
-} from '@cos-ui/creation-wizard';
+import { CreationWizard } from '@cos-ui/creation-wizard';
+import { CreationWizardMachineProvider } from '@cos-ui/machines';
 import {
   render,
   fireEvent,
@@ -34,7 +32,7 @@ const testMachine = Machine({
     loadingKafka: {
       always: [
         { target: 'selectKafka', cond: ctx => !ctx.willKafkaApiFail },
-        { target: 'error', cond: ctx => ctx.willKafkaApiFail },
+        { target: 'selectKafkaEmptyState', cond: ctx => ctx.willKafkaApiFail },
       ],
     },
     selectKafka: {
@@ -45,13 +43,23 @@ const testMachine = Machine({
         test: () => waitFor(() => expect(screen.getByText('badwords'))),
       },
     },
+    selectKafkaEmptyState: {
+      meta: {
+        noCoverage: true,
+        test: () =>
+          waitFor(() => expect(screen.getByText('cos.no_kafka_instance'))),
+      },
+    },
     loadingClusters: {
       always: [
         {
           target: 'selectCluster',
           cond: ctx => !ctx.willClusterApiFail,
         },
-        { target: 'error', cond: ctx => ctx.willClusterApiFail },
+        {
+          target: 'selectClusterEmptyState',
+          cond: ctx => ctx.willClusterApiFail,
+        },
       ],
     },
     selectCluster: {
@@ -62,13 +70,23 @@ const testMachine = Machine({
         test: () => waitFor(() => expect(screen.getByText('megalord'))),
       },
     },
+    selectClusterEmptyState: {
+      meta: {
+        noCoverage: true,
+        test: () =>
+          waitFor(() => expect(screen.getByText('cos.no_clusters_instance'))),
+      },
+    },
     loadingConnectors: {
       always: [
         {
           target: 'selectConnector',
           cond: ctx => !ctx.willConnectorsApiFail,
         },
-        { target: 'error', cond: ctx => ctx.willConnectorsApiFail },
+        {
+          target: 'selectConnectorEmptyState',
+          cond: ctx => ctx.willConnectorsApiFail,
+        },
       ],
     },
     selectConnector: {
@@ -78,6 +96,12 @@ const testMachine = Machine({
       meta: {
         test: () =>
           waitFor(() => expect(screen.getByText('telegram-source-source'))),
+      },
+    },
+    selectConnectorEmptyState: {
+      meta: {
+        noCoverage: true,
+        test: () => waitFor(() => expect(screen.getByText('No results found'))),
       },
     },
     configureConnector: {
@@ -121,11 +145,6 @@ const testMachine = Machine({
           expect(onClose).toBeCalledTimes(1);
           expect(onSave).toBeCalledTimes(0);
         },
-      },
-    },
-    error: {
-      meta: {
-        test: () => waitFor(() => expect(screen.getByText('No results found'))),
       },
     },
   },
@@ -213,7 +232,7 @@ describe('@cos-ui/creationWizard', () => {
       it('coverage', () => {
         testModel.testCoverage({
           filter: stateNode =>
-            stateNode.id !== 'test-machine.error' && stateNode.meta,
+            stateNode.meta && stateNode.meta.noCoverage !== true,
         });
       });
     });

@@ -1,5 +1,18 @@
 import {
+  useClustersMachine,
+  useClustersMachineIsReady,
+  useCreationWizardMachineClustersActor,
+} from '@cos-ui/machines';
+import {
+  EmptyState,
+  EmptyStateVariant,
+  Loading,
+  NoMatchFound,
+  useDebounce,
+} from '@cos-ui/utils';
+import {
   Button,
+  ButtonVariant,
   Card,
   CardBody,
   CardHeader,
@@ -8,215 +21,270 @@ import {
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
-  EmptyState,
-  EmptyStateIcon,
   Gallery,
   InputGroup,
   PageSection,
   Pagination,
-  Select,
-  SelectOption,
-  Spinner,
   TextInput,
-  Title,
   Toolbar,
   ToolbarContent,
-  ToolbarFilter,
+  // ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
-import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
-import { useActor } from '@xstate/react';
-import { ClusterMachineActorRef } from '@cos-ui/machines';
-import React, { Fragment, useCallback, useState } from 'react';
-import { NoMatchFound } from '@cos-ui/utils';
+import {
+  // ExclamationCircleIcon,
+  FilterIcon,
+  SearchIcon,
+} from '@patternfly/react-icons';
+import React, { FunctionComponent, useRef } from 'react';
+import { useHistory } from 'react-router';
 
-const defaultPerPageOptions = [
-  {
-    title: '1',
-    value: 1,
-  },
-  {
-    title: '5',
-    value: 5,
-  },
-  {
-    title: '10',
-    value: 10,
-  },
-];
+export function SelectCluster() {
+  const actor = useCreationWizardMachineClustersActor();
+  const isReady = useClustersMachineIsReady(actor);
 
-export type SelectClusterProps = {
-  actor: ClusterMachineActorRef;
-};
+  return isReady ? <ClustersGallery /> : null;
+}
 
-export function SelectCluster({ actor }: SelectClusterProps) {
-  const [state, send] = useActor(actor);
-  const [searchValue, setSearchValue] = useState('');
-  const [statuses, setStatuses] = useState<string[]>([
-    'Pending',
-    'Created',
-    'Cancelled',
-  ]);
-  const [statusesToggled, setStatusesToggled] = useState(false);
-  const clearAllFilters = useCallback(() => {
-    setSearchValue('');
-    setStatuses([]);
-  }, []);
-  const toggleStatuses = useCallback(
-    () => setStatusesToggled(prev => !prev),
-    []
-  );
-  const onSelectStatus = useCallback(
-    (_, status) =>
-      setStatuses(prev =>
-        prev.includes(status)
-          ? prev.filter(s => s !== status)
-          : [...prev, status]
-      ),
-    []
-  );
-  const onSelect = (selectedCluster: string) => {
-    send({ type: 'selectCluster', selectedCluster });
-  };
+const ClustersGallery: FunctionComponent = () => {
+  const history = useHistory();
+  const actor = useCreationWizardMachineClustersActor();
+  const {
+    response,
+    selectedId,
+    loading,
+    error,
+    noResults,
+    // results,
+    queryEmpty,
+    // queryResults,
+    firstRequest,
+    onSelect,
+    onQuery,
+  } = useClustersMachine(actor);
 
   switch (true) {
-    case state.matches('loading'):
+    case firstRequest:
       return (
-        <EmptyState>
-          <EmptyStateIcon variant="container" component={Spinner} />
-          <Title size="lg" headingLevel="h4">
-            Loading
-          </Title>
-        </EmptyState>
+        <PageSection padding={{ default: 'noPadding' }} isFilled>
+          <Loading />
+        </PageSection>
       );
-    case state.matches('failure'):
-      return <NoMatchFound />;
+    case queryEmpty:
+      return (
+        <PageSection padding={{ default: 'noPadding' }} isFilled>
+          <ClustersToolbar />
+          <NoMatchFound onClear={() => onQuery({ page: 1, size: 10 })} />
+        </PageSection>
+      );
+    case noResults || error:
+      return (
+        <PageSection padding={{ default: 'noPadding' }} isFilled>
+          <EmptyState
+            emptyStateProps={{ variant: EmptyStateVariant.GettingStarted }}
+            titleProps={{ title: 'cos.no_clusters_instance' }}
+            emptyStateBodyProps={{
+              body: 'cos.no_clusters_instance_body',
+            }}
+            buttonProps={{
+              title: 'cos.create_clusters_instance',
+              variant: ButtonVariant.primary,
+              onClick: () => history.push('/create-connector'),
+            }}
+          />
+        </PageSection>
+      );
+    case loading:
+      return (
+        <PageSection padding={{ default: 'noPadding' }} isFilled>
+          <ClustersToolbar />
+          <Loading />
+        </PageSection>
+      );
     default:
-      const statusMenuItems = [
-        <SelectOption key="statusPending" value="Pending" />,
-        <SelectOption key="statusCreated" value="Created" />,
-        <SelectOption key="statusCancelled" value="Cancelled" />,
-      ];
-      const toggleGroupItems = (
-        <Fragment>
-          <ToolbarItem>
-            <InputGroup>
-              <TextInput
-                name="textInput2"
-                id="textInput2"
-                type="search"
-                aria-label="search input example"
-                onChange={setSearchValue}
-                value={searchValue}
-              />
-              <Button
-                variant={'control'}
-                aria-label="search button for search input"
-              >
-                <SearchIcon />
-              </Button>
-            </InputGroup>
-          </ToolbarItem>
-          <ToolbarGroup variant="filter-group">
-            <ToolbarFilter
-              chips={statuses}
-              deleteChip={onSelectStatus}
-              deleteChipGroup={() => setStatuses([])}
-              categoryName="Status"
-            >
-              <Select
-                variant={'checkbox'}
-                aria-label="Status"
-                onToggle={toggleStatuses}
-                onSelect={onSelectStatus}
-                selections={statuses}
-                isOpen={statusesToggled}
-                placeholderText="Status"
-              >
-                {statusMenuItems}
-              </Select>
-            </ToolbarFilter>
-          </ToolbarGroup>
-        </Fragment>
-      );
-      const toolbarItems = (
-        <>
-          <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
-            {toggleGroupItems}
-          </ToolbarToggleGroup>
-          <ToolbarGroup variant="icon-button-group">
-            <ToolbarItem>
-              <Button variant="primary">Create OCM Cluster</Button>
-            </ToolbarItem>
-          </ToolbarGroup>
-          <ToolbarItem
-            variant="pagination"
-            alignment={{ default: 'alignRight' }}
-          >
-            <Pagination
-              itemCount={state.context.clusters?.total || 0}
-              page={(state.context.clusters?.page || 0) + 1}
-              perPage={state.context.clusters?.size || 0}
-              perPageOptions={defaultPerPageOptions}
-              onSetPage={() => false}
-              onPerPageSelect={() => false}
-              variant="top"
-              isCompact
-            />
-          </ToolbarItem>
-        </>
-      );
       return (
-        <PageSection padding={{ default: 'noPadding' }}>
-          <Toolbar
-            id="toolbar-group-types"
-            collapseListedFiltersBreakpoint="xl"
-            clearAllFilters={clearAllFilters}
-          >
-            <ToolbarContent>{toolbarItems}</ToolbarContent>
-          </Toolbar>
+        <PageSection padding={{ default: 'noPadding' }} isFilled>
+          <ClustersToolbar />
           <PageSection isFilled>
             <Gallery hasGutter>
-              {state.context.clusters?.items
-                .filter(i =>
-                  searchValue !== ''
-                    ? i.metadata!.name!.includes(searchValue)
-                    : true
-                )
-                .map(i => (
-                  <Card
-                    isHoverable
-                    key={i.id}
-                    isSelectable
-                    isSelected={state.context.selectedCluster?.id === i.id}
-                    onClick={() => onSelect(i.id!)}
-                  >
-                    <CardHeader>
-                      <CardTitle>{i.metadata?.name}</CardTitle>
-                    </CardHeader>
-                    <CardBody>
-                      <DescriptionList>
-                        <DescriptionListGroup>
-                          <DescriptionListTerm>Owner</DescriptionListTerm>
-                          <DescriptionListDescription>
-                            {i.metadata?.owner}
-                          </DescriptionListDescription>
-                        </DescriptionListGroup>
-                        <DescriptionListGroup>
-                          <DescriptionListTerm>Created</DescriptionListTerm>
-                          <DescriptionListDescription>
-                            {i.metadata?.created_at}
-                          </DescriptionListDescription>
-                        </DescriptionListGroup>
-                      </DescriptionList>
-                    </CardBody>
-                  </Card>
-                ))}
+              {response?.items?.map(i => (
+                <Card
+                  isHoverable
+                  key={i.id}
+                  isSelectable
+                  isSelected={selectedId === i.id}
+                  onClick={() => onSelect(i.id!)}
+                >
+                  <CardHeader>
+                    <CardTitle>{i.metadata?.name}</CardTitle>
+                  </CardHeader>
+                  <CardBody>
+                    <DescriptionList>
+                      <DescriptionListGroup>
+                        <DescriptionListTerm>Owner</DescriptionListTerm>
+                        <DescriptionListDescription>
+                          {i.metadata?.owner}
+                        </DescriptionListDescription>
+                      </DescriptionListGroup>
+                      <DescriptionListGroup>
+                        <DescriptionListTerm>Created</DescriptionListTerm>
+                        <DescriptionListDescription>
+                          {i.metadata?.created_at}
+                        </DescriptionListDescription>
+                      </DescriptionListGroup>
+                    </DescriptionList>
+                  </CardBody>
+                </Card>
+              ))}
             </Gallery>
           </PageSection>
         </PageSection>
       );
   }
-}
+};
+
+const ClustersToolbar: FunctionComponent = () => {
+  const actor = useCreationWizardMachineClustersActor();
+  const { request, response, onQuery } = useClustersMachine(actor);
+
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const debouncedOnQuery = useDebounce(onQuery, 1000);
+  const defaultPerPageOptions = [
+    {
+      title: '1',
+      value: 1,
+    },
+    {
+      title: '5',
+      value: 5,
+    },
+    {
+      title: '10',
+      value: 10,
+    },
+  ];
+
+  // const [statuses, setStatuses] = useState<string[]>([
+  //   'Pending',
+  //   'Created',
+  //   'Cancelled',
+  // ]);
+  // const [statusesToggled, setStatusesToggled] = useState(false);
+  // const clearAllFilters = useCallback(() => {
+  //   setSearchValue('');
+  //   setStatuses([]);
+  // }, []);
+  // const toggleStatuses = useCallback(
+  //   () => setStatusesToggled(prev => !prev),
+  //   []
+  // );
+  // const onSelectStatus = useCallback(
+  //   (_, status) =>
+  //     setStatuses(prev =>
+  //       prev.includes(status)
+  //         ? prev.filter(s => s !== status)
+  //         : [...prev, status]
+  //     ),
+  //   []
+  // );
+
+  // const statusMenuItems = [
+  //   <SelectOption key="statusPending" value="Pending" />,
+  //   <SelectOption key="statusCreated" value="Created" />,
+  //   <SelectOption key="statusCancelled" value="Cancelled" />,
+  // ];
+
+  // ensure the search input value reflects what's specified in the request object
+  // useEffect(() => {
+  //   if (searchInputRef.current) {
+  //     searchInputRef.current.value = (request.name as string | undefined) || '';
+  //   }
+  // }, [searchInputRef, request]);
+
+  const toggleGroupItems = (
+    <>
+      <ToolbarItem>
+        <InputGroup>
+          <TextInput
+            name="textInput2"
+            id="textInput2"
+            type="search"
+            aria-label="search input example"
+            onChange={value =>
+              debouncedOnQuery({
+                size: request.size,
+                page: 1,
+                name: value,
+              })
+            }
+            ref={searchInputRef}
+          />
+          <Button
+            variant={'control'}
+            aria-label="search button for search input"
+          >
+            <SearchIcon />
+          </Button>
+        </InputGroup>
+      </ToolbarItem>
+      {/* <ToolbarGroup variant="filter-group">
+        <ToolbarFilter
+          chips={statuses}
+          deleteChip={onSelectStatus}
+          deleteChipGroup={() => setStatuses([])}
+          categoryName="Status"
+        >
+          <Select
+            variant={'checkbox'}
+            aria-label="Status"
+            onToggle={toggleStatuses}
+            onSelect={onSelectStatus}
+            selections={statuses}
+            isOpen={statusesToggled}
+            placeholderText="Status"
+          >
+            {statusMenuItems}
+          </Select>
+        </ToolbarFilter>
+      </ToolbarGroup> */}
+    </>
+  );
+  const toolbarItems = (
+    <>
+      <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
+        {toggleGroupItems}
+      </ToolbarToggleGroup>
+      <ToolbarGroup variant="icon-button-group">
+        <ToolbarItem>
+          <Button variant="primary">Create Clusters Instance</Button>
+        </ToolbarItem>
+      </ToolbarGroup>
+      <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
+        <Pagination
+          itemCount={response?.total || 0}
+          page={request.page}
+          perPage={request.size}
+          perPageOptions={defaultPerPageOptions}
+          onSetPage={(_, page, size) =>
+            onQuery({ ...request, page, size: size || request.size })
+          }
+          onPerPageSelect={() => false}
+          variant="top"
+          isCompact
+        />
+      </ToolbarItem>
+    </>
+  );
+
+  return (
+    <Toolbar
+      id="toolbar-group-types"
+      collapseListedFiltersBreakpoint="xl"
+      // clearAllFilters={clearAllFilters}
+    >
+      <ToolbarContent>{toolbarItems}</ToolbarContent>
+    </Toolbar>
+  );
+};

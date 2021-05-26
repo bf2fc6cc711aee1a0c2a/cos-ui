@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useRef } from 'react';
+import React, { FunctionComponent, useRef } from 'react';
 import { Table, TableHeader, TableBody } from '@patternfly/react-table';
 import {
   PaginatedApiRequest,
@@ -51,17 +51,25 @@ export const ConnectorsPage: FunctionComponent = () => {
 const ConnectorsTable: FunctionComponent = () => {
   const history = useHistory();
   const service = useConnectorsMachineService();
-  const { response, isLoading, isEmpty, hasFilters } = useConnectorsMachine(
-    service
-  );
+  const {
+    response,
+    loading,
+    error,
+    noResults,
+    // results,
+    queryEmpty,
+    // queryResults,
+    firstRequest,
+  } = useConnectorsMachine(service);
+
   switch (true) {
-    case isLoading:
+    case firstRequest:
       return (
         <PageSection padding={{ default: 'noPadding' }} isFilled>
           <Loading />
         </PageSection>
       );
-    case isEmpty && hasFilters:
+    case queryEmpty:
       return (
         <PageSection padding={{ default: 'noPadding' }} isFilled>
           <NoMatchFound
@@ -69,7 +77,14 @@ const ConnectorsTable: FunctionComponent = () => {
           />
         </PageSection>
       );
-    case isEmpty:
+    case loading:
+      return (
+        <PageSection padding={{ default: 'noPadding' }} isFilled>
+          <ConnectorsToolbar />
+          <Loading />
+        </PageSection>
+      );
+    case noResults || error:
       return (
         <EmptyState
           emptyStateProps={{ variant: EmptyStateVariant.GettingStarted }}
@@ -126,7 +141,7 @@ const ConnectorsToolbar: FunctionComponent = () => {
   const service = useConnectorsMachineService();
   const { request, response } = useConnectorsMachine(service);
 
-  const onChange = (request: PaginatedApiRequest) =>
+  const onChange = (request: PaginatedApiRequest<{}>) =>
     service.send({ type: 'query', ...request });
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnChange = useDebounce(onChange, 1000);
@@ -176,11 +191,11 @@ const ConnectorsToolbar: FunctionComponent = () => {
   // ];
 
   // ensure the search input value reflects what's specified in the request object
-  useEffect(() => {
-    if (searchInputRef.current) {
-      searchInputRef.current.value = (request.name as string | undefined) || '';
-    }
-  }, [searchInputRef, request]);
+  // useEffect(() => {
+  //   if (searchInputRef.current) {
+  //     searchInputRef.current.value = (request.name as string | undefined) || '';
+  //   }
+  // }, [searchInputRef, request]);
 
   const toggleGroupItems = (
     <>

@@ -1,18 +1,7 @@
 import * as React from 'react';
 import { useInterpret } from '@xstate/react';
-import { Interpreter, StateMachine } from 'xstate';
 import { creationWizardMachine } from '@cos-ui/machines';
-
-export type InterpreterFrom<
-  T extends StateMachine<any, any, any, any>
-> = T extends StateMachine<
-  infer TContext,
-  infer TStateSchema,
-  infer TEvent,
-  infer TTypestate
->
-  ? Interpreter<TContext, TStateSchema, TEvent, TTypestate>
-  : never;
+import { InterpreterFrom } from 'xstate';
 
 type InterpretType = InterpreterFrom<typeof creationWizardMachine>;
 type MachineServiceType = InterpretType | null;

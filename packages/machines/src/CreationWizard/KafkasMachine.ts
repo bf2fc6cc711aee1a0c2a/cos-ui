@@ -1,23 +1,35 @@
 import { Configuration, DefaultApi, KafkaRequest } from '@cos-ui/api';
+import { useSelector } from '@xstate/react';
 import axios from 'axios';
-import { assign, createMachine, createSchema, send } from 'xstate';
+import { useCallback } from 'react';
+import {
+  ActorRefFrom,
+  assign,
+  createMachine,
+  createSchema,
+  send,
+} from 'xstate';
 import { sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import {
   ApiCallback,
   ApiSuccessResponse,
   makePaginatedApiMachine,
+  PaginatedApiActorType,
   paginatedApiMachineEvents,
   PaginatedApiRequest,
   PaginatedApiResponse,
+  usePagination,
 } from '../shared';
 
 const PAGINATED_MACHINE_ID = 'paginatedApi';
 
+type QueryType = { name: string };
+
 const fetchKafkaInstances = (
   accessToken?: Promise<string>,
   basePath?: string
-): ApiCallback<KafkaRequest> => {
+): ApiCallback<KafkaRequest, QueryType> => {
   const apisService = new DefaultApi(
     new Configuration({
       accessToken,
@@ -27,16 +39,15 @@ const fetchKafkaInstances = (
   return (request, onSuccess, onError) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
-    const { page, size, name = '' } = request as PaginatedApiRequest & {
-      name?: string;
-    };
-    const query = name.length > 0 ? `name LIKE ${name}` : undefined;
+    const { page, size, query } = request;
+    const { name } = query || {};
+    const search = name && name.length > 0 ? `name LIKE ${name}` : undefined;
     apisService
       .listKafkas(
         `${page}`,
         `${size}`,
         undefined,
-        query as string | undefined,
+        search as string | undefined,
         {
           cancelToken: source.token,
         }
@@ -87,7 +98,8 @@ const kafkasMachineModel = createModel(
       }),
       deselectInstance: () => ({}),
       confirm: () => ({}),
-      loading: (payload: PaginatedApiRequest) => payload,
+      ready: () => ({}),
+      loading: (payload: PaginatedApiRequest<QueryType>) => payload,
       success: (payload: ApiSuccessResponse<KafkaRequest>) => payload,
       ...paginatedApiMachineEvents,
     },
@@ -105,20 +117,20 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
         type: 'parallel',
         states: {
           api: {
-            initial: 'deferred',
+            initial: 'idle',
             invoke: {
               id: PAGINATED_MACHINE_ID,
               src: context =>
-                makePaginatedApiMachine<KafkaRequest>(
+                makePaginatedApiMachine<KafkaRequest, QueryType>(
                   fetchKafkaInstances(context.authToken, context.basePath)
                 ),
               autoForward: true,
             },
             states: {
-              deferred: {
-                entry: send('refresh', { to: PAGINATED_MACHINE_ID }),
+              idle: {
+                entry: send('query', { to: PAGINATED_MACHINE_ID }),
                 on: {
-                  loading: 'ready',
+                  ready: 'ready',
                 },
               },
               ready: {},
@@ -209,3 +221,50 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
     },
   }
 );
+
+export type KafkaMachineActorRef = ActorRefFrom<typeof kafkasMachine>;
+
+export const useKafkasMachineIsReady = (actor: KafkaMachineActorRef) => {
+  return useSelector(
+    actor,
+    useCallback(
+      (state: typeof actor.state) => {
+        return state.matches({ root: { api: 'ready' } });
+      },
+      [actor]
+    )
+  );
+};
+
+export const useKafkasMachine = (actor: KafkaMachineActorRef) => {
+  const api = usePagination<KafkaRequest, QueryType>(
+    actor.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType
+  );
+  const { selectedId } = useSelector(
+    actor,
+    useCallback(
+      (state: typeof actor.state) => ({
+        selectedId: state.context.selectedInstance?.id,
+      }),
+      [actor]
+    )
+  );
+  const onSelect = useCallback(
+    (selectedInstance: string) => {
+      actor.send({ type: 'selectInstance', selectedInstance });
+    },
+    [actor]
+  );
+  const onQuery = useCallback(
+    (request: PaginatedApiRequest<QueryType>) => {
+      actor.send({ type: 'query', ...request });
+    },
+    [actor]
+  );
+  return {
+    ...api,
+    selectedId,
+    onSelect,
+    onQuery,
+  };
+};

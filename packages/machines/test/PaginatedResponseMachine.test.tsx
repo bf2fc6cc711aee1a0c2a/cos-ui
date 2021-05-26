@@ -4,7 +4,7 @@ import {
   makePaginatedApiMachine,
   ApiCallback,
   paginatedApiMachineEvents,
-} from '../src/PaginatedResponseMachine';
+} from '../src';
 
 describe('@cos-ui/machines', () => {
   describe('makePaginatedApiMachine', () => {
@@ -13,7 +13,8 @@ describe('@cos-ui/machines', () => {
     const API_LATENCY = 1000;
     jest.useFakeTimers();
 
-    type TestType = { foo: string };
+    type TestResultType = { foo: string };
+    type TestQueryType = { bar: string };
 
     const makeRequestData = (size: number) =>
       Array(size).fill({ foo: 'it works' });
@@ -31,7 +32,7 @@ describe('@cos-ui/machines', () => {
       responsePayload = context;
     });
 
-    const testApi: ApiCallback<TestType> = jest.fn(
+    const testApi: ApiCallback<TestResultType, TestQueryType> = jest.fn(
       (request, onSuccess, onError) => {
         if (request.page === 0) {
           fail("can't fetch page 0");
@@ -64,7 +65,10 @@ describe('@cos-ui/machines', () => {
       }
     );
 
-    const paginatedApiMachine = makePaginatedApiMachine<TestType>(testApi);
+    const paginatedApiMachine = makePaginatedApiMachine<
+      TestResultType,
+      TestQueryType
+    >(testApi);
 
     const testModel = createModel(
       {},
@@ -198,11 +202,45 @@ describe('@cos-ui/machines', () => {
       expect(onErrorSpy).toBeCalledTimes(0);
     });
 
-    it('query requires a full request object', () => {
-      testService.send('query', { page: 1, size: 4, foo: 'test foo' });
+    it('can query with a complete request object', () => {
+      testService.send('query', {
+        page: 1,
+        size: 4,
+        query: { bar: 'test bar' },
+      });
       jest.runAllTimers();
       expect(loadingPayload).toEqual(
-        expect.objectContaining({ page: 1, size: 4, foo: 'test foo' })
+        expect.objectContaining({
+          page: 1,
+          size: 4,
+          query: { bar: 'test bar' },
+        })
+      );
+      expect(responsePayload).toEqual(
+        expect.objectContaining({
+          items: makeRequestData(4),
+          total: 100,
+          error: undefined,
+        })
+      );
+      expect(testApi).toBeCalledTimes(1);
+      expect(onCancelTimerSpy).toBeCalledTimes(0);
+      expect(onLoadingSpy).toBeCalledTimes(1);
+      expect(onSuccessSpy).toBeCalledTimes(1);
+      expect(onErrorSpy).toBeCalledTimes(0);
+    });
+
+    it('can query with a partial request object', () => {
+      testService.send('query', {
+        query: { bar: 'test bar 2' },
+      });
+      jest.runAllTimers();
+      expect(loadingPayload).toEqual(
+        expect.objectContaining({
+          page: 1,
+          size: 4,
+          query: { bar: 'test bar 2' },
+        })
       );
       expect(responsePayload).toEqual(
         expect.objectContaining({

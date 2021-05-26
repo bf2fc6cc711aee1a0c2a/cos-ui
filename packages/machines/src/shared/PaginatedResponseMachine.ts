@@ -13,43 +13,43 @@ import { sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
 export type ApiErrorResponse = { page: number; error: string };
-export type ApiSuccessResponse<T> = {
-  items: Array<T>;
+export type ApiSuccessResponse<ResponseType> = {
+  items: Array<ResponseType>;
   page: number;
   size: number;
   total: number;
 };
-export type ApiCallback<T> = (
-  request: PaginatedApiRequest,
-  onSuccess: (payload: ApiSuccessResponse<T>) => void,
+export type ApiCallback<ResponseType, QueryType> = (
+  request: PaginatedApiRequest<QueryType>,
+  onSuccess: (payload: ApiSuccessResponse<ResponseType>) => void,
   onError: (payload: ApiErrorResponse) => void
 ) => () => void;
 
-export type PaginatedApiRequest = {
+export type PaginatedApiRequest<QueryType> = {
   page: number;
   size: number;
-  [key: string]: unknown;
+  query?: QueryType;
 };
-export type PaginatedApiResponse<T> = {
+export type PaginatedApiResponse<ResponseType> = {
   total: number;
-  items?: Array<T>;
+  items?: Array<ResponseType>;
   error?: string;
 };
-export type PaginatedMachineContext<T> = {
-  request: PaginatedApiRequest;
-  response?: PaginatedApiResponse<T>;
+export type PaginatedMachineContext<ResponseType, QueryType> = {
+  request: PaginatedApiRequest<QueryType>;
+  response?: PaginatedApiResponse<ResponseType>;
   actor?: SpawnedActorRef<any>;
 };
 
 const paginatedApiMachineSchema = {
-  context: createSchema<PaginatedMachineContext<any>>(),
+  context: createSchema<PaginatedMachineContext<any, {}>>(),
 };
 
 export const paginatedApiMachineEvents = {
   refresh: () => ({}),
   nextPage: () => ({}),
   prevPage: () => ({}),
-  query: (payload: PaginatedApiRequest) => payload,
+  query: (payload: PaginatedApiRequest<{}>) => payload,
   setResponse: (payload: ApiSuccessResponse<unknown>) => payload,
   setError: (payload: ApiErrorResponse) => payload,
 };
@@ -61,7 +61,7 @@ export const paginatedApiMachineModel = createModel(
       size: 10,
     },
     response: undefined,
-  } as PaginatedMachineContext<any>,
+  } as PaginatedMachineContext<any, any>,
   {
     events: {
       ...paginatedApiMachineEvents,
@@ -69,13 +69,15 @@ export const paginatedApiMachineModel = createModel(
   }
 );
 
-export function makePaginatedApiMachine<T>(service: ApiCallback<T>) {
-  const callApi = (context: PaginatedMachineContext<T>) => (
-    callback: Sender<any>
-  ) => {
+export function makePaginatedApiMachine<ResponseType, QueryType>(
+  service: ApiCallback<ResponseType, QueryType>
+) {
+  const callApi = (
+    context: PaginatedMachineContext<ResponseType, QueryType>
+  ) => (callback: Sender<any>) => {
     return service(
       context.request!,
-      (payload: ApiSuccessResponse<T>) =>
+      (payload: ApiSuccessResponse<ResponseType>) =>
         callback(paginatedApiMachineModel.events.setResponse(payload)),
       (payload: ApiErrorResponse) =>
         callback(paginatedApiMachineModel.events.setError(payload))
@@ -89,37 +91,134 @@ export function makePaginatedApiMachine<T>(service: ApiCallback<T>) {
       context: paginatedApiMachineModel.initialContext,
       initial: 'idle',
       states: {
+        idle: {
+          entry: 'notifyReady',
+          on: {
+            query: {
+              target: 'loading',
+              actions: 'query',
+            },
+          },
+        },
+        success: {
+          always: [
+            { target: 'queryEmpty', cond: 'isQueryEmpty' },
+            { target: 'queryResults', cond: 'isQuerySuccesful' },
+            { target: 'empty', cond: 'isTotalZero' },
+            { target: 'results' },
+          ],
+        },
+        queryEmpty: {
+          tags: 'queryEmpty',
+          on: {
+            query: {
+              target: 'loading',
+              actions: 'query',
+            },
+            prevPage: {
+              target: 'loading',
+              actions: 'decreasePage',
+              cond: 'isNotFirstPage',
+            },
+            refresh: {
+              target: 'loading',
+              actions: 'fetch',
+            },
+          },
+        },
+        queryResults: {
+          tags: 'queryResults',
+          on: {
+            query: {
+              target: 'loading',
+              actions: 'query',
+            },
+            nextPage: {
+              target: 'loading',
+              actions: 'increasePage',
+              cond: 'isNotLastPage',
+            },
+            prevPage: {
+              target: 'loading',
+              actions: 'decreasePage',
+              cond: 'isNotFirstPage',
+            },
+            refresh: {
+              target: 'loading',
+              actions: 'fetch',
+            },
+          },
+        },
+        empty: {
+          tags: 'empty',
+          on: {
+            query: {
+              target: 'loading',
+              actions: 'query',
+            },
+            refresh: {
+              target: 'loading',
+              actions: 'fetch',
+            },
+          },
+        },
+        results: {
+          tags: 'results',
+          on: {
+            query: {
+              target: 'loading',
+              actions: 'query',
+            },
+            nextPage: {
+              target: 'loading',
+              actions: 'increasePage',
+              cond: 'isNotLastPage',
+            },
+            prevPage: {
+              target: 'loading',
+              actions: 'decreasePage',
+              cond: 'isNotFirstPage',
+            },
+            refresh: {
+              target: 'loading',
+              actions: 'fetch',
+            },
+          },
+        },
+        error: {
+          tags: 'error',
+          on: {
+            query: {
+              target: 'loading',
+              actions: 'query',
+            },
+            refresh: {
+              target: 'loading',
+              actions: 'fetch',
+            },
+            prevPage: {
+              target: 'loading',
+              actions: 'decreasePage',
+              cond: 'isNotFirstPage',
+            },
+          },
+        },
         loading: {
           entry: ['notifyLoading', 'fetch'],
-        },
-        idle: {},
-      },
-      on: {
-        nextPage: {
-          target: 'loading',
-          actions: 'increasePage',
-          cond: 'isNotLastPage',
-        },
-        prevPage: {
-          target: 'loading',
-          actions: 'decreasePage',
-          cond: 'isNotFirstPage',
-        },
-        query: {
-          target: 'loading',
-          actions: 'query',
-        },
-        setResponse: {
-          target: 'idle',
-          actions: ['setResponse', 'notifySuccess'],
-        },
-        setError: {
-          target: 'idle',
-          actions: ['setError', 'notifyError'],
-        },
-        refresh: {
-          target: 'loading',
-          actions: 'fetch',
+          on: {
+            query: {
+              target: 'loading',
+              actions: 'query',
+            },
+            setResponse: {
+              target: 'success',
+              actions: ['setResponse', 'notifySuccess'],
+            },
+            setError: {
+              target: 'error',
+              actions: ['setError', 'notifyError'],
+            },
+          },
         },
       },
     },
@@ -167,12 +266,19 @@ export function makePaginatedApiMachine<T>(service: ApiCallback<T>) {
             request: { ...context.request, page: context.request.page - 1 },
           };
         }),
-        query: assign((_context, event) => {
+        query: assign((context, event) => {
           if (event.type !== 'query') return {};
-          const { type, ...payload } = event;
+          const { page, size, query } = event;
           return {
-            request: payload,
+            request: {
+              page: page || context.request.page,
+              size: size || context.request.size,
+              query,
+            },
           };
+        }),
+        notifyReady: sendParent({
+          type: 'ready',
         }),
         notifySuccess: sendParent(context => ({
           type: 'success',
@@ -195,6 +301,15 @@ export function makePaginatedApiMachine<T>(service: ApiCallback<T>) {
           context.request.size > 0 &&
           context.request.page <
             Math.ceil(context.response.total / context.request.size),
+        isTotalZero: context => context.response?.total === 0,
+        isQuerySuccesful: context =>
+          context.request.query !== undefined &&
+          context.response !== undefined &&
+          context.response?.total > 0,
+        isQueryEmpty: context =>
+          context.request.query !== undefined &&
+          context.response !== undefined &&
+          context.response?.total === 0,
       },
     }
   );
@@ -204,21 +319,25 @@ export type PaginatedApiActorType = ActorRefFrom<
   ReturnType<typeof makePaginatedApiMachine>
 >;
 
-export const usePagination = <T>(actor: PaginatedApiActorType) => {
+export const usePagination = <ResponseType, QueryType>(
+  actor: PaginatedApiActorType
+) => {
   return useSelector(
     actor,
     useCallback(
       (state: typeof actor.state) => {
-        const items = state.context.response?.items || [];
         return {
-          request: state.context.request,
+          request: state.context.request as PaginatedApiRequest<QueryType>,
           response: state.context.response as
-            | PaginatedApiResponse<T>
+            | PaginatedApiResponse<ResponseType>
             | undefined,
-          isLoading: state.matches('loading'),
-          hasFilters: Object.keys(state.context.request).length !== 2, // TODO: fix this logic
-          isEmpty: items.length === 0,
-          isFirstRequest: state.context.response === undefined,
+          loading: state.matches('loading'),
+          queryEmpty: state.hasTag('queryEmpty'),
+          queryResults: state.hasTag('queryResults'),
+          noResults: state.hasTag('empty'),
+          results: state.hasTag('results'),
+          error: state.hasTag('error'),
+          firstRequest: state.matches('idle'),
         };
       },
       [actor]

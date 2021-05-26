@@ -3,7 +3,6 @@ import { useSelector, useService } from '@xstate/react';
 import {
   creationWizardMachine,
   ConnectorTypesMachineActorRef,
-  ClusterMachineActorRef,
   useCreationWizardMachineService,
 } from '@cos-ui/machines';
 import {
@@ -122,9 +121,7 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
       isActive: state.matches('selectCluster'),
       component: (
         <StepErrorBoundary>
-          <SelectCluster
-            actor={state.children.selectCluster as ClusterMachineActorRef}
-          />
+          <SelectCluster />
         </StepErrorBoundary>
       ),
       canJumpTo:

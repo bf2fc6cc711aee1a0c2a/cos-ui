@@ -64,7 +64,7 @@ export const useConnectorsMachineIsReady = (
 export const useConnectorsMachine = (
   service: ConnectorsMachineInterpretType
 ) => {
-  return usePagination<Connector>(
+  return usePagination<Connector, {}>(
     service.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType
   );
 };

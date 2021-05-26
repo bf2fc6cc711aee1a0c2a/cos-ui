@@ -1,4 +1,8 @@
-import { useKafkasMachine, useKafkasMachineIsReady } from '@cos-ui/machines';
+import {
+  useCreationWizardMachineKafkasActor,
+  useKafkasMachine,
+  useKafkasMachineIsReady,
+} from '@cos-ui/machines';
 import {
   EmptyState,
   EmptyStateVariant,
@@ -38,39 +42,44 @@ import React, { FunctionComponent, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router';
 
 export function SelectKafkaInstance() {
-  const isReady = useKafkasMachineIsReady();
+  const actor = useCreationWizardMachineKafkasActor();
+  const isReady = useKafkasMachineIsReady(actor);
 
   return isReady ? <KafkasGallery /> : null;
 }
 
 const KafkasGallery: FunctionComponent = () => {
   const history = useHistory();
+  const actor = useCreationWizardMachineKafkasActor();
   const {
     response,
-    isFirstRequest,
-    isLoading,
-    isEmpty,
-    hasFilters,
+    loading,
+    error,
     selectedId,
+    noResults,
+    // results,
+    queryEmpty,
+    // queryResults,
+    firstRequest,
     onSelect,
     onQuery,
-  } = useKafkasMachine();
+  } = useKafkasMachine(actor);
 
   switch (true) {
-    case isFirstRequest:
+    case firstRequest:
       return (
         <PageSection padding={{ default: 'noPadding' }} isFilled>
           <Loading />
         </PageSection>
       );
-    case isEmpty && hasFilters:
+    case queryEmpty:
       return (
         <PageSection padding={{ default: 'noPadding' }} isFilled>
           <KafkaToolbar />
           <NoMatchFound onClear={() => onQuery({ page: 1, size: 10 })} />
         </PageSection>
       );
-    case isEmpty:
+    case noResults || error:
       return (
         <PageSection padding={{ default: 'noPadding' }} isFilled>
           <EmptyState
@@ -87,7 +96,7 @@ const KafkasGallery: FunctionComponent = () => {
           />
         </PageSection>
       );
-    case isLoading:
+    case loading:
       return (
         <PageSection padding={{ default: 'noPadding' }} isFilled>
           <KafkaToolbar />
@@ -143,7 +152,8 @@ const KafkasGallery: FunctionComponent = () => {
 };
 
 const KafkaToolbar: FunctionComponent = () => {
-  const { request, response, onQuery } = useKafkasMachine();
+  const actor = useCreationWizardMachineKafkasActor();
+  const { request, response, onQuery } = useKafkasMachine(actor);
 
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnQuery = useDebounce(onQuery, 1000);
@@ -195,7 +205,7 @@ const KafkaToolbar: FunctionComponent = () => {
   // ensure the search input value reflects what's specified in the request object
   useEffect(() => {
     if (searchInputRef.current) {
-      searchInputRef.current.value = (request.name as string | undefined) || '';
+      searchInputRef.current.value = request.query?.name || '';
     }
   }, [searchInputRef, request]);
 
@@ -212,7 +222,9 @@ const KafkaToolbar: FunctionComponent = () => {
               debouncedOnQuery({
                 size: request.size,
                 page: 1,
-                name: value,
+                query: {
+                  name: value,
+                },
               })
             }
             ref={searchInputRef}

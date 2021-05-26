@@ -10,14 +10,14 @@ import {
   paginatedApiMachineEvents,
   PaginatedApiRequest,
   PaginatedApiResponse,
-} from '../shared/PaginatedResponseMachine';
+} from '../shared';
 
 export const PAGINATED_MACHINE_ID = 'paginatedApi';
 
 const fetchConnectors = (
   accessToken?: Promise<string>,
   basePath?: string
-): ApiCallback<Connector> => {
+): ApiCallback<Connector, {}> => {
   const apisService = new ConnectorsApi(
     new Configuration({
       accessToken,
@@ -27,9 +27,7 @@ const fetchConnectors = (
   return (request, onSuccess, onError) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
-    const { page, size /*, name = '' */ } = request as PaginatedApiRequest & {
-      name?: string;
-    };
+    const { page, size /*, name = '' */ } = request;
     // const query = name.length > 0 ? `name LIKE ${name}` : undefined;
     apisService
       .listConnectors(`${page}`, `${size}`, undefined, {
@@ -57,8 +55,7 @@ const fetchConnectors = (
 type Context = {
   authToken?: Promise<string>;
   basePath?: string;
-  request: PaginatedApiRequest;
-  connectors?: PaginatedApiResponse<Connector>;
+  response?: PaginatedApiResponse<Connector>;
   error?: Object;
 };
 
@@ -70,17 +67,13 @@ const connectorsMachineModel = createModel(
   {
     authToken: undefined,
     basePath: undefined,
-    connectors: undefined,
     selectedInstance: undefined,
     error: undefined,
-    request: {
-      page: 1,
-      size: 10,
-    },
   } as Context,
   {
     events: {
-      loading: (payload: PaginatedApiRequest) => payload,
+      ready: () => ({}),
+      loading: (payload: PaginatedApiRequest<{}>) => payload,
       success: (payload: ApiSuccessResponse<Connector>) => payload,
       error: (payload: ApiErrorResponse) => payload,
       ...paginatedApiMachineEvents,
@@ -98,22 +91,20 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>({
       type: 'parallel',
       states: {
         api: {
-          initial: 'deferred',
+          initial: 'idle',
           invoke: {
             id: PAGINATED_MACHINE_ID,
             src: context =>
-              makePaginatedApiMachine<Connector>(
+              makePaginatedApiMachine<Connector, {}>(
                 fetchConnectors(context.authToken, context.basePath)
-              ).withContext({
-                request: context.request,
-              }),
+              ),
             autoForward: true,
           },
           states: {
-            deferred: {
-              entry: send('refresh', { to: PAGINATED_MACHINE_ID }),
+            idle: {
+              entry: send('query', { to: PAGINATED_MACHINE_ID }),
               on: {
-                loading: { target: 'ready' },
+                ready: 'ready',
               },
             },
             ready: {},
