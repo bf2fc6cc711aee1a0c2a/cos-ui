@@ -1,7 +1,7 @@
 import { PageSection, Text, TextArea } from '@patternfly/react-core';
 import { useService } from '@xstate/react';
 import React from 'react';
-import { useCreationWizardMachineService } from './CreationWizardContext';
+import { useCreationWizardMachineService } from '@cos-ui/machines';
 
 export function Review() {
   const service = useCreationWizardMachineService();

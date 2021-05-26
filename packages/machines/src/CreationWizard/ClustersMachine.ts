@@ -26,7 +26,7 @@ const fetchClusters = (
       basePath,
     })
   );
-  return apisService.listConnectorClusters();
+  return apisService.listConnectorClusters('1', '10');
 };
 
 type Context = {

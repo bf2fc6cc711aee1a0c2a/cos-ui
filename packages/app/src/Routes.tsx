@@ -1,7 +1,5 @@
-import {
-  CreationWizard,
-  CreationWizardMachineProvider,
-} from '@cos-ui/creation-wizard';
+import { CreationWizard } from '@cos-ui/creation-wizard';
+import { CreationWizardMachineProvider } from '@cos-ui/machines';
 import { PageSection, TextContent, Title } from '@patternfly/react-core';
 import React, { FunctionComponent } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';

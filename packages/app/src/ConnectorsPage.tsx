@@ -26,12 +26,12 @@ import {
   EmptyState,
   EmptyStateVariant,
 } from '@cos-ui/utils';
-import { useAppContext } from './AppContext';
-import { NavLink, useHistory } from 'react-router-dom';
 import {
   ConnectorsMachineProvider,
   useConnectorsMachineService,
-} from './ConnectorsPageContext';
+} from '@cos-ui/machines';
+import { NavLink, useHistory } from 'react-router-dom';
+import { useAppContext } from './AppContext';
 
 export const ConnectedConnectorsPage: FunctionComponent = () => {
   const { basePath, authToken } = useAppContext();

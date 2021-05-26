@@ -1,5 +1,11 @@
 import { KafkaRequest, ConnectorCluster, ConnectorType } from '@cos-ui/api';
-import { createMachine, assign, send, createSchema } from 'xstate';
+import {
+  createMachine,
+  assign,
+  send,
+  createSchema,
+  InterpreterFrom,
+} from 'xstate';
 import { kafkasMachine } from './KafkasMachine';
 import { clustersMachine } from './ClustersMachine';
 import { connectorTypesMachine } from './ConnectorTypesMachine';
@@ -316,3 +322,7 @@ export const creationWizardMachine = createMachine<
     },
   }
 );
+
+export type CreationWizardMachineInterpreterFromType = InterpreterFrom<
+  typeof creationWizardMachine
+> | null;

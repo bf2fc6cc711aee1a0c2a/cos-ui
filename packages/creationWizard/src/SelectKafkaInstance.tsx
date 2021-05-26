@@ -1,9 +1,4 @@
-import {
-  KafkaMachineActorRef,
-  PaginatedApiRequest,
-  useKafkasMachine,
-  useKafkasMachineIsReady,
-} from '@cos-ui/machines';
+import { useKafkasMachine, useKafkasMachineIsReady } from '@cos-ui/machines';
 import {
   EmptyState,
   EmptyStateVariant,
@@ -42,19 +37,13 @@ import {
 import React, { FunctionComponent, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router';
 
-export type WithKafkasMachineActorProp = {
-  actor: KafkaMachineActorRef;
-};
+export function SelectKafkaInstance() {
+  const isReady = useKafkasMachineIsReady();
 
-export function SelectKafkaInstance({ actor }: WithKafkasMachineActorProp) {
-  const isReady = useKafkasMachineIsReady(actor);
-
-  return isReady ? <KafkasGallery actor={actor} /> : null;
+  return isReady ? <KafkasGallery /> : null;
 }
 
-const KafkasGallery: FunctionComponent<WithKafkasMachineActorProp> = ({
-  actor,
-}) => {
+const KafkasGallery: FunctionComponent = () => {
   const history = useHistory();
   const {
     response,
@@ -63,21 +52,22 @@ const KafkasGallery: FunctionComponent<WithKafkasMachineActorProp> = ({
     isEmpty,
     hasFilters,
     selectedId,
-  } = useKafkasMachine(actor);
+    onSelect,
+    onQuery,
+  } = useKafkasMachine();
+
   switch (true) {
     case isFirstRequest:
       return (
         <PageSection padding={{ default: 'noPadding' }} isFilled>
-          <KafkaToolbar actor={actor} />
           <Loading />
         </PageSection>
       );
     case isEmpty && hasFilters:
       return (
         <PageSection padding={{ default: 'noPadding' }} isFilled>
-          <NoMatchFound
-            onClear={() => actor.send({ type: 'query', page: 1, size: 10 })}
-          />
+          <KafkaToolbar />
+          <NoMatchFound onClear={() => onQuery({ page: 1, size: 10 })} />
         </PageSection>
       );
     case isEmpty:
@@ -100,17 +90,14 @@ const KafkasGallery: FunctionComponent<WithKafkasMachineActorProp> = ({
     case isLoading:
       return (
         <PageSection padding={{ default: 'noPadding' }} isFilled>
-          <KafkaToolbar actor={actor} />
+          <KafkaToolbar />
           <Loading />
         </PageSection>
       );
     default:
-      const onSelect = (selectedInstance: string) => {
-        actor.send({ type: 'selectInstance', selectedInstance });
-      };
       return (
         <PageSection padding={{ default: 'noPadding' }} isFilled>
-          <KafkaToolbar actor={actor} />
+          <KafkaToolbar />
           <PageSection isFilled>
             <Gallery hasGutter>
               {response?.items?.map(i => (
@@ -155,15 +142,11 @@ const KafkasGallery: FunctionComponent<WithKafkasMachineActorProp> = ({
   }
 };
 
-const KafkaToolbar: FunctionComponent<WithKafkasMachineActorProp> = ({
-  actor,
-}) => {
-  const { request, response } = useKafkasMachine(actor);
+const KafkaToolbar: FunctionComponent = () => {
+  const { request, response, onQuery } = useKafkasMachine();
 
-  const onChange = (request: PaginatedApiRequest) =>
-    actor.send({ type: 'query', ...request });
   const searchInputRef = useRef<HTMLInputElement | null>(null);
-  const debouncedOnChange = useDebounce(onChange, 1000);
+  const debouncedOnQuery = useDebounce(onQuery, 1000);
   const defaultPerPageOptions = [
     {
       title: '1',
@@ -226,7 +209,7 @@ const KafkaToolbar: FunctionComponent<WithKafkasMachineActorProp> = ({
             type="search"
             aria-label="search input example"
             onChange={value =>
-              debouncedOnChange({
+              debouncedOnQuery({
                 size: request.size,
                 page: 1,
                 name: value,
@@ -281,7 +264,7 @@ const KafkaToolbar: FunctionComponent<WithKafkasMachineActorProp> = ({
           perPage={request.size}
           perPageOptions={defaultPerPageOptions}
           onSetPage={(_, page, size) =>
-            onChange({ ...request, page, size: size || request.size })
+            onQuery({ ...request, page, size: size || request.size })
           }
           onPerPageSelect={() => false}
           variant="top"

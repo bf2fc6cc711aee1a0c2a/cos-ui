@@ -1,27 +1,16 @@
-import { useSelector } from '@xstate/react';
+import { Configuration, DefaultApi, KafkaRequest } from '@cos-ui/api';
 import axios from 'axios';
-import {
-  ActorRefFrom,
-  assign,
-  createMachine,
-  createSchema,
-  send,
-} from 'xstate';
+import { assign, createMachine, createSchema, send } from 'xstate';
 import { sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
-import { useCallback } from 'react';
-import { Configuration, DefaultApi, KafkaRequest } from '@cos-ui/api';
 import {
-  paginatedApiMachineEvents,
-  makePaginatedApiMachine,
   ApiCallback,
+  ApiSuccessResponse,
+  makePaginatedApiMachine,
+  paginatedApiMachineEvents,
   PaginatedApiRequest,
   PaginatedApiResponse,
-  ApiSuccessResponse,
-  ApiErrorResponse,
-  usePagination,
-  PaginatedApiActorType,
-} from '../shared/PaginatedResponseMachine';
+} from '../shared';
 
 const PAGINATED_MACHINE_ID = 'paginatedApi';
 
@@ -74,7 +63,7 @@ const fetchKafkaInstances = (
 type Context = {
   authToken?: Promise<string>;
   basePath?: string;
-  instances?: PaginatedApiResponse<KafkaRequest>;
+  response?: PaginatedApiResponse<KafkaRequest>;
   selectedInstance?: KafkaRequest;
   error?: Object;
 };
@@ -100,7 +89,6 @@ const kafkasMachineModel = createModel(
       confirm: () => ({}),
       loading: (payload: PaginatedApiRequest) => payload,
       success: (payload: ApiSuccessResponse<KafkaRequest>) => payload,
-      error: (payload: ApiErrorResponse) => payload,
       ...paginatedApiMachineEvents,
     },
   }
@@ -130,10 +118,13 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
               deferred: {
                 entry: send('refresh', { to: PAGINATED_MACHINE_ID }),
                 on: {
-                  loading: { target: 'ready' },
+                  loading: 'ready',
                 },
               },
               ready: {},
+            },
+            on: {
+              success: { actions: 'success' },
             },
           },
           selection: {
@@ -188,10 +179,17 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
   },
   {
     actions: {
+      success: assign((_context, event) => {
+        if (event.type !== 'success') return {};
+        const { type, ...response } = event;
+        return {
+          response,
+        };
+      }),
       selectInstance: assign({
         selectedInstance: (context, event) => {
           if (event.type === 'selectInstance') {
-            return context.instances?.items?.find(
+            return context.response?.items?.find(
               i => i.id === event.selectedInstance
             );
           }
@@ -211,36 +209,3 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
     },
   }
 );
-
-export type KafkaMachineActorRef = ActorRefFrom<typeof kafkasMachine>;
-
-export const useKafkasMachineIsReady = (actor: KafkaMachineActorRef) => {
-  return useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => {
-        return state.matches({ root: { api: 'ready' } });
-      },
-      [actor]
-    )
-  );
-};
-
-export const useKafkasMachine = (actor: KafkaMachineActorRef) => {
-  const api = usePagination<KafkaRequest>(
-    actor.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType
-  );
-  const { selectedId } = useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => ({
-        selectedId: state.context.selectedInstance?.id,
-      }),
-      [actor]
-    )
-  );
-  return {
-    ...api,
-    selectedId,
-  };
-};

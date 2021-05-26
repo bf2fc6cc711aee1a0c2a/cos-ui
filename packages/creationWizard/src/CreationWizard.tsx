@@ -2,9 +2,9 @@ import React, { FunctionComponent, useCallback } from 'react';
 import { useSelector, useService } from '@xstate/react';
 import {
   creationWizardMachine,
-  KafkaMachineActorRef,
   ConnectorTypesMachineActorRef,
   ClusterMachineActorRef,
+  useCreationWizardMachineService,
 } from '@cos-ui/machines';
 import {
   UncontrolledWizard,
@@ -15,19 +15,17 @@ import { SelectKafkaInstance } from './SelectKafkaInstance';
 import { SelectCluster } from './SelectCluster';
 import { SelectConnector } from './SelectConnector';
 import { Configuration } from './Configuration';
-import { useCreationWizardMachineService } from './CreationWizardContext';
 import { Review } from './Review';
 import { StepErrorBoundary } from './StepErrorBoundary';
 import './CreationWizard.css';
 
 function useKafkaInstanceStep() {
   const service = useCreationWizardMachineService();
-  const { isActive, actor, canJumpTo, enableNext } = useSelector(
+  const { isActive, canJumpTo, enableNext } = useSelector(
     service,
     useCallback(
       (state: typeof service.state) => ({
         isActive: state.matches('selectKafka'),
-        actor: state.children.selectKafkaInstance as KafkaMachineActorRef,
         canJumpTo:
           creationWizardMachine.transition(state, 'jumpToSelectKafka')
             .changed || state.matches('selectKafka'),
@@ -41,7 +39,7 @@ function useKafkaInstanceStep() {
     isActive,
     component: (
       <StepErrorBoundary>
-        <SelectKafkaInstance actor={actor} />
+        <SelectKafkaInstance />
       </StepErrorBoundary>
     ),
     canJumpTo,
