@@ -10,6 +10,7 @@
       "@cos-ui/app": ["packages/app/src"],
       "@cos-ui/creation-wizard": ["packages/creationWizard/src"],
       "@cos-ui/machines": ["packages/machines/src"],
+      "@cos-ui/utils": ["packages/utils/src"],
 
       "@cos-ui-apps/cli": ["apps/cli/src"],
       "@cos-ui-apps/cos-ui": ["apps/cos-ui/src"],

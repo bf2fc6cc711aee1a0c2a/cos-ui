@@ -1,5 +1,6 @@
+import { useSelector } from '@xstate/react';
 import axios from 'axios';
-import { assign, createMachine, createSchema, send } from 'xstate';
+import { createMachine, createSchema, InterpreterFrom, send } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 import { Configuration, ConnectorsApi, Connector } from '@cos-ui/api';
 import {
@@ -10,7 +11,10 @@ import {
   PaginatedApiResponse,
   ApiSuccessResponse,
   ApiErrorResponse,
-} from './PaginatedResponseMachine';
+  usePagination,
+  PaginatedApiActorType,
+} from './shared/PaginatedResponseMachine';
+import { useCallback } from 'react';
 
 const fetchConnectors = (
   accessToken?: Promise<string>,
@@ -94,79 +98,72 @@ export const makeConnectorsMachine = ({
   basePath,
   authToken,
 }: MakeConnectorsMachineProps) => {
-  return createMachine<typeof connectorsMachineModel>(
-    {
-      schema: connectorsMachineSchema,
-      id: 'connectors',
-      initial: 'running',
-      context: {
-        ...connectorsMachineModel.initialContext,
-        basePath,
-        authToken,
-      },
-      states: {
-        running: {
-          type: 'parallel',
-          states: {
-            api: {
-              initial: 'idle',
-              entry: send('refresh', { to: 'paginatedApi' }),
-              invoke: {
-                id: 'paginatedApi',
-                src: context =>
-                  makePaginatedApiMachine<Connector>(
-                    fetchConnectors(context.authToken, context.basePath)
-                  ).withContext({
-                    request: context.request,
-                  }),
-                autoForward: true,
-              },
-              states: {
-                idle: {
-                  on: {
-                    loading: { target: 'loading', actions: 'loading' },
-                  },
-                },
-                loading: {
-                  on: {
-                    loading: { actions: 'loading' },
-                    success: { target: 'idle', actions: 'success' },
-                    error: { target: 'idle', actions: 'error' },
-                  },
-                  tags: 'loading',
-                },
-              },
+  return createMachine<typeof connectorsMachineModel>({
+    schema: connectorsMachineSchema,
+    id: 'connectors',
+    initial: 'root',
+    context: {
+      ...connectorsMachineModel.initialContext,
+      basePath,
+      authToken,
+    },
+    states: {
+      root: {
+        type: 'parallel',
+        states: {
+          api: {
+            initial: 'deferred',
+            invoke: {
+              id: PAGINATED_MACHINE_ID,
+              src: context =>
+                makePaginatedApiMachine<Connector>(
+                  fetchConnectors(context.authToken, context.basePath)
+                ).withContext({
+                  request: context.request,
+                }),
+              autoForward: true,
             },
-            listing: {},
+            states: {
+              deferred: {
+                entry: send('refresh', { to: PAGINATED_MACHINE_ID }),
+                on: {
+                  loading: { target: 'ready' },
+                },
+              },
+              ready: {},
+            },
           },
+          listing: {},
         },
       },
     },
-    {
-      actions: {
-        loading: assign((_context, event) => {
-          if (event.type !== 'loading') return {};
-          const { type, ...payload } = event;
-          return {
-            request: payload,
-          };
-        }),
-        success: assign((_context, event) => {
-          if (event.type !== 'success') return {};
-          const { type, ...connectors } = event;
-          return {
-            connectors,
-          };
-        }),
-        error: assign((_context, event) => {
-          if (event.type !== 'error') return {};
-          const { error } = event;
-          return {
-            error,
-          };
-        }),
+  });
+};
+
+export const useConnectorsMachineIsReady = (
+  service: InterpreterFrom<ReturnType<typeof makeConnectorsMachine>>
+) => {
+  return useSelector(
+    service,
+    useCallback(
+      (state: typeof service.state) => {
+        return state.matches({ root: { api: 'ready' } });
       },
-      guards: {},
-    }
+      [service]
+    )
   );
 };
+
+export const useConnectorsMachine = (
+  service: InterpreterFrom<ReturnType<typeof makeConnectorsMachine>>
+) => {
+  return usePagination<Connector>(
+    service.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType
+  );
+};
+
+const PAGINATED_MACHINE_ID = 'paginatedApi';
+
+export type ConnectorsMachineInterpretType = InterpreterFrom<
+  ReturnType<typeof makeConnectorsMachine>
+>;

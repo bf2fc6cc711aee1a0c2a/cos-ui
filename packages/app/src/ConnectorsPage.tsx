@@ -1,12 +1,10 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useRef,
-} from 'react';
+import React, { FunctionComponent, useEffect, useRef } from 'react';
 import { Table, TableHeader, TableBody } from '@patternfly/react-table';
-import { useInterpret, useSelector } from '@xstate/react';
-import { makeConnectorsMachine, PaginatedApiRequest } from '@cos-ui/machines';
+import {
+  PaginatedApiRequest,
+  useConnectorsMachineIsReady,
+  useConnectorsMachine,
+} from '@cos-ui/machines';
 import {
   PageSection,
   ToolbarItem,
@@ -18,61 +16,72 @@ import {
   Pagination,
   Toolbar,
   ToolbarContent,
+  ButtonVariant,
 } from '@patternfly/react-core';
 import { SearchIcon, FilterIcon } from '@patternfly/react-icons';
-import { useDebounce, NoMatchFound, Loading } from '@cos-ui/utils';
+import {
+  useDebounce,
+  NoMatchFound,
+  Loading,
+  EmptyState,
+  EmptyStateVariant,
+} from '@cos-ui/utils';
 import { useAppContext } from './AppContext';
-import { InterpreterFrom } from 'xstate';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
+import {
+  ConnectorsMachineProvider,
+  useConnectorsMachineService,
+} from './ConnectorsPageContext';
+
+export const ConnectedConnectorsPage: FunctionComponent = () => {
+  const { basePath, authToken } = useAppContext();
+  return (
+    <ConnectorsMachineProvider authToken={authToken} basePath={basePath}>
+      <ConnectorsPage />
+    </ConnectorsMachineProvider>
+  );
+};
 
 export const ConnectorsPage: FunctionComponent = () => {
-  const { basePath, authToken } = useAppContext();
-  const service = useInterpret(makeConnectorsMachine({ authToken, basePath }));
-  const { request, itemCount } = useSelector(
-    service,
-    useCallback(
-      (state: typeof service.state) => ({
-        request: state.context.request,
-        itemCount: state.context.connectors?.total,
-      }),
-      [service]
-    )
-  );
-  return (
-    <PageSection padding={{ default: 'noPadding' }}>
-      <ConnectorsToolbar
-        request={request}
-        itemCount={itemCount}
-        onChange={request => service.send({ type: 'query', ...request })}
-      />
-      <ConnectorsTable service={service} />
-    </PageSection>
-  );
+  const service = useConnectorsMachineService();
+  const isReady = useConnectorsMachineIsReady(service);
+  return isReady ? <ConnectorsTable /> : null;
 };
 
-type ConnectorsTableProps = {
-  service: InterpreterFrom<ReturnType<typeof makeConnectorsMachine>>;
-};
-const ConnectorsTable: FunctionComponent<ConnectorsTableProps> = ({
-  service,
-}) => {
-  const { connectors, isLoading } = useSelector(
-    service,
-    useCallback(
-      (state: typeof service.state) => ({
-        connectors: state.context.connectors?.items || [],
-        isLoading: state.hasTag('loading'),
-      }),
-      [service]
-    )
+const ConnectorsTable: FunctionComponent = () => {
+  const history = useHistory();
+  const service = useConnectorsMachineService();
+  const { response, isLoading, isEmpty, hasFilters } = useConnectorsMachine(
+    service
   );
   switch (true) {
     case isLoading:
-      return <Loading />;
-    case connectors.length === 0:
       return (
-        <NoMatchFound
-          onClear={() => service.send({ type: 'query', page: 1, size: 10 })}
+        <PageSection padding={{ default: 'noPadding' }} isFilled>
+          <Loading />
+        </PageSection>
+      );
+    case isEmpty && hasFilters:
+      return (
+        <PageSection padding={{ default: 'noPadding' }} isFilled>
+          <NoMatchFound
+            onClear={() => service.send({ type: 'query', page: 1, size: 10 })}
+          />
+        </PageSection>
+      );
+    case isEmpty:
+      return (
+        <EmptyState
+          emptyStateProps={{ variant: EmptyStateVariant.GettingStarted }}
+          titleProps={{ title: 'cos.welcome_to_cos' }}
+          emptyStateBodyProps={{
+            body: 'cos.welcome_empty_state_body',
+          }}
+          buttonProps={{
+            title: 'cos.create_cos',
+            variant: ButtonVariant.primary,
+            onClick: () => history.push('/create-connector'),
+          }}
         />
       );
     default:
@@ -84,7 +93,7 @@ const ConnectorsTable: FunctionComponent<ConnectorsTableProps> = ({
         'Time Updated',
         'Status',
       ];
-      const rows = connectors.map(c => [
+      const rows = response?.items?.map(c => [
         c.metadata?.created_at,
         c.metadata?.resource_version,
         c.metadata?.owner,
@@ -93,32 +102,32 @@ const ConnectorsTable: FunctionComponent<ConnectorsTableProps> = ({
         c.status,
       ]);
       return (
-        <Table
-          aria-label="Sortable Table"
-          variant={'compact'}
-          sortBy={{}}
-          onSort={() => false}
-          cells={columns}
-          rows={rows}
-          className="pf-m-no-border-rows"
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
+        <PageSection padding={{ default: 'noPadding' }} isFilled>
+          <ConnectorsToolbar />
+
+          <Table
+            aria-label="Sortable Table"
+            variant={'compact'}
+            sortBy={{}}
+            onSort={() => false}
+            cells={columns}
+            rows={rows}
+            className="pf-m-no-border-rows"
+          >
+            <TableHeader />
+            <TableBody />
+          </Table>
+        </PageSection>
       );
   }
 };
 
-type ConnectorsToolbarProps = {
-  itemCount?: number;
-  request: PaginatedApiRequest;
-  onChange: (query: PaginatedApiRequest) => void;
-};
-const ConnectorsToolbar: FunctionComponent<ConnectorsToolbarProps> = ({
-  itemCount = 0,
-  request,
-  onChange,
-}) => {
+const ConnectorsToolbar: FunctionComponent = () => {
+  const service = useConnectorsMachineService();
+  const { request, response } = useConnectorsMachine(service);
+
+  const onChange = (request: PaginatedApiRequest) =>
+    service.send({ type: 'query', ...request });
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnChange = useDebounce(onChange, 1000);
   const defaultPerPageOptions = [
@@ -238,7 +247,7 @@ const ConnectorsToolbar: FunctionComponent<ConnectorsToolbarProps> = ({
       </ToolbarGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
         <Pagination
-          itemCount={itemCount}
+          itemCount={response?.total || 0}
           page={request.page}
           perPage={request.size}
           perPageOptions={defaultPerPageOptions}

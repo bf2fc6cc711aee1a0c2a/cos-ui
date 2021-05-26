@@ -1,7 +1,19 @@
-import { KafkaMachineActorRef, PaginatedApiRequest } from '@cos-ui/machines';
-import { Loading, NoMatchFound, useDebounce } from '@cos-ui/utils';
+import {
+  KafkaMachineActorRef,
+  PaginatedApiRequest,
+  useKafkasMachine,
+  useKafkasMachineIsReady,
+} from '@cos-ui/machines';
+import {
+  EmptyState,
+  EmptyStateVariant,
+  Loading,
+  NoMatchFound,
+  useDebounce,
+} from '@cos-ui/utils';
 import {
   Button,
+  ButtonVariant,
   Card,
   CardBody,
   CardHeader,
@@ -27,54 +39,129 @@ import {
   FilterIcon,
   SearchIcon,
 } from '@patternfly/react-icons';
-import { useSelector } from '@xstate/react';
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useRef,
-} from 'react';
+import React, { FunctionComponent, useEffect, useRef } from 'react';
+import { useHistory } from 'react-router';
 
-export type SelectKafkaInstanceProps = {
+export type WithKafkasMachineActorProp = {
   actor: KafkaMachineActorRef;
 };
 
-export function SelectKafkaInstance({ actor }: SelectKafkaInstanceProps) {
-  const { itemCount, request } = useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => ({
-        itemCount: state.context.instances?.total,
-        request: state.context.request,
-      }),
-      [actor]
-    )
-  );
+export function SelectKafkaInstance({ actor }: WithKafkasMachineActorProp) {
+  const isReady = useKafkasMachineIsReady(actor);
 
-  return (
-    <PageSection padding={{ default: 'noPadding' }}>
-      <KafkaToolbar
-        itemCount={itemCount}
-        request={request}
-        onChange={request => actor.send({ type: 'query', ...request })}
-      />
-      <PageSection isFilled>
-        <KafkasGallery actor={actor} />
-      </PageSection>
-    </PageSection>
-  );
+  return isReady ? <KafkasGallery actor={actor} /> : null;
 }
 
-type KafkaToolbarProps = {
-  itemCount?: number;
-  request: PaginatedApiRequest;
-  onChange: (query: PaginatedApiRequest) => void;
-};
-const KafkaToolbar: FunctionComponent<KafkaToolbarProps> = ({
-  itemCount = 0,
-  request,
-  onChange,
+const KafkasGallery: FunctionComponent<WithKafkasMachineActorProp> = ({
+  actor,
 }) => {
+  const history = useHistory();
+  const {
+    response,
+    isFirstRequest,
+    isLoading,
+    isEmpty,
+    hasFilters,
+    selectedId,
+  } = useKafkasMachine(actor);
+  switch (true) {
+    case isFirstRequest:
+      return (
+        <PageSection padding={{ default: 'noPadding' }} isFilled>
+          <KafkaToolbar actor={actor} />
+          <Loading />
+        </PageSection>
+      );
+    case isEmpty && hasFilters:
+      return (
+        <PageSection padding={{ default: 'noPadding' }} isFilled>
+          <NoMatchFound
+            onClear={() => actor.send({ type: 'query', page: 1, size: 10 })}
+          />
+        </PageSection>
+      );
+    case isEmpty:
+      return (
+        <PageSection padding={{ default: 'noPadding' }} isFilled>
+          <EmptyState
+            emptyStateProps={{ variant: EmptyStateVariant.GettingStarted }}
+            titleProps={{ title: 'cos.no_kafka_instance' }}
+            emptyStateBodyProps={{
+              body: 'cos.no_kafka_instance_body',
+            }}
+            buttonProps={{
+              title: 'cos.create_kafka_instance',
+              variant: ButtonVariant.primary,
+              onClick: () => history.push('/create-connector'),
+            }}
+          />
+        </PageSection>
+      );
+    case isLoading:
+      return (
+        <PageSection padding={{ default: 'noPadding' }} isFilled>
+          <KafkaToolbar actor={actor} />
+          <Loading />
+        </PageSection>
+      );
+    default:
+      const onSelect = (selectedInstance: string) => {
+        actor.send({ type: 'selectInstance', selectedInstance });
+      };
+      return (
+        <PageSection padding={{ default: 'noPadding' }} isFilled>
+          <KafkaToolbar actor={actor} />
+          <PageSection isFilled>
+            <Gallery hasGutter>
+              {response?.items?.map(i => (
+                <Card
+                  isHoverable
+                  key={i.id}
+                  isSelectable
+                  isSelected={selectedId === i.id}
+                  onClick={() => onSelect(i.id!)}
+                >
+                  <CardHeader>
+                    <CardTitle>{i.name}</CardTitle>
+                  </CardHeader>
+                  <CardBody>
+                    <DescriptionList>
+                      <DescriptionListGroup>
+                        <DescriptionListTerm>Region</DescriptionListTerm>
+                        <DescriptionListDescription>
+                          {i.region}
+                        </DescriptionListDescription>
+                      </DescriptionListGroup>
+                      <DescriptionListGroup>
+                        <DescriptionListTerm>Owner</DescriptionListTerm>
+                        <DescriptionListDescription>
+                          {i.owner}
+                        </DescriptionListDescription>
+                      </DescriptionListGroup>
+                      <DescriptionListGroup>
+                        <DescriptionListTerm>Created</DescriptionListTerm>
+                        <DescriptionListDescription>
+                          {i.created_at}
+                        </DescriptionListDescription>
+                      </DescriptionListGroup>
+                    </DescriptionList>
+                  </CardBody>
+                </Card>
+              ))}
+            </Gallery>
+          </PageSection>
+        </PageSection>
+      );
+  }
+};
+
+const KafkaToolbar: FunctionComponent<WithKafkasMachineActorProp> = ({
+  actor,
+}) => {
+  const { request, response } = useKafkasMachine(actor);
+
+  const onChange = (request: PaginatedApiRequest) =>
+    actor.send({ type: 'query', ...request });
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnChange = useDebounce(onChange, 1000);
   const defaultPerPageOptions = [
@@ -189,7 +276,7 @@ const KafkaToolbar: FunctionComponent<KafkaToolbarProps> = ({
       </ToolbarGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
         <Pagination
-          itemCount={itemCount}
+          itemCount={response?.total || 0}
           page={request.page}
           perPage={request.size}
           perPageOptions={defaultPerPageOptions}
@@ -213,74 +300,4 @@ const KafkaToolbar: FunctionComponent<KafkaToolbarProps> = ({
       <ToolbarContent>{toolbarItems}</ToolbarContent>
     </Toolbar>
   );
-};
-
-const KafkasGallery: FunctionComponent<SelectKafkaInstanceProps> = ({
-  actor,
-}) => {
-  const { kafkas, selectedId, isLoading } = useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => ({
-        kafkas: state.context.instances?.items || [],
-        selectedId: state.context.selectedInstance?.id,
-        isLoading: state.hasTag('loading'),
-      }),
-      [actor]
-    )
-  );
-  const onSelect = (selectedInstance: string) => {
-    actor.send({ type: 'selectInstance', selectedInstance });
-  };
-
-  switch (true) {
-    case isLoading:
-      return <Loading />;
-    case kafkas.length === 0:
-      return (
-        <NoMatchFound
-          onClear={() => actor.send({ type: 'query', page: 1, size: 10 })}
-        />
-      );
-    default:
-      return (
-        <Gallery hasGutter>
-          {kafkas.map(i => (
-            <Card
-              isHoverable
-              key={i.id}
-              isSelectable
-              isSelected={selectedId === i.id}
-              onClick={() => onSelect(i.id!)}
-            >
-              <CardHeader>
-                <CardTitle>{i.name}</CardTitle>
-              </CardHeader>
-              <CardBody>
-                <DescriptionList>
-                  <DescriptionListGroup>
-                    <DescriptionListTerm>Region</DescriptionListTerm>
-                    <DescriptionListDescription>
-                      {i.region}
-                    </DescriptionListDescription>
-                  </DescriptionListGroup>
-                  <DescriptionListGroup>
-                    <DescriptionListTerm>Owner</DescriptionListTerm>
-                    <DescriptionListDescription>
-                      {i.owner}
-                    </DescriptionListDescription>
-                  </DescriptionListGroup>
-                  <DescriptionListGroup>
-                    <DescriptionListTerm>Created</DescriptionListTerm>
-                    <DescriptionListDescription>
-                      {i.created_at}
-                    </DescriptionListDescription>
-                  </DescriptionListGroup>
-                </DescriptionList>
-              </CardBody>
-            </Card>
-          ))}
-        </Gallery>
-      );
-  }
 };

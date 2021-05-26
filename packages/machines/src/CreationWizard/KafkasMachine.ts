@@ -1,3 +1,4 @@
+import { useSelector } from '@xstate/react';
 import axios from 'axios';
 import {
   ActorRefFrom,
@@ -8,6 +9,7 @@ import {
 } from 'xstate';
 import { sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
+import { useCallback } from 'react';
 import { Configuration, DefaultApi, KafkaRequest } from '@cos-ui/api';
 import {
   paginatedApiMachineEvents,
@@ -17,7 +19,11 @@ import {
   PaginatedApiResponse,
   ApiSuccessResponse,
   ApiErrorResponse,
-} from './../PaginatedResponseMachine';
+  usePagination,
+  PaginatedApiActorType,
+} from '../shared/PaginatedResponseMachine';
+
+const PAGINATED_MACHINE_ID = 'paginatedApi';
 
 const fetchKafkaInstances = (
   accessToken?: Promise<string>,
@@ -68,7 +74,6 @@ const fetchKafkaInstances = (
 type Context = {
   authToken?: Promise<string>;
   basePath?: string;
-  request: PaginatedApiRequest;
   instances?: PaginatedApiResponse<KafkaRequest>;
   selectedInstance?: KafkaRequest;
   error?: Object;
@@ -85,10 +90,6 @@ const kafkasMachineModel = createModel(
     instances: undefined,
     selectedInstance: undefined,
     error: undefined,
-    request: {
-      page: 1,
-      size: 10,
-    },
   } as Context,
   {
     events: {
@@ -109,39 +110,30 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
   {
     schema: kafkasMachineSchema,
     id: 'kafkas',
-    initial: 'running',
+    initial: 'root',
     context: kafkasMachineModel.initialContext,
     states: {
-      running: {
+      root: {
         type: 'parallel',
         states: {
           api: {
-            initial: 'idle',
-            entry: send('refresh', { to: 'paginatedApi' }),
+            initial: 'deferred',
             invoke: {
-              id: 'paginatedApi',
+              id: PAGINATED_MACHINE_ID,
               src: context =>
                 makePaginatedApiMachine<KafkaRequest>(
                   fetchKafkaInstances(context.authToken, context.basePath)
-                ).withContext({
-                  request: context.request,
-                }),
+                ),
               autoForward: true,
             },
             states: {
-              idle: {
+              deferred: {
+                entry: send('refresh', { to: PAGINATED_MACHINE_ID }),
                 on: {
-                  loading: { target: 'loading', actions: 'loading' },
+                  loading: { target: 'ready' },
                 },
               },
-              loading: {
-                on: {
-                  loading: { actions: 'loading' },
-                  success: { target: 'idle', actions: 'success' },
-                  error: { target: 'idle', actions: 'error' },
-                },
-                tags: 'loading',
-              },
+              ready: {},
             },
           },
           selection: {
@@ -196,27 +188,6 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
   },
   {
     actions: {
-      loading: assign((_context, event) => {
-        if (event.type !== 'loading') return {};
-        const { type, ...payload } = event;
-        return {
-          request: payload,
-        };
-      }),
-      success: assign((_context, event) => {
-        if (event.type !== 'success') return {};
-        const { type, ...instances } = event;
-        return {
-          instances,
-        };
-      }),
-      error: assign((_context, event) => {
-        if (event.type !== 'error') return {};
-        const { error } = event;
-        return {
-          error,
-        };
-      }),
       selectInstance: assign({
         selectedInstance: (context, event) => {
           if (event.type === 'selectInstance') {
@@ -242,3 +213,34 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
 );
 
 export type KafkaMachineActorRef = ActorRefFrom<typeof kafkasMachine>;
+
+export const useKafkasMachineIsReady = (actor: KafkaMachineActorRef) => {
+  return useSelector(
+    actor,
+    useCallback(
+      (state: typeof actor.state) => {
+        return state.matches({ root: { api: 'ready' } });
+      },
+      [actor]
+    )
+  );
+};
+
+export const useKafkasMachine = (actor: KafkaMachineActorRef) => {
+  const api = usePagination<KafkaRequest>(
+    actor.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType
+  );
+  const { selectedId } = useSelector(
+    actor,
+    useCallback(
+      (state: typeof actor.state) => ({
+        selectedId: state.context.selectedInstance?.id,
+      }),
+      [actor]
+    )
+  );
+  return {
+    ...api,
+    selectedId,
+  };
+};

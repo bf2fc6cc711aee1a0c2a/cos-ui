@@ -18,6 +18,7 @@ import { Configuration } from './Configuration';
 import { useCreationWizardMachineService } from './CreationWizardContext';
 import { Review } from './Review';
 import { StepErrorBoundary } from './StepErrorBoundary';
+import './CreationWizard.css';
 
 function useKafkaInstanceStep() {
   const service = useCreationWizardMachineService();
@@ -213,6 +214,7 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
 
   return (
     <UncontrolledWizard
+      className="cos"
       steps={steps}
       currentStep={currentStep}
       onNext={onNext}

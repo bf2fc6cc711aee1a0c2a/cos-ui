@@ -6,7 +6,7 @@ import { PageSection, TextContent, Title } from '@patternfly/react-core';
 import React, { FunctionComponent } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
-import { ConnectorsPage } from './ConnectorsPage';
+import { ConnectedConnectorsPage } from './ConnectorsPage';
 import { fetchConfigurator } from './FederatedConfigurator';
 
 type RoutesProps = {
@@ -27,7 +27,7 @@ export const Routes: FunctionComponent<RoutesProps> = ({ getToken }) => {
             </TextContent>
           </PageSection>
           <PageSection variant={'light'} padding={{ default: 'noPadding' }}>
-            <ConnectorsPage />
+            <ConnectedConnectorsPage />
           </PageSection>
         </Route>
         <Route path={'/create-connector'}>

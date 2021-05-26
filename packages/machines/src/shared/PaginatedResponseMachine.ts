@@ -1,4 +1,7 @@
+import { useSelector } from '@xstate/react';
+import { useCallback } from 'react';
 import {
+  ActorRefFrom,
   assign,
   createMachine,
   createSchema,
@@ -196,3 +199,29 @@ export function makePaginatedApiMachine<T>(service: ApiCallback<T>) {
     }
   );
 }
+
+export type PaginatedApiActorType = ActorRefFrom<
+  ReturnType<typeof makePaginatedApiMachine>
+>;
+
+export const usePagination = <T>(actor: PaginatedApiActorType) => {
+  return useSelector(
+    actor,
+    useCallback(
+      (state: typeof actor.state) => {
+        const items = state.context.response?.items || [];
+        return {
+          request: state.context.request,
+          response: state.context.response as
+            | PaginatedApiResponse<T>
+            | undefined,
+          isLoading: state.matches('loading'),
+          hasFilters: Object.keys(state.context.request).length !== 2, // TODO: fix this logic
+          isEmpty: items.length === 0,
+          isFirstRequest: state.context.response === undefined,
+        };
+      },
+      [actor]
+    )
+  );
+};

@@ -1,4 +1,3 @@
 export * from './CreationWizard';
-export * from './FetchMachine';
-export * from './PaginatedResponseMachine';
+export * from './shared';
 export * from './ConnectorsMachine';
