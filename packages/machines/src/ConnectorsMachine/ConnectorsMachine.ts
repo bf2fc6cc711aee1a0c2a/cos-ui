@@ -1,14 +1,13 @@
-import { Configuration, Connector, ConnectorsApi } from '@cos-ui/api';
 import axios from 'axios';
 import { createMachine, createSchema, InterpreterFrom, send } from 'xstate';
 import { createModel } from 'xstate/lib/model';
+
+import { Configuration, Connector, ConnectorsApi } from '@cos-ui/api';
+
 import {
   ApiCallback,
-  ApiErrorResponse,
-  ApiSuccessResponse,
+  getPaginatedApiMachineEvents,
   makePaginatedApiMachine,
-  paginatedApiMachineEvents,
-  PaginatedApiRequest,
   PaginatedApiResponse,
 } from '../shared';
 
@@ -72,11 +71,7 @@ const connectorsMachineModel = createModel(
   } as Context,
   {
     events: {
-      ready: () => ({}),
-      loading: (payload: PaginatedApiRequest<{}>) => payload,
-      success: (payload: ApiSuccessResponse<Connector>) => payload,
-      error: (payload: ApiErrorResponse) => payload,
-      ...paginatedApiMachineEvents,
+      ...getPaginatedApiMachineEvents<Connector, {}>(),
     },
   }
 );

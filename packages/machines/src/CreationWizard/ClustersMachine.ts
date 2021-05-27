@@ -23,7 +23,7 @@ import {
   ApiSuccessResponse,
   makePaginatedApiMachine,
   PaginatedApiActorType,
-  paginatedApiMachineEvents,
+  getPaginatedApiMachineEvents,
   PaginatedApiRequest,
   usePagination,
 } from '../shared';
@@ -94,10 +94,7 @@ const clustersMachineModel = createModel(
       }),
       deselectCluster: () => ({}),
       confirm: () => ({}),
-      ready: () => ({}),
-      loading: (payload: PaginatedApiRequest<{}>) => payload,
-      success: (payload: ApiSuccessResponse<KafkaRequest>) => payload,
-      ...paginatedApiMachineEvents,
+      ...getPaginatedApiMachineEvents<KafkaRequest, {}>(),
     },
   }
 );
@@ -234,7 +231,10 @@ export const useClustersMachineIsReady = (actor: ClustersMachineActorRef) => {
 
 export const useClustersMachine = (actor: ClustersMachineActorRef) => {
   const api = usePagination<ConnectorCluster, {}>(
-    actor.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType
+    actor.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType<
+      ConnectorCluster,
+      {}
+    >
   );
   const { selectedId } = useSelector(
     actor,

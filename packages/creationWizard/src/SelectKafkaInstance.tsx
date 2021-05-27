@@ -25,9 +25,14 @@ import {
   InputGroup,
   PageSection,
   Pagination,
+  Select,
+  SelectOption,
   TextInput,
   Toolbar,
+  ToolbarChip,
+  ToolbarChipGroup,
   ToolbarContent,
+  ToolbarFilter,
   // ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
@@ -38,7 +43,13 @@ import {
   FilterIcon,
   SearchIcon,
 } from '@patternfly/react-icons';
-import React, { FunctionComponent, useEffect, useRef } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useHistory } from 'react-router';
 
 export function SelectKafkaInstance() {
@@ -154,6 +165,11 @@ const KafkasGallery: FunctionComponent = () => {
 const KafkaToolbar: FunctionComponent = () => {
   const actor = useCreationWizardMachineKafkasActor();
   const { request, response, onQuery } = useKafkasMachine(actor);
+  const { name = '', statuses = [] } = request.query || {};
+  const clearAllFilters = useCallback(
+    () => onQuery({ page: 1, size: request.size }),
+    [onQuery, request.size]
+  );
 
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnQuery = useDebounce(onQuery, 1000);
@@ -172,42 +188,46 @@ const KafkaToolbar: FunctionComponent = () => {
     },
   ];
 
-  // const [statuses, setStatuses] = useState<string[]>([
-  //   'Pending',
-  //   'Created',
-  //   'Cancelled',
-  // ]);
-  // const [statusesToggled, setStatusesToggled] = useState(false);
-  // const clearAllFilters = useCallback(() => {
-  //   setSearchValue('');
-  //   setStatuses([]);
-  // }, []);
-  // const toggleStatuses = useCallback(
-  //   () => setStatusesToggled(prev => !prev),
-  //   []
-  // );
-  // const onSelectStatus = useCallback(
-  //   (_, status) =>
-  //     setStatuses(prev =>
-  //       prev.includes(status)
-  //         ? prev.filter(s => s !== status)
-  //         : [...prev, status]
-  //     ),
-  //   []
-  // );
+  const onSelectStatus = (
+    _category: string | ToolbarChipGroup,
+    status: string | ToolbarChip
+  ) =>
+    onQuery({
+      ...request,
+      query: {
+        ...(request.query || {}),
+        statuses: statuses?.includes(status as string)
+          ? statuses.filter(s => s !== status)
+          : [...(statuses || []), status as string],
+      },
+    });
 
-  // const statusMenuItems = [
-  //   <SelectOption key="statusPending" value="Pending" />,
-  //   <SelectOption key="statusCreated" value="Created" />,
-  //   <SelectOption key="statusCancelled" value="Cancelled" />,
-  // ];
+  const onDeleteStatusGroup = () =>
+    onQuery({
+      ...request,
+      query: {
+        ...(request.query || {}),
+        statuses: undefined,
+      },
+    });
+  const [statusesToggled, setStatusesToggled] = useState(false);
+  const onToggleStatuses = useCallback(
+    () => setStatusesToggled(prev => !prev),
+    []
+  );
+
+  const statusMenuItems = statusOptions.map(({ value, label }) => (
+    <SelectOption key={value} value={value}>
+      {label}
+    </SelectOption>
+  ));
 
   // ensure the search input value reflects what's specified in the request object
   useEffect(() => {
     if (searchInputRef.current) {
-      searchInputRef.current.value = request.query?.name || '';
+      searchInputRef.current.value = name;
     }
-  }, [searchInputRef, request]);
+  }, [searchInputRef, name]);
 
   const toggleGroupItems = (
     <>
@@ -224,6 +244,7 @@ const KafkaToolbar: FunctionComponent = () => {
                 page: 1,
                 query: {
                   name: value,
+                  statuses,
                 },
               })
             }
@@ -237,18 +258,18 @@ const KafkaToolbar: FunctionComponent = () => {
           </Button>
         </InputGroup>
       </ToolbarItem>
-      {/* <ToolbarGroup variant="filter-group">
+      <ToolbarGroup variant="filter-group">
         <ToolbarFilter
           chips={statuses}
           deleteChip={onSelectStatus}
-          deleteChipGroup={() => setStatuses([])}
+          deleteChipGroup={onDeleteStatusGroup}
           categoryName="Status"
         >
           <Select
             variant={'checkbox'}
             aria-label="Status"
-            onToggle={toggleStatuses}
-            onSelect={onSelectStatus}
+            onToggle={onToggleStatuses}
+            onSelect={(_, value) => onSelectStatus('', value as string)}
             selections={statuses}
             isOpen={statusesToggled}
             placeholderText="Status"
@@ -256,7 +277,7 @@ const KafkaToolbar: FunctionComponent = () => {
             {statusMenuItems}
           </Select>
         </ToolbarFilter>
-      </ToolbarGroup> */}
+      </ToolbarGroup>
     </>
   );
   const toolbarItems = (
@@ -290,9 +311,51 @@ const KafkaToolbar: FunctionComponent = () => {
     <Toolbar
       id="toolbar-group-types"
       collapseListedFiltersBreakpoint="xl"
-      // clearAllFilters={clearAllFilters}
+      clearAllFilters={clearAllFilters}
     >
       <ToolbarContent>{toolbarItems}</ToolbarContent>
     </Toolbar>
   );
 };
+
+type KeyValueOptions = {
+  value: string;
+  label: string;
+};
+
+// enum InstanceStatus {
+//   READY = 'ready',
+//   ACCEPTED = 'accepted',
+//   PREPARING = 'preparing',
+//   PROVISIONING = 'provisioning',
+//   FAILED = 'failed',
+//   DEPROVISION = 'deprovision',
+//   DELETED = 'deleted',
+// }
+
+// const cloudProviderOptions: KeyValueOptions[] = [
+//   { value: 'aws', label: 'Amazon Web Services' },
+//   // Only aws is supported for now
+//   // { value: 'azure', label: 'Microsoft Azure' },
+//   // { value: 'baremetal', label: 'Bare Metal' },
+//   // { value: 'gcp', label: 'Google Cloud Platform' },
+//   // { value: 'libvirt', label: 'Libvirt' },
+//   // { value: 'openstack', label: 'OpenStack' },
+//   // { value: 'vsphere', label: 'VSphere' },
+// ];
+
+const statusOptions: KeyValueOptions[] = [
+  { value: 'ready', label: 'Ready' },
+  { value: 'failed', label: 'Failed' },
+  { value: 'accepted', label: 'Creation pending' },
+  { value: 'provisioning', label: 'Creation in progress' },
+  { value: 'preparing', label: 'Creation in progress' },
+  { value: 'deprovision', label: 'Deletion in progress' },
+  { value: 'deleted', label: 'Deletion in progress' },
+];
+
+// const getCloudProviderDisplayName = (value: string) => {
+//   return (
+//     cloudProviderOptions.find(option => option.value === value)?.label || value
+//   );
+// };

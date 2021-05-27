@@ -78,7 +78,7 @@ export const useCreationWizardMachineService = () => {
   return service;
 };
 
-export const useCreationWizardMachineKafkasActor = () => {
+export const useCreationWizardMachineKafkasActor = (): KafkaMachineActorRef => {
   const service = useCreationWizardMachineService();
   return useSelector(
     service,
@@ -90,7 +90,7 @@ export const useCreationWizardMachineKafkasActor = () => {
   );
 };
 
-export const useCreationWizardMachineClustersActor = () => {
+export const useCreationWizardMachineClustersActor = (): ClustersMachineActorRef => {
   const service = useCreationWizardMachineService();
   return useSelector(
     service,

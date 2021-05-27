@@ -3,7 +3,7 @@ import { createModel } from 'xstate/lib/model';
 import {
   makePaginatedApiMachine,
   ApiCallback,
-  paginatedApiMachineEvents,
+  getPaginatedApiMachineEvents,
 } from '../src';
 
 describe('@cos-ui/machines', () => {
@@ -74,9 +74,7 @@ describe('@cos-ui/machines', () => {
       {},
       {
         events: {
-          success: () => ({}),
-          error: () => ({}),
-          ...paginatedApiMachineEvents,
+          ...getPaginatedApiMachineEvents<TestResultType, TestQueryType>(),
         },
       }
     );

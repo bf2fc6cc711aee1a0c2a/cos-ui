@@ -65,6 +65,9 @@ export const useConnectorsMachine = (
   service: ConnectorsMachineInterpretType
 ) => {
   return usePagination<Connector, {}>(
-    service.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType
+    service.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType<
+      Connector,
+      {}
+    >
   );
 };

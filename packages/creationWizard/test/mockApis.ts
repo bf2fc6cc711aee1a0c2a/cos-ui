@@ -9,7 +9,7 @@ import {
 export function makeHappyPath() {
   const mock = new MockAdapter(axios);
   mock
-    .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10')
+    .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=')
     .reply<KafkaRequestList>(200, kafkaInstances)
     .onGet(
       '/dummy/api/connector_mgmt/v1/kafka-connector-clusters?page=1&size=10'
@@ -22,14 +22,16 @@ export function makeHappyPath() {
 
 export function makeKafkaError() {
   const mock = new MockAdapter(axios);
-  mock.onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10').reply(404);
+  mock
+    .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=')
+    .reply(404);
   return mock;
 }
 
 export function makeClusterError() {
   const mock = new MockAdapter(axios);
   mock
-    .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10')
+    .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=')
     .reply<KafkaRequestList>(200, kafkaInstances)
     .onGet(
       '/dummy/api/connector_mgmt/v1/kafka-connector-clusters?page=1&size=10'
@@ -41,7 +43,7 @@ export function makeClusterError() {
 export function makeConnectorsError() {
   const mock = new MockAdapter(axios);
   mock
-    .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10')
+    .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=')
     .reply<KafkaRequestList>(200, kafkaInstances)
     .onGet(
       '/dummy/api/connector_mgmt/v1/kafka-connector-clusters?page=1&size=10'

@@ -42,36 +42,42 @@ export type PaginatedMachineContext<ResponseType, QueryType> = {
 };
 
 const paginatedApiMachineSchema = {
-  context: createSchema<PaginatedMachineContext<any, {}>>(),
+  context: createSchema<PaginatedMachineContext<any, any>>(),
 };
 
-export const paginatedApiMachineEvents = {
+export const getPaginatedApiMachineEvents = <ResponseType, QueryType>() => ({
   refresh: () => ({}),
   nextPage: () => ({}),
   prevPage: () => ({}),
-  query: (payload: PaginatedApiRequest<{}>) => payload,
-  setResponse: (payload: ApiSuccessResponse<unknown>) => payload,
+  query: (payload: PaginatedApiRequest<QueryType>) => payload,
+  setResponse: (payload: ApiSuccessResponse<ResponseType>) => payload,
   setError: (payload: ApiErrorResponse) => payload,
-};
 
-export const paginatedApiMachineModel = createModel(
-  {
-    request: {
-      page: 1,
-      size: 10,
-    },
-    response: undefined,
-  } as PaginatedMachineContext<any, any>,
-  {
-    events: {
-      ...paginatedApiMachineEvents,
-    },
-  }
-);
+  // notifyParent
+  ready: () => ({}),
+  loading: (payload: PaginatedApiRequest<QueryType>) => payload,
+  success: (payload: ApiSuccessResponse<ResponseType>) => payload,
+  error: (payload: { error: string }) => payload,
+});
 
 export function makePaginatedApiMachine<ResponseType, QueryType>(
   service: ApiCallback<ResponseType, QueryType>
 ) {
+  const paginatedApiMachineModel = createModel(
+    {
+      request: {
+        page: 1,
+        size: 10,
+      },
+      response: undefined,
+    } as PaginatedMachineContext<ResponseType, QueryType>,
+    {
+      events: {
+        ...getPaginatedApiMachineEvents<ResponseType, QueryType>(),
+      },
+    }
+  );
+
   const callApi = (
     context: PaginatedMachineContext<ResponseType, QueryType>
   ) => (callback: Sender<any>) => {
@@ -315,22 +321,27 @@ export function makePaginatedApiMachine<ResponseType, QueryType>(
   );
 }
 
-export type PaginatedApiActorType = ActorRefFrom<
-  ReturnType<typeof makePaginatedApiMachine>
+// https://stackoverflow.com/questions/50321419/typescript-returntype-of-generic-function/64919133#64919133
+class Wrapper<ResponseType, QueryType> {
+  wrapped(service: ApiCallback<ResponseType, QueryType>) {
+    return makePaginatedApiMachine<ResponseType, QueryType>(service);
+  }
+}
+
+export type PaginatedApiActorType<ResponseType, QueryType> = ActorRefFrom<
+  ReturnType<Wrapper<ResponseType, QueryType>['wrapped']>
 >;
 
 export const usePagination = <ResponseType, QueryType>(
-  actor: PaginatedApiActorType
+  actor: PaginatedApiActorType<ResponseType, QueryType>
 ) => {
   return useSelector(
     actor,
     useCallback(
       (state: typeof actor.state) => {
         return {
-          request: state.context.request as PaginatedApiRequest<QueryType>,
-          response: state.context.response as
-            | PaginatedApiResponse<ResponseType>
-            | undefined,
+          request: state.context.request,
+          response: state.context.response,
           loading: state.matches('loading'),
           queryEmpty: state.hasTag('queryEmpty'),
           queryResults: state.hasTag('queryResults'),

@@ -13,23 +13,26 @@ import { sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import {
   ApiCallback,
-  ApiSuccessResponse,
   makePaginatedApiMachine,
   PaginatedApiActorType,
-  paginatedApiMachineEvents,
   PaginatedApiRequest,
   PaginatedApiResponse,
+  getPaginatedApiMachineEvents,
   usePagination,
 } from '../shared';
 
 const PAGINATED_MACHINE_ID = 'paginatedApi';
 
-type QueryType = { name: string };
+type KafkasQuery = {
+  name?: string;
+  statuses?: string[];
+  cloudProvider?: string[];
+};
 
 const fetchKafkaInstances = (
   accessToken?: Promise<string>,
   basePath?: string
-): ApiCallback<KafkaRequest, QueryType> => {
+): ApiCallback<KafkaRequest, KafkasQuery> => {
   const apisService = new DefaultApi(
     new Configuration({
       accessToken,
@@ -40,8 +43,14 @@ const fetchKafkaInstances = (
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     const { page, size, query } = request;
-    const { name } = query || {};
-    const search = name && name.length > 0 ? `name LIKE ${name}` : undefined;
+    const { name, statuses } = query || {};
+    const nameSearch =
+      name && name.length > 0 ? ` name LIKE ${name}` : undefined;
+    const statusSearch =
+      statuses && statuses.length > 0
+        ? statuses.map(s => `status = ${s}`).join(' OR ')
+        : undefined;
+    const search = [nameSearch, statusSearch].filter(Boolean).join(' AND ');
     apisService
       .listKafkas(
         `${page}`,
@@ -98,10 +107,7 @@ const kafkasMachineModel = createModel(
       }),
       deselectInstance: () => ({}),
       confirm: () => ({}),
-      ready: () => ({}),
-      loading: (payload: PaginatedApiRequest<QueryType>) => payload,
-      success: (payload: ApiSuccessResponse<KafkaRequest>) => payload,
-      ...paginatedApiMachineEvents,
+      ...getPaginatedApiMachineEvents<KafkaRequest, KafkasQuery>(),
     },
   }
 );
@@ -121,7 +127,7 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
             invoke: {
               id: PAGINATED_MACHINE_ID,
               src: context =>
-                makePaginatedApiMachine<KafkaRequest, QueryType>(
+                makePaginatedApiMachine<KafkaRequest, KafkasQuery>(
                   fetchKafkaInstances(context.authToken, context.basePath)
                 ),
               autoForward: true,
@@ -237,8 +243,11 @@ export const useKafkasMachineIsReady = (actor: KafkaMachineActorRef) => {
 };
 
 export const useKafkasMachine = (actor: KafkaMachineActorRef) => {
-  const api = usePagination<KafkaRequest, QueryType>(
-    actor.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType
+  const api = usePagination<KafkaRequest, KafkasQuery>(
+    actor.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType<
+      KafkaRequest,
+      KafkasQuery
+    >
   );
   const { selectedId } = useSelector(
     actor,
@@ -256,7 +265,7 @@ export const useKafkasMachine = (actor: KafkaMachineActorRef) => {
     [actor]
   );
   const onQuery = useCallback(
-    (request: PaginatedApiRequest<QueryType>) => {
+    (request: PaginatedApiRequest<KafkasQuery>) => {
       actor.send({ type: 'query', ...request });
     },
     [actor]
