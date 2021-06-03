@@ -97,12 +97,13 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>({
           },
           states: {
             idle: {
-              entry: send('query', { to: PAGINATED_MACHINE_ID }),
               on: {
                 ready: 'ready',
               },
             },
-            ready: {},
+            ready: {
+              entry: send('query', { to: PAGINATED_MACHINE_ID }),
+            },
           },
         },
         listing: {},

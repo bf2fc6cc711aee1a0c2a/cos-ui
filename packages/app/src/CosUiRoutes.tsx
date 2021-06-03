@@ -7,16 +7,19 @@ import { AppContextProvider } from './AppContext';
 import { ConnectedConnectorsPage } from './ConnectorsPage';
 import { fetchConfigurator } from './FederatedConfigurator';
 
-type RoutesProps = {
+type CosUiRoutesProps = {
   getToken: Promise<string>;
+  apiBasepath: string;
 };
-const basePath = process.env.BASE_PATH;
 
-export const Routes: FunctionComponent<RoutesProps> = ({ getToken }) => {
+export const CosUiRoutes: FunctionComponent<CosUiRoutesProps> = ({
+  getToken,
+  apiBasepath,
+}) => {
   const history = useHistory();
   const goToConnectorsList = () => history.push('/');
   return (
-    <AppContextProvider authToken={getToken} basePath={basePath}>
+    <AppContextProvider authToken={getToken} basePath={apiBasepath}>
       <Switch>
         <Route path={'/'} exact>
           <PageSection variant={'light'}>
@@ -32,7 +35,7 @@ export const Routes: FunctionComponent<RoutesProps> = ({ getToken }) => {
           <PageSection padding={{ default: 'noPadding' }}>
             <CreationWizardMachineProvider
               authToken={getToken}
-              basePath={process.env.BASE_PATH}
+              basePath={apiBasepath}
               fetchConfigurator={connector =>
                 fetchConfigurator(
                   connector,

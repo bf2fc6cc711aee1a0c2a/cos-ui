@@ -332,6 +332,8 @@ export type PaginatedApiActorType<ResponseType, QueryType> = ActorRefFrom<
   ReturnType<Wrapper<ResponseType, QueryType>['wrapped']>
 >;
 
+// These are not _writable_ booleans, they are derived from the machine state!
+// https://discord.com/channels/795785288994652170/799416943324823592/847466843290730527
 export const usePagination = <ResponseType, QueryType>(
   actor: PaginatedApiActorType<ResponseType, QueryType>
 ) => {
@@ -348,7 +350,7 @@ export const usePagination = <ResponseType, QueryType>(
           noResults: state.hasTag('empty'),
           results: state.hasTag('results'),
           error: state.hasTag('error'),
-          firstRequest: state.matches('idle'),
+          firstRequest: state.context.response === undefined,
         };
       },
       [actor]

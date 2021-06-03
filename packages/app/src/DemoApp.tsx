@@ -13,7 +13,7 @@ import {
   KeycloakContext,
 } from './auth/keycloak/KeycloakContext';
 import { AppLayout } from './AppLayout';
-import { Routes } from './Routes';
+import { CosUiRoutes } from './CosUiRoutes';
 import { AuthContext } from './auth/AuthContext';
 
 let keycloak: Keycloak.KeycloakInstance | undefined;
@@ -47,10 +47,11 @@ const ConnectedRoutes = () => {
   const authContext = useContext(AuthContext);
 
   return (
-    <Routes
+    <CosUiRoutes
       getToken={
         authContext?.getToken ? authContext.getToken() : Promise.resolve('')
       }
+      apiBasepath={process.env.BASE_PATH as string}
     />
   );
 };
