@@ -22,6 +22,7 @@
   ],
   "dependencies": {
     "@cos-ui/api": "^0.0.1",
+    "@cos-ui/json-schema-configurator": "^0.0.1",
     "@cos-ui/utils": "^0.0.1",
     "tslib": "^2.0.0"
   },

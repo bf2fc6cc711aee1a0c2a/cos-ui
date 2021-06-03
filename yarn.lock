@@ -3258,6 +3258,17 @@
     rxjs "6.6.7"
     tslib "1.13.0"
 
+"@patternfly/react-code-editor@^4.2.59":
+  version "4.2.59"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-code-editor/-/react-code-editor-4.2.59.tgz#27c82b73ca2d196213b0481fc3c4fa8e126f3289"
+  integrity sha512-PZU4lFafD/2ZrhRalAKNLJjH2W5TZ4qpxb6RePVlvGxUaB2kZbnCyfWb7Zv+1zbW88TX+b6S875xxOEWk2S0Qw==
+  dependencies:
+    "@patternfly/react-core" "^4.121.1"
+    "@patternfly/react-icons" "^4.10.7"
+    "@patternfly/react-styles" "^4.10.7"
+    react-dropzone "9.0.0"
+    tslib "1.13.0"
+
 "@patternfly/react-core@^4.106.2":
   version "4.106.2"
   resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-4.106.2.tgz#c2796b06777e9223851a7b58d5567afa265456aa"
@@ -3271,10 +3282,33 @@
     tippy.js "5.1.2"
     tslib "1.13.0"
 
+"@patternfly/react-core@^4.121.1":
+  version "4.121.1"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-4.121.1.tgz#25ce945c54366a202e1f581e48ff167df4d3f7fc"
+  integrity sha512-WIlh7Wd4o4r0PA2+9/fPcOxMAnc2H/InPx8rulJzD9a8KdUevl7+XDtKok6p6grKRUriV5wKPQyfZrxcb5VVHw==
+  dependencies:
+    "@patternfly/react-icons" "^4.10.7"
+    "@patternfly/react-styles" "^4.10.7"
+    "@patternfly/react-tokens" "^4.11.8"
+    focus-trap "6.2.2"
+    react-dropzone "9.0.0"
+    tippy.js "5.1.2"
+    tslib "1.13.0"
+
+"@patternfly/react-icons@^4.10.7":
+  version "4.10.7"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-4.10.7.tgz#fe2eabf88512afe7dab0c0e7c71142ec6e594664"
+  integrity sha512-CiHYDOS8jrxNiy/KIxv9vPqg3cie4SzsbQKh+eW8lj41x68IrgILiw3VvjcJeVXXJDRW36T7u3IPKjMI6zuoyA==
+
 "@patternfly/react-icons@^4.7.11", "@patternfly/react-icons@^4.9.9":
   version "4.9.9"
   resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-4.9.9.tgz#a10835cb5bdd482ab4de4651426e806382080129"
   integrity sha512-TAWwmpYPZeseoQXXFdWgakB8UV5mf/FugH15D9C3PQoX+un4OI2nm7d689ItlmBfB3FLK9sMhZ2eZX7/tAjC9g==
+
+"@patternfly/react-styles@^4.10.7":
+  version "4.10.7"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-styles/-/react-styles-4.10.7.tgz#3b0ce38f3e12a69cdcbaf1ada163a5b114b919bd"
+  integrity sha512-oA9R1dXAJaKhj0/1z/uf2Z1wzsQ4jGQw2F8alPBagbDLyZD+pvUmElBr7o2Ucz/fm+/pLcphekCkGEVtyV3jOA==
 
 "@patternfly/react-styles@^4.7.8":
   version "4.8.5"
@@ -3302,6 +3336,11 @@
   version "4.10.9"
   resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-4.10.9.tgz#0c55ec18651bc8ca11f7bac10a4904e435e7e98d"
   integrity sha512-qmyTPHC/bO+rxCnfLKQZLkV5xLRS2QkB/9aoAdUZvBXpcGS7eX891sSipefwSxxWv+9F2v06zfhdmAhgT7T02g==
+
+"@patternfly/react-tokens@^4.11.8":
+  version "4.11.8"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-4.11.8.tgz#ea0c9ca036f6b0506cda43e899c3248971920337"
+  integrity sha512-k3UwsnWRoHHYbFbiqmUHtkrAPtw6D8BZLB1tPGzdXBlqQXRX1t8xukgDcTSUWo6wOPVdk8WrOgmWMy0u0Tk+sw==
 
 "@pmmmwh/react-refresh-webpack-plugin@^0.4.3":
   version "0.4.3"
@@ -11728,6 +11767,18 @@ moment@^2.27.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.0.tgz#fcbef955844d91deb55438613ddcec56e86a3425"
   integrity sha512-z6IJ5HXYiuxvFTI6eiQ9dm77uE0gyy1yXNApVHqTcnIKfY9tIwEjlzsZ6u1LQXvVgKeTnv9Xm7NDvJ7lso3MtA==
 
+monaco-editor-webpack-plugin@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-3.1.0.tgz#972efc47a91b3bf3bd977885684a3180eb8f341b"
+  integrity sha512-TP5NkCAV0OeFTry5k/d60KR7CkhTXL4kgJKtE3BzjgbDb5TGEPEhoKmHBrSa6r7Oc0sNbPLZhKD/TP2ig7A+/A==
+  dependencies:
+    loader-utils "^2.0.0"
+
+monaco-editor@*:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.24.0.tgz#990b55096bcc95d08d8d28e55264c6eb17707269"
+  integrity sha512-o1f0Lz6ABFNTtnEqqqvlY9qzNx24rQZx1RgYNQ8SkWkE+Ka63keHH/RqxQ4QhN4fs/UYOnvAtEUZsPrzccH++A==
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -13876,6 +13927,14 @@ react-is@^17.0.1:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
+
+react-monaco-editor@^0.43.0:
+  version "0.43.0"
+  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.43.0.tgz#495578470db7b27ab306af813b31f206a6bf9d1c"
+  integrity sha512-2PXSDwOzjUDlwdsK8psrmezSB2lPnjLQ/SRNwqoRF2+TAB2n4Q+Bs1wGlWOZbU8WI7s6Wnni0+3PdT9nSPtzRA==
+  dependencies:
+    monaco-editor "*"
+    prop-types "^15.7.2"
 
 react-reconciler@^0.24.0:
   version "0.24.0"
@@ -16308,15 +16367,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.6.4:
-  version "3.9.9"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.9.tgz#e69905c54bc0681d0518bd4d587cc6f2d0b1a674"
-  integrity sha512-kdMjTiekY+z/ubJCATUPlRDl39vXYiMV9iyeMuEuXZh2we6zz80uovNN2WlAxmmdE/Z/YQe+EbOEXB5RHEED3w==
-
-typescript@^3.7.3, typescript@^3.9.7:
-  version "3.9.7"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.7.tgz#98d600a5ebdc38f40cb277522f12dc800e9e25fa"
-  integrity sha512-BLbiRkiBzAwsjut4x/dsibSTB6yWpwT5qWmC2OfuCg3GgVQCSgMs4vEctYPhsaGtd0AeuuHMkjZ2h2WG8MSzRw==
+typescript@^3.6.4, typescript@^3.7.3, typescript@^4.3.2:
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.2.tgz#399ab18aac45802d6f2498de5054fcbbe716a805"
+  integrity sha512-zZ4hShnmnoVnAHpVHWpTcxdv7dWP60S2FsydQLV8V5PbS3FifjWFFRiHSWpDJahly88PRyV5teTSLoq4eG7mKw==
 
 uglify-js@^3.1.4:
   version "3.10.4"

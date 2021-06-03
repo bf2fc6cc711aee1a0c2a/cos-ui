@@ -96,7 +96,7 @@ export const Configuration: FunctionComponent = () => {
           isLoading,
           hasErrors,
           hasCustomConfigurator,
-          configuration: state.context.connectorData,
+          configuration: state.context.connectorConfiguration,
           Configurator: state.context.Configurator,
           configuratorRef: state.children
             .configuratorRef as ConfiguratorActorRef,

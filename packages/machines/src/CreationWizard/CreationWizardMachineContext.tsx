@@ -16,6 +16,7 @@ import {
   CreationWizardMachineInterpreterFromType,
 } from './CreationWizardMachine';
 import { KafkaMachineActorRef } from './KafkasMachine';
+import { ReviewMachineActorRef } from './ReviewMachine';
 
 const CreationWizardMachineService = createContext<
   CreationWizardMachineInterpreterFromType
@@ -97,6 +98,18 @@ export const useCreationWizardMachineClustersActor = (): ClustersMachineActorRef
     useCallback(
       (state: typeof service.state) =>
         state.children.selectCluster as ClustersMachineActorRef,
+      [service]
+    )
+  );
+};
+
+export const useCreationWizardMachineReviewActor = (): ReviewMachineActorRef => {
+  const service = useCreationWizardMachineService();
+  return useSelector(
+    service,
+    useCallback(
+      (state: typeof service.state) =>
+        state.children.review as ReviewMachineActorRef,
       [service]
     )
   );

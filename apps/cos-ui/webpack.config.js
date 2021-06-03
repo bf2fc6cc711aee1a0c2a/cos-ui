@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const { ModuleFederationPlugin } = require('webpack').container;
 const path = require('path');
 const { federatedModuleName } = require('./package.json');
@@ -114,6 +115,10 @@ module.exports = (env, argv) => {
               };
               return acc;
             }, {}),
+      }),
+      new MonacoWebpackPlugin({
+        // available options are documented at https://github.com/Microsoft/monaco-editor-webpack-plugin#options
+        languages: ['json', 'yaml'],
       }),
       new webpack.HotModuleReplacementPlugin(),
       new ReactRefreshWebpackPlugin(),

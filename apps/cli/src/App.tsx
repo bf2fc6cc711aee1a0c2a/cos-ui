@@ -216,7 +216,7 @@ export const App: FunctionComponent = () => {
           </Text>
         </Box>
         <Box>
-          <Text>{JSON.stringify(state.context.connectorData)}</Text>
+          <Text>{JSON.stringify(state.context.connectorConfiguration)}</Text>
         </Box>
       </Box>
 

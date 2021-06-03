@@ -15,6 +15,7 @@ import {
 } from './ConfiguratorLoaderMachine';
 import { configuratorMachine } from './ConfiguratorMachine';
 import { createModel } from 'xstate/lib/model';
+import { reviewMachine } from './ReviewMachine';
 
 type Context = {
   authToken?: Promise<string>;
@@ -26,7 +27,7 @@ type Context = {
   configurationSteps?: string[] | false;
   activeConfigurationStep?: number;
   isConfigurationValid?: boolean;
-  connectorData?: unknown;
+  connectorConfiguration?: unknown;
 };
 
 const creationWizardMachineSchema = {
@@ -150,7 +151,7 @@ export const creationWizardMachine = createMachine<
             target: 'configureConnector',
             actions: assign((_context, event) => ({
               selectedConnector: event.data.selectedConnector,
-              connectorData: false,
+              connectorConfiguration: false,
               activeConfigurationStep: 0,
               isConfigurationValid: false,
               configurationSteps: false,
@@ -208,15 +209,15 @@ export const creationWizardMachine = createMachine<
               src: configuratorMachine,
               data: context => ({
                 connector: context.selectedConnector,
-                configuration: context.connectorData,
+                configuration: context.connectorConfiguration,
                 steps: context.configurationSteps || ['single step'],
                 activeStep: context.activeConfigurationStep || 0,
-                isActiveStepValid: context.connectorData !== false,
+                isActiveStepValid: context.connectorConfiguration !== false,
               }),
               onDone: {
                 target: '#creationWizard.reviewConfiguration',
                 actions: assign((_, event) => ({
-                  connectorData: event.data.configuration || true,
+                  connectorConfiguration: event.data.configuration || true,
                 })),
               },
               onError: {
@@ -256,12 +257,46 @@ export const creationWizardMachine = createMachine<
         },
       },
       reviewConfiguration: {
+        id: 'review',
+        initial: 'reviewing',
+        invoke: {
+          id: 'review',
+          src: reviewMachine,
+          data: context => ({
+            connector: context.selectedConnector,
+            initialData: context.connectorConfiguration,
+          }),
+          onDone: {
+            target: '#creationWizard.saved',
+            actions: assign((_, event) => ({
+              connectorConfiguration: event.data,
+            })),
+          },
+          onError: {
+            actions: (_context, event) => console.error(event.data.message),
+          },
+        },
+        states: {
+          reviewing: {
+            on: {
+              isValid: 'valid',
+            },
+          },
+          valid: {
+            on: {
+              isInvalid: 'reviewing',
+              next: {
+                actions: send('next', { to: 'reviewRef' }),
+              },
+            },
+          },
+        },
         on: {
           prev: 'configureConnector',
-          next: 'saving',
         },
       },
-      saving: {
+      saved: {
+        id: 'saved',
         type: 'final',
       },
     },
@@ -298,7 +333,7 @@ export const creationWizardMachine = createMachine<
         if (subStep) {
           return (
             context.selectedConnector !== undefined &&
-            (context.connectorData !== undefined ||
+            (context.connectorConfiguration !== undefined ||
               subStep <= context.activeConfigurationStep!)
           );
         }
@@ -306,10 +341,10 @@ export const creationWizardMachine = createMachine<
       },
       isConnectorConfigured: context => {
         if (!context.configurationSteps) {
-          return context.connectorData !== undefined;
+          return context.connectorConfiguration !== undefined;
         }
         return (
-          context.connectorData !== undefined ||
+          context.connectorConfiguration !== undefined ||
           (context.activeConfigurationStep ===
             context.configurationSteps.length - 1 &&
             context.isConfigurationValid === true)

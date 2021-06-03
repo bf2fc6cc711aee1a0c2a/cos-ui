@@ -5,3 +5,4 @@ export * from './ConnectorTypesMachine';
 export * from './CreationWizardMachine';
 export * from './CreationWizardMachineContext';
 export * from './KafkasMachine';
+export * from './ReviewMachine';

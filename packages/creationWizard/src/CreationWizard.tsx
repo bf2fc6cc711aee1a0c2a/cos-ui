@@ -158,6 +158,7 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
       canJumpTo:
         creationWizardMachine.transition(state, 'jumpToReviewConfiguration')
           .changed || state.matches('reviewConfiguration'),
+      enableNext: creationWizardMachine.transition(state, 'next').changed,
       nextButtonText: 'Create connector',
     },
   ];

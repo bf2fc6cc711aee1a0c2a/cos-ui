@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useRef } from 'react';
 import { AutoForm, AutoFields, ErrorsField } from 'uniforms-patternfly';
 import { JSONSchemaBridge } from 'uniforms-bridge-json-schema';
-import Ajv from 'ajv';
+import Ajv, { ValidateFunction } from 'ajv';
 import { DeepPartial, useForm } from 'uniforms/es5';
 
 const ajv = new Ajv({
@@ -11,7 +11,7 @@ const ajv = new Ajv({
   strictSchema: false,
 });
 
-function createValidator(schema: object) {
+export function createValidator(schema: object) {
   const validator = ajv.compile(schema);
 
   return (model: object) => {
@@ -19,6 +19,9 @@ function createValidator(schema: object) {
     return validator.errors?.length ? { details: validator.errors } : null;
   };
 }
+
+export type CreateValidatorType = ReturnType<typeof createValidator>;
+export type ValidatorResultType = ValidateFunction<unknown>['errors'];
 
 type JsonSchemaConfiguratorProps = {
   schema: Record<string, any>;
