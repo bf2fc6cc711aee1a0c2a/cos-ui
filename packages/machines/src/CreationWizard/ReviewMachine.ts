@@ -51,7 +51,7 @@ export const reviewMachine = createMachine<typeof reviewMachineModel>(
   {
     schema: reviewMachineSchema,
     id: 'review',
-    initial: 'reviewing',
+    initial: 'verify',
     context: reviewMachineModel.initialContext,
     entry: 'initialize',
     states: {

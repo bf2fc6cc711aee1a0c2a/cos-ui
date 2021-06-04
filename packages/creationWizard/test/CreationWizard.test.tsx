@@ -121,7 +121,7 @@ const testMachine = Machine({
           waitFor(() => {
             expect(screen.getByText('Please review the configuration data.'));
             expect(
-              screen.getByDisplayValue('{"authorizationToken":"some-token"}')
+              screen.getByDisplayValue('{ "authorizationToken": "some-token" }')
             );
           }),
       },
@@ -190,7 +190,10 @@ describe('@cos-ui/creationWizard', () => {
           await waitFor(() => expect(screen.getByText('Next')).toBeEnabled());
           fireEvent.click(screen.getByText('Next'));
         },
-        saveConnector: () => {
+        saveConnector: async () => {
+          await waitFor(() =>
+            expect(screen.getByText('Create connector')).toBeEnabled()
+          );
           fireEvent.click(screen.getByText('Create connector'));
         },
         onClose: () => {

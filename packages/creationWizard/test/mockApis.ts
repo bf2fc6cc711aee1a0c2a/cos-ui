@@ -194,6 +194,7 @@ const connectors: ConnectorTypeList = {
       version: 'v1alpha1',
       description: 'Receive data from AWS Kinesis.',
       json_schema: {
+        type: 'object',
         description: 'Receive data from AWS Kinesis.',
         properties: {
           accessKey: {
@@ -234,6 +235,7 @@ const connectors: ConnectorTypeList = {
       version: 'v1alpha1',
       description: 'Receive data from AWS SQS.',
       json_schema: {
+        type: 'object',
         description: 'Receive data from AWS SQS.',
         properties: {
           accessKey: {
@@ -279,6 +281,7 @@ const connectors: ConnectorTypeList = {
       version: 'v1alpha1',
       description: 'Receive notifications about new issues from Jira.',
       json_schema: {
+        type: 'object',
         description: 'Receive notifications about new issues from Jira.',
         properties: {
           jiraUrl: {
@@ -317,6 +320,7 @@ const connectors: ConnectorTypeList = {
       version: 'v1alpha1',
       description: 'Receive updates from Salesforce.',
       json_schema: {
+        type: 'object',
         description: 'Receive updates from Salesforce.',
         properties: {
           clientId: {
@@ -379,6 +383,7 @@ const connectors: ConnectorTypeList = {
       version: 'v1alpha1',
       description: 'Receive messages from a Slack channel.',
       json_schema: {
+        type: 'object',
         description: 'Receive messages from a Slack channel.',
         properties: {
           channel: {
@@ -408,6 +413,7 @@ const connectors: ConnectorTypeList = {
       description:
         'Receive all messages that people send to your telegram bot.',
       json_schema: {
+        type: 'object',
         description:
           'Receive all messages that people send to your telegram bot.',
         properties: {

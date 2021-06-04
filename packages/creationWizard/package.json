@@ -37,7 +37,7 @@
     "@cos-ui/json-schema-configurator": "^0.0.1",
     "@cos-ui/machines": "^0.0.1",
     "@cos-ui/utils": "^0.0.1",
-    "tslib": "^2.0.0"
+    "tslib": "^2.2.0"
   },
   "publishConfig": {
     "access": "public"
