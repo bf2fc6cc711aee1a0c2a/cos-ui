@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@cos-ui/machines": "^0.0.1",
-    "@cos-ui/api": "^0.0.1",
+    "@cos-ui/api": "^1.1.0",
     "ink": "^3.0.8",
     "ink-select-input": "^4.2.0",
     "ink-spinner": "^4.0.1",

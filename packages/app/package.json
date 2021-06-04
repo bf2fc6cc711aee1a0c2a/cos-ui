@@ -21,7 +21,7 @@
     "dist"
   ],
   "dependencies": {
-    "@cos-ui/api": "0.0.1",
+    "@cos-ui/api": "1.1.0",
     "@cos-ui/creation-wizard": "0.0.1",
     "tslib": "^2.0.0"
   },

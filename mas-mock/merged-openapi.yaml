@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Kafka Service Fleet Manager
-  version: 0.0.1
+  version: 1.1.0
   description: >-
     Kafka Service Fleet Manager is a Rest API to manage kafka instances and
     connectors.
@@ -14,10 +14,17 @@ servers:
     description: localhost
   - url: /
     description: current domain
+tags:
+  - name: Connector Types
+    description: ''
+  - name: Connectors
+    description: ''
+  - name: Connector Clusters
+    description: ''
 paths:
-  /api/managed-services-api/v1:
+  /api/kafkas_mgmt/v1:
     get:
-      operationId: versionMetadata
+      operationId: getVersionMetadata
       responses:
         '200':
           content:
@@ -26,9 +33,9 @@ paths:
                 $ref: '#/components/schemas/VersionMetadata'
           description: Version metadata
       summary: Retrieves the version metadata
-  /api/managed-services-api/v1/status:
+  /api/kafkas_mgmt/v1/status:
     get:
-      operationId: serviceStatus
+      operationId: getServiceStatus
       responses:
         '200':
           content:
@@ -50,7 +57,7 @@ paths:
         service capacity
       security:
         - Bearer: []
-  '/api/managed-services-api/v1/kafkas/{id}':
+  '/api/kafkas_mgmt/v1/kafkas/{id}':
     get:
       operationId: getKafkaById
       responses:
@@ -172,7 +179,7 @@ paths:
         - Bearer: []
     parameters:
       - $ref: '#/components/parameters/id'
-  /api/managed-services-api/v1/kafkas:
+  /api/kafkas_mgmt/v1/kafkas:
     post:
       operationId: createKafka
       parameters:
@@ -268,7 +275,7 @@ paths:
       summary: Create a new kafka Request
     get:
       summary: Returns a list of Kafka requests
-      operationId: listKafkas
+      operationId: getKafkas
       security:
         - Bearer: []
       responses:
@@ -319,10 +326,10 @@ paths:
         - $ref: '#/components/parameters/size'
         - $ref: '#/components/parameters/orderBy'
         - $ref: '#/components/parameters/search'
-  /api/managed-services-api/v1/cloud_providers:
+  /api/kafkas_mgmt/v1/cloud_providers:
     get:
       summary: Retrieves the list of supported cloud providers.
-      operationId: listCloudProviders
+      operationId: getCloudProviders
       security:
         - Bearer: []
       responses:
@@ -353,10 +360,10 @@ paths:
       parameters:
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/size'
-  '/api/managed-services-api/v1/cloud_providers/{id}/regions':
+  '/api/kafkas_mgmt/v1/cloud_providers/{id}/regions':
     get:
       summary: Retrieves the list of supported regions of the supported cloud provider.
-      operationId: listCloudProviderRegions
+      operationId: getCloudProviderRegions
       security:
         - Bearer: []
       responses:
@@ -388,7 +395,7 @@ paths:
         - $ref: '#/components/parameters/id'
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/size'
-  /api/managed-services-api/v1/serviceaccounts:
+  /api/kafkas_mgmt/v1/service_accounts:
     get:
       responses:
         '200':
@@ -426,7 +433,9 @@ paths:
           description: Unexpected error occurred
       security:
         - Bearer: []
-      operationId: listServiceAccounts
+      tags:
+        - security
+      operationId: getServiceAccounts
       summary: List service accounts
     post:
       requestBody:
@@ -479,8 +488,10 @@ paths:
       security:
         - Bearer: []
       operationId: createServiceAccount
+      tags:
+        - security
       summary: Create a service account
-  '/api/managed-services-api/v1/serviceaccounts/{id}':
+  '/api/kafkas_mgmt/v1/service_accounts/{id}':
     get:
       parameters:
         - $ref: '#/components/parameters/id'
@@ -497,6 +508,8 @@ paths:
       security:
         - Bearer: []
       operationId: getServiceAccountById
+      tags:
+        - security
       summary: get service account by id
     summary: Get service account by id
     description: Get the service account with the given id
@@ -538,9 +551,11 @@ paths:
           description: Unexpected error occurred
       security:
         - Bearer: []
-      operationId: deleteServiceAccount
+      operationId: deleteServiceAccountById
+      tags:
+        - security
       summary: Delete service account
-  '/api/managed-services-api/v1/serviceaccounts/{id}/reset-credentials':
+  '/api/kafkas_mgmt/v1/service_accounts/{id}/reset_credentials':
     post:
       parameters:
         - $ref: '#/components/parameters/id'
@@ -554,14 +569,42 @@ paths:
                 sa-reset:
                   $ref: '#/components/examples/ServiceAccountExample'
           description: reset credentials
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                401Example:
+                  $ref: '#/components/examples/401Example'
+          description: auth token is invalid
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                401Example:
+                  $ref: '#/components/examples/403Example'
+          description: User not authorized to access the service
+        '500':
+          content:
+            application/json:
+              schema: {}
+              examples:
+                500Example:
+                  $ref: '#/components/examples/500Example'
+          description: Unexpected error occurred
       security:
         - Bearer: []
       operationId: resetServiceAccountCreds
+      tags:
+        - security
       summary: reset credentials for the service account
-  '/api/managed-services-api/v1/kafkas/{id}/metrics/query_range':
+  '/api/kafkas_mgmt/v1/kafkas/{id}/metrics/query_range':
     get:
       summary: Get metrics with timeseries range query by kafka id.
-      operationId: GetMetricsByRangeQuery
+      operationId: getMetricsByRangeQuery
       security:
         - Bearer: []
       responses:
@@ -594,10 +637,10 @@ paths:
         - $ref: '#/components/parameters/duration'
         - $ref: '#/components/parameters/interval'
         - $ref: '#/components/parameters/filters'
-  '/api/managed-services-api/v1/kafkas/{id}/metrics/query':
+  '/api/kafkas_mgmt/v1/kafkas/{id}/metrics/query':
     get:
       summary: Get metrics with instant query by kafka id.
-      operationId: GetMetricsByInstantQuery
+      operationId: getMetricsByInstantQuery
       security:
         - Bearer: []
       responses:
@@ -628,8 +671,17 @@ paths:
       parameters:
         - $ref: '#/components/parameters/id'
         - $ref: '#/components/parameters/filters'
-  '/api/managed-services-api/v1/connector-types/{id}':
+  '/api/connector_mgmt/v1/kafka_connector_types/{connector_type_id}':
+    parameters:
+      - name: connector_type_id
+        description: The id of the connector type
+        schema:
+          type: string
+        in: path
+        required: true
     get:
+      tags:
+        - Connector Types
       responses:
         '200':
           content:
@@ -667,11 +719,15 @@ paths:
       security:
         - Bearer: []
       operationId: getConnectorTypeByID
-      summary: Get a connector type by name and version
-    parameters:
-      - $ref: '#/components/parameters/id'
-  /api/managed-services-api/v1/connector-types:
+      summary: Get a connector type by id
+  /api/connector_mgmt/v1/kafka_connector_types:
     get:
+      tags:
+        - Connector Types
+      security:
+        - Bearer: []
+      operationId: listConnectorTypes
+      summary: Returns a list of connector types
       parameters:
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/size'
@@ -700,12 +756,10 @@ paths:
                 500Example:
                   $ref: '#/components/examples/500Example'
           description: Unexpected error occurred
-      security:
-        - Bearer: []
-      operationId: listConnectorTypes
-      summary: Returns a list of connector types
-  '/api/managed-services-api/v1/kafkas/{id}/connector-deployments':
+  /api/connector_mgmt/v1/kafka_connectors:
     post:
+      tags:
+        - Connectors
       operationId: createConnector
       parameters:
         - in: query
@@ -768,16 +822,23 @@ paths:
         - Bearer: []
       summary: Create a new connector
     get:
+      tags:
+        - Connectors
       parameters:
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/size'
+        - in: query
+          name: kafka_id
+          description: The kafka cluster id
+          schema:
+            type: string
       responses:
         '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConnectorList'
-          description: A list of connector deployments
+          description: A list of connectors
         '401':
           content:
             application/json:
@@ -800,25 +861,29 @@ paths:
         - Bearer: []
       operationId: listConnectors
       summary: Returns a list of connector types
+  '/api/connector_mgmt/v1/kafkas_connectors/{connector_id}':
     parameters:
-      - $ref: '#/components/parameters/id'
-  '/api/managed-services-api/v1/kafkas/{id}/connector-deployments/{cid}':
+      - in: query
+        name: kafka_id
+        description: The kafka cluster id
+        schema:
+          type: string
+      - name: connector_id
+        description: The id of the connector
+        schema:
+          type: string
+        in: path
+        required: true
     get:
-      parameters:
-        - $ref: '#/components/parameters/id'
-        - name: cid
-          description: The id of the connector
-          schema:
-            type: string
-          in: path
-          required: true
+      tags:
+        - Connectors
       responses:
         '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Connector'
-          description: The connector deployment matching the request
+          description: The connector matching the request
         '401':
           content:
             application/json:
@@ -849,15 +914,10 @@ paths:
       security:
         - Bearer: []
       operationId: getConnector
-      summary: Get a connector deployment
+      summary: Get a connector
     delete:
-      parameters:
-        - name: id
-          description: Id of the connector
-          schema:
-            type: string
-          in: path
-          required: true
+      tags:
+        - Connectors
       responses:
         '204':
           content:
@@ -896,10 +956,65 @@ paths:
         - Bearer: []
       operationId: deleteConnector
       summary: Delete a connector
-    parameters:
-      - $ref: '#/components/parameters/id'
-  /api/managed-services-api/v1/kafka-connector-clusters:
+    patch:
+      tags:
+        - Connectors
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connector'
+          description: The connector matching the request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                401Example:
+                  $ref: '#/components/examples/401Example'
+          description: Auth token is invalid
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                404Example:
+                  $ref: '#/components/examples/404Example'
+          description: No matching connector type exists
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                500Example:
+                  $ref: '#/components/examples/500Example'
+          description: Unexpected error occurred
+      security:
+        - Bearer: []
+      operationId: patchConnector
+      summary: patch a connector
+      requestBody:
+        description: Data to patch the connector with
+        content:
+          application/json-patch+json:
+            schema:
+              description: 'A JSON Patch, RFC 6902 - https://tools.ietf.org/html/rfc6902'
+              type: object
+          application/merge-patch+json:
+            schema:
+              description: >-
+                A JSON Merge Patch, RFC 7386 -
+                https://tools.ietf.org/html/rfc7386
+              type: object
+        required: true
+  /api/connector_mgmt/v1/kafka_connector_clusters:
     post:
+      tags:
+        - Connector Clusters
       operationId: createConnectorCluster
       parameters:
         - in: query
@@ -962,6 +1077,8 @@ paths:
         - Bearer: []
       summary: Create a new connector cluster
     get:
+      tags:
+        - Connector Clusters
       parameters:
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/size'
@@ -994,18 +1111,17 @@ paths:
         - Bearer: []
       operationId: listConnectorClusters
       summary: Returns a list of connector clusters
+  '/api/connector_mgmt/v1/kafka_connector_clusters/{connector_cluster_id}':
     parameters:
-      - $ref: '#/components/parameters/id'
-  '/api/managed-services-api/v1/kafka-connector-clusters/{id}':
+      - name: connector_cluster_id
+        description: The id of the connector cluster
+        schema:
+          type: string
+        in: path
+        required: true
     get:
-      parameters:
-        - $ref: '#/components/parameters/id'
-        - name: cid
-          description: The id of the connector cluster
-          schema:
-            type: string
-          in: path
-          required: true
+      tags:
+        - Connector Clusters
       responses:
         '200':
           content:
@@ -1045,13 +1161,8 @@ paths:
       operationId: getConnectorCluster
       summary: Get a connector cluster
     delete:
-      parameters:
-        - name: id
-          description: Id of the connector cluster
-          schema:
-            type: string
-          in: path
-          required: true
+      tags:
+        - Connector Clusters
       responses:
         '204':
           content:
@@ -1090,18 +1201,17 @@ paths:
         - Bearer: []
       operationId: deleteConnectorCluster
       summary: Delete a connector cluster
+  '/api/connector_mgmt/v1/kafka_connector_clusters/{connector_cluster_id}/addon_parameters':
     parameters:
-      - $ref: '#/components/parameters/id'
-  '/api/managed-services-api/v1/kafka-connector-clusters/{id}/addon-parameters':
+      - name: connector_cluster_id
+        description: The id of the connector cluster
+        schema:
+          type: string
+        in: path
+        required: true
     get:
-      parameters:
-        - $ref: '#/components/parameters/id'
-        - name: cid
-          description: The id of the connector cluster
-          schema:
-            type: string
-          in: path
-          required: true
+      tags:
+        - Connector Clusters
       responses:
         '200':
           content:
@@ -1142,278 +1252,6 @@ paths:
         - Bearer: []
       operationId: getConnectorClusterAddonParameters
       summary: Get a connector cluster's addon parameters
-    parameters:
-      - $ref: '#/components/parameters/id'
-  '/api/managed-services-api/v1/kafka-connector-clusters/{id}/status':
-    put:
-      requestBody:
-        description: Cluster status update data
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ConnectorClusterUpdateStatus'
-        required: true
-      responses:
-        '200':
-          description: Cluster status is updated
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                400InvalidIdExample:
-                  $ref: '#/components/examples/400InvalidIdExample'
-          description: id value is not valid
-        '404':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                404Example:
-                  $ref: '#/components/examples/404Example'
-          description: Auth token is not valid.
-      security:
-        - Bearer: []
-      operationId: updateKafkaConnectorAgentClusterStatus
-      summary: Update the status of a connector agent cluster
-    parameters:
-      - $ref: '#/components/parameters/id'
-  '/api/managed-services-api/v1/kafka-connector-clusters/{id}/connectors':
-    parameters:
-      - $ref: '#/components/parameters/id'
-    get:
-      parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/size'
-        - in: query
-          name: gt_version
-          description: >-
-            filters the connectors to those with a version greater than the
-            given value
-          schema:
-            type: integer
-            format: int64
-        - in: query
-          name: watch
-          description: >-
-            watch for changes to the resources and return them as a stream of
-            watch events. Specify gt_version to specify the starting point.
-          schema:
-            type: boolean
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConnectorList'
-            application/json;stream=watch:
-              schema:
-                $ref: '#/components/schemas/ConnectorWatchEvent'
-          description: A list of connector deployments
-        '401':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                401Example:
-                  $ref: '#/components/examples/401Example'
-          description: Auth token is invalid
-        '500':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                500Example:
-                  $ref: '#/components/examples/500Example'
-          description: Unexpected error occurred
-      security:
-        - Bearer: []
-      operationId: listClusterAsignedConnectors
-      summary: Returns a list of connector types
-  '/api/managed-services-api/v1/kafka-connector-clusters/{id}/connectors/{cid}/status':
-    put:
-      requestBody:
-        description: Cluster status update data
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ConnectorUpdateStatus'
-        required: true
-      responses:
-        '200':
-          description: Cluster status is updated
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                400InvalidIdExample:
-                  $ref: '#/components/examples/400InvalidIdExample'
-          description: id value is not valid
-        '404':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                404Example:
-                  $ref: '#/components/examples/404Example'
-          description: Auth token is not valid.
-      security:
-        - Bearer: []
-      operationId: updateKafkaConnectorStatus
-      summary: Update the status of a connector agent cluster
-    parameters:
-      - $ref: '#/components/parameters/id'
-      - name: cid
-        description: The id of the connector
-        schema:
-          type: string
-        in: path
-        required: true
-  '/api/managed-services-api/v1/agent-clusters/{id}/status':
-    put:
-      parameters:
-        - $ref: '#/components/parameters/id'
-      requestBody:
-        description: Cluster status update data
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DataPlaneClusterUpdateStatusRequest'
-        required: true
-      responses:
-        '200':
-          description: Cluster status is updated
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                400InvalidIdExample:
-                  $ref: '#/components/examples/400InvalidIdExample'
-          description: id value is not valid
-        '404':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                404Example:
-                  $ref: '#/components/examples/404Example'
-          description: Auth token is not valid.
-      security:
-        - Bearer: []
-      operationId: updateAgentClusterStatus
-      summary: Update the status of an agent cluster
-  '/api/managed-services-api/v1/agent-clusters/{id}/kafkas/status':
-    put:
-      parameters:
-        - $ref: '#/components/parameters/id'
-      requestBody:
-        description: Kafka clusters status update data
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DataPlaneKafkaStatusUpdateRequest'
-        required: true
-      responses:
-        '200':
-          description: Status is updated for Kafka clusters
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                400InvalidIdExample:
-                  $ref: '#/components/examples/400InvalidIdExample'
-          description: id value is not valid
-        '404':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                404Example:
-                  $ref: '#/components/examples/404Example'
-          description: Auth token is not valid.
-      security:
-        - Bearer: []
-      operationId: updateKafkaClusterStatus
-      summary: Update the status of Kafka clusters on an agent cluster
-  '/api/managed-services-api/v1/agent-clusters/{id}/kafkas':
-    get:
-      parameters:
-        - $ref: '#/components/parameters/id'
-      responses:
-        '200':
-          description: The list of the ManagedKafkas for the specified agent cluster
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ManagedKafkaList'
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                400InvalidIdExample:
-                  $ref: '#/components/examples/400InvalidIdExample'
-          description: id value is not valid
-        '404':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                404Example:
-                  $ref: '#/components/examples/404Example'
-          description: Auth token is not valid.
-      security:
-        - Bearer: []
-      operationId: getKafkas
-      summary: Get the list of ManagedaKafkas for the specified agent cluster
-  '/api/managed-services-api/v1/agent-clusters/{id}':
-    get:
-      parameters:
-        - $ref: '#/components/parameters/id'
-      responses:
-        '200':
-          description: The ManagedKafkaAgent CR Spec
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DataplaneClusterAgentConfig'
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                400InvalidIdExample:
-                  $ref: '#/components/examples/400InvalidIdExample'
-          description: id value is not valid
-        '404':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                404Example:
-                  $ref: '#/components/examples/404Example'
-          description: Auth token is not valid.
-      security:
-        - Bearer: []
-      operationId: getKafkaAgent
-      summary: Get the spec of the ManagedKafkaAgent CR spec
 components:
   schemas:
     ObjectReference:
@@ -1517,10 +1355,10 @@ components:
           example:
             kind: APIVersion
             id: v1
-            href: /api/managed-services-api/v1
+            href: /api/kafkas_mgmt/v1
             collections:
               - id: kafkas
-                href: /api/managed-services-api/v1/kafkas
+                href: /api/kafkas_mgmt/v1/kafkas
                 kind: KafkaList
           properties:
             collections:
@@ -1661,6 +1499,9 @@ components:
               type: string
             owner:
               type: string
+            created_at:
+              format: date-time
+              type: string
           example:
             $ref: '#/components/examples/ServiceAccountExample'
     ServiceAccountRequest:
@@ -1687,23 +1528,28 @@ components:
               description: server generated unique id of the service account
               type: string
             clientID:
-              description: ''
+              description: client id of the service account
               type: string
             name:
-              description: ''
+              description: name of the service account
               type: string
             owner:
-              description: ''
+              description: owner of the service account
+              type: string
+            created_at:
+              format: date-time
+              description: service account creation timestamp
               type: string
             description:
-              description: ''
+              type: string
+              description: description of the service account
     ServiceAccountList:
       allOf:
         - type: object
           example:
             kind: ServiceAccountList
             items:
-              $ref: '#/components/examples/ServiceAccountListItemExample'
+              - $ref: '#/components/examples/ServiceAccountListItemExample'
           properties:
             kind:
               type: string
@@ -1712,6 +1558,9 @@ components:
               items:
                 allOf:
                   - $ref: '#/components/schemas/ServiceAccountListItem'
+          required:
+            - kind
+            - items
     MetricsRangeQueryList:
       allOf:
         - type: object
@@ -1785,136 +1634,12 @@ components:
           format: double
       required:
         - Value
-    ListReference:
-      required:
-        - kind
-        - items
-      type: object
-      properties:
-        kind:
-          type: string
-    PrivateObjectReference:
-      type: object
-      properties:
-        id:
-          type: string
-        kind:
-          type: string
-    MetaV1Condition:
-      type: object
-      properties:
-        type:
-          type: string
-        reason:
-          type: string
-        message:
-          type: string
-        status:
-          type: string
-        lastTransitionTime:
-          type: string
-    ManagedKafkaCapacity:
-      type: object
-      properties:
-        ingressEgressThroughputPerSec:
-          type: string
-        totalMaxConnections:
-          type: integer
-          format: int
-        maxDataRetentionSize:
-          type: string
-        maxPartitions:
-          type: integer
-          format: int
-        maxDataRetentionPeriod:
-          type: string
-    ManagedKafkaVersions:
-      type: object
-      properties:
-        kafka:
-          type: string
-        strimzi:
-          type: string
-    ManagedKafka:
-      allOf:
-        - $ref: '#/components/schemas/PrivateObjectReference'
-        - type: object
-          properties:
-            metadata:
-              type: object
-              properties:
-                name:
-                  type: string
-                namespace:
-                  type: string
-                annotations:
-                  type: object
-                  properties:
-                    bf2.org/id:
-                      type: string
-                    bf2.org/placementId:
-                      type: string
-            spec:
-              type: object
-              properties:
-                capacity:
-                  $ref: '#/components/schemas/ManagedKafkaCapacity'
-                oauth:
-                  type: object
-                  properties:
-                    clientId:
-                      type: string
-                    clientSecret:
-                      type: string
-                    tokenEndpointURI:
-                      type: string
-                    jwksEndpointURI:
-                      type: string
-                    validIssuerEndpointURI:
-                      type: string
-                    userNameClaim:
-                      type: string
-                    tlsTrustedCertificate:
-                      type: string
-                endpoint:
-                  type: object
-                  properties:
-                    bootstrapServerHost:
-                      type: string
-                    tls:
-                      type: object
-                      properties:
-                        cert:
-                          type: string
-                        key:
-                          type: string
-                versions:
-                  $ref: '#/components/schemas/ManagedKafkaVersions'
-                deleted:
-                  type: boolean
-              required:
-                - deleted
-    ManagedKafkaList:
-      description: A list of ManagedKafka
-      allOf:
-        - $ref: '#/components/schemas/ListReference'
-        - type: object
-          example:
-            kind: ManagedKafkaList
-            items:
-              $ref: '#/components/examples/ManagedKafkaExample'
-          properties:
-            items:
-              type: array
-              items:
-                allOf:
-                  - $ref: '#/components/schemas/ManagedKafka'
     ConnectorType:
       description: Represents a connector type supported by the API
       required:
         - name
-        - openAPIV3Schema
         - version
+        - json_schema
       allOf:
         - $ref: '#/components/schemas/ObjectReference'
         - type: object
@@ -1925,9 +1650,25 @@ components:
             version:
               description: Version of the connector type.
               type: string
+            channels:
+              description: Version of the connector type.
+              type: array
+              items:
+                type: string
             description:
               description: A description of the connector.
               type: string
+            icon_href:
+              description: URL to an icon of the connector.
+              type: string
+            labels:
+              description: labels used to categorize the connector
+              type: array
+              items:
+                type: string
+                enum:
+                  - sink
+                  - source
             json_schema:
               description: >-
                 A json schema that can be used to validate a connectors
@@ -1953,27 +1694,6 @@ components:
               items:
                 allOf:
                   - $ref: '#/components/schemas/Connector'
-    WatchEvent:
-      required:
-        - type
-      type: object
-      properties:
-        type:
-          type: string
-        error:
-          nullable: true
-          $ref: '#/components/schemas/Error'
-        object:
-          type: object
-          nullable: true
-    ConnectorWatchEvent:
-      allOf:
-        - $ref: '#/components/schemas/WatchEvent'
-        - type: object
-          properties:
-            object:
-              nullable: true
-              $ref: '#/components/schemas/Connector'
     Connector:
       description: >-
         A connector holds the configuration to connect a Kafka topic to another
@@ -2002,10 +1722,16 @@ components:
                   format: int64
             deployment_location:
               $ref: '#/components/schemas/ClusterTarget'
+            kafka:
+              $ref: '#/components/schemas/KafkaConnectionSettings'
             connector_type_id:
               type: string
             connector_spec:
               type: object
+            channel:
+              type: string
+            desired_state:
+              type: string
             status:
               type: string
     ClusterTarget:
@@ -2025,7 +1751,7 @@ components:
       properties:
         kind:
           type: string
-        group:
+        cluster_id:
           type: string
     CloudProviderClusterTarget:
       description: Targets workloads to a cloud provider
@@ -2068,16 +1794,12 @@ components:
                   type: string
                 name:
                   type: string
-                group:
-                  type: string
                 created_at:
                   format: date-time
                   type: string
                 updated_at:
                   format: date-time
                   type: string
-            service_account:
-              type: string
             status:
               type: string
     ConnectorClusterList:
@@ -2090,178 +1812,14 @@ components:
               items:
                 allOf:
                   - $ref: '#/components/schemas/ConnectorCluster'
-    ConnectorClusterUpdateStatus:
-      description: Schema for the request to update a data plane cluster's status
-      type: object
+    KafkaConnectionSettings:
       properties:
-        status:
+        bootstrap_server:
           type: string
-    ConnectorUpdateStatus:
-      description: Schema for the request to update a data plane cluster's status
-      type: object
-      properties:
-        status:
+        client_id:
           type: string
-    DataPlaneClusterUpdateStatusRequest:
-      description: Schema for the request to update a data plane cluster's status
-      type: object
-      properties:
-        conditions:
-          description: The cluster data plane conditions
-          type: array
-          items:
-            type: object
-            properties:
-              type:
-                type: string
-              reason:
-                type: string
-              message:
-                type: string
-              status:
-                type: string
-              lastTransitionTime:
-                type: string
-        total:
-          type: object
-          properties:
-            ingressEgressThroughputPerSec:
-              type: string
-              nullable: true
-            connections:
-              type: integer
-              nullable: true
-            dataRetentionSize:
-              type: string
-              nullable: true
-            partitions:
-              type: integer
-              nullable: true
-        remaining:
-          type: object
-          properties:
-            ingressEgressThroughputPerSec:
-              type: string
-              nullable: true
-            connections:
-              type: integer
-              nullable: true
-            dataRetentionSize:
-              type: string
-              nullable: true
-            partitions:
-              type: integer
-              nullable: true
-        nodeInfo:
-          type: object
-          properties:
-            ceiling:
-              type: integer
-              nullable: true
-            floor:
-              type: integer
-              nullable: true
-            current:
-              type: integer
-              nullable: true
-            currentWorkLoadMinimum:
-              type: integer
-              nullable: true
-        resizeInfo:
-          type: object
-          properties:
-            nodeDelta:
-              type: integer
-              nullable: true
-            delta:
-              type: object
-              nullable: true
-              properties:
-                ingressEgressThroughputPerSec:
-                  type: string
-                  nullable: true
-                connections:
-                  type: integer
-                  nullable: true
-                dataRetentionSize:
-                  type: string
-                  nullable: true
-                partitions:
-                  type: integer
-                  nullable: true
-      example:
-        $ref: '#/components/examples/DataPlaneClusterUpdateStatusRequestExample'
-    DataPlaneKafkaStatus:
-      description: Schema of the status object for a Kafka cluster
-      type: object
-      properties:
-        conditions:
-          description: The status conditions of a Kafka cluster
-          type: array
-          items:
-            type: object
-            properties:
-              type:
-                type: string
-              reason:
-                type: string
-              message:
-                type: string
-              status:
-                type: string
-              lastTransitionTime:
-                type: string
-        capacity:
-          description: Capacity information of the data plane cluster
-          type: object
-          properties:
-            ingressEgressThroughputPerSec:
-              type: string
-            totalMaxConnections:
-              type: integer
-            maxDataRetentionSize:
-              type: string
-            maxPartitions:
-              type: integer
-            maxDataRetentionPeriod:
-              type: string
-        versions:
-          description: Version information related to a Kafka cluster
-          type: object
-          properties:
-            kafka:
-              type: string
-            strimzi:
-              type: string
-    DataPlaneKafkaStatusUpdateRequest:
-      description: >-
-        Schema for the request to update the statuses of Kafka clusters from
-        data plane
-      type: object
-      additionalProperties:
-        $ref: '#/components/schemas/DataPlaneKafkaStatus'
-      example:
-        $ref: '#/components/examples/DataPlaneKafkaUpdateStatusRequestExample'
-    DataplaneClusterAgentConfig:
-      description: Configuration for the data plane cluster agent
-      type: object
-      properties:
-        spec:
-          description: Data plane cluster agent spec
-          type: object
-          properties:
-            observability:
-              description: Observability configurations
-              type: object
-              properties:
-                accessToken:
-                  type: string
-                channel:
-                  type: string
-                repository:
-                  type: string
-                tag:
-                  type: string
+        client_secret:
+          type: string
   parameters:
     id:
       name: id
@@ -2443,7 +2001,7 @@ components:
       value:
         id: 1iSY6RQ3JKI8Q0OTmjQFd3ocFRg
         kind: kafka
-        href: /api/managed-services-api/v1/kafkas/1iSY6RQ3JKI8Q0OTmjQFd3ocFRg
+        href: /api/kafkas_mgmt/v1/kafkas/1iSY6RQ3JKI8Q0OTmjQFd3ocFRg
         status: ready
         cloud_provider: aws
         multi_az: true
@@ -2451,7 +2009,7 @@ components:
         owner: api_kafka_service
         name: serviceapi
         bootstrapServerHost: >-
-          serviceapi-1isy6rq3jki8q0otmjqfd3ocfrg.apps.ms-bttg0jn170hp.x5u8.s1.devshift.org
+          serviceapi-1isy6rq3jki8q0otmjqfd3ocfrg.apps.mk-bttg0jn170hp.x5u8.s1.devshift.org
         created_at: '2020-10-05T12:51:24.053142Z'
         updated_at: '2020-10-05T12:56:36.362208Z'
         version: 2.6.0
@@ -2459,7 +2017,7 @@ components:
       value:
         id: 1iSY6RQ3JKI8Q0OTmjQFd3ocFRg
         kind: kafka
-        href: /api/managed-services-api/v1/kafkas/1iSY6RQ3JKI8Q0OTmjQFd3ocFRg
+        href: /api/kafkas_mgmt/v1/kafkas/1iSY6RQ3JKI8Q0OTmjQFd3ocFRg
         status: failed
         cloud_provider: aws
         multi_az: true
@@ -2467,7 +2025,7 @@ components:
         owner: api_kafka_service
         name: serviceapi
         bootstrapServerHost: >-
-          serviceapi-1isy6rq3jki8q0otmjqfd3ocfrg.apps.ms-bttg0jn170hp.x5u8.s1.devshift.org
+          serviceapi-1isy6rq3jki8q0otmjqfd3ocfrg.apps.mk-bttg0jn170hp.x5u8.s1.devshift.org
         created_at: '2020-10-05T12:51:24.053142Z'
         updated_at: '2020-10-05T12:56:36.362208Z'
         failed_reason: a reason the kafka request creation failed
@@ -2492,30 +2050,33 @@ components:
       value:
         id: '1'
         kind: ServiceAccount
-        href: /api/managed-services-api/v1/serviceaccounts/1
+        href: /api/kafkas_mgmt/v1/serviceaccounts/1
         name: my-app-sa
         description: service account for my app
         clientID: SA-121212
         clientSecret: secret
         owner: test-user
+        created_at: '2021-04-07T16:24:01+05:30'
     ServiceAccountByIdExample:
       value:
         id: '1'
         kind: ServiceAccount
-        href: /api/managed-services-api/v1/serviceaccounts/1
+        href: /api/kafkas_mgmt/v1/serviceaccounts/1
         name: my-app-sa
         description: service account for my app
         clientID: SA-121212
         owner: test-user
+        created_at: '2021-04-07T16:24:01+05:30'
     ServiceAccountListItemExample:
       value:
         id: '1'
         kind: ServiceAccountListItem
-        href: /api/managed-services-api/v1/serviceaccounts/1
+        href: /api/kafkas_mgmt/v1/serviceaccounts/1
         name: my-app-sa
         description: service account for my app
         clientID: SA-121212
         owner: test-user
+        created_at: '2021-04-07T16:24:01+05:30'
     MetricsRangeQueryExample:
       value:
         metric:
@@ -2541,27 +2102,27 @@ components:
       value:
         id: '103'
         kind: Error
-        href: /api/managed-services-api/v1/errors/103
-        code: MGD-SERV-API-103
+        href: /api/kafkas_mgmt/v1/errors/103
+        code: KAFKAS-MGMT-103
         reason: 'Synchronous action is not supported, use async=true parameter'
         operation_id: 1iWIimqGcrDuL61aUxIZqBTqNRa
     400CreationExample:
       value:
         id: '103'
         kind: Error
-        href: /api/managed-services-api/v1/errors/103
-        code: MGD-SERV-API-103
+        href: /api/kafkas_mgmt/v1/errors/103
+        code: KAFKAS-MGMT-103
         reason: 'Synchronous action is not supported, use async=true parameter'
         operation_id: 1iWIimqGcrDuL61aUxIZqBTqNRa
     400InvalidQueryExample:
       value:
         id: '203'
         kind: Error
-        href: /api/managed-services-api/v1/errors/23
-        code: MGD-SERV-API-23
+        href: /api/kafkas_mgmt/v1/errors/23
+        code: KAFKAS-MGMT-23
         reason: >-
           Failed to parse search query: Unable to list kafka requests for
-          api_kafka_service: MGD-SERV-API-23: Failed to parse search query:
+          api_kafka_service: KAFKAS-MGMT-23: Failed to parse search query:
           Unsupported column name for search: 'id'. Supported column names are:
           region, name, cloud_provider, name, status. Query invalid: id = 123
         operation_id: 1lWDGuybIrEnxrAem724gqkkiDv
@@ -2569,63 +2130,63 @@ components:
       value:
         id: '404'
         kind: Error
-        href: /api/managed-services-api/v1/errors/7
-        code: MGD-SERV-API-7
+        href: /api/kafkas_mgmt/v1/errors/7
+        code: KAFKAS-MGMT-7
         reason: The requested resource doesn't exist
     404DeleteExample:
       value:
         id: '7'
         kind: Error
-        href: /api/managed-services-api/v1/errors/7
-        code: MGD-SERV-API-7
+        href: /api/kafkas_mgmt/v1/errors/7
+        code: KAFKAS-MGMT-7
         reason: KafkaResource with id='1iK3duVYIvv5YvLlyz1mGR3JyqN' not found
         operation_id: 1iYO7g2g6HTdUKUa2ksH82kQD3y
     401Example:
       value:
         id: '11'
         kind: Error
-        href: /api/managed-services-api/v1/errors/11
-        code: MGD-SERV-API-11
+        href: /api/kafkas_mgmt/v1/errors/11
+        code: KAFKAS-MGMT-11
         reason: 'Unable to verify JWT token: Required authorization token not found'
         operation_id: 1iY3UhEhwmXBpWPfI2lNekpd4ZD
     403Example:
       value:
         id: '4'
         kind: Error
-        href: /api/managed-services-api/v1/errors/4
-        code: MGD-SERV-API-4
+        href: /api/kafkas_mgmt/v1/errors/4
+        code: KAFKAS-MGMT-4
         reason: User 'foo-bar' is not authorized to access the service.
         operation_id: 1lY3UiEhznXBpWPfI2lNejpd4YC
     403MaxAllowedInstanceReachedExample:
       value:
         id: '5'
         kind: Error
-        href: /api/managed-services-api/v1/errors/5
-        code: MGD-SERV-API-5
+        href: /api/kafkas_mgmt/v1/errors/5
+        code: KAFKAS-MGMT-5
         reason: User 'foo-bar' has reached a maximum number of 6 allowed instances.
         operation_id: 1lY3UiEkxnXBpVPeI2oNejd3XB
     409NameConflictExample:
       value:
         id: '36'
         kind: Error
-        href: /api/managed-services-api/v1/errors/36
-        code: MGD-SERV-API-36
+        href: /api/kafkas_mgmt/v1/errors/36
+        code: KAFKAS-MGMT-36
         reason: Kafka cluster name is already used
         operation_id: 6kY0UiEkzkXCzWPeI2oYehd3ED
     500Example:
       value:
         id: '9'
         kind: Error
-        href: /api/managed-services-api/v1/errors/9
-        code: MGD-SERV-API-9
+        href: /api/kafkas_mgmt/v1/errors/9
+        code: KAFKAS-MGMT-9
         reason: Unspecified error
         operation_id: 1ieELvF9jMQY6YghfM9gGRsHvEW
     500DeleteExample:
       value:
         id: '9'
         kind: Error
-        href: /api/managed-services-api/v1/errors/9
-        code: MGD-SERV-API-9
+        href: /api/kafkas_mgmt/v1/errors/9
+        code: KAFKAS-MGMT-9
         reason: >-
           error deleting syncset: OCM-EX-9: failed to delete syncset:
           ext-serviceapi-1ix03lndlmq0qfc7sita5sljv8e for cluster id:
@@ -2634,36 +2195,6 @@ components:
           '1g5or50viu07oealuehrkc26dgftj1ac': Cluster
           '1g5d88q0lrcdv4g7alb7slfgnj3dhbsj' not found)
         operation_id: 1iYTsWry6nsqb2sNmFj5bXpD7Ca
-    ManagedKafkaExample:
-      value: {}
-    DataPlaneClusterUpdateStatusRequestExample:
-      value: {}
-    DataPlaneKafkaUpdateStatusRequestExample:
-      value:
-        1iSY6RQ3JKI8Q0OTmjQFd3ocFRg:
-          conditions:
-            - type: Ready
-              reason: KafkaInstanceReady
-              message: installing
-              status: 'False'
-              lastTransitionTime: '2018-01-01T00:00:00Z'
-          capacity:
-            ingressEgressThroughputPerSec: 4Mi
-            totalMaxConnections: 500
-            maxDataRetentionSize: 100Gi
-            maxPartitions: 100
-            maxDataRetentionPeriod: P14D
-          versions:
-            kafka: 2.4.1
-            strimzi: 0.21.2
-    400InvalidIdExample:
-      value:
-        id: '203'
-        kind: Error
-        href: /api/managed-services-api/v1/errors/21
-        code: MGD-SERV-API-21
-        reason: Bad request
-        operation_id: 1lWDGuybIrEnxrAem724gqkkiDv
   securitySchemes:
     Bearer:
       scheme: bearer

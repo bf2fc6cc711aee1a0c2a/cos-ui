@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@cos-ui/api": "0.0.1",
+    "@cos-ui/api": "1.1.0",
     "@cos-ui/app": "0.0.1"
   },
   "peerDependencies": {

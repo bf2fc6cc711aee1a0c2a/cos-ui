@@ -5,8 +5,8 @@ module.exports = {
     res.status(200).json({
       name: req.body.name,
       description: req.body.description,
-      clientID: clientId.toString(),
-      clientSecret: clientSecret.toString(),
+      client_id: clientId.toString(),
+      client_secret: clientSecret.toString(),
     });
   },
   createKafka: async (c, req, res) => {
@@ -20,7 +20,7 @@ module.exports = {
       region: "us-east-1",
       owner: "api_kafka_service",
       name: "serviceapi",
-      bootstrapServerHost:
+      bootstrap_server_host:
         "serviceapi-1isy6rq3jki8q0otmjqfd3ocfrg.apps.ms-bttg0jn170hp.x5u8.s1.devshift.org",
       created_at: "2020-10-05T12:51:24.053142Z",
       updated_at: "2020-10-05T12:56:36.362208Z",
@@ -38,7 +38,7 @@ module.exports = {
       region: "us-east-1",
       owner: "api_kafka_service",
       name: "serviceapi",
-      bootstrapServerHost:
+      bootstrap_server_host:
         "serviceapi-1isy6rq3jki8q0otmjqfd3ocfrg.apps.ms-bttg0jn170hp.x5u8.s1.devshift.org",
       created_at: "2020-10-05T12:51:24.053142Z",
       updated_at: "2020-10-05T12:56:36.362208Z",
@@ -63,7 +63,7 @@ module.exports = {
     });
   },
 
-  listKafkas: async (c, req, res) => {
+  getKafkas: async (c, req, res) => {
     res.status(200).json({
       page: 1,
       size: 1,
@@ -80,7 +80,7 @@ module.exports = {
           region: "us-east-1",
           owner: "api_kafka_service",
           name: "serviceapi",
-          bootstrapServerHost:
+          bootstrap_server_host:
             "serviceapi-1isy6rq3jki8q0otmjqfd3ocfrg.apps.ms-bttg0jn170hp.x5u8.s1.devshift.org",
         },
         {
@@ -94,7 +94,7 @@ module.exports = {
           region: "us-east-1",
           owner: "api_kafka_service",
           name: "serviceapi2",
-          bootstrapServerHost:
+          bootstrap_server_host:
             "serviceapi-v5Sg6faQ3JKGas4hFd3og45fd31.apps.ms-dfasf3gsds.23ds.s1.devshift.org",
         },
         {
@@ -108,7 +108,7 @@ module.exports = {
           region: "us-east-1",
           owner: "api_kafka_service",
           name: "serviceapi3",
-          bootstrapServerHost:
+          bootstrap_server_host:
             "serviceapi-v5Sg6faQ3JKGas4hFd3og45fd32.apps.ms-dfasf3gsds.23ds.s1.devshift.org",
         },
         {
@@ -122,7 +122,7 @@ module.exports = {
           region: "us-east-1",
           owner: "api_kafka_service",
           name: "serviceapi4",
-          bootstrapServerHost:
+          bootstrap_server_host:
             "serviceapi-v5Sg6faQ3JKGas4hFd3og45fd33.apps.ms-dfasf3gsds.23ds.s1.devshift.org",
         },
         {
@@ -136,7 +136,7 @@ module.exports = {
           region: "us-east-1",
           owner: "api_kafka_service",
           name: "serviceapi5",
-          bootstrapServerHost:
+          bootstrap_server_host:
             "serviceapi-v5Sg6faQ3JKGas4hFd3og45fd35.apps.ms-dfasf3gsds.23ds.s1.devshift.org",
         }
       ],
