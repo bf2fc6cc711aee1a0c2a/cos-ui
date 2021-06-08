@@ -52,7 +52,7 @@ const fetchKafkaInstances = (
         : undefined;
     const search = [nameSearch, statusSearch].filter(Boolean).join(' AND ');
     apisService
-      .listKafkas(
+      .getKafkas(
         `${page}`,
         `${size}`,
         undefined,

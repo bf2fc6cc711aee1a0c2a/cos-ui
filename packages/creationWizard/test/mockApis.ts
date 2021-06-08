@@ -12,10 +12,10 @@ export function makeHappyPath() {
     .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=')
     .reply<KafkaRequestList>(200, kafkaInstances)
     .onGet(
-      '/dummy/api/connector_mgmt/v1/kafka-connector-clusters?page=1&size=10'
+      '/dummy/api/connector_mgmt/v1/kafka_connector_clusters?page=1&size=10'
     )
     .reply<ConnectorClusterList>(200, clusters)
-    .onGet('/dummy/api/connector_mgmt/v1/kafka-connector-types')
+    .onGet('/dummy/api/connector_mgmt/v1/kafka_connector_types')
     .reply<ConnectorTypeList>(200, connectors);
   return mock;
 }
@@ -34,7 +34,7 @@ export function makeClusterError() {
     .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=')
     .reply<KafkaRequestList>(200, kafkaInstances)
     .onGet(
-      '/dummy/api/connector_mgmt/v1/kafka-connector-clusters?page=1&size=10'
+      '/dummy/api/connector_mgmt/v1/kafka_connector_clusters?page=1&size=10'
     )
     .reply(404);
   return mock;
@@ -46,10 +46,10 @@ export function makeConnectorsError() {
     .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=')
     .reply<KafkaRequestList>(200, kafkaInstances)
     .onGet(
-      '/dummy/api/connector_mgmt/v1/kafka-connector-clusters?page=1&size=10'
+      '/dummy/api/connector_mgmt/v1/kafka_connector_clusters?page=1&size=10'
     )
     .reply<ConnectorClusterList>(200, clusters)
-    .onGet('/dummy/api/connector_mgmt/v1/kafka-connector-types')
+    .onGet('/dummy/api/connector_mgmt/v1/kafka_connector_types')
     .reply(404);
   return mock;
 }
@@ -156,7 +156,7 @@ const clusters: ConnectorClusterList = {
       id: '1r9uyAjkDfKKOr5pOnZbfdzj23D',
       kind: 'ConnectorCluster',
       href:
-        '/api/connector_mgmt/v1/kafka-connector-clusters?page=1&size=10/1r9uyAjkDfKKOr5pOnZbfdzj23D',
+        '/api/connector_mgmt/v1/kafka_connector_clusters?page=1&size=10/1r9uyAjkDfKKOr5pOnZbfdzj23D',
       metadata: {
         owner: 'rforina',
         name: 'megalord',
@@ -169,7 +169,7 @@ const clusters: ConnectorClusterList = {
       id: '1qnpZvkkZerQwjRY52v4SC82YxA',
       kind: 'ConnectorCluster',
       href:
-        '/api/connector_mgmt/v1/kafka-connector-clusters?page=1&size=10/1qnpZvkkZerQwjRY52v4SC82YxA',
+        '/api/connector_mgmt/v1/kafka_connector_clusters?page=1&size=10/1qnpZvkkZerQwjRY52v4SC82YxA',
       metadata: {
         owner: 'rforina',
         name: 'string',
@@ -189,7 +189,7 @@ const connectors: ConnectorTypeList = {
     {
       id: 'aws-kinesis-source',
       kind: 'ConnectorType',
-      href: '/api/connector_mgmt/v1/kafka-connector-types/aws-kinesis-source',
+      href: '/api/connector_mgmt/v1/kafka_connector_types/aws-kinesis-source',
       name: 'aws-kinesis-source',
       version: 'v1alpha1',
       description: 'Receive data from AWS Kinesis.',
@@ -230,7 +230,7 @@ const connectors: ConnectorTypeList = {
       id: 'aws-sqs-source-v1alpha1',
       kind: 'ConnectorType',
       href:
-        '/api/connector_mgmt/v1/kafka-connector-types/aws-sqs-source-v1alpha1',
+        '/api/connector_mgmt/v1/kafka_connector_types/aws-sqs-source-v1alpha1',
       name: 'aws-sqs-source',
       version: 'v1alpha1',
       description: 'Receive data from AWS SQS.',
@@ -276,7 +276,7 @@ const connectors: ConnectorTypeList = {
     {
       id: 'jira-source',
       kind: 'ConnectorType',
-      href: '/api/connector_mgmt/v1/kafka-connector-types/jira-source',
+      href: '/api/connector_mgmt/v1/kafka_connector_types/jira-source',
       name: 'jira-source',
       version: 'v1alpha1',
       description: 'Receive notifications about new issues from Jira.',
@@ -315,7 +315,7 @@ const connectors: ConnectorTypeList = {
     {
       id: 'salesforce-source',
       kind: 'ConnectorType',
-      href: '/api/connector_mgmt/v1/kafka-connector-types/salesforce-source',
+      href: '/api/connector_mgmt/v1/kafka_connector_types/salesforce-source',
       name: 'salesforce-source-source',
       version: 'v1alpha1',
       description: 'Receive updates from Salesforce.',
@@ -378,7 +378,7 @@ const connectors: ConnectorTypeList = {
     {
       id: 'slack-source',
       kind: 'ConnectorType',
-      href: '/api/connector_mgmt/v1/kafka-connector-types/slack-source',
+      href: '/api/connector_mgmt/v1/kafka_connector_types/slack-source',
       name: 'slack-source-source',
       version: 'v1alpha1',
       description: 'Receive messages from a Slack channel.',
@@ -407,7 +407,7 @@ const connectors: ConnectorTypeList = {
     {
       id: 'telegram-source',
       kind: 'ConnectorType',
-      href: '/api/connector_mgmt/v1/kafka-connector-types/telegram-source',
+      href: '/api/connector_mgmt/v1/kafka_connector_types/telegram-source',
       name: 'telegram-source-source',
       version: 'v1alpha1',
       description:
