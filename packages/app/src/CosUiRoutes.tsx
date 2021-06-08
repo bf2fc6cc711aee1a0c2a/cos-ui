@@ -6,6 +6,7 @@ import { Route, Switch, useHistory } from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
 import { ConnectedConnectorsPage } from './ConnectorsPage';
 import { fetchConfigurator } from './FederatedConfigurator';
+import { useTranslation } from 'react-i18next';
 
 type CosUiRoutesProps = {
   getToken: Promise<string>;
@@ -17,6 +18,7 @@ export const CosUiRoutes: FunctionComponent<CosUiRoutesProps> = ({
   apiBasepath,
 }) => {
   const history = useHistory();
+  const { t } = useTranslation();
   const goToConnectorsList = () => history.push('/');
   return (
     <AppContextProvider authToken={getToken} basePath={apiBasepath}>
@@ -24,7 +26,7 @@ export const CosUiRoutes: FunctionComponent<CosUiRoutesProps> = ({
         <Route path={'/'} exact>
           <PageSection variant={'light'}>
             <TextContent>
-              <Title headingLevel="h1">Managed Connectors</Title>
+              <Title headingLevel="h1">{t('managedConnectors')}</Title>
             </TextContent>
           </PageSection>
           <PageSection variant={'light'} padding={{ default: 'noPadding' }}>
