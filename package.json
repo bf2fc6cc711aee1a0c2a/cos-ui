@@ -91,7 +91,7 @@
     "start": "lerna run start --stream --parallel --scope @cos-ui/*",
     "test": "lerna run test --",
     "lint": "lerna run lint -- --fix",
-    "build": "lerna run build",
+    "build": "lerna run clean && lerna run build",
     "prepublish": "yarn run api:generate && lerna run build",
     "start:app:example": "yarn run build && yarn start:app:example:run",
     "start:app:example:run": "yarn --cwd example && yarn --cwd example start",
@@ -104,7 +104,7 @@
     "version:canary": "changeset version --snapshot canary",
     "release:canary": "changeset publish --tag canary",
     "api:generate": "yarn run api:generate:merge && yarn run api:generate:build",
-    "api:generate:merge": "openapi-merge-cli && openapi-generator-cli generate -i mas-mock/merged-openapi.yaml -g typescript-axios -o packages/api --additional-properties=ngVersion=6.1.7,npmName=@cos-ui/api,supportsES6=true,withInterfaces=true --skip-validate-spec && rimraf packages/api/dist",
+    "api:generate:merge": "openapi-merge-cli && openapi-generator-cli generate -i ./openapi/merged-openapi.yaml -g typescript-axios -o packages/api --additional-properties=ngVersion=6.1.7,npmName=@cos-ui/api,supportsES6=true,withInterfaces=true --skip-validate-spec && rimraf packages/api/dist",
     "api:generate:build": "lerna run build --scope @cos-ui/api"
   },
   "eslint": {

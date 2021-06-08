@@ -1,7 +1,7 @@
 {
   "inputs": [
-    { "inputFile": "./openapi/openapi.yaml"  },
+    { "inputFile": "./openapi/connector_mgmt.yaml"  },
     { "inputFile": "./openapi/kas-fleet-manager.yaml" }
   ], 
-  "output": "./mas-mock/merged-openapi.yaml"
+  "output": "./openapi/merged-openapi.yaml"
 }

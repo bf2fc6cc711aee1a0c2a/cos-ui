@@ -12,3 +12,5 @@ yarn.lock
 
 .yalc
 yalc.lock
+
+./openapi/merged-openapi.yaml

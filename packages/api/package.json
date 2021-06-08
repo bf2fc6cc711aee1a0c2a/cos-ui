@@ -1,6 +1,6 @@
 {
   "name": "@cos-ui/api",
-  "version": "0.0.3",
+  "version": "0.0.1",
   "description": "OpenAPI client for @cos-ui/api",
   "author": "OpenAPI-Generator Contributors",
   "keywords": [
