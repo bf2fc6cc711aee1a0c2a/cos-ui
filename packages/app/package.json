@@ -23,7 +23,7 @@
   "dependencies": {
     "@cos-ui/api": "0.0.1",
     "@cos-ui/creation-wizard": "0.0.1",
-    "tslib": "^2.0.0"
+    "tslib": "^2.2.0"
   },
   "peerDependencies": {
     "@patternfly/react-core": "^4.87.2",

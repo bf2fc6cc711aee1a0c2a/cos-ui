@@ -2,9 +2,8 @@ import React, { FunctionComponent, useCallback } from 'react';
 import { useSelector, useService } from '@xstate/react';
 import {
   creationWizardMachine,
-  KafkaMachineActorRef,
-  ConnectorsMachineActorRef,
-  ClusterMachineActorRef,
+  ConnectorTypesMachineActorRef,
+  useCreationWizardMachineService,
 } from '@cos-ui/machines';
 import {
   UncontrolledWizard,
@@ -15,18 +14,17 @@ import { SelectKafkaInstance } from './SelectKafkaInstance';
 import { SelectCluster } from './SelectCluster';
 import { SelectConnector } from './SelectConnector';
 import { Configuration } from './Configuration';
-import { useCreationWizardMachineService } from './CreationWizardContext';
 import { Review } from './Review';
 import { StepErrorBoundary } from './StepErrorBoundary';
+import './CreationWizard.css';
 
 function useKafkaInstanceStep() {
   const service = useCreationWizardMachineService();
-  const { isActive, actor, canJumpTo, enableNext } = useSelector(
+  const { isActive, canJumpTo, enableNext } = useSelector(
     service,
     useCallback(
       (state: typeof service.state) => ({
         isActive: state.matches('selectKafka'),
-        actor: state.children.selectKafkaInstance as KafkaMachineActorRef,
         canJumpTo:
           creationWizardMachine.transition(state, 'jumpToSelectKafka')
             .changed || state.matches('selectKafka'),
@@ -40,7 +38,7 @@ function useKafkaInstanceStep() {
     isActive,
     component: (
       <StepErrorBoundary>
-        <SelectKafkaInstance actor={actor} />
+        <SelectKafkaInstance />
       </StepErrorBoundary>
     ),
     canJumpTo,
@@ -123,9 +121,7 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
       isActive: state.matches('selectCluster'),
       component: (
         <StepErrorBoundary>
-          <SelectCluster
-            actor={state.children.selectCluster as ClusterMachineActorRef}
-          />
+          <SelectCluster />
         </StepErrorBoundary>
       ),
       canJumpTo:
@@ -139,7 +135,9 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
       component: (
         <StepErrorBoundary>
           <SelectConnector
-            actor={state.children.selectConnector as ConnectorsMachineActorRef}
+            actor={
+              state.children.selectConnector as ConnectorTypesMachineActorRef
+            }
           />
         </StepErrorBoundary>
       ),
@@ -160,6 +158,7 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
       canJumpTo:
         creationWizardMachine.transition(state, 'jumpToReviewConfiguration')
           .changed || state.matches('reviewConfiguration'),
+      enableNext: creationWizardMachine.transition(state, 'next').changed,
       nextButtonText: 'Create connector',
     },
   ];
@@ -211,6 +210,7 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
 
   return (
     <UncontrolledWizard
+      className="cos"
       steps={steps}
       currentStep={currentStep}
       onNext={onNext}

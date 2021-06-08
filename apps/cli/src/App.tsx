@@ -4,8 +4,8 @@ import { useMachineService } from './Context';
 import { useService, useActor } from '@xstate/react';
 import {
   KafkaMachineActorRef,
-  ClusterMachineActorRef,
-  ConnectorsMachineActorRef,
+  ClustersMachineActorRef,
+  ConnectorTypesMachineActorRef,
 } from '@cos-ui/machines';
 import { ConnectorCluster, ConnectorType, KafkaRequest } from '@cos-ui/api';
 import { Box, Text, useApp, useInput } from 'ink';
@@ -32,7 +32,7 @@ const SelectKafkaInstance: FunctionComponent<SelectKafkaInstanceProps> = ({
     case state.matches('failure'):
       return <Text color="red">{state.context.error}</Text>;
     default:
-      const items = state.context.instances?.items.map(instanceToSelect) || [];
+      const items = state.context.response?.items?.map(instanceToSelect) || [];
       const initialIndex = state.context.selectedInstance
         ? items.findIndex(i => i.value === state.context.selectedInstance?.id)
         : undefined;
@@ -66,7 +66,7 @@ const SelectKafkaInstance: FunctionComponent<SelectKafkaInstanceProps> = ({
 };
 
 export type SelectClusterProps = {
-  actor: ClusterMachineActorRef;
+  actor: ClustersMachineActorRef;
 };
 
 const SelectCluster: FunctionComponent<SelectClusterProps> = ({ actor }) => {
@@ -83,7 +83,7 @@ const SelectCluster: FunctionComponent<SelectClusterProps> = ({ actor }) => {
     case state.matches('failure'):
       return <Text color="red">{state.context.error}</Text>;
     default:
-      const items = state.context.clusters?.items.map(instanceToSelect) || [];
+      const items = state.context.response?.items.map(instanceToSelect) || [];
       const initialIndex = state.context.selectedCluster
         ? items.findIndex(i => i.value === state.context.selectedCluster?.id)
         : undefined;
@@ -106,7 +106,7 @@ const SelectCluster: FunctionComponent<SelectClusterProps> = ({ actor }) => {
 };
 
 export type SelectConnectorProps = {
-  actor: ConnectorsMachineActorRef;
+  actor: ConnectorTypesMachineActorRef;
 };
 
 const SelectConnector: FunctionComponent<SelectConnectorProps> = ({
@@ -216,7 +216,7 @@ export const App: FunctionComponent = () => {
           </Text>
         </Box>
         <Box>
-          <Text>{JSON.stringify(state.context.connectorData)}</Text>
+          <Text>{JSON.stringify(state.context.connectorConfiguration)}</Text>
         </Box>
       </Box>
 
@@ -228,12 +228,14 @@ export const App: FunctionComponent = () => {
         )}
         {state.matches('selectCluster') && (
           <SelectCluster
-            actor={state.children.selectCluster as ClusterMachineActorRef}
+            actor={state.children.selectCluster as ClustersMachineActorRef}
           />
         )}
         {state.matches('selectConnector') && (
           <SelectConnector
-            actor={state.children.selectConnector as ConnectorsMachineActorRef}
+            actor={
+              state.children.selectConnector as ConnectorTypesMachineActorRef
+            }
           />
         )}
         {state.matches('configureConnector') && <Text>TODO 😅</Text>}

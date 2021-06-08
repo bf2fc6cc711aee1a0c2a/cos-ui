@@ -1,27 +1,20 @@
 {
   "extends": "./tsconfig.build.json",
-  "include": [
-    "packages",
-    "types",
-    "scripts",
-    "example",
-    "apps"
-, "packages/creationWizard/jest.config.js.js", "jest.config.js"  ],
+  "include": ["packages", "types", "scripts", "example", "apps"],
   "compilerOptions": {
     "allowJs": false,
-    "baseUrl": ".",
+    "baseUrl": ".",    
     "typeRoots": ["./node_modules/@types", "./types"],
     "paths": {
       "@cos-ui/api": ["packages/api/src"],
       "@cos-ui/app": ["packages/app/src"],
       "@cos-ui/creation-wizard": ["packages/creationWizard/src"],
       "@cos-ui/machines": ["packages/machines/src"],
+      "@cos-ui/utils": ["packages/utils/src"],
 
       "@cos-ui-apps/cli": ["apps/cli/src"],
-      "@cos-ui-apps/kas-connectors": ["apps/kas-connectors/src"],
-      "@cos-ui-apps/simple-configurator": [
-        "apps/simple-configurator/src"
-      ],
+      "@cos-ui-apps/cos-ui": ["apps/cos-ui/src"],
+      "@cos-ui-apps/simple-configurator": ["apps/simple-configurator/src"],
       "@cos-ui-apps/multistep-configurator": [
         "apps/multistep-configurator/src"
       ],

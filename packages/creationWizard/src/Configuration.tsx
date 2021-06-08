@@ -2,6 +2,7 @@ import {
   ConnectorConfiguratorComponent,
   ConnectorConfiguratorProps,
   ConfiguratorActorRef,
+  useCreationWizardMachineService,
 } from '@cos-ui/machines';
 import {
   EmptyState,
@@ -14,7 +15,6 @@ import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { useSelector } from '@xstate/react';
 import { JsonSchemaConfigurator } from '@cos-ui/json-schema-configurator';
 import React, { ComponentType, FunctionComponent, useCallback } from 'react';
-import { useCreationWizardMachineService } from './CreationWizardContext';
 
 const ConnectedCustomConfigurator: FunctionComponent<{
   Configurator: ConnectorConfiguratorComponent;
@@ -96,7 +96,7 @@ export const Configuration: FunctionComponent = () => {
           isLoading,
           hasErrors,
           hasCustomConfigurator,
-          configuration: state.context.connectorData,
+          configuration: state.context.connectorConfiguration,
           Configurator: state.context.Configurator,
           configuratorRef: state.children
             .configuratorRef as ConfiguratorActorRef,

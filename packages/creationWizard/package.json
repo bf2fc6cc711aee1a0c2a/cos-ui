@@ -21,10 +21,13 @@
     "dist"
   ],
   "peerDependencies": {
+    "@patternfly/react-code-editor": "^4.2.59",
     "@patternfly/react-core": "^4.87.2",
     "@patternfly/react-icons": "^4.7.11",
     "@patternfly/react-styles": "^4.7.8",
     "@xstate/react": "^1.3.1",
+    "ajv": "^8.2.0",
+    "lodash.debounce": "^4.0.8",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "react-error-boundary": "^3.1.1",
@@ -33,7 +36,8 @@
   "dependencies": {
     "@cos-ui/json-schema-configurator": "^0.0.1",
     "@cos-ui/machines": "^0.0.1",
-    "tslib": "^2.0.0"
+    "@cos-ui/utils": "^0.0.1",
+    "tslib": "^2.2.0"
   },
   "publishConfig": {
     "access": "public"

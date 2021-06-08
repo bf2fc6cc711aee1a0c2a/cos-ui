@@ -9,5 +9,14 @@ module.exports = {
       __dirname,
       './__mocks__/fileMock.js'
     ),
+    '@patternfly/react-code-editor': path.resolve(
+      __dirname,
+      './__mocks__/react-code-editor.js'
+    ),
+  },
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.test.json',
+    },
   },
 };
