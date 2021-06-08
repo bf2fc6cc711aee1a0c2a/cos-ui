@@ -115,7 +115,7 @@
     "api:generate": "yarn run api:generate:merge && yarn run api:generate:build",
     "api:generate:merge": "openapi-merge-cli && openapi-generator-cli generate -i ./openapi/merged-openapi.yaml -g typescript-axios -o packages/api --additional-properties=ngVersion=6.1.7,npmName=@cos-ui/api,supportsES6=true,withInterfaces=true --skip-validate-spec && rimraf packages/api/dist",
     "api:generate:build": "lerna run build --scope @cos-ui/api",
-    "i18n": "i18next 'packages/app/src/**/**/*.{ts,tsx}' 'packages/creationWizard/src/**/**/*.{ts,tsx}' [-oc] -c './i18next-parser.config.js' -o 'apps/kas-connectors/src/locales/$LOCALE/$NAMESPACE.json'"
+    "i18n": "i18next 'packages/app/src/**/**/*.{ts,tsx}' 'packages/creationWizard/src/**/**/*.{ts,tsx}' [-oc] -c './i18next-parser.config.js' -o 'apps/cos-ui/src/locales/$LOCALE/$NAMESPACE.json'"
   },
   "eslint": {
     "extends": [

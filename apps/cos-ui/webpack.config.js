@@ -1,6 +1,7 @@
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const ChunkMapper = require('@redhat-cloud-services/frontend-components-config/chunk-mapper');
 const webpack = require('webpack');
+const CopyPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
@@ -82,6 +83,9 @@ module.exports = (env, argv) => {
       }),
       new HtmlWebpackPlugin({
         template: './public/index.html',
+      }),
+      new CopyPlugin({
+        patterns: [{ from: './src/locales', to: 'locales' }],
       }),
       new MiniCssExtractPlugin({
         filename: isProduction ? '[id].[contenthash:8].css' : '[name].css',
