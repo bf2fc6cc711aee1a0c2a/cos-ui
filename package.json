@@ -91,7 +91,7 @@
     "start": "lerna run start --stream --parallel --scope @cos-ui/*",
     "test": "lerna run test --",
     "lint": "lerna run lint -- --fix",
-    "build": "lerna run clean && lerna run build",
+    "build": "lerna run build",
     "prepublish": "yarn run api:generate && lerna run build",
     "start:app:example": "yarn run build && yarn start:app:example:run",
     "start:app:example:run": "yarn --cwd example && yarn --cwd example start",

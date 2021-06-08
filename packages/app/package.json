@@ -8,8 +8,7 @@
   },
   "scripts": {
     "start": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
-    "clear": "yarn run rimraf dist",
-    "build": "yarn run tsc --project tsconfig.build.json",
+    "build": "tsdx build --tsconfig tsconfig.build.json",
     "test": "tsdx test",
     "lint": "tsdx lint",
     "prepublish": "npm run build"
