@@ -7,6 +7,9 @@ import React, {
 import { Spinner } from '@patternfly/react-core';
 import Keycloak from 'keycloak-js';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { I18nextProvider } from 'react-i18next';
+import { Loading } from '@cos-ui/utils';
+import i18n from './i18n';
 import { getKeycloakInstance } from './auth/keycloak/keycloakAuth';
 import {
   KeycloakAuthProvider,
@@ -33,11 +36,15 @@ export const DemoApp: FunctionComponent = () => {
   return (
     <KeycloakContext.Provider value={{ keycloak, profile: keycloak?.profile }}>
       <KeycloakAuthProvider>
-        <Router>
-          <AppLayout>
-            {initialized ? <ConnectedRoutes /> : <Spinner />}
-          </AppLayout>
-        </Router>
+        <I18nextProvider i18n={i18n}>
+          <React.Suspense fallback={<Loading />}>
+            <Router>
+              <AppLayout>
+                {initialized ? <ConnectedRoutes /> : <Spinner />}
+              </AppLayout>
+            </Router>
+          </React.Suspense>
+        </I18nextProvider>
       </KeycloakAuthProvider>
     </KeycloakContext.Provider>
   );
