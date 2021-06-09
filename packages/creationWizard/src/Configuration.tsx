@@ -15,6 +15,7 @@ import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { useSelector } from '@xstate/react';
 import { JsonSchemaConfigurator } from '@cos-ui/json-schema-configurator';
 import React, { ComponentType, FunctionComponent, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const ConnectedCustomConfigurator: FunctionComponent<{
   Configurator: ConnectorConfiguratorComponent;
@@ -74,6 +75,7 @@ export type ConfigurationProps = {
 };
 
 export const Configuration: FunctionComponent = () => {
+  const { t } = useTranslation();
   const service = useCreationWizardMachineService();
   const {
     isLoading,
@@ -112,7 +114,7 @@ export const Configuration: FunctionComponent = () => {
         <EmptyState>
           <EmptyStateIcon variant="container" component={Spinner} />
           <Title size="lg" headingLevel="h4">
-            Loading
+            {t('loading')}
           </Title>
         </EmptyState>
       );

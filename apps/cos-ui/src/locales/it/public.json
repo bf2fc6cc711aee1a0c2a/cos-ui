@@ -1,5 +1,6 @@
 {
   "managedConnectors": "Connettori gestiti",
-  "createConnectors": "Crea connettore",
-  "selectOcmCluster": "Seleziona cluster OCM"
+  "loading": "Caricamento in corso",
+  "selectOcmCluster": "Seleziona cluster OCM",
+  "createConnectors": "Crea connettore"
 }
