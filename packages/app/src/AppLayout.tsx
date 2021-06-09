@@ -10,6 +10,7 @@ import {
 } from '@patternfly/react-core';
 import { NavLink, useHistory } from 'react-router-dom';
 import logo from './Patternfly-Logo.svg';
+import { useTranslation } from 'react-i18next';
 
 interface IAppLayout {
   children: ReactNode;
@@ -19,6 +20,8 @@ export const AppLayout: FunctionComponent<IAppLayout> = ({ children }) => {
   const [isNavOpen, setIsNavOpen] = useState(true);
   const [isMobileView, setIsMobileView] = useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = useState(false);
+
+  const { t } = useTranslation();
 
   const onNavToggleMobile = () => {
     setIsNavOpenMobile(!isNavOpenMobile);
@@ -53,7 +56,7 @@ export const AppLayout: FunctionComponent<IAppLayout> = ({ children }) => {
       <NavList id="nav-list-simple">
         <NavItem id={'connectors'}>
           <NavLink to={'/'} activeClassName="pf-m-current">
-            Managed Connectors
+            {t('managedConnectors')}
           </NavLink>
         </NavItem>
       </NavList>
