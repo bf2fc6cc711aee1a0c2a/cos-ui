@@ -118,20 +118,6 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
   const kafkaInstanceStep = useKafkaInstanceStep();
   const configurationStep = useConfigurationStep();
   const steps = [
-    kafkaInstanceStep,
-    {
-      name: t('selectOcmCluster'),
-      isActive: state.matches('selectCluster'),
-      component: (
-        <StepErrorBoundary>
-          <SelectCluster />
-        </StepErrorBoundary>
-      ),
-      canJumpTo:
-        creationWizardMachine.transition(state, 'jumpToSelectCluster')
-          .changed || state.matches('selectCluster'),
-      enableNext: creationWizardMachine.transition(state, 'next').changed,
-    },
     {
       name: 'Connector',
       isActive: state.matches('selectConnector'),
@@ -147,6 +133,20 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
       canJumpTo:
         creationWizardMachine.transition(state, 'jumpToSelectConnector')
           .changed || state.matches('selectConnector'),
+      enableNext: creationWizardMachine.transition(state, 'next').changed,
+    },
+    kafkaInstanceStep,
+    {
+      name: t('selectOcmCluster'),
+      isActive: state.matches('selectCluster'),
+      component: (
+        <StepErrorBoundary>
+          <SelectCluster />
+        </StepErrorBoundary>
+      ),
+      canJumpTo:
+        creationWizardMachine.transition(state, 'jumpToSelectCluster')
+          .changed || state.matches('selectCluster'),
       enableNext: creationWizardMachine.transition(state, 'next').changed,
     },
     configurationStep,

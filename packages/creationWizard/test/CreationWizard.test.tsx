@@ -22,13 +22,40 @@ type TestContext = {
 };
 const testMachine = Machine({
   id: 'test-machine',
-  initial: 'loadingKafka',
+  initial: 'loadingConnectors',
   context: {
     willKafkaApiFail: false,
     willClusterApiFail: false,
     willConnectorsApiFail: false,
   },
   states: {
+    loadingConnectors: {
+      always: [
+        {
+          target: 'selectConnector',
+          cond: ctx => !ctx.willConnectorsApiFail,
+        },
+        {
+          target: 'selectConnectorEmptyState',
+          cond: ctx => ctx.willConnectorsApiFail,
+        },
+      ],
+    },
+    selectConnector: {
+      on: {
+        clickConnector: 'loadingKafka',
+      },
+      meta: {
+        test: () =>
+          waitFor(() => expect(screen.getByText('telegram-source-source'))),
+      },
+    },
+    selectConnectorEmptyState: {
+      meta: {
+        noCoverage: true,
+        test: () => waitFor(() => expect(screen.getByText('No results found'))),
+      },
+    },
     loadingKafka: {
       always: [
         { target: 'selectKafka', cond: ctx => !ctx.willKafkaApiFail },
@@ -64,7 +91,7 @@ const testMachine = Machine({
     },
     selectCluster: {
       on: {
-        clickCluster: 'loadingConnectors',
+        clickCluster: 'configureConnector',
       },
       meta: {
         test: () => waitFor(() => expect(screen.getByText('megalord'))),
@@ -75,33 +102,6 @@ const testMachine = Machine({
         noCoverage: true,
         test: () =>
           waitFor(() => expect(screen.getByText('cos.no_clusters_instance'))),
-      },
-    },
-    loadingConnectors: {
-      always: [
-        {
-          target: 'selectConnector',
-          cond: ctx => !ctx.willConnectorsApiFail,
-        },
-        {
-          target: 'selectConnectorEmptyState',
-          cond: ctx => ctx.willConnectorsApiFail,
-        },
-      ],
-    },
-    selectConnector: {
-      on: {
-        clickConnector: 'configureConnector',
-      },
-      meta: {
-        test: () =>
-          waitFor(() => expect(screen.getByText('telegram-source-source'))),
-      },
-    },
-    selectConnectorEmptyState: {
-      meta: {
-        noCoverage: true,
-        test: () => waitFor(() => expect(screen.getByText('No results found'))),
       },
     },
     configureConnector: {
@@ -171,16 +171,16 @@ describe('@cos-ui/creationWizard', () => {
         clickOnDisabledNext: () => {
           fireEvent.click(screen.getByText('Next'));
         },
+        clickConnector: () => {
+          fireEvent.click(screen.getByText('telegram-source-source'));
+          fireEvent.click(screen.getByText('Next'));
+        },
         clickKafkaInstance: () => {
           fireEvent.click(screen.getByText('badwords'));
           fireEvent.click(screen.getByText('Next'));
         },
         clickCluster: () => {
           fireEvent.click(screen.getByText('megalord'));
-          fireEvent.click(screen.getByText('Next'));
-        },
-        clickConnector: () => {
-          fireEvent.click(screen.getByText('telegram-source-source'));
           fireEvent.click(screen.getByText('Next'));
         },
         configure: async () => {
@@ -239,6 +239,52 @@ describe('@cos-ui/creationWizard', () => {
         });
       });
     });
+
+    describe('Connectors API error', () => {
+      const testModel = createModel(
+        testMachine.withContext({
+          willKafkaApiFail: false,
+          willClusterApiFail: false,
+          willConnectorsApiFail: true,
+        })
+      ).withEvents({
+        onClose: () => {
+          fireEvent.click(screen.getByText('Cancel'));
+        },
+      });
+
+      const testPlans = testModel.getSimplePathPlans();
+      testPlans.forEach(plan => {
+        describe(plan.description, () => {
+          beforeEach(mockApis.makeConnectorsError);
+          afterEach(() => {
+            jest.clearAllMocks();
+          });
+          plan.paths.forEach(path => {
+            it(path.description, async () => {
+              await act(async () => {
+                const onClose = jest.fn();
+                const onSave = jest.fn();
+
+                render(
+                  <CreationWizardMachineProvider
+                    authToken={Promise.resolve('dummy')}
+                    basePath={'/dummy'}
+                    fetchConfigurator={() =>
+                      Promise.resolve({ steps: false, Configurator: false })
+                    }
+                  >
+                    <CreationWizard onClose={onClose} onSave={onSave} />
+                  </CreationWizardMachineProvider>
+                );
+                await path.test({ onClose, onSave });
+              });
+            });
+          });
+        });
+      });
+    });
+
     describe('Kafka API error', () => {
       const testModel = createModel(
         testMachine.withContext({
@@ -247,6 +293,10 @@ describe('@cos-ui/creationWizard', () => {
           willConnectorsApiFail: false,
         })
       ).withEvents({
+        clickConnector: () => {
+          fireEvent.click(screen.getByText('telegram-source-source'));
+          fireEvent.click(screen.getByText('Next'));
+        },
         onClose: () => {
           fireEvent.click(screen.getByText('Cancel'));
         },
@@ -292,6 +342,10 @@ describe('@cos-ui/creationWizard', () => {
           willConnectorsApiFail: false,
         })
       ).withEvents({
+        clickConnector: () => {
+          fireEvent.click(screen.getByText('telegram-source-source'));
+          fireEvent.click(screen.getByText('Next'));
+        },
         clickKafkaInstance: () => {
           fireEvent.click(screen.getByText('badwords'));
           fireEvent.click(screen.getByText('Next'));
@@ -305,59 +359,6 @@ describe('@cos-ui/creationWizard', () => {
       testPlans.forEach(plan => {
         describe(plan.description, () => {
           beforeEach(mockApis.makeClusterError);
-          afterEach(() => {
-            jest.clearAllMocks();
-          });
-          plan.paths.forEach(path => {
-            it(path.description, async () => {
-              await act(async () => {
-                const onClose = jest.fn();
-                const onSave = jest.fn();
-
-                render(
-                  <CreationWizardMachineProvider
-                    authToken={Promise.resolve('dummy')}
-                    basePath={'/dummy'}
-                    fetchConfigurator={() =>
-                      Promise.resolve({ steps: false, Configurator: false })
-                    }
-                  >
-                    <CreationWizard onClose={onClose} onSave={onSave} />
-                  </CreationWizardMachineProvider>
-                );
-                await path.test({ onClose, onSave });
-              });
-            });
-          });
-        });
-      });
-    });
-
-    describe('Connectors API error', () => {
-      const testModel = createModel(
-        testMachine.withContext({
-          willKafkaApiFail: false,
-          willClusterApiFail: false,
-          willConnectorsApiFail: true,
-        })
-      ).withEvents({
-        clickKafkaInstance: () => {
-          fireEvent.click(screen.getByText('badwords'));
-          fireEvent.click(screen.getByText('Next'));
-        },
-        clickCluster: () => {
-          fireEvent.click(screen.getByText('megalord'));
-          fireEvent.click(screen.getByText('Next'));
-        },
-        onClose: () => {
-          fireEvent.click(screen.getByText('Cancel'));
-        },
-      });
-
-      const testPlans = testModel.getSimplePathPlans();
-      testPlans.forEach(plan => {
-        describe(plan.description, () => {
-          beforeEach(mockApis.makeConnectorsError);
           afterEach(() => {
             jest.clearAllMocks();
           });
