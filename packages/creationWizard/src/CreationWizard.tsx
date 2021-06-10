@@ -187,13 +187,13 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
   const goToStep = (stepIndex: number) => {
     switch (stepIndex) {
       case 1:
-        send('jumpToSelectKafka');
+        send('jumpToSelectConnector');
         break;
       case 2:
-        send('jumpToSelectCluster');
+        send('jumpToSelectKafka');
         break;
       case 3:
-        send('jumpToSelectConnector');
+        send('jumpToSelectCluster');
         break;
       // case 4:
       //   send('jumpToConfigureConnector');
