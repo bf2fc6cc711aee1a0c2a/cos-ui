@@ -9,20 +9,28 @@ import {
 export function makeHappyPath() {
   const mock = new MockAdapter(axios);
   mock
+    .onGet('/dummy/api/connector_mgmt/v1/kafka_connector_types')
+    .reply<ConnectorTypeList>(200, connectors)
     .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=')
     .reply<KafkaRequestList>(200, kafkaInstances)
     .onGet(
       '/dummy/api/connector_mgmt/v1/kafka_connector_clusters?page=1&size=10'
     )
-    .reply<ConnectorClusterList>(200, clusters)
-    .onGet('/dummy/api/connector_mgmt/v1/kafka_connector_types')
-    .reply<ConnectorTypeList>(200, connectors);
+    .reply<ConnectorClusterList>(200, clusters);
+  return mock;
+}
+
+export function makeConnectorsError() {
+  const mock = new MockAdapter(axios);
+  mock.onGet('/dummy/api/connector_mgmt/v1/kafka_connector_types').reply(404);
   return mock;
 }
 
 export function makeKafkaError() {
   const mock = new MockAdapter(axios);
   mock
+    .onGet('/dummy/api/connector_mgmt/v1/kafka_connector_types')
+    .reply<ConnectorTypeList>(200, connectors)
     .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=')
     .reply(404);
   return mock;
@@ -31,25 +39,13 @@ export function makeKafkaError() {
 export function makeClusterError() {
   const mock = new MockAdapter(axios);
   mock
-    .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=')
-    .reply<KafkaRequestList>(200, kafkaInstances)
-    .onGet(
-      '/dummy/api/connector_mgmt/v1/kafka_connector_clusters?page=1&size=10'
-    )
-    .reply(404);
-  return mock;
-}
-
-export function makeConnectorsError() {
-  const mock = new MockAdapter(axios);
-  mock
-    .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=')
-    .reply<KafkaRequestList>(200, kafkaInstances)
-    .onGet(
-      '/dummy/api/connector_mgmt/v1/kafka_connector_clusters?page=1&size=10'
-    )
-    .reply<ConnectorClusterList>(200, clusters)
     .onGet('/dummy/api/connector_mgmt/v1/kafka_connector_types')
+    .reply<ConnectorTypeList>(200, connectors)
+    .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=')
+    .reply<KafkaRequestList>(200, kafkaInstances)
+    .onGet(
+      '/dummy/api/connector_mgmt/v1/kafka_connector_clusters?page=1&size=10'
+    )
     .reply(404);
   return mock;
 }

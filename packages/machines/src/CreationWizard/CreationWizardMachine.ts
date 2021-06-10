@@ -57,9 +57,48 @@ export const creationWizardMachine = createMachine<
   {
     schema: creationWizardMachineSchema,
     id: 'creationWizard',
-    initial: 'selectKafka',
+    initial: 'selectConnector',
     context: {},
     states: {
+      selectConnector: {
+        initial: 'selecting',
+        invoke: {
+          id: 'selectConnector',
+          src: connectorTypesMachine,
+          data: context => ({
+            authToken: context.authToken,
+            basePath: context.basePath,
+            selectedConnector: context.selectedConnector,
+          }),
+          onDone: {
+            target: 'selectKafka',
+            actions: assign((_context, event) => ({
+              selectedConnector: event.data.selectedConnector,
+              connectorConfiguration: false,
+              activeConfigurationStep: 0,
+              isConfigurationValid: false,
+              configurationSteps: false,
+            })),
+          },
+          onError: '.error',
+        },
+        states: {
+          error: {},
+          selecting: {
+            on: {
+              isValid: 'valid',
+            },
+          },
+          valid: {
+            on: {
+              isInvalid: 'selecting',
+              next: {
+                actions: send('confirm', { to: 'selectConnector' }),
+              },
+            },
+          },
+        },
+      },
       selectKafka: {
         initial: 'selecting',
         invoke: {
@@ -98,6 +137,9 @@ export const creationWizardMachine = createMachine<
             },
           },
         },
+        on: {
+          prev: 'selectConnector',
+        },
       },
       selectCluster: {
         initial: 'selecting',
@@ -110,7 +152,7 @@ export const creationWizardMachine = createMachine<
             selectedCluster: context.selectedCluster,
           }),
           onDone: {
-            target: 'selectConnector',
+            target: 'configureConnector',
             actions: assign({
               selectedCluster: (_, event) => event.data.selectedCluster,
             }),
@@ -135,48 +177,6 @@ export const creationWizardMachine = createMachine<
         },
         on: {
           prev: 'selectKafka',
-        },
-      },
-      selectConnector: {
-        initial: 'selecting',
-        invoke: {
-          id: 'selectConnector',
-          src: connectorTypesMachine,
-          data: context => ({
-            authToken: context.authToken,
-            basePath: context.basePath,
-            selectedConnector: context.selectedConnector,
-          }),
-          onDone: {
-            target: 'configureConnector',
-            actions: assign((_context, event) => ({
-              selectedConnector: event.data.selectedConnector,
-              connectorConfiguration: false,
-              activeConfigurationStep: 0,
-              isConfigurationValid: false,
-              configurationSteps: false,
-            })),
-          },
-          onError: '.error',
-        },
-        states: {
-          error: {},
-          selecting: {
-            on: {
-              isValid: 'valid',
-            },
-          },
-          valid: {
-            on: {
-              isInvalid: 'selecting',
-              next: {
-                actions: send('confirm', { to: 'selectConnector' }),
-              },
-            },
-          },
-        },
-        on: {
-          prev: 'selectCluster',
         },
       },
       configureConnector: {
@@ -245,7 +245,7 @@ export const creationWizardMachine = createMachine<
                   actions: send('prev', { to: 'configuratorRef' }),
                   cond: 'areThereSubsteps',
                 },
-                { target: '#creationWizard.selectConnector' },
+                { target: '#creationWizard.selectCluster' },
               ],
               changedStep: {
                 actions: assign({
@@ -301,18 +301,20 @@ export const creationWizardMachine = createMachine<
       },
     },
     on: {
-      jumpToSelectKafka: 'selectKafka',
+      jumpToSelectConnector: {
+        target: 'selectConnector',
+      },
+      jumpToSelectKafka: {
+        target: 'selectKafka',
+        cond: 'isConnectorSelected',
+      },
       jumpToSelectCluster: {
         target: 'selectCluster',
         cond: 'isKafkaInstanceSelected',
       },
-      jumpToSelectConnector: {
-        target: 'selectConnector',
-        cond: 'isClusterSelected',
-      },
       jumpToConfigureConnector: {
         target: 'configureConnector',
-        cond: 'isConnectorSelected',
+        cond: 'isClusterSelected',
         actions: assign((_, event) => ({
           activeConfigurationStep: event.subStep || 0,
         })),
