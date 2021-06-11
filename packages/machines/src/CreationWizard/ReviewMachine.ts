@@ -117,11 +117,20 @@ export const reviewMachine = createMachine<typeof reviewMachineModel>(
 );
 
 function dataToPrettyString(data: unknown) {
+  const dataVal = data instanceof Map ? mapToObject(data) : data;
   try {
-    return JSON.stringify(data, null, 2);
+    return JSON.stringify(dataVal, null, 2);
   } catch (e) {
     return '';
   }
+}
+
+function mapToObject(inputMap: Map<string, unknown>) {
+  const obj = {} as { [key: string]: unknown };
+  inputMap.forEach((value, key) => {
+    obj[key] = value;
+  });
+  return obj;
 }
 
 function verifyData(
