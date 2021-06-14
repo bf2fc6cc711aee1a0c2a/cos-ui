@@ -22,7 +22,7 @@ i18n
     // Commenting it as we have fallbackLng for case of language detected as en-GB or en-US
     // supportedLngs: ['en','it'],
     backend: {
-      loadPath: `locales/{{lng}}/{{ns}}.json`,
+      loadPath: `${__webpack_public_path__}locales/{{lng}}/{{ns}}.json`,
     },
     fallbackLng: 'en',
     load: 'all',
