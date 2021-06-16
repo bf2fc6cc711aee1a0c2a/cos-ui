@@ -343,10 +343,14 @@ export const creationWizardMachine = createMachine<
       },
       isConnectorConfigured: context => {
         if (!context.configurationSteps) {
-          return context.connectorConfiguration !== undefined;
+          return (
+            context.connectorConfiguration !== undefined &&
+            context.connectorConfiguration !== false
+          );
         }
         return (
-          context.connectorConfiguration !== undefined ||
+          (context.connectorConfiguration !== undefined &&
+            context.connectorConfiguration !== false) ||
           (context.activeConfigurationStep ===
             context.configurationSteps.length - 1 &&
             context.isConfigurationValid === true)
