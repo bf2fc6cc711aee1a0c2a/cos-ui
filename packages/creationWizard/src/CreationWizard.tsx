@@ -2,7 +2,6 @@ import React, { FunctionComponent, useCallback } from 'react';
 import { useSelector, useService } from '@xstate/react';
 import {
   creationWizardMachine,
-  ConnectorTypesMachineActorRef,
   useCreationWizardMachineService,
 } from '@cos-ui/machines';
 import {
@@ -104,30 +103,28 @@ function useConfigurationStep() {
 
 export type CreationWizardProps = {
   onClose: () => void;
-  onSave: () => void;
 };
 
 export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
   onClose,
-  onSave,
 }) => {
   const { t } = useTranslation();
 
   const service = useCreationWizardMachineService();
   const [state, send] = useService(service);
+
   const kafkaInstanceStep = useKafkaInstanceStep();
   const configurationStep = useConfigurationStep();
+
+  if (state.value === 'saved') return null;
+
   const steps = [
     {
       name: 'Connector',
       isActive: state.matches('selectConnector'),
       component: (
         <StepErrorBoundary>
-          <SelectConnector
-            actor={
-              state.children.selectConnector as ConnectorTypesMachineActorRef
-            }
-          />
+          <SelectConnector />
         </StepErrorBoundary>
       ),
       canJumpTo:
@@ -176,13 +173,7 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
       -1
     ) + 1;
 
-  const onNext = () => {
-    if (state.matches('reviewConfiguration')) {
-      onSave();
-    } else {
-      send('next');
-    }
-  };
+  const onNext = () => send('next');
   const onBack = () => send('prev');
   const goToStep = (stepIndex: number) => {
     switch (stepIndex) {

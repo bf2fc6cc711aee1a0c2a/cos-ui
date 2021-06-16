@@ -45,11 +45,9 @@ export const CosUiRoutes: FunctionComponent<CosUiRoutesProps> = ({
                     'federated-configurators.json'
                 )
               }
+              onSave={goToConnectorsList}
             >
-              <CreationWizard
-                onClose={goToConnectorsList}
-                onSave={goToConnectorsList}
-              />
+              <CreationWizard onClose={goToConnectorsList} />
             </CreationWizardMachineProvider>
           </PageSection>
         </Route>

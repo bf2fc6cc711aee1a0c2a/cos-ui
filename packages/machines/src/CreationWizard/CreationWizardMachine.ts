@@ -58,12 +58,12 @@ export const creationWizardMachine = createMachine<
     schema: creationWizardMachineSchema,
     id: 'creationWizard',
     initial: 'selectConnector',
-    context: {},
+    context: creationWizardMachineModel.initialContext,
     states: {
       selectConnector: {
         initial: 'selecting',
         invoke: {
-          id: 'selectConnector',
+          id: 'selectConnectorRef',
           src: connectorTypesMachine,
           data: context => ({
             authToken: context.authToken,
@@ -93,7 +93,7 @@ export const creationWizardMachine = createMachine<
             on: {
               isInvalid: 'selecting',
               next: {
-                actions: send('confirm', { to: 'selectConnector' }),
+                actions: send('confirm', { to: 'selectConnectorRef' }),
               },
             },
           },
@@ -102,7 +102,7 @@ export const creationWizardMachine = createMachine<
       selectKafka: {
         initial: 'selecting',
         invoke: {
-          id: 'selectKafkaInstance',
+          id: 'selectKafkaInstanceRef',
           src: kafkasMachine,
           data: context => ({
             authToken: context.authToken,
@@ -132,7 +132,7 @@ export const creationWizardMachine = createMachine<
             on: {
               isInvalid: 'selecting',
               next: {
-                actions: send('confirm', { to: 'selectKafkaInstance' }),
+                actions: send('confirm', { to: 'selectKafkaInstanceRef' }),
               },
             },
           },
@@ -144,7 +144,7 @@ export const creationWizardMachine = createMachine<
       selectCluster: {
         initial: 'selecting',
         invoke: {
-          id: 'selectCluster',
+          id: 'selectClusterRef',
           src: clustersMachine,
           data: context => ({
             authToken: context.authToken,
@@ -170,7 +170,7 @@ export const creationWizardMachine = createMachine<
             on: {
               isInvalid: 'selecting',
               next: {
-                actions: send('confirm', { to: 'selectCluster' }),
+                actions: send('confirm', { to: 'selectClusterRef' }),
               },
             },
           },
@@ -260,11 +260,16 @@ export const creationWizardMachine = createMachine<
         id: 'review',
         initial: 'reviewing',
         invoke: {
-          id: 'review',
+          id: 'reviewRef',
           src: reviewMachine,
           data: context => ({
-            connector: context.selectedConnector,
-            initialData: context.connectorConfiguration,
+            accessToken: context.authToken,
+            basePath: context.basePath,
+            kafka: context.selectedKafkaInstance,
+            cluster: context.selectedCluster,
+            connectorType: context.selectedConnector,
+            initialConfiguration: context.connectorConfiguration,
+            name: '',
           }),
           onDone: {
             target: '#creationWizard.saved',
@@ -286,7 +291,7 @@ export const creationWizardMachine = createMachine<
             on: {
               isInvalid: 'reviewing',
               next: {
-                actions: send('next', { to: 'reviewRef' }),
+                actions: send('save', { to: 'reviewRef' }),
               },
             },
           },
@@ -366,4 +371,4 @@ export const creationWizardMachine = createMachine<
 
 export type CreationWizardMachineInterpreterFromType = InterpreterFrom<
   typeof creationWizardMachine
-> | null;
+>;

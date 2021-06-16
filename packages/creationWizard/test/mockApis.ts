@@ -16,7 +16,9 @@ export function makeHappyPath() {
     .onGet(
       '/dummy/api/connector_mgmt/v1/kafka_connector_clusters?page=1&size=10'
     )
-    .reply<ConnectorClusterList>(200, clusters);
+    .reply<ConnectorClusterList>(200, clusters)
+    .onPost('/dummy/api/connector_mgmt/v1/kafka_connectors?async=true')
+    .reply(202, 'success');
   return mock;
 }
 
