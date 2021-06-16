@@ -9,6 +9,7 @@ import {
   waitFor,
   act,
   configure,
+  waitForElementToBeRemoved,
 } from '@testing-library/react';
 // import { assert } from 'chai';
 import { createModel } from '@xstate/test';
@@ -129,7 +130,11 @@ const testMachine = Machine({
     saved: {
       type: 'final',
       meta: {
-        test: ({ onClose, onSave }: TestContext) => {
+        test: async ({ onClose, onSave }: TestContext) => {
+          await waitForElementToBeRemoved(() =>
+            screen.queryByText('Create connector')
+          );
+
           expect(onClose).toBeCalledTimes(0);
           expect(onSave).toBeCalledTimes(1);
         },
@@ -191,6 +196,9 @@ describe('@cos-ui/creationWizard', () => {
           fireEvent.click(screen.getByText('Next'));
         },
         saveConnector: async () => {
+          fireEvent.change(screen.getByLabelText('Name *'), {
+            target: { value: 'my-connector' },
+          });
           await waitFor(() =>
             expect(screen.getByText('Create connector')).toBeEnabled()
           );
@@ -221,8 +229,9 @@ describe('@cos-ui/creationWizard', () => {
                     fetchConfigurator={() =>
                       Promise.resolve({ steps: false, Configurator: false })
                     }
+                    onSave={onSave}
                   >
-                    <CreationWizard onClose={onClose} onSave={onSave} />
+                    <CreationWizard onClose={onClose} />
                   </CreationWizardMachineProvider>
                 );
                 await path.test({ onClose, onSave });
@@ -273,8 +282,9 @@ describe('@cos-ui/creationWizard', () => {
                     fetchConfigurator={() =>
                       Promise.resolve({ steps: false, Configurator: false })
                     }
+                    onSave={onSave}
                   >
-                    <CreationWizard onClose={onClose} onSave={onSave} />
+                    <CreationWizard onClose={onClose} />
                   </CreationWizardMachineProvider>
                 );
                 await path.test({ onClose, onSave });
@@ -322,8 +332,9 @@ describe('@cos-ui/creationWizard', () => {
                     fetchConfigurator={() =>
                       Promise.resolve({ steps: false, Configurator: false })
                     }
+                    onSave={onSave}
                   >
-                    <CreationWizard onClose={onClose} onSave={onSave} />
+                    <CreationWizard onClose={onClose} />
                   </CreationWizardMachineProvider>
                 );
                 await path.test({ onClose, onSave });
@@ -375,8 +386,9 @@ describe('@cos-ui/creationWizard', () => {
                     fetchConfigurator={() =>
                       Promise.resolve({ steps: false, Configurator: false })
                     }
+                    onSave={onSave}
                   >
-                    <CreationWizard onClose={onClose} onSave={onSave} />
+                    <CreationWizard onClose={onClose} />
                   </CreationWizardMachineProvider>
                 );
                 await path.test({ onClose, onSave });

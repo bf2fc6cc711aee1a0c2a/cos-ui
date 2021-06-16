@@ -1,25 +1,118 @@
+import {
+  Configuration,
+  Connector,
+  ConnectorCluster,
+  ConnectorsApi,
+  ConnectorType,
+  KafkaRequest,
+} from '@cos-ui/api';
+import {
+  createValidator,
+  CreateValidatorType,
+} from '@cos-ui/json-schema-configurator';
 import { useSelector } from '@xstate/react';
+import axios from 'axios';
 import { useCallback } from 'react';
 import {
   ActorRefFrom,
   assign,
   createMachine,
   createSchema,
+  Sender,
   sendParent,
 } from 'xstate';
 import { createModel } from 'xstate/lib/model';
-import { ConnectorType } from '@cos-ui/api';
-import {
-  createValidator,
-  CreateValidatorType,
-} from '@cos-ui/json-schema-configurator';
+
+type SaveConnectorProps = {
+  accessToken?: Promise<string>;
+  basePath?: string;
+
+  kafka: KafkaRequest;
+  cluster: ConnectorCluster;
+  connectorType: ConnectorType;
+
+  configuration: object;
+
+  name: string;
+  userServiceAccount?: ServiceAccount;
+};
+const saveConnector = ({
+  accessToken,
+  basePath,
+  kafka,
+  cluster,
+  connectorType,
+  configuration,
+  name,
+  userServiceAccount,
+}: SaveConnectorProps) => {
+  const apisService = new ConnectorsApi(
+    new Configuration({
+      accessToken,
+      basePath,
+    })
+  );
+  return (callback: Sender<any>) => {
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    const async = true;
+    const connector: Connector = {
+      kind: 'Connector',
+      metadata: {
+        name,
+        kafka_id: kafka.id,
+      },
+      deployment_location: {
+        kind: 'addon',
+        cluster_id: cluster.id,
+      },
+      connector_type_id: connectorType.id,
+      kafka: {
+        bootstrap_server: kafka.bootstrap_server_host || 'demo',
+        client_id: userServiceAccount?.clientId,
+        client_secret: userServiceAccount?.clientSecret,
+      },
+      connector_spec: configuration,
+    };
+    apisService
+      .createConnector(async, connector, {
+        cancelToken: source.token,
+      })
+      .then(() => {
+        callback({ type: 'success' });
+      })
+      .catch(error => {
+        if (!axios.isCancel(error)) {
+          callback({ type: 'failure', message: error.response.data.reason });
+        }
+      });
+    return () => {
+      source.cancel('Operation canceled by the user.');
+    };
+  };
+};
+
+type ServiceAccount = {
+  clientId: string;
+  clientSecret: string;
+};
 
 type Context = {
-  connector: ConnectorType;
-  initialData: unknown;
-  dataString: string;
-  error?: string;
-  warnings?: string[];
+  accessToken?: Promise<string>;
+  basePath?: string;
+
+  kafka: KafkaRequest;
+  cluster: ConnectorCluster;
+  connectorType: ConnectorType;
+
+  initialConfiguration: unknown;
+
+  name: string;
+  userServiceAccount?: ServiceAccount;
+  configString: string;
+  configStringError?: string;
+  configStringWarnings?: string[];
+  savingError?: string;
   validator: CreateValidatorType;
 };
 
@@ -29,20 +122,21 @@ const reviewMachineSchema = {
 
 const reviewMachineModel = createModel(
   {
-    connector: {
-      id: 'something',
-      name: 'something',
-      version: '0.1',
-      json_schema: {},
-    },
-    initialData: undefined,
-    dataString: '',
+    initialConfiguration: undefined,
+    configString: '',
+    name: '',
     validator: createValidator({}),
   } as Context,
   {
     events: {
-      change: ({ data }: { data: string }) => ({ data }),
-      confirm: () => ({}),
+      setName: (payload: { name: string }) => payload,
+      setServiceAccount: (payload: {
+        serviceAccount: ServiceAccount | undefined;
+      }) => payload,
+      updateConfiguration: (payload: { data: string }) => payload,
+      save: () => ({}),
+      success: () => ({}),
+      failure: (payload: { message: string }) => payload,
     },
   }
 );
@@ -56,18 +150,26 @@ export const reviewMachine = createMachine<typeof reviewMachineModel>(
     entry: 'initialize',
     states: {
       verify: {
-        entry: 'verifyDataString',
+        entry: 'verifyConfigString',
         always: [
-          { target: 'valid', cond: 'dataStringIsValid' },
+          { target: 'valid', cond: 'isAllConfigured' },
           { target: 'reviewing' },
         ],
       },
       reviewing: {
         entry: sendParent('isInvalid'),
         on: {
-          change: {
+          setName: {
             target: 'verify',
-            actions: 'change',
+            actions: 'setName',
+          },
+          setServiceAccount: {
+            target: 'verify',
+            actions: 'setServiceAccount',
+          },
+          updateConfiguration: {
+            target: 'verify',
+            actions: 'updateConfiguration',
           },
         },
       },
@@ -75,43 +177,95 @@ export const reviewMachine = createMachine<typeof reviewMachineModel>(
         id: 'valid',
         entry: sendParent('isValid'),
         on: {
-          change: {
+          setName: {
             target: 'verify',
-            actions: 'change',
+            actions: 'setName',
           },
-          confirm: 'configured',
+          setServiceAccount: {
+            target: 'verify',
+            actions: 'setServiceAccount',
+          },
+          updateConfiguration: {
+            target: 'verify',
+            actions: 'updateConfiguration',
+          },
+          save: 'saving',
         },
       },
-      configured: {
+      saving: {
+        invoke: {
+          src: context =>
+            saveConnector({
+              accessToken: context.accessToken,
+              basePath: context.basePath,
+              kafka: context.kafka,
+              cluster: context.cluster,
+              connectorType: context.connectorType,
+              configuration: JSON.parse(context.configString),
+              name: context.name,
+              userServiceAccount: context.userServiceAccount,
+            }),
+        },
+        on: {
+          success: 'saved',
+          failure: {
+            target: 'valid',
+            actions: 'setSavingError',
+          },
+        },
+        tags: ['saving'],
+      },
+      saved: {
         type: 'final',
-        data: ({ dataString }) => ({ data: JSON.parse(dataString) }),
       },
     },
   },
   {
     actions: {
       initialize: assign(context => ({
-        dataString: dataToPrettyString(context.initialData),
-        validator: createValidator(context.connector.json_schema),
+        configString: dataToPrettyString(context.initialConfiguration),
+        validator: createValidator(context.connectorType.json_schema),
       })),
-      change: assign((_, event) =>
-        event.type === 'change'
+      setName: assign((_, event) =>
+        event.type === 'setName'
           ? {
-              dataString: event.data,
+              name: event.name,
             }
           : {}
       ),
-      verifyDataString: assign(context => {
+      setServiceAccount: assign((_, event) =>
+        event.type === 'setServiceAccount'
+          ? {
+              userServiceAccount: event.serviceAccount,
+            }
+          : {}
+      ),
+      updateConfiguration: assign((_, event) =>
+        event.type === 'updateConfiguration'
+          ? {
+              configString: event.data,
+            }
+          : {}
+      ),
+      verifyConfigString: assign(context => {
         const { warnings, error } = verifyData(
-          context.dataString,
+          context.configString,
           context.validator!
         );
-        return { warnings, error };
+        return { configStringWarnings: warnings, configStringError: error };
+      }),
+      setSavingError: assign((_, event) => {
+        if (event.type !== 'failure') return {};
+        return {
+          savingError: event.message,
+        };
       }),
     },
     guards: {
-      dataStringIsValid: context =>
-        context.dataString !== undefined && context.error === undefined,
+      isAllConfigured: context =>
+        context.configString !== undefined &&
+        context.configStringError === undefined &&
+        context.name.length > 0,
     },
   }
 );
@@ -145,27 +299,57 @@ function verifyData(
 export type ReviewMachineActorRef = ActorRefFrom<typeof reviewMachine>;
 
 export const useReviewMachine = (actor: ReviewMachineActorRef) => {
-  const { data, error, warnings } = useSelector(
+  const {
+    name,
+    serviceAccount,
+    configString,
+    configStringError,
+    configStringWarnings,
+    isSaving,
+    savingError,
+  } = useSelector(
     actor,
     useCallback(
       (state: typeof actor.state) => ({
-        data: state.context.dataString,
-        error: state.context.error,
-        warnings: state.context.warnings,
+        name: state.context.name,
+        serviceAccount: state.context.userServiceAccount,
+        configString: state.context.configString,
+        configStringError: state.context.configStringError,
+        configStringWarnings: state.context.configStringWarnings,
+        isSaving: state.hasTag('saving'),
+        savingError: state.context.savingError,
       }),
       [actor]
     )
   );
-  const onChange = useCallback(
+  const onSetName = useCallback(
+    (name: string) => {
+      actor.send({ type: 'setName', name });
+    },
+    [actor]
+  );
+  const onSetServiceAccount = useCallback(
+    (serviceAccount: ServiceAccount | undefined) => {
+      actor.send({ type: 'setServiceAccount', serviceAccount });
+    },
+    [actor]
+  );
+  const onUpdateConfiguration = useCallback(
     (data?: string) => {
-      actor.send({ type: 'change', data: data || '' });
+      actor.send({ type: 'updateConfiguration', data: data || '' });
     },
     [actor]
   );
   return {
-    data,
-    error,
-    warnings,
-    onChange,
+    name,
+    serviceAccount,
+    configString,
+    configStringError,
+    configStringWarnings,
+    isSaving,
+    savingError,
+    onSetName,
+    onSetServiceAccount,
+    onUpdateConfiguration,
   };
 };

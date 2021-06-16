@@ -17,10 +17,11 @@ import {
 } from './CreationWizardMachine';
 import { KafkaMachineActorRef } from './KafkasMachine';
 import { ReviewMachineActorRef } from './ReviewMachine';
+import { ConnectorTypesMachineActorRef } from './ConnectorTypesMachine';
 
-const CreationWizardMachineService = createContext<
-  CreationWizardMachineInterpreterFromType
->(null);
+const CreationWizardMachineService = createContext<CreationWizardMachineInterpreterFromType | null>(
+  null
+);
 
 type CreationWizardMachineProviderPropsType = {
   authToken?: Promise<string>;
@@ -28,6 +29,7 @@ type CreationWizardMachineProviderPropsType = {
   fetchConfigurator: (
     connector: ConnectorType
   ) => Promise<ConnectorConfiguratorResponse>;
+  onSave: () => void;
 };
 
 export const CreationWizardMachineProvider: FunctionComponent<CreationWizardMachineProviderPropsType> = ({
@@ -35,6 +37,7 @@ export const CreationWizardMachineProvider: FunctionComponent<CreationWizardMach
   authToken,
   basePath,
   fetchConfigurator,
+  onSave,
 }) => {
   const makeConfiguratorLoaderMachine = useCallback(
     () =>
@@ -56,11 +59,12 @@ export const CreationWizardMachineProvider: FunctionComponent<CreationWizardMach
       services: {
         makeConfiguratorLoaderMachine,
       },
+    },
+    state => {
+      if (state.done) {
+        onSave();
+      }
     }
-    // state => {
-    //   // subscribes to state changes
-    //   console.log(state.value);
-    // }
   );
   return (
     <CreationWizardMachineService.Provider value={service}>
@@ -79,13 +83,25 @@ export const useCreationWizardMachineService = () => {
   return service;
 };
 
+export const useCreationWizardMachineConnectorTypesActor = (): ConnectorTypesMachineActorRef => {
+  const service = useCreationWizardMachineService();
+  return useSelector(
+    service,
+    useCallback(
+      (state: typeof service.state) =>
+        state.children.selectConnectorRef as ConnectorTypesMachineActorRef,
+      [service]
+    )
+  );
+};
+
 export const useCreationWizardMachineKafkasActor = (): KafkaMachineActorRef => {
   const service = useCreationWizardMachineService();
   return useSelector(
     service,
     useCallback(
       (state: typeof service.state) =>
-        state.children.selectKafkaInstance as KafkaMachineActorRef,
+        state.children.selectKafkaInstanceRef as KafkaMachineActorRef,
       [service]
     )
   );
@@ -97,7 +113,7 @@ export const useCreationWizardMachineClustersActor = (): ClustersMachineActorRef
     service,
     useCallback(
       (state: typeof service.state) =>
-        state.children.selectCluster as ClustersMachineActorRef,
+        state.children.selectClusterRef as ClustersMachineActorRef,
       [service]
     )
   );
@@ -109,7 +125,7 @@ export const useCreationWizardMachineReviewActor = (): ReviewMachineActorRef => 
     service,
     useCallback(
       (state: typeof service.state) =>
-        state.children.review as ReviewMachineActorRef,
+        state.children.reviewRef as ReviewMachineActorRef,
       [service]
     )
   );

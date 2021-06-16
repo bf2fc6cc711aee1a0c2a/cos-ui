@@ -1,4 +1,3 @@
-import { ConnectorTypesMachineActorRef } from '@cos-ui/machines';
 import {
   Button,
   Card,
@@ -28,9 +27,9 @@ import {
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
-import { useActor } from '@xstate/react';
 import React, { useCallback, useState } from 'react';
 import { NoMatchFound } from '@cos-ui/utils';
+import { useCreationWizardMachineConnectorTypesActor } from '@cos-ui/machines';
 
 const defaultPerPageOptions = [
   {
@@ -47,12 +46,8 @@ const defaultPerPageOptions = [
   },
 ];
 
-export type SelectConnectorProps = {
-  actor: ConnectorTypesMachineActorRef;
-};
-
-export function SelectConnector({ actor }: SelectConnectorProps) {
-  const [state, send] = useActor(actor);
+export function SelectConnector() {
+  const actor = useCreationWizardMachineConnectorTypesActor();
   const [searchValue, setSearchValue] = useState('');
   const [types, setTypes] = useState<string[]>(['Sink', 'Source']);
   const [typesToggled, setTypesToggled] = useState(false);
@@ -71,11 +66,11 @@ export function SelectConnector({ actor }: SelectConnectorProps) {
     []
   );
   const onSelect = (selectedConnector: string) => {
-    send({ type: 'selectConnector', selectedConnector });
+    actor.send({ type: 'selectConnector', selectedConnector });
   };
 
   switch (true) {
-    case state.matches('loading'):
+    case actor.state.matches('loading'):
       return (
         <EmptyState>
           <EmptyStateIcon variant="container" component={Spinner} />
@@ -84,7 +79,7 @@ export function SelectConnector({ actor }: SelectConnectorProps) {
           </Title>
         </EmptyState>
       );
-    case state.matches('failure'):
+    case actor.state.matches('failure'):
       return <NoMatchFound />;
     default:
       const typeMenuItems = [
@@ -143,9 +138,9 @@ export function SelectConnector({ actor }: SelectConnectorProps) {
             alignment={{ default: 'alignRight' }}
           >
             <Pagination
-              itemCount={state.context.connectors?.total || 0}
-              page={(state.context.connectors?.page || 0) + 1}
-              perPage={state.context.connectors?.size || 0}
+              itemCount={actor.state.context.connectors?.total || 0}
+              page={(actor.state.context.connectors?.page || 0) + 1}
+              perPage={actor.state.context.connectors?.size || 0}
               perPageOptions={defaultPerPageOptions}
               onSetPage={() => false}
               onPerPageSelect={() => false}
@@ -166,7 +161,7 @@ export function SelectConnector({ actor }: SelectConnectorProps) {
           </Toolbar>
           <PageSection isFilled>
             <Gallery hasGutter>
-              {state.context.connectors?.items
+              {actor.state.context.connectors?.items
                 .filter(i =>
                   searchValue !== '' ? i.name!.includes(searchValue) : true
                 )
@@ -175,7 +170,9 @@ export function SelectConnector({ actor }: SelectConnectorProps) {
                     isHoverable
                     key={c.id}
                     isSelectable
-                    isSelected={state.context.selectedConnector?.id === c.id}
+                    isSelected={
+                      actor.state.context.selectedConnector?.id === c.id
+                    }
                     onClick={() => onSelect(c.id!)}
                   >
                     <CardHeader>
