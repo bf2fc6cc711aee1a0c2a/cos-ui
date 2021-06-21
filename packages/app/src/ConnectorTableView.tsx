@@ -19,11 +19,11 @@ import { Connector } from '@cos-ui/api';
 import { PaginatedApiResponse } from '@cos-ui/machines';
 
 export type ConnectorTableViewProps = {
-  data: PaginatedApiResponse<Connector>;
+  data: PaginatedApiResponse<Connector> | undefined;
   selectConnector: (conn: Connector | null) => void;
 };
 
-const getTableRow = (data: PaginatedApiResponse<Connector>) => {
+const getTableRow = (data: PaginatedApiResponse<Connector> | undefined) => {
   const rows = data?.items?.map(c => ({
     cells: [
       c.metadata?.name,
