@@ -1,5 +1,4 @@
-import React, { FunctionComponent, useRef } from 'react';
-import { Table, TableHeader, TableBody } from '@patternfly/react-table';
+import React, { FunctionComponent, useRef, useState } from 'react';
 import {
   PaginatedApiRequest,
   useConnectorsMachineIsReady,
@@ -17,6 +16,8 @@ import {
   Toolbar,
   ToolbarContent,
   ButtonVariant,
+  TextContent,
+  Title,
 } from '@patternfly/react-core';
 import { SearchIcon, FilterIcon } from '@patternfly/react-icons';
 import {
@@ -32,23 +33,60 @@ import {
 } from '@cos-ui/machines';
 import { NavLink, useHistory } from 'react-router-dom';
 import { useAppContext } from './AppContext';
+import { ConnectorTableView } from './ConnectorTableView';
+import { useTranslation } from 'react-i18next';
+import { ConnectorDrawer } from './ConnectorDrawer';
+import { Connector } from '@cos-ui/api';
 
 export const ConnectedConnectorsPage: FunctionComponent = () => {
+  const { t } = useTranslation();
   const { basePath, authToken } = useAppContext();
+  const [
+    selectedConnectors,
+    setSelectedConnectors,
+  ] = useState<Connector | null>(null);
+  const onDrawerClose = () => {
+    setSelectedConnectors(null);
+  };
   return (
     <ConnectorsMachineProvider authToken={authToken} basePath={basePath}>
-      <ConnectorsPage />
+      <ConnectorDrawer
+        isExpanded={selectedConnectors != null}
+        selectedConnectors={selectedConnectors}
+        onClose={onDrawerClose}
+      >
+        <PageSection variant={'light'}>
+          <TextContent>
+            <Title headingLevel="h1">{t('managedConnectors')}</Title>
+          </TextContent>
+        </PageSection>
+        <PageSection variant={'light'} padding={{ default: 'noPadding' }}>
+          <ConnectorsPage selectConnector={setSelectedConnectors} />
+        </PageSection>
+      </ConnectorDrawer>
     </ConnectorsMachineProvider>
   );
 };
 
-export const ConnectorsPage: FunctionComponent = () => {
-  const service = useConnectorsMachineService();
-  const isReady = useConnectorsMachineIsReady(service);
-  return isReady ? <ConnectorsTable /> : null;
+export type ConnectorsPageProps = {
+  selectConnector: (conn: Connector | null) => void;
 };
 
-const ConnectorsTable: FunctionComponent = () => {
+export const ConnectorsPage: FunctionComponent<ConnectorsPageProps> = ({
+  selectConnector,
+}: ConnectorsPageProps) => {
+  const service = useConnectorsMachineService();
+  const isReady = useConnectorsMachineIsReady(service);
+  return isReady ? <ConnectorsTable selectConnector={selectConnector} /> : null;
+};
+
+export type ConnectorsTableProps = {
+  selectConnector: (conn: Connector | null) => void;
+};
+
+const ConnectorsTable: FunctionComponent<ConnectorsTableProps> = ({
+  selectConnector,
+}: ConnectorsTableProps) => {
   const history = useHistory();
   const service = useConnectorsMachineService();
   const {
@@ -100,44 +138,13 @@ const ConnectorsTable: FunctionComponent = () => {
         />
       );
     default:
-      const columns = [
-        'Connector',
-        'Version',
-        'Owner',
-        'Time Created',
-        'Time Updated',
-        'Status',
-      ];
-      const rows = response?.items?.map(c => [
-        c.metadata?.created_at,
-        c.metadata?.resource_version,
-        c.metadata?.owner,
-        c.metadata?.created_at,
-        c.metadata?.updated_at,
-        c.status,
-      ]);
       return (
-        <PageSection padding={{ default: 'noPadding' }} isFilled>
-          <ConnectorsToolbar />
-
-          <Table
-            aria-label="Sortable Table"
-            variant={'compact'}
-            sortBy={{}}
-            onSort={() => false}
-            cells={columns}
-            rows={rows}
-            className="pf-m-no-border-rows"
-          >
-            <TableHeader />
-            <TableBody />
-          </Table>
-        </PageSection>
+        <ConnectorTableView data={response} selectConnector={selectConnector} />
       );
   }
 };
 
-const ConnectorsToolbar: FunctionComponent = () => {
+export const ConnectorsToolbar: FunctionComponent = () => {
   const service = useConnectorsMachineService();
   const { request, response } = useConnectorsMachine(service);
 
