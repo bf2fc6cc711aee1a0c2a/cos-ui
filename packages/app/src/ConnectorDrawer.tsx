@@ -65,9 +65,18 @@ export const ConnectorDrawer: React.FunctionComponent<ConnectorDrawerProps> = ({
       <DrawerPanelContent widths={{ default: 'width_50' }}>
         <DrawerHead>
           <TextContent>
-            <Text component={TextVariants.small}> Connector name</Text>
+            <Text
+              component={TextVariants.small}
+              className="connector-drawer__header-text"
+            >
+              Connector name
+            </Text>
 
-            <Title headingLevel={'h2'} size={TitleSizes['xl']}>
+            <Title
+              headingLevel={'h2'}
+              size={TitleSizes['xl']}
+              className="connector-drawer__header-title"
+            >
               {selectedConnectors?.metadata?.name}
             </Title>
           </TextContent>
