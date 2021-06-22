@@ -5,29 +5,26 @@ import React, {
   useCallback,
 } from 'react';
 import { useSelector, useInterpret } from '@xstate/react';
-import { Connector } from '@cos-ui/api';
 import {
   ConnectorsMachineInterpretType,
   connectorsMachine,
-  PAGINATED_MACHINE_ID,
 } from './ConnectorsMachine';
-import { PaginatedApiActorType, usePagination } from '../shared';
 
 const ConnectorsMachineServiceContext = createContext<ConnectorsMachineInterpretType | null>(
   null
 );
 type ConnectorsMachineProviderPropsType = {
-  authToken?: Promise<string>;
+  accessToken?: Promise<string>;
   basePath?: string;
 };
 
 export const ConnectorsMachineProvider: FunctionComponent<ConnectorsMachineProviderPropsType> = ({
   children,
-  authToken,
+  accessToken,
   basePath,
 }) => {
   const service = useInterpret(connectorsMachine, {
-    context: { authToken, basePath },
+    context: { accessToken, basePath },
     devTools: true,
   });
   return (
@@ -58,16 +55,5 @@ export const useConnectorsMachineIsReady = (
       },
       [service]
     )
-  );
-};
-
-export const useConnectorsMachine = (
-  service: ConnectorsMachineInterpretType
-) => {
-  return usePagination<Connector, {}>(
-    service.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType<
-      Connector,
-      {}
-    >
   );
 };

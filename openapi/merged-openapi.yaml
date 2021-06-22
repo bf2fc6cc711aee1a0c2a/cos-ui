@@ -211,7 +211,7 @@ paths:
         - Bearer: []
       operationId: listConnectors
       summary: Returns a list of connector types
-  '/api/connector_mgmt/v1/kafkas_connectors/{connector_id}':
+  '/api/connector_mgmt/v1/kafka_connectors/{connector_id}':
     parameters:
       - in: query
         name: kafka_id
@@ -680,7 +680,7 @@ paths:
               examples:
                 404Example:
                   $ref: '#/components/examples/404Example'
-          description: No Kakfa request with specified ID exists
+          description: No Kafka request with specified ID exists
         '500':
           content:
             application/json:
@@ -692,7 +692,7 @@ paths:
           description: Unexpected error occurred
       security:
         - Bearer: []
-      summary: Returns a Kakfa request by ID
+      summary: Returns a Kafka request by ID
     delete:
       operationId: deleteKafkaById
       parameters:
@@ -745,7 +745,7 @@ paths:
               examples:
                 404DeleteExample:
                   $ref: '#/components/examples/404DeleteExample'
-          description: No Kakfa request with specified ID exists
+          description: No Kafka request with specified ID exists
         '500':
           content:
             application/json:
@@ -755,7 +755,7 @@ paths:
                 500DeleteExample:
                   $ref: '#/components/examples/500DeleteExample'
           description: Unexpected error occurred
-      summary: Deletes a Kakfa request by ID
+      summary: Deletes a Kafka request by ID
       security:
         - Bearer: []
     parameters:
@@ -853,7 +853,7 @@ paths:
           description: An unexpected error occurred while creating the Kafka request
       security:
         - Bearer: []
-      summary: Creates a Kakfa request
+      summary: Creates a Kafka request
     get:
       summary: Returns a list of Kafka requests
       operationId: getKafkas
@@ -1184,7 +1184,7 @@ paths:
       summary: Resets the credentials for a service account by ID
   '/api/kafkas_mgmt/v1/kafkas/{id}/metrics/query_range':
     get:
-      summary: Returns metrics with timeseries range query by Kakfa ID
+      summary: Returns metrics with timeseries range query by Kafka ID
       operationId: getMetricsByRangeQuery
       security:
         - Bearer: []
@@ -1220,7 +1220,7 @@ paths:
         - $ref: '#/components/parameters/filters'
   '/api/kafkas_mgmt/v1/kafkas/{id}/metrics/query':
     get:
-      summary: Returns metrics with instant query by Kakfa ID
+      summary: Returns metrics with instant query by Kafka ID
       operationId: getMetricsByInstantQuery
       security:
         - Bearer: []
@@ -1563,13 +1563,13 @@ components:
       type: object
       properties:
         kafkas:
-          description: The Kakfa resource api status
+          description: The Kafka resource api status
           type: object
           required:
             - max_capacity_reached
           properties:
             max_capacity_reached:
-              description: Indicates whether we have reached Kakfa maximum capacity
+              description: Indicates whether we have reached Kafka maximum capacity
               type: boolean
     KafkaRequestPayload:
       description: Schema for the request body sent to /kafkas POST
@@ -1895,7 +1895,7 @@ components:
       in: query
       description: >-
         List of metrics to fetch. Fetch all metrics when empty. List entries are
-        Kakfa internal metric names.
+        Kafka internal metric names.
       schema:
         type: array
         items:
@@ -1929,7 +1929,7 @@ components:
 
         Each query can be ordered by any of the `kafkaRequests` fields.
 
-        For example, to return all Kakfa instances ordered by their name, use
+        For example, to return all Kafka instances ordered by their name, use
         the following syntax:
 
 
@@ -1940,7 +1940,7 @@ components:
         ```
 
 
-        To return all Kakfa instances ordered by their name _and_ created date,
+        To return all Kafka instances ordered by their name _and_ created date,
         use the following syntax:
 
 
@@ -1983,7 +1983,7 @@ components:
         Examples:
 
 
-        To return a Kakfa instance with the name `my-kafka` and the region
+        To return a Kafka instance with the name `my-kafka` and the region
         `aws`, use the following syntax:
 
 
@@ -1994,7 +1994,7 @@ components:
         ```[p-]
 
 
-        To return a Kakfa instance with a name that starts with `my`, use the
+        To return a Kafka instance with a name that starts with `my`, use the
         following syntax:
 
 
@@ -2006,7 +2006,7 @@ components:
 
 
         If the parameter isn't provided, or if the value is empty, then all the
-        Kakfa instances
+        Kafka instances
 
         that the user has permission to see are returned.
 
@@ -2064,7 +2064,7 @@ components:
           serviceapi-1isy6rq3jki8q0otmjqfd3ocfrg.apps.mk-bttg0jn170hp.x5u8.s1.devshift.org
         created_at: '2020-10-05T12:51:24.053142Z'
         updated_at: '2020-10-05T12:56:36.362208Z'
-        failed_reason: a reason the Kakfa request creation failed
+        failed_reason: a reason the Kafka request creation failed
     CloudProviderExample:
       value:
         kind: CloudProvider
@@ -2157,7 +2157,7 @@ components:
         href: /api/kafkas_mgmt/v1/errors/23
         code: KAFKAS-MGMT-23
         reason: >-
-          Failed to parse search query: Unable to list Kakfa requests for
+          Failed to parse search query: Unable to list Kafka requests for
           api_kafka_service: KAFKAS-MGMT-23: Failed to parse search query:
           Unsupported column name for search: 'id'. Supported column names are:
           region, name, cloud_provider, name, status. Query invalid: id = 123

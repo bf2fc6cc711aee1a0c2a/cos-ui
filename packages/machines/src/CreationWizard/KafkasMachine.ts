@@ -107,7 +107,11 @@ const kafkasMachineModel = createModel(
       }),
       deselectInstance: () => ({}),
       confirm: () => ({}),
-      ...getPaginatedApiMachineEvents<KafkaRequest, KafkasQuery>(),
+      ...getPaginatedApiMachineEvents<
+        KafkaRequest,
+        KafkasQuery,
+        KafkaRequest
+      >(),
     },
   }
 );
@@ -127,8 +131,13 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
             invoke: {
               id: PAGINATED_MACHINE_ID,
               src: context =>
-                makePaginatedApiMachine<KafkaRequest, KafkasQuery>(
-                  fetchKafkaInstances(context.authToken, context.basePath)
+                makePaginatedApiMachine<
+                  KafkaRequest,
+                  KafkasQuery,
+                  KafkaRequest
+                >(
+                  fetchKafkaInstances(context.authToken, context.basePath),
+                  i => i
                 ),
               autoForward: true,
             },
@@ -243,10 +252,11 @@ export const useKafkasMachineIsReady = (actor: KafkaMachineActorRef) => {
 };
 
 export const useKafkasMachine = (actor: KafkaMachineActorRef) => {
-  const api = usePagination<KafkaRequest, KafkasQuery>(
+  const api = usePagination<KafkaRequest, KafkasQuery, KafkaRequest>(
     actor.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType<
       KafkaRequest,
-      KafkasQuery
+      KafkasQuery,
+      KafkaRequest
     >
   );
   const { selectedId } = useSelector(
