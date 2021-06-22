@@ -1,6 +1,6 @@
 {
   "name": "@cos-ui/app",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mono/mono.git",
@@ -21,8 +21,8 @@
     "dist"
   ],
   "dependencies": {
-    "@cos-ui/api": "^0.0.1",
-    "@cos-ui/creation-wizard": "^0.0.1",
+    "@cos-ui/api": "0.0.3",
+    "@cos-ui/creation-wizard": "^1.0.1",
     "tslib": "^2.2.0"
   },
   "peerDependencies": {

@@ -1,6 +1,6 @@
 {
   "name": "@cos-ui-apps/cli",
-  "version": "0.0.2",
+  "version": "1.0.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mono/mono.git",
@@ -28,8 +28,8 @@
     "xstate": "^4.17.1"
   },
   "dependencies": {
-    "@cos-ui/machines": "^0.0.1",
-    "@cos-ui/api": "^0.0.1",
+    "@cos-ui/machines": "^1.0.1",
+    "@cos-ui/api": "0.0.3",
     "ink": "^3.0.8",
     "ink-select-input": "^4.2.0",
     "ink-spinner": "^4.0.1",
