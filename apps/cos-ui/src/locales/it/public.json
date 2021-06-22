@@ -1,5 +1,10 @@
 {
   "managedConnectors": "Connettori gestiti",
+  "name": "Nome",
+  "type": "Genere",
+  "category": "Categoria",
+  "status": "Stato",
+  "overview": "Panoramica",
   "loading": "Caricamento in corso",
   "selectOcmCluster": "Seleziona cluster OCM",
   "createConnectors": "Crea connettore"
