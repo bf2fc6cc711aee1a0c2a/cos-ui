@@ -31,11 +31,14 @@ const startConnector = ({ accessToken, basePath, connectorId }: ApiProps) => {
       .patchConnector(
         connectorId,
         {
-          desired_state: 'started',
+          desired_state: 'ready',
         },
         undefined,
         {
           cancelToken: source.token,
+          headers: {
+            'Content-type': 'application/merge-patch+json',
+          },
         }
       )
       .then(response => {
@@ -77,6 +80,9 @@ const stopConnector = ({ accessToken, basePath, connectorId }: ApiProps) => {
         undefined,
         {
           cancelToken: source.token,
+          headers: {
+            'Content-type': 'application/merge-patch+json',
+          },
         }
       )
       .then(response => {
@@ -189,9 +195,7 @@ export const connectorMachine = createMachine<typeof connectorMachineModel>(
           remove: 'deletingConnector',
         },
       },
-      deleted: {
-        type: 'final',
-      },
+      deleted: {},
 
       startingConnector: {
         invoke: {
@@ -201,7 +205,7 @@ export const connectorMachine = createMachine<typeof connectorMachineModel>(
         on: {
           success: {
             target: 'verify',
-            actions: ['updateConnector', 'notifySuccessToParent'],
+            actions: ['updateState', 'notifySuccessToParent'],
           },
           error: {
             target: 'verify',
@@ -217,7 +221,7 @@ export const connectorMachine = createMachine<typeof connectorMachineModel>(
         on: {
           success: {
             target: 'verify',
-            actions: ['updateConnector', 'notifySuccessToParent'],
+            actions: ['updateState', 'notifySuccessToParent'],
           },
           error: {
             target: 'verify',
@@ -234,7 +238,7 @@ export const connectorMachine = createMachine<typeof connectorMachineModel>(
         on: {
           success: {
             target: 'deleted',
-            actions: ['updateConnector', 'notifySuccessToParent'],
+            actions: ['updateState', 'notifySuccessToParent'],
           },
           error: {
             target: 'verify',

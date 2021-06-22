@@ -125,13 +125,6 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>({
               ),
             autoForward: true,
           },
-          on: {
-            connector_action_success: {
-              actions: send('query', {
-                to: PAGINATED_MACHINE_ID,
-              }),
-            },
-          },
           states: {
             idle: {
               on: {
@@ -144,6 +137,13 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>({
           },
         },
         listing: {},
+      },
+      on: {
+        connector_action_success: {
+          actions: send('query', {
+            to: PAGINATED_MACHINE_ID,
+          }),
+        },
       },
     },
   },

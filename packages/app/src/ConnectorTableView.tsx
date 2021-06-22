@@ -53,6 +53,7 @@ export const ConnectorTableView: FunctionComponent<ConnectorTableViewProps> = ({
       <TableComposable aria-label="Sortable Table">
         <Thead>
           <Tr>
+            <Th>{t('id')}</Th>
             <Th>{t('name')}</Th>
             <Th>{t('type')}</Th>
             <Th>{t('category')}</Th>
@@ -119,6 +120,7 @@ export const ConnectorRow: FunctionComponent<ConnectorRowProps> = ({
         }
       }}
     >
+      <Td dataLabel={t('id')}>{connector.id}</Td>
       <Td dataLabel={t('name')}>{connector.metadata?.name}</Td>
       <Td dataLabel={t('type')}>{connector.connector_type_id}</Td>
       <Td dataLabel={t('category')}>TODO: MISSING</Td>
