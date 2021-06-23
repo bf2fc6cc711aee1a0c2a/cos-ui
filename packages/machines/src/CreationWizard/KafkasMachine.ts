@@ -1,3 +1,4 @@
+import { getPaginatedApiMachineEventsHandlers } from './../shared/PaginatedResponseMachine';
 import { Configuration, DefaultApi, KafkaRequest } from '@cos-ui/api';
 import { useSelector } from '@xstate/react';
 import axios from 'axios';
@@ -139,7 +140,6 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
                   fetchKafkaInstances(context.authToken, context.basePath),
                   i => i
                 ),
-              autoForward: true,
             },
             states: {
               idle: {
@@ -151,6 +151,7 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
               ready: {},
             },
             on: {
+              ...getPaginatedApiMachineEventsHandlers(PAGINATED_MACHINE_ID),
               success: { actions: 'success' },
             },
           },

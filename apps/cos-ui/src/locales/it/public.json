@@ -1,10 +1,16 @@
 {
   "managedConnectors": "Connettori gestiti",
+  "overview": "Panoramica",
+  "id": "id",
   "name": "Nome",
   "type": "Genere",
   "category": "Categoria",
   "status": "Stato",
-  "overview": "Panoramica",
+  "Ready": "Ready",
+  "Failed": "Failed",
+  "Creation pending": "Creation pending",
+  "Creation in progress": "Creation in progress",
+  "Deletion in progress": "Deletion in progress",
   "loading": "Caricamento in corso",
   "selectOcmCluster": "Seleziona cluster OCM",
   "createConnectors": "Crea connettore"

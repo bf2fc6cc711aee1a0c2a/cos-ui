@@ -1,3 +1,4 @@
+import { getPaginatedApiMachineEventsHandlers } from './../shared/PaginatedResponseMachine';
 import axios from 'axios';
 import { useCallback } from 'react';
 import {
@@ -118,7 +119,6 @@ export const clustersMachine = createMachine<typeof clustersMachineModel>(
                   fetchClusters(context.authToken, context.basePath),
                   i => i
                 ),
-              autoForward: true,
             },
             states: {
               idle: {
@@ -130,6 +130,7 @@ export const clustersMachine = createMachine<typeof clustersMachineModel>(
               ready: {},
             },
             on: {
+              ...getPaginatedApiMachineEventsHandlers(PAGINATED_MACHINE_ID),
               success: { actions: 'success' },
             },
           },
