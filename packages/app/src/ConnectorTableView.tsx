@@ -46,6 +46,7 @@ import {
   Thead,
   Tr,
 } from '@patternfly/react-table';
+import { DeleteConnectorConfirmDialog } from './DeleteConnectorConfirmDialog';
 
 export type ConnectorTableViewProps = {
   data: PaginatedApiResponse<ConnectorMachineActorRef> | undefined;
@@ -118,6 +119,20 @@ export const ConnectorRow: FunctionComponent<ConnectorRowProps> = ({
     onDelete,
   } = useConnector(connectorRef);
 
+  const [
+    showDeleteConnectorConfirm,
+    setShowDeleteConnectorConfirm,
+  ] = React.useState(false);
+
+  const doCancelDeleteConnector = () => {
+    setShowDeleteConnectorConfirm(false);
+  };
+
+  const doDeleteConnector = () => {
+    setShowDeleteConnectorConfirm(false);
+    onDelete();
+  };
+
   const actions: IActions = [
     {
       title: 'Start',
@@ -131,7 +146,7 @@ export const ConnectorRow: FunctionComponent<ConnectorRowProps> = ({
     },
     {
       title: 'Delete',
-      onClick: onDelete,
+      onClick: () => setShowDeleteConnectorConfirm(true),
       isDisabled: !canDelete,
     },
     {
@@ -156,38 +171,49 @@ export const ConnectorRow: FunctionComponent<ConnectorRowProps> = ({
 
   const getStatusLabel = (status: string) =>
     statusOptions.find(s => s.value === status)?.label || status;
-
+      
   return (
-    <Tr
-      onClick={event => {
-        // send the event only if the click didn't happen on the actions button
-        if ((event.target as any | undefined)?.type !== 'button') {
-          onClick(connector);
-        }
-      }}
-      className={css(
-        'pf-c-table-row__item',
-        'pf-m-selectable',
-        activeRow && activeRow === connector.id && 'pf-m-selected'
-      )}
-    >
-      <Td dataLabel={t('id')}>{connector.id}</Td>
-      <Td dataLabel={t('name')}>{connector.metadata?.name}</Td>
-      <Td dataLabel={t('type')}>{connector.connector_type_id}</Td>
-      <Td dataLabel={t('category')}>TODO: MISSING</Td>
-      <Td dataLabel={t('status')}>
-        <Flex>
-          <FlexItem spacer={{ default: 'spacerSm' }}>
-            <ConnectorStatusIcon
-              id={connector.id!}
-              status={connector.status!}
-            />
-          </FlexItem>
-          <FlexItem>{getStatusLabel(connector.status!)}</FlexItem>
-        </Flex>
-      </Td>
-      <Td actions={{ items: actions }} />
-    </Tr>
+    <>
+      <DeleteConnectorConfirmDialog
+        connectorName={connector.metadata?.name}
+        i18nCancel={t('cancel')}
+        i18nDelete={t('delete')}
+        i18nTitle={t('deleteConnector')}
+        showDialog={showDeleteConnectorConfirm}
+        onCancel={doCancelDeleteConnector}
+        onConfirm={doDeleteConnector}
+      />
+      <Tr
+        onClick={event => {
+          // send the event only if the click didn't happen on the actions button
+          if ((event.target as any | undefined)?.type !== 'button') {
+            onClick(connector);
+          }
+        }}
+        className={css(
+          'pf-c-table-row__item',
+          'pf-m-selectable',
+          activeRow && activeRow === connector.id && 'pf-m-selected'
+        )}
+      >
+        <Td dataLabel={t('id')}>{connector.id}</Td>
+        <Td dataLabel={t('name')}>{connector.metadata?.name}</Td>
+        <Td dataLabel={t('type')}>{connector.connector_type_id}</Td>
+        <Td dataLabel={t('category')}>TODO: MISSING</Td>
+        <Td dataLabel={t('status')}>
+          <Flex>
+            <FlexItem spacer={{ default: 'spacerSm' }}>
+              <ConnectorStatusIcon
+                id={connector.id!}
+                status={connector.status!}
+              />
+            </FlexItem>
+            <FlexItem>{getStatusLabel(connector.status!)}</FlexItem>
+          </Flex>
+        </Td>
+        <Td actions={{ items: actions }} />
+      </Tr>
+    </>
   );
 };
 

@@ -13,5 +13,10 @@
   "Deletion in progress": "Deletion in progress",
   "loading": "Caricamento in corso",
   "selectOcmCluster": "Seleziona cluster OCM",
-  "createConnectors": "Crea connettore"
+  "createConnectors": "Crea connettore",
+  "deleteConnector": "Eliminare il connettore?",
+  "deleteConfirmMessage": "Il connettore <1>{{connectorName}}</1> verrà eliminato.",
+  "deleteTypeNameMessage": "Digitare <1>{{connectorName}}</1> per confermare l'eliminazione.",
+  "delete": "Elimina",
+  "cancel": "Annulla"
 }
