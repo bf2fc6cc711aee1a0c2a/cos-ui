@@ -35,22 +35,35 @@ import {
   Tr,
 } from '@patternfly/react-table';
 import { useActor } from '@xstate/react';
+import { css } from '@patternfly/react-styles';
+import './ConnectorTableView.css';
 
 export type ConnectorTableViewProps = {
   data: PaginatedApiResponse<ConnectorWithActorRef> | undefined;
   selectConnector: (conn: Connector | null) => void;
+  activeRow: string;
+  setActiveRow: (currentRow: string) => void;
 };
 
 export const ConnectorTableView: FunctionComponent<ConnectorTableViewProps> = ({
   data,
+  activeRow,
+  setActiveRow,
   selectConnector,
 }: ConnectorTableViewProps) => {
   const { t } = useTranslation();
+  const rowClick = (c: Connector) => {
+    selectConnector(c);
+    setActiveRow(c.id || '');
+  };
   return (
     <PageSection padding={{ default: 'noPadding' }} isFilled>
       <ConnectorsToolbar />
 
-      <TableComposable aria-label="Sortable Table">
+      <TableComposable
+        aria-label="Sortable Table"
+        className={css('connector-table-view__table')}
+      >
         <Thead>
           <Tr>
             <Th>{t('id')}</Th>
@@ -63,7 +76,8 @@ export const ConnectorTableView: FunctionComponent<ConnectorTableViewProps> = ({
         <Tbody>
           {data?.items?.map(connector => (
             <ConnectorRow
-              onClick={() => selectConnector(connector)}
+              activeRow={activeRow}
+              onClick={() => rowClick(connector)}
               connector={connector}
               key={connector.id}
             />
@@ -75,10 +89,12 @@ export const ConnectorTableView: FunctionComponent<ConnectorTableViewProps> = ({
 };
 
 type ConnectorRowProps = {
+  activeRow: string;
   connector: ConnectorWithActorRef;
   onClick: () => void;
 };
 export const ConnectorRow: FunctionComponent<ConnectorRowProps> = ({
+  activeRow,
   connector,
   onClick,
 }) => {
@@ -119,6 +135,11 @@ export const ConnectorRow: FunctionComponent<ConnectorRowProps> = ({
           onClick();
         }
       }}
+      className={css(
+        'pf-c-table-row__item',
+        'pf-m-selectable',
+        activeRow && activeRow === connector.id && 'pf-m-selected'
+      )}
     >
       <Td dataLabel={t('id')}>{connector.id}</Td>
       <Td dataLabel={t('name')}>{connector.metadata?.name}</Td>

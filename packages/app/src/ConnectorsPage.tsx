@@ -33,8 +33,10 @@ export const ConnectedConnectorsPage: FunctionComponent = () => {
     selectedConnectors,
     setSelectedConnectors,
   ] = useState<Connector | null>(null);
+  const [activeRow, setActiveRow] = useState('');
   const onDrawerClose = () => {
     setSelectedConnectors(null);
+    setActiveRow('');
   };
   return (
     <ConnectorsMachineProvider accessToken={authToken} basePath={basePath}>
@@ -49,7 +51,11 @@ export const ConnectedConnectorsPage: FunctionComponent = () => {
           </TextContent>
         </PageSection>
         <PageSection variant={'light'} padding={{ default: 'noPadding' }}>
-          <ConnectorsPage selectConnector={setSelectedConnectors} />
+          <ConnectorsPage
+            selectConnector={setSelectedConnectors}
+            activeRow={activeRow}
+            setActiveRow={setActiveRow}
+          />
         </PageSection>
       </ConnectorDrawer>
     </ConnectorsMachineProvider>
@@ -58,21 +64,35 @@ export const ConnectedConnectorsPage: FunctionComponent = () => {
 
 export type ConnectorsPageProps = {
   selectConnector: (conn: Connector | null) => void;
+  activeRow: string;
+  setActiveRow: (currentRow: string) => void;
 };
 
 export const ConnectorsPage: FunctionComponent<ConnectorsPageProps> = ({
+  activeRow,
+  setActiveRow,
   selectConnector,
 }: ConnectorsPageProps) => {
   const service = useConnectorsMachineService();
   const isReady = useConnectorsMachineIsReady(service);
-  return isReady ? <ConnectorsTable selectConnector={selectConnector} /> : null;
+  return isReady ? (
+    <ConnectorsTable
+      selectConnector={selectConnector}
+      activeRow={activeRow}
+      setActiveRow={setActiveRow}
+    />
+  ) : null;
 };
 
 export type ConnectorsTableProps = {
   selectConnector: (conn: Connector | null) => void;
+  activeRow: string;
+  setActiveRow: (currentRow: string) => void;
 };
 
 const ConnectorsTable: FunctionComponent<ConnectorsTableProps> = ({
+  activeRow,
+  setActiveRow,
   selectConnector,
 }: ConnectorsTableProps) => {
   const history = useHistory();
@@ -127,7 +147,12 @@ const ConnectorsTable: FunctionComponent<ConnectorsTableProps> = ({
       );
     default:
       return (
-        <ConnectorTableView data={response} selectConnector={selectConnector} />
+        <ConnectorTableView
+          data={response}
+          selectConnector={selectConnector}
+          activeRow={activeRow}
+          setActiveRow={setActiveRow}
+        />
       );
   }
 };
