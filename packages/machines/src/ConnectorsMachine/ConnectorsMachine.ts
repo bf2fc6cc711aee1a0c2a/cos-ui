@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
   createMachine,
   createSchema,
@@ -7,70 +6,29 @@ import {
   spawn,
 } from 'xstate';
 import { createModel } from 'xstate/lib/model';
+
+import { Connector } from '@cos-ui/api';
+
+import {
+  getPaginatedApiMachineEvents,
+  makePaginatedApiMachine,
+  PaginatedApiActorType,
+  PaginatedApiResponse,
+  usePagination,
+} from '../shared';
+import { getPaginatedApiMachineEventsHandlers } from '../shared/PaginatedResponseMachine';
+import { fetchConnectors } from './actors';
 import {
   ConnectorMachineActorRef,
   makeConnectorMachine,
 } from './ConnectorMachine';
 
-import { Configuration, Connector, ConnectorsApi } from '@cos-ui/api';
-
-import {
-  ApiCallback,
-  getPaginatedApiMachineEvents,
-  makePaginatedApiMachine,
-  PaginatedApiResponse,
-  PaginatedApiActorType,
-  usePagination,
-} from '../shared';
-
-export type ConnectorWithActorRef = Connector & {
-  ref: ConnectorMachineActorRef;
-};
-
 export const PAGINATED_MACHINE_ID = 'paginatedApi';
-
-const fetchConnectors = (
-  accessToken?: Promise<string>,
-  basePath?: string
-): ApiCallback<Connector, {}> => {
-  const apisService = new ConnectorsApi(
-    new Configuration({
-      accessToken,
-      basePath,
-    })
-  );
-  return (request, onSuccess, onError) => {
-    const CancelToken = axios.CancelToken;
-    const source = CancelToken.source();
-    const { page, size /*, name = '' */ } = request;
-    // const query = name.length > 0 ? `name LIKE ${name}` : undefined;
-    apisService
-      .listConnectors(`${page}`, `${size}`, undefined, {
-        cancelToken: source.token,
-      })
-      .then(response => {
-        onSuccess({
-          items: response.data.items,
-          total: response.data.total,
-          page: response.data.page,
-          size: response.data.size,
-        });
-      })
-      .catch(error => {
-        if (!axios.isCancel(error)) {
-          onError({ error: error.message, page: request.page });
-        }
-      });
-    return () => {
-      source.cancel('Operation canceled by the user.');
-    };
-  };
-};
 
 type Context = {
   accessToken?: Promise<string>;
   basePath?: string;
-  response?: PaginatedApiResponse<ConnectorWithActorRef>;
+  response?: PaginatedApiResponse<ConnectorMachineActorRef>;
   error?: Object;
 };
 
@@ -87,9 +45,13 @@ const connectorsMachineModel = createModel(
   } as Context,
   {
     events: {
-      ...getPaginatedApiMachineEvents<Connector, {}, ConnectorWithActorRef>(),
-      connector_action_success: () => ({}),
-      connector_action_error: () => ({}),
+      ...getPaginatedApiMachineEvents<
+        Connector,
+        {},
+        ConnectorMachineActorRef
+      >(),
+      'connector.action-success': () => ({}),
+      'connector.action-failure': () => ({}),
     },
   }
 );
@@ -108,22 +70,18 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>({
           invoke: {
             id: PAGINATED_MACHINE_ID,
             src: context =>
-              makePaginatedApiMachine<Connector, {}, ConnectorWithActorRef>(
+              makePaginatedApiMachine<Connector, {}, ConnectorMachineActorRef>(
                 fetchConnectors(context.accessToken, context.basePath),
-                c => ({
-                  ...c,
-                  ref: spawn(
+                connector =>
+                  spawn(
                     makeConnectorMachine({
                       accessToken: context.accessToken,
                       basePath: context.basePath,
-                      connectorId: c.id!,
-                      desiredState: c.desired_state!,
+                      connector,
                     }),
-                    `connector-${c.id}`
-                  ),
-                })
+                    `connector-${connector.id}`
+                  )
               ),
-            autoForward: true,
           },
           states: {
             idle: {
@@ -135,15 +93,17 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>({
               entry: send('query', { to: PAGINATED_MACHINE_ID }),
             },
           },
+          on: {
+            ...getPaginatedApiMachineEventsHandlers(PAGINATED_MACHINE_ID),
+            'connector.action-success': {
+              actions: send('query', { to: PAGINATED_MACHINE_ID }),
+            },
+            'connector.action-failure': {
+              actions: send('query', { to: PAGINATED_MACHINE_ID }),
+            },
+          },
         },
         listing: {},
-      },
-      on: {
-        connector_action_success: {
-          actions: send('query', {
-            to: PAGINATED_MACHINE_ID,
-          }),
-        },
       },
     },
   },
@@ -156,11 +116,11 @@ export type ConnectorsMachineInterpretType = InterpreterFrom<
 export const useConnectorsMachine = (
   service: ConnectorsMachineInterpretType
 ) => {
-  return usePagination<Connector, {}, ConnectorWithActorRef>(
+  return usePagination<Connector, {}, ConnectorMachineActorRef>(
     service.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType<
       Connector,
       {},
-      ConnectorWithActorRef
+      ConnectorMachineActorRef
     >
   );
 };

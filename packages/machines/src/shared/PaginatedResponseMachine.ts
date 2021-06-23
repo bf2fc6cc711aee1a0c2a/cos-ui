@@ -1,4 +1,3 @@
-import { useSelector } from '@xstate/react';
 import { useCallback } from 'react';
 import {
   ActorRefFrom,
@@ -9,8 +8,10 @@ import {
   spawn,
   SpawnedActorRef,
 } from 'xstate';
-import { sendParent } from 'xstate/lib/actions';
+import { sendParent, pure, send } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
+
+import { useSelector } from '@xstate/react';
 
 export type ApiErrorResponse = { page: number; error: string };
 export type ApiSuccessResponse<RawDataType> = {
@@ -63,6 +64,15 @@ export const getPaginatedApiMachineEvents = <
   loading: (payload: PaginatedApiRequest<QueryType>) => payload,
   success: (payload: ApiSuccessResponse<DataType>) => payload,
   error: (payload: { error: string }) => payload,
+});
+
+export const getPaginatedApiMachineEventsHandlers = (to: string) => ({
+  refresh: { actions: send((_, e) => e, { to }) },
+  nextPage: { actions: send((_, e) => e, { to }) },
+  prevPage: { actions: send((_, e) => e, { to }) },
+  query: { actions: send((_, e) => e, { to }) },
+  setResponse: { actions: send((_, e) => e, { to }) },
+  setError: { actions: send((_, e) => e, { to }) },
 });
 
 export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
@@ -234,6 +244,11 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
           },
         },
       },
+      on: {
+        '*': {
+          actions: 'forwardUnknownEventsToParent',
+        },
+      },
     },
     {
       actions: {
@@ -305,6 +320,18 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
           type: 'loading',
           ...context.request,
         })),
+        forwardUnknownEventsToParent: pure((_context, event) => {
+          if (
+            Object.keys(paginatedApiMachineModel.events).includes(
+              event.type
+            ) === false
+          ) {
+            return sendParent((_context, _event, meta) => {
+              return meta._event.data;
+            });
+          }
+          return [];
+        }),
       },
       guards: {
         isNotFirstPage: context =>

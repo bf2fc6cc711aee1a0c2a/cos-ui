@@ -1,10 +1,16 @@
 {
   "managedConnectors": "Managed connectors",
+  "overview": "Overview",
+  "id": "id",
   "name": "Name",
   "type": "Type",
   "category": "Category",
   "status": "Status",
-  "overview": "Overview",
+  "Ready": "Ready",
+  "Failed": "Failed",
+  "Creation pending": "Creation pending",
+  "Creation in progress": "Creation in progress",
+  "Deletion in progress": "Deletion in progress",
   "loading": "Loading",
   "selectOcmCluster": "Select OCM cluster",
   "createConnectors": "Create connector"

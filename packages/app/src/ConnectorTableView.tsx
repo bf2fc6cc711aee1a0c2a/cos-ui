@@ -1,22 +1,27 @@
+import './ConnectorTableView.css';
+
 import React, { FunctionComponent, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 
 import { Connector } from '@cos-ui/api';
 import {
-  ConnectorWithActorRef,
+  ConnectorMachineActorRef,
   PaginatedApiRequest,
   PaginatedApiResponse,
+  useConnector,
   useConnectorsMachine,
   useConnectorsMachineService,
-  connectorMachine,
 } from '@cos-ui/machines';
 import { useDebounce } from '@cos-ui/utils';
 import {
   Button,
+  Flex,
+  FlexItem,
   InputGroup,
   PageSection,
   Pagination,
+  Spinner,
   TextInput,
   Toolbar,
   ToolbarContent,
@@ -24,7 +29,14 @@ import {
   ToolbarItem,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
-import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  FilterIcon,
+  PendingIcon,
+  SearchIcon,
+} from '@patternfly/react-icons';
+import { css } from '@patternfly/react-styles';
 import {
   IActions,
   TableComposable,
@@ -34,12 +46,9 @@ import {
   Thead,
   Tr,
 } from '@patternfly/react-table';
-import { useActor } from '@xstate/react';
-import { css } from '@patternfly/react-styles';
-import './ConnectorTableView.css';
 
 export type ConnectorTableViewProps = {
-  data: PaginatedApiResponse<ConnectorWithActorRef> | undefined;
+  data: PaginatedApiResponse<ConnectorMachineActorRef> | undefined;
   selectConnector: (conn: Connector | null) => void;
   activeRow: string;
   setActiveRow: (currentRow: string) => void;
@@ -74,12 +83,12 @@ export const ConnectorTableView: FunctionComponent<ConnectorTableViewProps> = ({
           </Tr>
         </Thead>
         <Tbody>
-          {data?.items?.map(connector => (
+          {data?.items?.map(ref => (
             <ConnectorRow
               activeRow={activeRow}
-              onClick={() => rowClick(connector)}
-              connector={connector}
-              key={connector.id}
+              onClick={rowClick}
+              connectorRef={ref}
+              key={ref.id}
             />
           ))}
         </Tbody>
@@ -90,49 +99,70 @@ export const ConnectorTableView: FunctionComponent<ConnectorTableViewProps> = ({
 
 type ConnectorRowProps = {
   activeRow: string;
-  connector: ConnectorWithActorRef;
-  onClick: () => void;
+  connectorRef: ConnectorMachineActorRef;
+  onClick: (connector: Connector) => void;
 };
 export const ConnectorRow: FunctionComponent<ConnectorRowProps> = ({
   activeRow,
-  connector,
+  connectorRef,
   onClick,
 }) => {
   const { t } = useTranslation();
-  const [state, send] = useActor(connector.ref);
+  const {
+    connector,
+    canStart,
+    canStop,
+    canDelete,
+    onStart,
+    onStop,
+    onDelete,
+  } = useConnector(connectorRef);
 
   const actions: IActions = [
     {
       title: 'Start',
-      onClick: () => send({ type: 'start' }),
-      isDisabled: connectorMachine.transition(state, 'start').changed === false,
+      onClick: onStart,
+      isDisabled: !canStart,
     },
     {
       title: 'Stop',
-      onClick: () => send({ type: 'stop' }),
-      isDisabled: connectorMachine.transition(state, 'stop').changed === false,
+      onClick: onStop,
+      isDisabled: !canStop,
     },
     {
       title: 'Delete',
-      onClick: () => send({ type: 'remove' }),
-      isDisabled:
-        connectorMachine.transition(state, 'remove').changed === false,
+      onClick: onDelete,
+      isDisabled: !canDelete,
     },
     {
       isSeparator: true,
     },
     {
       title: 'Overview',
-      onClick,
+      onClick: () => onClick(connector),
     },
   ];
+
+  const statusOptions = [
+    { value: 'ready', label: t('Ready') },
+    { value: 'failed', label: t('Failed') },
+    { value: 'assigning', label: t('Creation pending') },
+    { value: 'assigned', label: t('Creation in progress') },
+    { value: 'updating', label: t('Creation in progress') },
+    { value: 'provisioning', label: t('Creation in progress') },
+    { value: 'deleting', label: t('Deletion in progress') },
+    { value: 'deleted', label: t('Deletion in progress') },
+  ];
+
+  const getStatusLabel = (status: string) =>
+    statusOptions.find(s => s.value === status)?.label || status;
 
   return (
     <Tr
       onClick={event => {
         // send the event only if the click didn't happen on the actions button
         if ((event.target as any | undefined)?.type !== 'button') {
-          onClick();
+          onClick(connector);
         }
       }}
       className={css(
@@ -145,10 +175,55 @@ export const ConnectorRow: FunctionComponent<ConnectorRowProps> = ({
       <Td dataLabel={t('name')}>{connector.metadata?.name}</Td>
       <Td dataLabel={t('type')}>{connector.connector_type_id}</Td>
       <Td dataLabel={t('category')}>TODO: MISSING</Td>
-      <Td dataLabel={t('status')}>{connector.status}</Td>
+      <Td dataLabel={t('status')}>
+        <Flex>
+          <FlexItem spacer={{ default: 'spacerSm' }}>
+            <ConnectorStatusIcon
+              id={connector.id!}
+              status={connector.status!}
+            />
+          </FlexItem>
+          <FlexItem>{getStatusLabel(connector.status!)}</FlexItem>
+        </Flex>
+      </Td>
       <Td actions={{ items: actions }} />
     </Tr>
   );
+};
+
+type ConnectorStatusIconProps = {
+  id: string;
+  status: string;
+};
+const ConnectorStatusIcon: FunctionComponent<ConnectorStatusIconProps> = ({
+  id,
+  status,
+}) => {
+  switch (status?.toLowerCase()) {
+    case 'ready':
+      return (
+        <CheckCircleIcon className="mk--instances__table--icon--completed" />
+      );
+    case 'failed':
+      return (
+        <ExclamationCircleIcon className="mk--instances__table--icon--failed" />
+      );
+    case 'accepted':
+      return <PendingIcon />;
+    case 'provisioning':
+    case 'preparing':
+      return (
+        <Spinner
+          size="md"
+          aria-label={id}
+          aria-valuetext="Creation in progress"
+        />
+      );
+    case 'deprovision':
+    case 'deleted':
+      return null;
+  }
+  return <PendingIcon />;
 };
 
 export const ConnectorsToolbar: FunctionComponent = () => {
