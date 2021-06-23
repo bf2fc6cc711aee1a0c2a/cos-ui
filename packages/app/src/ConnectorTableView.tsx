@@ -1,40 +1,44 @@
-import React, { FunctionComponent } from 'react';
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  sortable,
-  SortByDirection,
-  IRowData,
-  IExtraData,
-  IAction,
-  headerCol,
-  cellWidth,
-  IRow,
-} from '@patternfly/react-table';
-import { PageSection } from '@patternfly/react-core';
-import { ConnectorsToolbar } from './ConnectorsPage';
+import React, { FunctionComponent, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { NavLink } from 'react-router-dom';
+
 import { Connector } from '@cos-ui/api';
-import { PaginatedApiResponse } from '@cos-ui/machines';
+import {
+  ConnectorWithActorRef,
+  PaginatedApiRequest,
+  PaginatedApiResponse,
+  useConnectorsMachine,
+  useConnectorsMachineService,
+  connectorMachine,
+} from '@cos-ui/machines';
+import { useDebounce } from '@cos-ui/utils';
+import {
+  Button,
+  InputGroup,
+  PageSection,
+  Pagination,
+  TextInput,
+  Toolbar,
+  ToolbarContent,
+  ToolbarGroup,
+  ToolbarItem,
+  ToolbarToggleGroup,
+} from '@patternfly/react-core';
+import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
+import {
+  IActions,
+  TableComposable,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@patternfly/react-table';
+import { useActor } from '@xstate/react';
 
 export type ConnectorTableViewProps = {
-  data: PaginatedApiResponse<Connector> | undefined;
+  data: PaginatedApiResponse<ConnectorWithActorRef> | undefined;
   selectConnector: (conn: Connector | null) => void;
-};
-
-const getTableRow = (data: PaginatedApiResponse<Connector> | undefined) => {
-  const rows = data?.items?.map(c => ({
-    cells: [
-      c.metadata?.name,
-      c.connector_type_id,
-      // using owner as dummy value for category
-      c.metadata?.owner,
-      c.status,
-    ],
-    originalData: c,
-  }));
-  return rows;
 };
 
 export const ConnectorTableView: FunctionComponent<ConnectorTableViewProps> = ({
@@ -42,90 +46,237 @@ export const ConnectorTableView: FunctionComponent<ConnectorTableViewProps> = ({
   selectConnector,
 }: ConnectorTableViewProps) => {
   const { t } = useTranslation();
-  const [sortBy, setSortBy] = React.useState({});
-  const [rows, setRows] = React.useState(getTableRow(data));
-
-  const columns = [
-    {
-      title: t('name'),
-      transforms: [sortable, cellWidth(30)],
-      cellTransforms: [headerCol()],
-    },
-    { title: t('type'), transforms: [sortable, cellWidth(20)] },
-    { title: t('category'), transforms: [sortable] },
-    { title: t('status'), transforms: [sortable] },
-  ];
-
-  const onSort = (
-    _event: React.MouseEvent,
-    index: number,
-    direction: SortByDirection
-  ) => {
-    const sortedRows = rows?.sort((a: any, b: any) =>
-      a[index] < b[index] ? -1 : a[index] > b[index] ? 1 : 0
-    );
-    setRows(
-      direction === SortByDirection.asc ? sortedRows : sortedRows?.reverse()
-    );
-    setSortBy({
-      index,
-      direction,
-    });
-  };
-
-  const onRowClick = (event: any, row: IRow) => {
-    const { originalData } = row;
-    const clickedEventType = event?.target?.type;
-    const tagName = event?.target?.tagName;
-
-    // Open modal on row click except kebab button click
-    if (clickedEventType !== 'button' && tagName?.toLowerCase() !== 'a') {
-      selectConnector(originalData);
-    }
-  };
-
-  const tableActionResolver = (_row: IRowData, _extraData: IExtraData) => {
-    let returnVal = [] as IAction[];
-    returnVal = [
-      {
-        title: 'Start',
-        onClick: () => console.log('clicked on Start ACTION, on row: '),
-      },
-      {
-        title: 'Stop',
-        onClick: () => console.log('clicked on Stop ACTION, on row: '),
-      },
-      {
-        title: 'Delete',
-        onClick: () => console.log('clicked on Delete ACTION, on row: '),
-      },
-      {
-        isSeparator: true,
-      },
-      {
-        title: 'Overview',
-        onClick: () => console.log('clicked on Overview ACTION, on row: '),
-      },
-    ];
-    return returnVal;
-  };
-
   return (
     <PageSection padding={{ default: 'noPadding' }} isFilled>
       <ConnectorsToolbar />
 
-      <Table
-        aria-label="Sortable Table"
-        cells={columns}
-        rows={rows}
-        // className="pf-m-no-border-rows"
-        actionResolver={tableActionResolver}
-        sortBy={sortBy}
-        onSort={onSort}
-      >
-        <TableHeader />
-        <TableBody onRowClick={onRowClick} />
-      </Table>
+      <TableComposable aria-label="Sortable Table">
+        <Thead>
+          <Tr>
+            <Th>{t('id')}</Th>
+            <Th>{t('name')}</Th>
+            <Th>{t('type')}</Th>
+            <Th>{t('category')}</Th>
+            <Th>{t('status')}</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {data?.items?.map(connector => (
+            <ConnectorRow
+              onClick={() => selectConnector(connector)}
+              connector={connector}
+              key={connector.id}
+            />
+          ))}
+        </Tbody>
+      </TableComposable>
     </PageSection>
+  );
+};
+
+type ConnectorRowProps = {
+  connector: ConnectorWithActorRef;
+  onClick: () => void;
+};
+export const ConnectorRow: FunctionComponent<ConnectorRowProps> = ({
+  connector,
+  onClick,
+}) => {
+  const { t } = useTranslation();
+  const [state, send] = useActor(connector.ref);
+
+  const actions: IActions = [
+    {
+      title: 'Start',
+      onClick: () => send({ type: 'start' }),
+      isDisabled: connectorMachine.transition(state, 'start').changed === false,
+    },
+    {
+      title: 'Stop',
+      onClick: () => send({ type: 'stop' }),
+      isDisabled: connectorMachine.transition(state, 'stop').changed === false,
+    },
+    {
+      title: 'Delete',
+      onClick: () => send({ type: 'remove' }),
+      isDisabled:
+        connectorMachine.transition(state, 'remove').changed === false,
+    },
+    {
+      isSeparator: true,
+    },
+    {
+      title: 'Overview',
+      onClick,
+    },
+  ];
+
+  return (
+    <Tr
+      onClick={event => {
+        // send the event only if the click didn't happen on the actions button
+        if ((event.target as any | undefined)?.type !== 'button') {
+          onClick();
+        }
+      }}
+    >
+      <Td dataLabel={t('id')}>{connector.id}</Td>
+      <Td dataLabel={t('name')}>{connector.metadata?.name}</Td>
+      <Td dataLabel={t('type')}>{connector.connector_type_id}</Td>
+      <Td dataLabel={t('category')}>TODO: MISSING</Td>
+      <Td dataLabel={t('status')}>{connector.status}</Td>
+      <Td actions={{ items: actions }} />
+    </Tr>
+  );
+};
+
+export const ConnectorsToolbar: FunctionComponent = () => {
+  const service = useConnectorsMachineService();
+  const { request, response } = useConnectorsMachine(service);
+
+  const onChange = (request: PaginatedApiRequest<{}>) =>
+    service.send({ type: 'query', ...request });
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const debouncedOnChange = useDebounce(onChange, 1000);
+  const defaultPerPageOptions = [
+    {
+      title: '1',
+      value: 1,
+    },
+    {
+      title: '5',
+      value: 5,
+    },
+    {
+      title: '10',
+      value: 10,
+    },
+  ];
+
+  // const [statuses, setStatuses] = useState<string[]>([
+  //   'Pending',
+  //   'Created',
+  //   'Cancelled',
+  // ]);
+  // const [statusesToggled, setStatusesToggled] = useState(false);
+  // const clearAllFilters = useCallback(() => {
+  //   setSearchValue('');
+  //   setStatuses([]);
+  // }, []);
+  // const toggleStatuses = useCallback(
+  //   () => setStatusesToggled(prev => !prev),
+  //   []
+  // );
+  // const onSelectStatus = useCallback(
+  //   (_, status) =>
+  //     setStatuses(prev =>
+  //       prev.includes(status)
+  //         ? prev.filter(s => s !== status)
+  //         : [...prev, status]
+  //     ),
+  //   []
+  // );
+
+  // const statusMenuItems = [
+  //   <SelectOption key="statusPending" value="Pending" />,
+  //   <SelectOption key="statusCreated" value="Created" />,
+  //   <SelectOption key="statusCancelled" value="Cancelled" />,
+  // ];
+
+  // ensure the search input value reflects what's specified in the request object
+  // useEffect(() => {
+  //   if (searchInputRef.current) {
+  //     searchInputRef.current.value = (request.name as string | undefined) || '';
+  //   }
+  // }, [searchInputRef, request]);
+
+  const toggleGroupItems = (
+    <>
+      <ToolbarItem>
+        <InputGroup>
+          <TextInput
+            name="textInput2"
+            id="textInput2"
+            type="search"
+            aria-label="search input example"
+            onChange={value =>
+              debouncedOnChange({
+                size: request.size,
+                page: 1,
+                name: value,
+              })
+            }
+            ref={searchInputRef}
+          />
+          <Button
+            variant={'control'}
+            aria-label="search button for search input"
+          >
+            <SearchIcon />
+          </Button>
+        </InputGroup>
+      </ToolbarItem>
+      {/* <ToolbarGroup variant="filter-group">
+        <ToolbarFilter
+          chips={statuses}
+          deleteChip={onSelectStatus}
+          deleteChipGroup={() => setStatuses([])}
+          categoryName="Status"
+        >
+          <Select
+            variant={'checkbox'}
+            aria-label="Status"
+            onToggle={toggleStatuses}
+            onSelect={onSelectStatus}
+            selections={statuses}
+            isOpen={statusesToggled}
+            placeholderText="Status"
+          >
+            {statusMenuItems}
+          </Select>
+        </ToolbarFilter>
+      </ToolbarGroup> */}
+    </>
+  );
+  const toolbarItems = (
+    <>
+      <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
+        {toggleGroupItems}
+      </ToolbarToggleGroup>
+      <ToolbarGroup variant="icon-button-group">
+        <ToolbarItem>
+          <NavLink
+            className="pf-c-button pf-m-primary"
+            to={'/create-connector'}
+          >
+            Create Connector
+          </NavLink>
+        </ToolbarItem>
+      </ToolbarGroup>
+      <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
+        <Pagination
+          itemCount={response?.total || 0}
+          page={request.page}
+          perPage={request.size}
+          perPageOptions={defaultPerPageOptions}
+          onSetPage={(_, page, size) =>
+            onChange({ ...request, page, size: size || request.size })
+          }
+          onPerPageSelect={() => false}
+          variant="top"
+          isCompact
+        />
+      </ToolbarItem>
+    </>
+  );
+
+  return (
+    <Toolbar
+      id="toolbar-group-types"
+      collapseListedFiltersBreakpoint="xl"
+      // clearAllFilters={clearAllFilters}
+    >
+      <ToolbarContent>{toolbarItems}</ToolbarContent>
+    </Toolbar>
   );
 };

@@ -13,15 +13,15 @@ import { sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
 export type ApiErrorResponse = { page: number; error: string };
-export type ApiSuccessResponse<ResponseType> = {
-  items: Array<ResponseType>;
+export type ApiSuccessResponse<RawDataType> = {
+  items: Array<RawDataType>;
   page: number;
   size: number;
   total: number;
 };
-export type ApiCallback<ResponseType, QueryType> = (
+export type ApiCallback<RawDataType, QueryType> = (
   request: PaginatedApiRequest<QueryType>,
-  onSuccess: (payload: ApiSuccessResponse<ResponseType>) => void,
+  onSuccess: (payload: ApiSuccessResponse<RawDataType>) => void,
   onError: (payload: ApiErrorResponse) => void
 ) => () => void;
 
@@ -30,38 +30,44 @@ export type PaginatedApiRequest<QueryType> = {
   size: number;
   query?: QueryType;
 };
-export type PaginatedApiResponse<ResponseType> = {
+export type PaginatedApiResponse<DataType> = {
   total: number;
-  items?: Array<ResponseType>;
+  items?: Array<DataType>;
   error?: string;
 };
-export type PaginatedMachineContext<ResponseType, QueryType> = {
+export type PaginatedMachineContext<RawDataType, QueryType, DataType> = {
   request: PaginatedApiRequest<QueryType>;
-  response?: PaginatedApiResponse<ResponseType>;
+  response?: PaginatedApiResponse<DataType>;
   actor?: SpawnedActorRef<any>;
+  dataTransformer: (response: RawDataType) => DataType;
 };
 
 const paginatedApiMachineSchema = {
-  context: createSchema<PaginatedMachineContext<any, any>>(),
+  context: createSchema<PaginatedMachineContext<any, any, any>>(),
 };
 
-export const getPaginatedApiMachineEvents = <ResponseType, QueryType>() => ({
+export const getPaginatedApiMachineEvents = <
+  RawDataType,
+  QueryType,
+  DataType
+>() => ({
   refresh: () => ({}),
   nextPage: () => ({}),
   prevPage: () => ({}),
   query: (payload: PaginatedApiRequest<QueryType>) => payload,
-  setResponse: (payload: ApiSuccessResponse<ResponseType>) => payload,
+  setResponse: (payload: ApiSuccessResponse<RawDataType>) => payload,
   setError: (payload: ApiErrorResponse) => payload,
 
   // notifyParent
   ready: () => ({}),
   loading: (payload: PaginatedApiRequest<QueryType>) => payload,
-  success: (payload: ApiSuccessResponse<ResponseType>) => payload,
+  success: (payload: ApiSuccessResponse<DataType>) => payload,
   error: (payload: { error: string }) => payload,
 });
 
-export function makePaginatedApiMachine<ResponseType, QueryType>(
-  service: ApiCallback<ResponseType, QueryType>
+export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
+  service: ApiCallback<RawDataType, QueryType>,
+  dataTransformer: (response: RawDataType) => DataType
 ) {
   const paginatedApiMachineModel = createModel(
     {
@@ -70,20 +76,21 @@ export function makePaginatedApiMachine<ResponseType, QueryType>(
         size: 10,
       },
       response: undefined,
-    } as PaginatedMachineContext<ResponseType, QueryType>,
+      dataTransformer,
+    } as PaginatedMachineContext<RawDataType, QueryType, DataType>,
     {
       events: {
-        ...getPaginatedApiMachineEvents<ResponseType, QueryType>(),
+        ...getPaginatedApiMachineEvents<RawDataType, QueryType, DataType>(),
       },
     }
   );
 
   const callApi = (
-    context: PaginatedMachineContext<ResponseType, QueryType>
+    context: PaginatedMachineContext<RawDataType, QueryType, DataType>
   ) => (callback: Sender<any>) => {
     return service(
       context.request!,
-      (payload: ApiSuccessResponse<ResponseType>) =>
+      (payload: ApiSuccessResponse<RawDataType>) =>
         callback(paginatedApiMachineModel.events.setResponse(payload)),
       (payload: ApiErrorResponse) =>
         callback(paginatedApiMachineModel.events.setError(payload))
@@ -242,7 +249,7 @@ export function makePaginatedApiMachine<ResponseType, QueryType>(
             return {};
           return {
             response: {
-              items: e.items,
+              items: e.items.map(i => context.dataTransformer(i)),
               total: e.total,
               error: undefined,
             },
@@ -322,20 +329,30 @@ export function makePaginatedApiMachine<ResponseType, QueryType>(
 }
 
 // https://stackoverflow.com/questions/50321419/typescript-returntype-of-generic-function/64919133#64919133
-class Wrapper<ResponseType, QueryType> {
-  wrapped(service: ApiCallback<ResponseType, QueryType>) {
-    return makePaginatedApiMachine<ResponseType, QueryType>(service);
+class Wrapper<RawDataType, QueryType, DataType> {
+  wrapped(
+    service: ApiCallback<RawDataType, QueryType>,
+    dataTransformer: (response: RawDataType) => DataType
+  ) {
+    return makePaginatedApiMachine<RawDataType, QueryType, DataType>(
+      service,
+      dataTransformer
+    );
   }
 }
 
-export type PaginatedApiActorType<ResponseType, QueryType> = ActorRefFrom<
-  ReturnType<Wrapper<ResponseType, QueryType>['wrapped']>
+export type PaginatedApiActorType<
+  RawDataType,
+  QueryType,
+  DataType
+> = ActorRefFrom<
+  ReturnType<Wrapper<RawDataType, QueryType, DataType>['wrapped']>
 >;
 
 // These are not _writable_ booleans, they are derived from the machine state!
 // https://discord.com/channels/795785288994652170/799416943324823592/847466843290730527
-export const usePagination = <ResponseType, QueryType>(
-  actor: PaginatedApiActorType<ResponseType, QueryType>
+export const usePagination = <RawDataType, QueryType, DataType>(
+  actor: PaginatedApiActorType<RawDataType, QueryType, DataType>
 ) => {
   return useSelector(
     actor,

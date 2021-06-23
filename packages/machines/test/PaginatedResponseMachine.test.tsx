@@ -67,14 +67,19 @@ describe('@cos-ui/machines', () => {
 
     const paginatedApiMachine = makePaginatedApiMachine<
       TestResultType,
-      TestQueryType
-    >(testApi);
+      TestQueryType,
+      TestResultType
+    >(testApi, i => i);
 
     const testModel = createModel(
       {},
       {
         events: {
-          ...getPaginatedApiMachineEvents<TestResultType, TestQueryType>(),
+          ...getPaginatedApiMachineEvents<
+            TestResultType,
+            TestQueryType,
+            TestResultType
+          >(),
         },
       }
     );

@@ -1,9 +1,9 @@
 {
   "name": "@cos-ui-apps/simple-configurator",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@cos-ui/machines": "0.0.1"
+    "@cos-ui/machines": "1.0.1"
   },
   "peerDependencies": {
     "@patternfly/react-core": "^4.87.2",

@@ -1,6 +1,6 @@
 {
   "name": "@cos-ui/json-schema-configurator",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mono/mono.git",

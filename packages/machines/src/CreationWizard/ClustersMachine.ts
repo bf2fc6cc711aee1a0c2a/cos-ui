@@ -94,7 +94,7 @@ const clustersMachineModel = createModel(
       }),
       deselectCluster: () => ({}),
       confirm: () => ({}),
-      ...getPaginatedApiMachineEvents<KafkaRequest, {}>(),
+      ...getPaginatedApiMachineEvents<KafkaRequest, {}, KafkaRequest>(),
     },
   }
 );
@@ -114,8 +114,9 @@ export const clustersMachine = createMachine<typeof clustersMachineModel>(
             invoke: {
               id: PAGINATED_MACHINE_ID,
               src: context =>
-                makePaginatedApiMachine<KafkaRequest, {}>(
-                  fetchClusters(context.authToken, context.basePath)
+                makePaginatedApiMachine<KafkaRequest, {}, KafkaRequest>(
+                  fetchClusters(context.authToken, context.basePath),
+                  i => i
                 ),
               autoForward: true,
             },
@@ -230,10 +231,11 @@ export const useClustersMachineIsReady = (actor: ClustersMachineActorRef) => {
 };
 
 export const useClustersMachine = (actor: ClustersMachineActorRef) => {
-  const api = usePagination<ConnectorCluster, {}>(
+  const api = usePagination<ConnectorCluster, {}, ConnectorCluster>(
     actor.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType<
       ConnectorCluster,
-      {}
+      {},
+      ConnectorCluster
     >
   );
   const { selectedId } = useSelector(

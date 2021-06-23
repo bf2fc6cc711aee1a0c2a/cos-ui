@@ -1,11 +1,11 @@
 {
   "name": "@cos-ui-apps/cos-ui",
   "federatedModuleName": "cos",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@cos-ui/api": "0.0.1",
-    "@cos-ui/app": "0.0.1"
+    "@cos-ui/api": "0.0.3",
+    "@cos-ui/app": "^1.0.1"
   },
   "peerDependencies": {
     "@patternfly/react-core": "^4.87.2",
