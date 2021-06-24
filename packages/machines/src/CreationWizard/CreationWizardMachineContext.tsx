@@ -24,8 +24,8 @@ const CreationWizardMachineService = createContext<CreationWizardMachineInterpre
 );
 
 type CreationWizardMachineProviderPropsType = {
-  authToken?: Promise<string>;
-  basePath?: string;
+  accessToken: () => Promise<string>;
+  basePath: string;
   fetchConfigurator: (
     connector: ConnectorType
   ) => Promise<ConnectorConfiguratorResponse>;
@@ -34,7 +34,7 @@ type CreationWizardMachineProviderPropsType = {
 
 export const CreationWizardMachineProvider: FunctionComponent<CreationWizardMachineProviderPropsType> = ({
   children,
-  authToken,
+  accessToken,
   basePath,
   fetchConfigurator,
   onSave,
@@ -53,7 +53,7 @@ export const CreationWizardMachineProvider: FunctionComponent<CreationWizardMach
     {
       devTools: true,
       context: {
-        authToken,
+        accessToken,
         basePath,
       },
       services: {

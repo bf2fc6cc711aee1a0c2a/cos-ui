@@ -1810,6 +1810,13 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@bf2/ui-shared@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@bf2/ui-shared/-/ui-shared-0.3.0.tgz#9a4962fd0a998852d06297d5b8d4459f78be83b1"
+  integrity sha512-HbC4NE/djQRL8d19ypLfobBy6FU1W9Lwu6shrwNOTgaPrezTWCAtsS/3Jhu8aWj6aJHDP6yQyKaBsI+uZ7SVzA==
+  dependencies:
+    react "17.0.1"
+
 "@changesets/apply-release-plan@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@changesets/apply-release-plan/-/apply-release-plan-4.0.0.tgz#e78efb56a4e459a8dab814ba43045f2ace0f27c9"
@@ -14429,6 +14436,14 @@ react-router@5.2.0:
     react-is "^16.6.0"
     tiny-invariant "^1.0.2"
     tiny-warning "^1.0.0"
+
+react@17.0.1:
+  version "17.0.1"
+  resolved "https://registry.yarnpkg.com/react/-/react-17.0.1.tgz#6e0600416bd57574e3f86d92edba3d9008726127"
+  integrity sha512-lG9c9UuMHdcAexXtigOZLX8exLWkW0Ku29qPRU8uhF2R9BN96dLCt0psvzPLlHc5OWkgymP3qwTRgbnw5BKx3w==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
 
 react@^16.13.1:
   version "16.13.1"

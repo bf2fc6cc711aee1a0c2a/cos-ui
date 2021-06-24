@@ -2,11 +2,7 @@
 /* eslint-disable no-undef */
 import { ComponentType, LazyExoticComponent } from 'react';
 import { ConnectorType } from '@cos-ui/api';
-import {
-  ConnectorConfiguratorResponse,
-  makeFetchMachine,
-} from '@cos-ui/machines';
-import { interpret } from 'xstate';
+import { ConnectorConfiguratorResponse } from '@cos-ui/machines';
 
 type FederatedModuleConfigurationType = {
   remoteEntry: string;
@@ -24,32 +20,30 @@ type FederatedConfigurationConfigModule = {
 
 export const fetchConfigurator = async (
   connector: ConnectorType,
-  configUrl: string
+  config: Record<string, unknown>
 ): Promise<ConnectorConfiguratorResponse> => {
   const defaultConfig = Promise.resolve<ConnectorConfiguratorResponse>({
     steps: false,
     Configurator: false,
   });
-  return new Promise(resolve => {
-    interpret(
-      makeFetchMachine<FederatedModuleConfigurationType>().withConfig({
-        services: {
-          fetchService: () =>
-            fetchFederatedModulesConfiguration(configUrl, connector),
-        },
-      })
-    )
-      .onDone(async event => {
-        try {
-          await injectFederatedModuleScript(event.data.remoteEntry as string);
-          resolve(
-            loadFederatedConfigurator(event.data.scope, event.data.module)
-          );
-        } catch (e) {
-          resolve(defaultConfig);
-        }
-      })
-      .start();
+  return new Promise(async resolve => {
+    try {
+      const federatedConfigurator = await maybeGetFederatedConfiguratorForConnector(
+        config,
+        connector
+      );
+      await injectFederatedModuleScript(
+        federatedConfigurator.remoteEntry as string
+      );
+      resolve(
+        loadFederatedConfigurator(
+          federatedConfigurator.scope,
+          federatedConfigurator.module
+        )
+      );
+    } catch (e) {
+      resolve(defaultConfig);
+    }
   });
 };
 
@@ -62,11 +56,10 @@ const isValidConf = (maybeConf?: any) =>
   maybeConf.module &&
   typeof maybeConf.module === 'string';
 
-const fetchFederatedModulesConfiguration = async (
-  configUrl: string,
+const maybeGetFederatedConfiguratorForConnector = async (
+  config: Record<string, unknown>,
   connector: ConnectorType
 ): Promise<FederatedModuleConfigurationType> => {
-  const config = await (await fetch(configUrl)).json();
   console.log('Fetched federated configurator remotes configuration', config);
   const maybeConfiguration = config[connector.id!];
   console.log(
@@ -77,20 +70,12 @@ const fetchFederatedModulesConfiguration = async (
     console.log("Couldn't find any configuration for the requested connector");
     return Promise.reject();
   }
-  if (isValidConf(maybeConfiguration[connector.version])) {
-    const conf = maybeConfiguration[connector.version];
-    console.log(
-      `Found a configuration for connector version "${connector.version}"`,
-      conf
-    );
-    return conf;
-  }
   if (isValidConf(maybeConfiguration)) {
     console.log(
       'Found a generic configuration for the connector',
       maybeConfiguration
     );
-    return maybeConfiguration;
+    return maybeConfiguration as FederatedModuleConfigurationType;
   }
   console.log(
     "Couldn't find a valid configuration for the requested connector"

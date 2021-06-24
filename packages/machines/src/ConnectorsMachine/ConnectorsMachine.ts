@@ -26,8 +26,8 @@ import {
 export const PAGINATED_MACHINE_ID = 'paginatedApi';
 
 type Context = {
-  accessToken?: Promise<string>;
-  basePath?: string;
+  accessToken: () => Promise<string>;
+  basePath: string;
   response?: PaginatedApiResponse<ConnectorMachineActorRef>;
   error?: Object;
 };
@@ -38,8 +38,8 @@ const connectorsMachineSchema = {
 
 const connectorsMachineModel = createModel(
   {
-    accessToken: undefined,
-    basePath: undefined,
+    accessToken: () => Promise.resolve(''),
+    basePath: '',
     selectedInstance: undefined,
     error: undefined,
   } as Context,

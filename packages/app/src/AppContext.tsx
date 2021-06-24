@@ -1,8 +1,8 @@
 import React, { createContext, FunctionComponent, useContext } from 'react';
 
 type AppContextType = {
-  authToken?: Promise<string>;
-  basePath?: string;
+  authToken: () => Promise<string>;
+  basePath: string;
 };
 const AppContext = createContext<AppContextType | null>(null);
 
