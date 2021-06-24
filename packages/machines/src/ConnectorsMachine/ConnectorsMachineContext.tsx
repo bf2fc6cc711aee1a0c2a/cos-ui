@@ -14,8 +14,8 @@ const ConnectorsMachineServiceContext = createContext<ConnectorsMachineInterpret
   null
 );
 type ConnectorsMachineProviderPropsType = {
-  accessToken?: Promise<string>;
-  basePath?: string;
+  accessToken: () => Promise<string>;
+  basePath: string;
 };
 
 export const ConnectorsMachineProvider: FunctionComponent<ConnectorsMachineProviderPropsType> = ({

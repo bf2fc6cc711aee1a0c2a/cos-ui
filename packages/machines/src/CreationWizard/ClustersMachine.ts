@@ -32,8 +32,8 @@ import {
 const PAGINATED_MACHINE_ID = 'paginatedApi';
 
 const fetchClusters = (
-  accessToken?: Promise<string>,
-  basePath?: string
+  accessToken: () => Promise<string>,
+  basePath: string
 ): ApiCallback<ConnectorCluster, {}> => {
   const apisService = new ConnectorClustersApi(
     new Configuration({
@@ -69,8 +69,8 @@ const fetchClusters = (
 };
 
 type Context = {
-  authToken?: Promise<string>;
-  basePath?: string;
+  accessToken: () => Promise<string>;
+  basePath: string;
   response?: ApiSuccessResponse<ConnectorCluster>;
   selectedCluster?: ConnectorCluster;
   error?: Object;
@@ -82,8 +82,8 @@ const clustersMachineSchema = {
 
 const clustersMachineModel = createModel(
   {
-    authToken: undefined,
-    basePath: undefined,
+    accessToken: () => Promise.resolve(''),
+    basePath: '',
     clusters: undefined,
     selectedCluster: undefined,
     error: undefined,
@@ -116,7 +116,7 @@ export const clustersMachine = createMachine<typeof clustersMachineModel>(
               id: PAGINATED_MACHINE_ID,
               src: context =>
                 makePaginatedApiMachine<KafkaRequest, {}, KafkaRequest>(
-                  fetchClusters(context.authToken, context.basePath),
+                  fetchClusters(context.accessToken, context.basePath),
                   i => i
                 ),
             },

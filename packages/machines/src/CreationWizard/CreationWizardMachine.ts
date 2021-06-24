@@ -18,8 +18,8 @@ import { createModel } from 'xstate/lib/model';
 import { reviewMachine } from './ReviewMachine';
 
 type Context = {
-  authToken?: Promise<string>;
-  basePath?: string;
+  accessToken: () => Promise<string>;
+  basePath: string;
   selectedKafkaInstance?: KafkaRequest;
   selectedCluster?: ConnectorCluster;
   selectedConnector?: ConnectorType;
@@ -66,7 +66,7 @@ export const creationWizardMachine = createMachine<
           id: 'selectConnectorRef',
           src: connectorTypesMachine,
           data: context => ({
-            authToken: context.authToken,
+            accessToken: context.accessToken,
             basePath: context.basePath,
             selectedConnector: context.selectedConnector,
           }),
@@ -105,7 +105,7 @@ export const creationWizardMachine = createMachine<
           id: 'selectKafkaInstanceRef',
           src: kafkasMachine,
           data: context => ({
-            authToken: context.authToken,
+            accessToken: context.accessToken,
             basePath: context.basePath,
             selectedInstance: context.selectedKafkaInstance,
             request: {
@@ -147,7 +147,7 @@ export const creationWizardMachine = createMachine<
           id: 'selectClusterRef',
           src: clustersMachine,
           data: context => ({
-            authToken: context.authToken,
+            accessToken: context.accessToken,
             basePath: context.basePath,
             selectedCluster: context.selectedCluster,
           }),
@@ -263,7 +263,7 @@ export const creationWizardMachine = createMachine<
           id: 'reviewRef',
           src: reviewMachine,
           data: context => ({
-            accessToken: context.authToken,
+            accessToken: context.accessToken,
             basePath: context.basePath,
             kafka: context.selectedKafkaInstance,
             cluster: context.selectedCluster,

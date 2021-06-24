@@ -24,8 +24,8 @@ import {
 import { createModel } from 'xstate/lib/model';
 
 type SaveConnectorProps = {
-  accessToken?: Promise<string>;
-  basePath?: string;
+  accessToken: () => Promise<string>;
+  basePath: string;
 
   kafka: KafkaRequest;
   cluster: ConnectorCluster;
@@ -98,8 +98,8 @@ type ServiceAccount = {
 };
 
 type Context = {
-  accessToken?: Promise<string>;
-  basePath?: string;
+  accessToken: () => Promise<string>;
+  basePath: string;
 
   kafka: KafkaRequest;
   cluster: ConnectorCluster;

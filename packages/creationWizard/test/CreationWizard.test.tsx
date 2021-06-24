@@ -224,7 +224,7 @@ describe('@cos-ui/creationWizard', () => {
 
                 render(
                   <CreationWizardMachineProvider
-                    authToken={Promise.resolve('dummy')}
+                    accessToken={() => Promise.resolve('dummy')}
                     basePath={'/dummy'}
                     fetchConfigurator={() =>
                       Promise.resolve({ steps: false, Configurator: false })
@@ -277,7 +277,7 @@ describe('@cos-ui/creationWizard', () => {
 
                 render(
                   <CreationWizardMachineProvider
-                    authToken={Promise.resolve('dummy')}
+                    accessToken={() => Promise.resolve('dummy')}
                     basePath={'/dummy'}
                     fetchConfigurator={() =>
                       Promise.resolve({ steps: false, Configurator: false })
@@ -327,7 +327,7 @@ describe('@cos-ui/creationWizard', () => {
 
                 render(
                   <CreationWizardMachineProvider
-                    authToken={Promise.resolve('dummy')}
+                    accessToken={() => Promise.resolve('dummy')}
                     basePath={'/dummy'}
                     fetchConfigurator={() =>
                       Promise.resolve({ steps: false, Configurator: false })
@@ -381,7 +381,7 @@ describe('@cos-ui/creationWizard', () => {
 
                 render(
                   <CreationWizardMachineProvider
-                    authToken={Promise.resolve('dummy')}
+                    accessToken={() => Promise.resolve('dummy')}
                     basePath={'/dummy'}
                     fetchConfigurator={() =>
                       Promise.resolve({ steps: false, Configurator: false })

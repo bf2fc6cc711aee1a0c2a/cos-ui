@@ -4,8 +4,8 @@ import { Configuration, Connector, ConnectorsApi } from '@cos-ui/api';
 import { ApiCallback } from '../shared';
 
 type ApiProps = {
-  accessToken?: Promise<string>;
-  basePath?: string;
+  accessToken: () => Promise<string>;
+  basePath: string;
   connector: Connector;
 };
 export const startConnector = ({
@@ -145,8 +145,8 @@ export const deleteConnector = ({
 };
 
 export const fetchConnectors = (
-  accessToken?: Promise<string>,
-  basePath?: string
+  accessToken: () => Promise<string>,
+  basePath: string
 ): ApiCallback<Connector, {}> => {
   const apisService = new ConnectorsApi(
     new Configuration({

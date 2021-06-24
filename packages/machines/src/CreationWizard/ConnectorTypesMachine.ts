@@ -17,8 +17,8 @@ import { escalate } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
 const fetchConnectorTypes = (
-  accessToken?: Promise<string>,
-  basePath?: string
+  accessToken: () => Promise<string>,
+  basePath: string
 ): Promise<AxiosResponse<ConnectorTypeList>> => {
   const apisService = new ConnectorTypesApi(
     new Configuration({
@@ -30,8 +30,8 @@ const fetchConnectorTypes = (
 };
 
 type Context = {
-  authToken?: Promise<string>;
-  basePath?: string;
+  accessToken: () => Promise<string>;
+  basePath: string;
   connectors?: ConnectorTypeList;
   selectedConnector?: ConnectorType;
   error?: string;
@@ -43,8 +43,8 @@ const connectorTypesMachineSchema = {
 
 const connectorTypesMachineModel = createModel(
   {
-    authToken: undefined,
-    basePath: undefined,
+    accessToken: () => Promise.resolve(''),
+    basePath: '',
     connectors: undefined,
     selectedConnector: undefined,
     error: undefined,
@@ -72,7 +72,7 @@ export const connectorTypesMachine = createMachine<
         invoke: {
           id: 'fetchConnectors',
           src: context =>
-            fetchConnectorTypes(context.authToken, context.basePath),
+            fetchConnectorTypes(context.accessToken, context.basePath),
           onDone: {
             target: 'verify',
             actions: assign<

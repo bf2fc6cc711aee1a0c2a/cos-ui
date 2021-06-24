@@ -18,6 +18,7 @@ const singletonDeps = [
   'react-dom',
   'react-router-dom',
   'react-redux',
+  '@bf2/ui-config',
   '@patternfly/react-core',
   '@patternfly/react-charts',
   '@patternfly/react-table',

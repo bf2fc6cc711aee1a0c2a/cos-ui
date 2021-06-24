@@ -1,14 +1,17 @@
+import React, { FunctionComponent } from 'react';
+import { Route, Switch, useHistory } from 'react-router-dom';
+
+import { useConfig } from '@bf2/ui-shared';
 import { CreationWizard } from '@cos-ui/creation-wizard';
 import { CreationWizardMachineProvider } from '@cos-ui/machines';
 import { PageSection } from '@patternfly/react-core';
-import React, { FunctionComponent } from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
+
 import { AppContextProvider } from './AppContext';
 import { ConnectedConnectorsPage } from './ConnectorsPage';
 import { fetchConfigurator } from './FederatedConfigurator';
 
 type CosUiRoutesProps = {
-  getToken: Promise<string>;
+  getToken: () => Promise<string>;
   apiBasepath: string;
 };
 
@@ -16,6 +19,7 @@ export const CosUiRoutes: FunctionComponent<CosUiRoutesProps> = ({
   getToken,
   apiBasepath,
 }) => {
+  const { cos } = useConfig();
   const history = useHistory();
   const goToConnectorsList = () => history.push('/');
   return (
@@ -27,14 +31,10 @@ export const CosUiRoutes: FunctionComponent<CosUiRoutesProps> = ({
         <Route path={'/create-connector'}>
           <PageSection padding={{ default: 'noPadding' }}>
             <CreationWizardMachineProvider
-              authToken={getToken}
+              accessToken={getToken}
               basePath={apiBasepath}
               fetchConfigurator={connector =>
-                fetchConfigurator(
-                  connector,
-                  process.env.FEDERATED_CONFIGURATORS_CONFIG_URL ||
-                    'federated-configurators.json'
-                )
+                fetchConfigurator(connector, cos.configurators)
               }
               onSave={goToConnectorsList}
             >

@@ -35,7 +35,7 @@ export const MachineProvider: React.FunctionComponent<MachineProviderPropsType> 
   const service = useInterpret(creationWizardMachine, {
     devTools: true,
     context: {
-      authToken: Promise.resolve(authToken),
+      accessToken: () => Promise.resolve(authToken),
       basePath,
     },
     services: {

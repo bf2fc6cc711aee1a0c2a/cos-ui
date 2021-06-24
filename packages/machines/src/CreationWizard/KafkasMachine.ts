@@ -31,8 +31,8 @@ type KafkasQuery = {
 };
 
 const fetchKafkaInstances = (
-  accessToken?: Promise<string>,
-  basePath?: string
+  accessToken: () => Promise<string>,
+  basePath: string
 ): ApiCallback<KafkaRequest, KafkasQuery> => {
   const apisService = new DefaultApi(
     new Configuration({
@@ -82,8 +82,8 @@ const fetchKafkaInstances = (
 };
 
 type Context = {
-  authToken?: Promise<string>;
-  basePath?: string;
+  accessToken: () => Promise<string>;
+  basePath: string;
   response?: PaginatedApiResponse<KafkaRequest>;
   selectedInstance?: KafkaRequest;
   error?: Object;
@@ -95,8 +95,8 @@ const kafkasMachineSchema = {
 
 const kafkasMachineModel = createModel(
   {
-    authToken: undefined,
-    basePath: undefined,
+    accessToken: () => Promise.resolve(''),
+    basePath: '',
     instances: undefined,
     selectedInstance: undefined,
     error: undefined,
@@ -137,7 +137,7 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
                   KafkasQuery,
                   KafkaRequest
                 >(
-                  fetchKafkaInstances(context.authToken, context.basePath),
+                  fetchKafkaInstances(context.accessToken, context.basePath),
                   i => i
                 ),
             },

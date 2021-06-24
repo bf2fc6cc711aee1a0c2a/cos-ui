@@ -9,8 +9,8 @@ import { useSelector } from '@xstate/react';
 import { deleteConnector, startConnector, stopConnector } from './actors';
 
 type Context = {
-  accessToken?: Promise<string>;
-  basePath?: string;
+  accessToken: () => Promise<string>;
+  basePath: string;
   connector: Connector;
 };
 
@@ -20,8 +20,8 @@ const connectorMachineSchema = {
 
 const connectorMachineModel = createModel(
   {
-    accessToken: undefined,
-    basePath: undefined,
+    accessToken: () => Promise.resolve(''),
+    basePath: '',
     connector: {},
   } as Context,
   {
