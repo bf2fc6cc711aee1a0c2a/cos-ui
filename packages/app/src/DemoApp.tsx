@@ -34,19 +34,19 @@ export const DemoApp: FunctionComponent = () => {
       configurators: {
         'debezium-mongodb-1.5.0.Final': {
           remoteEntry:
-            'http://localhost:8888/dbz-connector-configurator.remoteEntry.js',
+            'https://dbz-ui.apps.kammellol.rhmw-integrations.net/dbz-connector-configurator.remoteEntry.js',
           scope: 'debezium_ui',
           module: './config',
         },
         'debezium-mysql-1.5.0.Final': {
           remoteEntry:
-            'http://localhost:8888/dbz-connector-configurator.remoteEntry.js',
+            'https://dbz-ui.apps.kammellol.rhmw-integrations.net/dbz-connector-configurator.remoteEntry.js',
           scope: 'debezium_ui',
           module: './config',
         },
         'debezium-postgres-1.5.0.Final': {
           remoteEntry:
-            'http://localhost:8888/dbz-connector-configurator.remoteEntry.js',
+            'https://dbz-ui.apps.kammellol.rhmw-integrations.net/dbz-connector-configurator.remoteEntry.js',
           scope: 'debezium_ui',
           module: './config',
         },
