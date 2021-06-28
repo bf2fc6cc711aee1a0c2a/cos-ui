@@ -354,6 +354,7 @@ const KafkaToolbar: FunctionComponent = () => {
           deleteChip={onSelectStatus}
           deleteChipGroup={onDeleteStatusGroup}
           categoryName="Status"
+          showToolbarItem={selectedCategory === 'Status'}
         >
           <Select
             variant={'checkbox'}
@@ -519,6 +520,7 @@ type KeyValueOptions = {
 
 const filterCategoryOptions: KeyValueOptions[] = [
   { value: 'name', label: 'Name' },
+  { value: 'status', label: 'Status' },
   { value: 'cloudprovider', label: 'Cloud Provider' },
   { value: 'region', label: 'Region' },
   { value: 'owner', label: 'Owner' },
