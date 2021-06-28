@@ -33,10 +33,13 @@ import {
   ToolbarChipGroup,
   ToolbarContent,
   ToolbarFilter,
-  // ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
+  Dropdown,
+  DropdownToggle,
+  DropdownItem,
+  DropdownPosition,
 } from '@patternfly/react-core';
 import {
   // ExclamationCircleIcon,
@@ -49,6 +52,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  SyntheticEvent,
 } from 'react';
 import { useHistory } from 'react-router';
 
@@ -165,13 +169,25 @@ const KafkasGallery: FunctionComponent = () => {
 const KafkaToolbar: FunctionComponent = () => {
   const actor = useCreationWizardMachineKafkasActor();
   const { request, response, onQuery } = useKafkasMachine(actor);
-  const { name = '', statuses = [] } = request.query || {};
+  const [statusesToggled, setStatusesToggled] = useState(false);
+  const [cloudProvidersToggled, setCloudProvidersToggled] = useState(false);
+  const [regionsToggled, setRegionsToggled] = useState(false);
+  const [categoryToggled, setCategoryToggled] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('Name');
+  const {
+    name = '',
+    owner = '',
+    statuses = [],
+    cloudProviders = [],
+    regions = [],
+  } = request.query || {};
   const clearAllFilters = useCallback(
     () => onQuery({ page: 1, size: request.size }),
     [onQuery, request.size]
   );
 
-  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
+  const ownerInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnQuery = useDebounce(onQuery, 1000);
   const defaultPerPageOptions = [
     {
@@ -202,6 +218,34 @@ const KafkaToolbar: FunctionComponent = () => {
       },
     });
 
+  const onSelectCloudProvider = (
+    _category: string | ToolbarChipGroup,
+    cloudProvider: string | ToolbarChip
+  ) =>
+    onQuery({
+      ...request,
+      query: {
+        ...(request.query || {}),
+        cloudProviders: cloudProviders?.includes(cloudProvider as string)
+          ? cloudProviders.filter(s => s !== cloudProvider)
+          : [...(cloudProviders || []), cloudProvider as string],
+      },
+    });
+
+  const onSelectRegions = (
+    _category: string | ToolbarChipGroup,
+    region: string | ToolbarChip
+  ) =>
+    onQuery({
+      ...request,
+      query: {
+        ...(request.query || {}),
+        regions: regions?.includes(region as string)
+          ? regions.filter(s => s !== region)
+          : [...(regions || []), region as string],
+      },
+    });
+
   const onDeleteStatusGroup = () =>
     onQuery({
       ...request,
@@ -210,55 +254,101 @@ const KafkaToolbar: FunctionComponent = () => {
         statuses: undefined,
       },
     });
-  const [statusesToggled, setStatusesToggled] = useState(false);
+  const onDeleteCloudProviderGroup = () =>
+    onQuery({
+      ...request,
+      query: {
+        ...(request.query || {}),
+        cloudProviders: undefined,
+      },
+    });
+  const onDeleteRegionGroup = () =>
+    onQuery({
+      ...request,
+      query: {
+        ...(request.query || {}),
+        regions: undefined,
+      },
+    });
   const onToggleStatuses = useCallback(
     () => setStatusesToggled(prev => !prev),
     []
   );
-
+  const onToggleCloudProviders = useCallback(
+    () => setCloudProvidersToggled(prev => !prev),
+    []
+  );
+  const onToggleRegions = useCallback(
+    () => setRegionsToggled(prev => !prev),
+    []
+  );
+  const onFilterCategoryToggle = useCallback(
+    () => setCategoryToggled(prev => !prev),
+    []
+  );
+  const selectCategory = useCallback(
+    (event?: SyntheticEvent<HTMLDivElement, Event> | undefined) => {
+      const eventTarget = event?.target as HTMLElement;
+      const selectedCategory = eventTarget.innerText;
+      setSelectedCategory(selectedCategory);
+      setCategoryToggled(prev => !prev);
+    },
+    []
+  );
+  const filterCategoryMenuItems = filterCategoryOptions.map(
+    ({ value, label }) => <DropdownItem key={value}>{label}</DropdownItem>
+  );
   const statusMenuItems = statusOptions.map(({ value, label }) => (
     <SelectOption key={value} value={value}>
       {label}
     </SelectOption>
   ));
-
+  const cloudProviderMenuItems = cloudProviderOptions.map(
+    ({ value, label }) => (
+      <SelectOption key={value} value={value}>
+        {label}
+      </SelectOption>
+    )
+  );
+  const regionMenuItems = regionOptions.map(({ value, label }) => (
+    <SelectOption key={value} value={value}>
+      {label}
+    </SelectOption>
+  ));
   // ensure the search input value reflects what's specified in the request object
   useEffect(() => {
-    if (searchInputRef.current) {
-      searchInputRef.current.value = name;
+    if (nameInputRef.current) {
+      nameInputRef.current.value = name;
+    } else if (ownerInputRef.current) {
+      ownerInputRef.current.value = owner;
     }
-  }, [searchInputRef, name]);
+  }, [nameInputRef, ownerInputRef, name, owner]);
+
+  const filterCategoryDropdown = (
+    <ToolbarItem>
+      <Dropdown
+        onSelect={event => selectCategory(event)}
+        position={DropdownPosition.left}
+        toggle={
+          <DropdownToggle
+            onToggle={onFilterCategoryToggle}
+            style={{ width: '100%' }}
+          >
+            <FilterIcon size="sm" /> {selectedCategory}
+          </DropdownToggle>
+        }
+        isOpen={categoryToggled}
+        dropdownItems={filterCategoryMenuItems}
+        style={{ width: '100%' }}
+      ></Dropdown>
+    </ToolbarItem>
+  );
 
   const toggleGroupItems = (
     <>
-      <ToolbarItem>
-        <InputGroup>
-          <TextInput
-            name="textInput2"
-            id="textInput2"
-            type="search"
-            aria-label="search input example"
-            onChange={value =>
-              debouncedOnQuery({
-                size: request.size,
-                page: 1,
-                query: {
-                  name: value,
-                  statuses,
-                },
-              })
-            }
-            ref={searchInputRef}
-          />
-          <Button
-            variant={'control'}
-            aria-label="search button for search input"
-          >
-            <SearchIcon />
-          </Button>
-        </InputGroup>
-      </ToolbarItem>
       <ToolbarGroup variant="filter-group">
+        {filterCategoryDropdown}
+
         <ToolbarFilter
           chips={statuses}
           deleteChip={onSelectStatus}
@@ -277,6 +367,101 @@ const KafkaToolbar: FunctionComponent = () => {
             {statusMenuItems}
           </Select>
         </ToolbarFilter>
+
+        <ToolbarFilter
+          chips={cloudProviders}
+          deleteChip={onSelectCloudProvider}
+          deleteChipGroup={onDeleteCloudProviderGroup}
+          categoryName="Cloud Provider"
+          showToolbarItem={selectedCategory === 'Cloud Provider'}
+        >
+          <Select
+            variant={'checkbox'}
+            aria-label="Cloud Provider"
+            onToggle={onToggleCloudProviders}
+            onSelect={(_, value) => onSelectCloudProvider('', value as string)}
+            selections={cloudProviders}
+            isOpen={cloudProvidersToggled}
+            placeholderText="Cloud Provider"
+          >
+            {cloudProviderMenuItems}
+          </Select>
+        </ToolbarFilter>
+        <ToolbarFilter
+          chips={regions}
+          deleteChip={onSelectRegions}
+          deleteChipGroup={onDeleteRegionGroup}
+          categoryName="Region"
+          showToolbarItem={selectedCategory === 'Region'}
+        >
+          <Select
+            variant={'checkbox'}
+            aria-label="Region"
+            onToggle={onToggleRegions}
+            onSelect={(_, value) => onSelectRegions('', value as string)}
+            selections={regions}
+            isOpen={regionsToggled}
+            placeholderText="Region"
+          >
+            {regionMenuItems}
+          </Select>
+        </ToolbarFilter>
+        {selectedCategory === 'Name' && (
+          <InputGroup>
+            <TextInput
+              name="Name"
+              id="Name"
+              type="search"
+              placeholder="Search by name"
+              aria-label="Search by name"
+              onChange={value =>
+                debouncedOnQuery({
+                  size: request.size,
+                  page: 1,
+                  query: {
+                    name: value,
+                    statuses,
+                  },
+                })
+              }
+              ref={nameInputRef}
+            />
+            <Button
+              variant={'control'}
+              aria-label="search button for name input"
+            >
+              <SearchIcon />
+            </Button>
+          </InputGroup>
+        )}
+        {selectedCategory === 'Owner' && (
+          <InputGroup>
+            <TextInput
+              name="Owner"
+              id="Owner"
+              type="search"
+              placeholder="Search by owner"
+              aria-label="Search by owner"
+              onChange={value =>
+                debouncedOnQuery({
+                  size: request.size,
+                  page: 1,
+                  query: {
+                    name: value,
+                    statuses,
+                  },
+                })
+              }
+              ref={ownerInputRef}
+            />
+            <Button
+              variant={'control'}
+              aria-label="search button for owner input"
+            >
+              <SearchIcon />
+            </Button>
+          </InputGroup>
+        )}
       </ToolbarGroup>
     </>
   );
@@ -306,7 +491,6 @@ const KafkaToolbar: FunctionComponent = () => {
       </ToolbarItem>
     </>
   );
-
   return (
     <Toolbar
       id="toolbar-group-types"
@@ -333,16 +517,17 @@ type KeyValueOptions = {
 //   DELETED = 'deleted',
 // }
 
-// const cloudProviderOptions: KeyValueOptions[] = [
-//   { value: 'aws', label: 'Amazon Web Services' },
-//   // Only aws is supported for now
-//   // { value: 'azure', label: 'Microsoft Azure' },
-//   // { value: 'baremetal', label: 'Bare Metal' },
-//   // { value: 'gcp', label: 'Google Cloud Platform' },
-//   // { value: 'libvirt', label: 'Libvirt' },
-//   // { value: 'openstack', label: 'OpenStack' },
-//   // { value: 'vsphere', label: 'VSphere' },
-// ];
+const filterCategoryOptions: KeyValueOptions[] = [
+  { value: 'name', label: 'Name' },
+  { value: 'cloudprovider', label: 'Cloud Provider' },
+  { value: 'region', label: 'Region' },
+  { value: 'owner', label: 'Owner' },
+];
+
+const cloudProviderOptions: KeyValueOptions[] = [
+  // Only aws is supported for now
+  { value: 'aws', label: 'Amazon Web Services' },
+];
 
 const statusOptions: KeyValueOptions[] = [
   { value: 'ready', label: 'Ready' },
@@ -352,6 +537,10 @@ const statusOptions: KeyValueOptions[] = [
   { value: 'preparing', label: 'Creation in progress' },
   { value: 'deprovision', label: 'Deletion in progress' },
   { value: 'deleted', label: 'Deletion in progress' },
+];
+const regionOptions: KeyValueOptions[] = [
+  // Only us-east-1 is supported for now
+  { value: 'us-east-1', label: 'us-east-1' },
 ];
 
 // const getCloudProviderDisplayName = (value: string) => {
