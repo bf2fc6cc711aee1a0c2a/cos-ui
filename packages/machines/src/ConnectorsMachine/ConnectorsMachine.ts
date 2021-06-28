@@ -80,7 +80,8 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>({
                       connector,
                     }),
                     `connector-${connector.id}`
-                  )
+                  ),
+                true
               ),
           },
           states: {

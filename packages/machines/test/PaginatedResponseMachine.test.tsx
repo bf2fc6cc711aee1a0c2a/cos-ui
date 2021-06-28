@@ -4,6 +4,7 @@ import {
   makePaginatedApiMachine,
   ApiCallback,
   getPaginatedApiMachineEvents,
+  getPaginatedApiMachineEventsHandlers,
 } from '../src';
 
 describe('@cos-ui/machines', () => {
@@ -94,11 +95,11 @@ describe('@cos-ui/machines', () => {
           invoke: {
             id: ID,
             src: paginatedApiMachine,
-            autoForward: true,
           },
         },
       },
       on: {
+        ...getPaginatedApiMachineEventsHandlers(ID),
         loading: { actions: onLoadingSpy },
         success: { actions: onSuccessSpy },
         error: { actions: onErrorSpy },
