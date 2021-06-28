@@ -39,6 +39,7 @@ export type PaginatedApiResponse<DataType> = {
 export type PaginatedMachineContext<RawDataType, QueryType, DataType> = {
   request: PaginatedApiRequest<QueryType>;
   response?: PaginatedApiResponse<DataType>;
+  pollingEnabled: boolean;
   actor?: SpawnedActorRef<any>;
   dataTransformer: (response: RawDataType) => DataType;
 };
@@ -77,7 +78,8 @@ export const getPaginatedApiMachineEventsHandlers = (to: string) => ({
 
 export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
   service: ApiCallback<RawDataType, QueryType>,
-  dataTransformer: (response: RawDataType) => DataType
+  dataTransformer: (response: RawDataType) => DataType,
+  pollingEnabled: boolean = false
 ) {
   const paginatedApiMachineModel = createModel(
     {
@@ -86,6 +88,7 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
         size: 10,
       },
       response: undefined,
+      pollingEnabled,
       dataTransformer,
     } as PaginatedMachineContext<RawDataType, QueryType, DataType>,
     {
@@ -148,6 +151,12 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
               actions: 'fetch',
             },
           },
+          after: {
+            INTERVAL: {
+              cond: 'isPollingEnabled',
+              target: 'poll',
+            },
+          },
         },
         queryResults: {
           tags: 'queryResults',
@@ -168,7 +177,12 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
             },
             refresh: {
               target: 'loading',
-              actions: 'fetch',
+            },
+          },
+          after: {
+            INTERVAL: {
+              cond: 'isPollingEnabled',
+              target: 'poll',
             },
           },
         },
@@ -181,7 +195,12 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
             },
             refresh: {
               target: 'loading',
-              actions: 'fetch',
+            },
+          },
+          after: {
+            INTERVAL: {
+              cond: 'isPollingEnabled',
+              target: 'poll',
             },
           },
         },
@@ -204,7 +223,12 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
             },
             refresh: {
               target: 'loading',
-              actions: 'fetch',
+            },
+          },
+          after: {
+            INTERVAL: {
+              cond: 'isPollingEnabled',
+              target: 'poll',
             },
           },
         },
@@ -217,12 +241,17 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
             },
             refresh: {
               target: 'loading',
-              actions: 'fetch',
             },
             prevPage: {
               target: 'loading',
               actions: 'decreasePage',
               cond: 'isNotFirstPage',
+            },
+          },
+          after: {
+            INTERVAL: {
+              cond: 'isPollingEnabled',
+              target: 'poll',
             },
           },
         },
@@ -243,6 +272,23 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
             },
           },
         },
+        poll: {
+          entry: 'fetch',
+          on: {
+            query: {
+              target: 'loading',
+              actions: 'query',
+            },
+            setResponse: {
+              target: 'success',
+              actions: 'setResponse',
+            },
+            setError: {
+              target: 'error',
+              actions: 'setError',
+            },
+          },
+        },
       },
       on: {
         '*': {
@@ -251,6 +297,9 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
       },
     },
     {
+      delays: {
+        INTERVAL: 5000,
+      },
       actions: {
         fetch: assign(context => {
           if (context.actor && context.actor.stop) {
@@ -350,6 +399,7 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
           context.request.query !== undefined &&
           context.response !== undefined &&
           context.response?.total === 0,
+        isPollingEnabled: context => context.pollingEnabled,
       },
     }
   );
