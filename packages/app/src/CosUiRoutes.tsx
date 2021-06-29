@@ -1,14 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 
-import { useConfig } from '@bf2/ui-shared';
-import { CreationWizard } from '@cos-ui/creation-wizard';
-import { CreationWizardMachineProvider } from '@cos-ui/machines';
-import { PageSection } from '@patternfly/react-core';
-
 import { AppContextProvider } from './AppContext';
-import { ConnectedConnectorsPage } from './ConnectorsPage';
-import { fetchConfigurator } from './FederatedConfigurator';
+import { ConnectedConnectorsPage, CreateConnectorPage } from './pages';
 
 type CosUiRoutesProps = {
   getToken: () => Promise<string>;
@@ -19,28 +13,24 @@ export const CosUiRoutes: FunctionComponent<CosUiRoutesProps> = ({
   getToken,
   apiBasepath,
 }) => {
-  const { cos } = useConfig();
   const history = useHistory();
   const goToConnectorsList = () => history.push('/');
+  const goToCreateConnector = () => history.push('/create-connector');
+  const onConnectorSave = () => {
+    // TODO: success notification
+    goToConnectorsList();
+  };
   return (
-    <AppContextProvider authToken={getToken} basePath={apiBasepath}>
+    <AppContextProvider getToken={getToken} basePath={apiBasepath}>
       <Switch>
         <Route path={'/'} exact>
-          <ConnectedConnectorsPage />
+          <ConnectedConnectorsPage onCreateConnector={goToCreateConnector} />
         </Route>
         <Route path={'/create-connector'}>
-          <PageSection padding={{ default: 'noPadding' }}>
-            <CreationWizardMachineProvider
-              accessToken={getToken}
-              basePath={apiBasepath}
-              fetchConfigurator={connector =>
-                fetchConfigurator(connector, cos.configurators)
-              }
-              onSave={goToConnectorsList}
-            >
-              <CreationWizard onClose={goToConnectorsList} />
-            </CreationWizardMachineProvider>
-          </PageSection>
+          <CreateConnectorPage
+            onSave={onConnectorSave}
+            onClose={goToConnectorsList}
+          />
         </Route>
       </Switch>
     </AppContextProvider>

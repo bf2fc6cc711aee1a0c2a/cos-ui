@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useState } from 'react';
 import {
   Modal,
   Button,
@@ -22,7 +22,7 @@ export interface IDeleteConnectorConfirmDialogProps {
 /**
  * A modal dialog to display confirmation for connector deletion.
  */
-export const DeleteConnectorConfirmDialog: React.FunctionComponent<IDeleteConnectorConfirmDialogProps> = ({
+export const DeleteDialog: React.FunctionComponent<IDeleteConnectorConfirmDialogProps> = ({
   connectorName,
   i18nCancel,
   i18nDelete,
@@ -31,25 +31,19 @@ export const DeleteConnectorConfirmDialog: React.FunctionComponent<IDeleteConnec
   onConfirm,
   showDialog,
 }) => {
-
-  const [nameValue, setNameValue] = React.useState("");
-  const [canDelete, setCanDelete] = React.useState(false);
-
-  // enable delete button if entered name matches
-  useEffect(() => {
-    setCanDelete(nameValue === connectorName);
-  }, [nameValue]);
+  const [nameValue, setNameValue] = useState('');
+  const canDelete = nameValue === connectorName;
 
   const onCancelDelete = () => {
-    setNameValue("");
+    setNameValue('');
     onCancel();
-  }
+  };
 
   const onConfirmDelete = () => {
-    setNameValue("");
+    setNameValue('');
     onConfirm();
-  }
-  
+  };
+
   return (
     <Modal
       variant={ModalVariant.small}
@@ -79,7 +73,7 @@ export const DeleteConnectorConfirmDialog: React.FunctionComponent<IDeleteConnec
         </StackItem>
         <StackItem>
           <Trans i18nKey="deleteTypeNameMessage">
-            Type <strong>{{connectorName}}</strong> to confirm the deletion.
+            Type <strong>{{ connectorName }}</strong> to confirm the deletion.
           </Trans>
         </StackItem>
         <StackItem>

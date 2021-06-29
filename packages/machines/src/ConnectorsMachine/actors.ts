@@ -38,14 +38,14 @@ export const startConnector = ({
       )
       .then(response => {
         callback({
-          type: 'success',
+          type: 'connector.actionSuccess',
           connector: response.data,
         });
       })
       .catch(error => {
         if (!axios.isCancel(error)) {
           callback({
-            type: 'error',
+            type: 'connector.actionError',
             error: error.response.data.reason,
           });
         }
@@ -85,14 +85,14 @@ export const stopConnector = ({
       )
       .then(response => {
         callback({
-          type: 'success',
+          type: 'connector.actionSuccess',
           connector: response.data,
         });
       })
       .catch(error => {
         if (!axios.isCancel(error)) {
           callback({
-            type: 'error',
+            type: 'connector.actionError',
             error: error.response.data.reason,
           });
         }
@@ -122,7 +122,7 @@ export const deleteConnector = ({
       })
       .then(() => {
         callback({
-          type: 'success',
+          type: 'connector.actionSuccess',
           connector: {
             ...connector,
             status: 'deleting',
@@ -133,7 +133,7 @@ export const deleteConnector = ({
       .catch(error => {
         if (!axios.isCancel(error)) {
           callback({
-            type: 'error',
+            type: 'connector.actionError',
             error: error.response.data.reason,
           });
         }

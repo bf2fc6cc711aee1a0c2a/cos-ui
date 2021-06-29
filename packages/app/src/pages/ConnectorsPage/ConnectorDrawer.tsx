@@ -1,4 +1,8 @@
+import './ConnectorDrawer.css';
+
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import {
   Drawer,
   DrawerActions,
@@ -20,25 +24,23 @@ import {
   Title,
   TitleSizes,
 } from '@patternfly/react-core';
-import { useTranslation } from 'react-i18next';
-import { Connector } from '@cos-ui/api';
-import './ConnectorDrawer.css';
+import {
+  useConnectorsMachine,
+  useConnectorsMachineService,
+} from '@cos-ui/machines';
 
 export type ConnectorDrawerProps = {
-  isExpanded: boolean;
-  selectedConnectors: Connector | null;
-  onClose: () => void;
   children: React.ReactNode;
 };
 
 export const ConnectorDrawer: React.FunctionComponent<ConnectorDrawerProps> = ({
   children,
-  isExpanded,
-  selectedConnectors,
-  onClose,
 }: ConnectorDrawerProps) => {
   const { t } = useTranslation();
-
+  const service = useConnectorsMachineService();
+  const { selectedConnector, deselectConnector } = useConnectorsMachine(
+    service
+  );
   const [activeTabKey, setActiveTabKey] = useState<string | number>(0);
 
   const selectActiveKey = (_: React.MouseEvent, eventKey: string | number) => {
@@ -77,11 +79,11 @@ export const ConnectorDrawer: React.FunctionComponent<ConnectorDrawerProps> = ({
               size={TitleSizes['xl']}
               className="connector-drawer__header-title"
             >
-              {selectedConnectors?.metadata?.name}
+              {selectedConnector?.metadata?.name}
             </Title>
           </TextContent>
           <DrawerActions>
-            <DrawerCloseButton onClick={onClose} />
+            <DrawerCloseButton onClick={deselectConnector} />
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody>
@@ -95,17 +97,17 @@ export const ConnectorDrawer: React.FunctionComponent<ConnectorDrawerProps> = ({
                   <TextList component={TextListVariants.dl}>
                     {textListItem(
                       'Bootstrap server',
-                      selectedConnectors?.kafka?.bootstrap_server
+                      selectedConnector?.kafka?.bootstrap_server
                     )}
                     {textListItem(
                       'Connector',
-                      selectedConnectors?.metadata?.name
+                      selectedConnector?.metadata?.name
                     )}
                     {textListItem(
                       'Kafka_instance',
-                      selectedConnectors?.metadata?.kafka_id
+                      selectedConnector?.metadata?.kafka_id
                     )}
-                    {textListItem('Owner', selectedConnectors?.metadata?.owner)}
+                    {textListItem('Owner', selectedConnector?.metadata?.owner)}
                   </TextList>
                 </TextContent>
               </div>
@@ -123,7 +125,7 @@ export const ConnectorDrawer: React.FunctionComponent<ConnectorDrawerProps> = ({
   };
 
   return (
-    <Drawer isExpanded={isExpanded}>
+    <Drawer isExpanded={selectedConnector !== undefined}>
       <DrawerContent panelContent={panelContent()}>{children}</DrawerContent>
     </Drawer>
   );

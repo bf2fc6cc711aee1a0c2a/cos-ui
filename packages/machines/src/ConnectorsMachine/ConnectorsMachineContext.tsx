@@ -34,7 +34,7 @@ export const ConnectorsMachineProvider: FunctionComponent<ConnectorsMachineProvi
   );
 };
 
-export const useConnectorsMachineService = () => {
+export const useConnectorsMachineService = (): ConnectorsMachineInterpretType => {
   const service = useContext(ConnectorsMachineServiceContext);
   if (!service) {
     throw new Error(

@@ -145,16 +145,16 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
             },
             states: {
               idle: {
-                entry: send('query', { to: PAGINATED_MACHINE_ID }),
+                entry: send('api.query', { to: PAGINATED_MACHINE_ID }),
                 on: {
-                  ready: 'ready',
+                  'api.ready': 'ready',
                 },
               },
               ready: {},
             },
             on: {
               ...getPaginatedApiMachineEventsHandlers(PAGINATED_MACHINE_ID),
-              success: { actions: 'success' },
+              'api.success': { actions: 'success' },
             },
           },
           selection: {
@@ -210,7 +210,7 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
   {
     actions: {
       success: assign((_context, event) => {
-        if (event.type !== 'success') return {};
+        if (event.type !== 'api.success') return {};
         const { type, ...response } = event;
         return {
           response,
@@ -279,7 +279,7 @@ export const useKafkasMachine = (actor: KafkaMachineActorRef) => {
   );
   const onQuery = useCallback(
     (request: PaginatedApiRequest<KafkasQuery>) => {
-      actor.send({ type: 'query', ...request });
+      actor.send({ type: 'api.query', ...request });
     },
     [actor]
   );

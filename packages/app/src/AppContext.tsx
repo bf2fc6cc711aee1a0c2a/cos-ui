@@ -1,17 +1,17 @@
 import React, { createContext, FunctionComponent, useContext } from 'react';
 
 type AppContextType = {
-  authToken: () => Promise<string>;
+  getToken: () => Promise<string>;
   basePath: string;
 };
 const AppContext = createContext<AppContextType | null>(null);
 
 export const AppContextProvider: FunctionComponent<AppContextType> = ({
-  authToken,
+  getToken,
   basePath,
   children,
 }) => (
-  <AppContext.Provider value={{ authToken, basePath }}>
+  <AppContext.Provider value={{ getToken, basePath }}>
     {children}
   </AppContext.Provider>
 );

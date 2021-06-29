@@ -100,9 +100,9 @@ describe('@cos-ui/machines', () => {
       },
       on: {
         ...getPaginatedApiMachineEventsHandlers(ID),
-        loading: { actions: onLoadingSpy },
-        success: { actions: onSuccessSpy },
-        error: { actions: onErrorSpy },
+        'api.loading': { actions: onLoadingSpy },
+        'api.success': { actions: onSuccessSpy },
+        'api.error': { actions: onErrorSpy },
       },
     });
 
@@ -117,9 +117,9 @@ describe('@cos-ui/machines', () => {
     });
 
     it("doesn't change page before getting a response", () => {
-      testService.send('nextPage');
+      testService.send('api.nextPage');
       jest.runAllTimers();
-      testService.send('prevPage');
+      testService.send('api.prevPage');
       jest.runAllTimers();
       expect(responsePayload).toBeUndefined();
       expect(testApi).toBeCalledTimes(0);
@@ -130,7 +130,7 @@ describe('@cos-ui/machines', () => {
     });
 
     it('can query', () => {
-      testService.send('query', { page: 1, size: 3 });
+      testService.send('api.query', { page: 1, size: 3 });
       jest.runAllTimers();
       expect(loadingPayload).toEqual(
         expect.objectContaining({ size: 3, page: 1 })
@@ -149,7 +149,7 @@ describe('@cos-ui/machines', () => {
     });
 
     it('can fetch next page', () => {
-      testService.send('nextPage');
+      testService.send('api.nextPage');
       jest.runAllTimers();
       expect(loadingPayload).toEqual(
         expect.objectContaining({ size: 3, page: 2 })
@@ -169,7 +169,7 @@ describe('@cos-ui/machines', () => {
     });
 
     it('properly sets an error on failed fetch', () => {
-      testService.send('nextPage');
+      testService.send('api.nextPage');
       jest.runAllTimers();
       expect(loadingPayload).toEqual(
         expect.objectContaining({ size: 3, page: 3 })
@@ -187,7 +187,7 @@ describe('@cos-ui/machines', () => {
     });
 
     it('unset the error on a successive fetch', () => {
-      testService.send('prevPage');
+      testService.send('api.prevPage');
       jest.runAllTimers();
       expect(loadingPayload).toEqual(
         expect.objectContaining({ size: 3, page: 2 })
@@ -207,7 +207,7 @@ describe('@cos-ui/machines', () => {
     });
 
     it('can query with a complete request object', () => {
-      testService.send('query', {
+      testService.send('api.query', {
         page: 1,
         size: 4,
         query: { bar: 'test bar' },
@@ -235,7 +235,7 @@ describe('@cos-ui/machines', () => {
     });
 
     it('can query with a partial request object', () => {
-      testService.send('query', {
+      testService.send('api.query', {
         query: { bar: 'test bar 2' },
       });
       jest.runAllTimers();
@@ -261,7 +261,7 @@ describe('@cos-ui/machines', () => {
     });
 
     it('previous filters are unset', () => {
-      testService.send('query', { page: 1, size: 6 });
+      testService.send('api.query', { page: 1, size: 6 });
       jest.runAllTimers();
       expect(loadingPayload).toEqual(
         expect.objectContaining({ page: 1, size: 6 })
@@ -281,11 +281,11 @@ describe('@cos-ui/machines', () => {
     });
 
     it('cancels the running request if a new request is triggered', () => {
-      testService.send('query', { page: 1, size: 6 });
+      testService.send('api.query', { page: 1, size: 6 });
       jest.advanceTimersByTime(API_LATENCY / 4);
-      testService.send('query', { page: 4, size: 2 });
+      testService.send('api.query', { page: 4, size: 2 });
       jest.advanceTimersByTime(API_LATENCY / 4);
-      testService.send('query', { page: 2, size: 2 });
+      testService.send('api.query', { page: 2, size: 2 });
       jest.runAllTimers();
 
       expect(loadingPayload).toEqual(

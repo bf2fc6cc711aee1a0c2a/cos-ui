@@ -1,0 +1,7 @@
+.cos--connectors__table--icon--completed {
+  color: var(--pf-global--success-color--100);
+}
+
+.cos--connectors__table--icon--failed {
+  color: var(--pf-global--danger-color--100);
+}
