@@ -34,6 +34,8 @@ const fetchKafkaInstances = (
   accessToken: () => Promise<string>,
   basePath: string
 ): ApiCallback<KafkaRequest, KafkasQuery> => {
+  // TODO: remove after demo
+  basePath = 'https://api.openshift.com';
   const apisService = new DefaultApi(
     new Configuration({
       accessToken,
