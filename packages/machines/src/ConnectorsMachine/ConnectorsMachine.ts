@@ -81,7 +81,18 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>({
                     }),
                     `connector-${connector.id}`
                   ),
-                true
+                {
+                  pollingEnabled: true,
+                  onBeforeSetResponse: data => {
+                    if (data) {
+                      data.forEach(d => {
+                        if (d && d.stop) {
+                          d.stop();
+                        }
+                      });
+                    }
+                  },
+                }
               ),
           },
           states: {
