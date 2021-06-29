@@ -42,6 +42,7 @@ export type PaginatedMachineContext<RawDataType, QueryType, DataType> = {
   pollingEnabled: boolean;
   actor?: SpawnedActorRef<any>;
   dataTransformer: (response: RawDataType) => DataType;
+  onBeforeSetResponse?: (previousData: DataType[] | undefined) => void;
 };
 
 const paginatedApiMachineSchema = {
@@ -79,7 +80,10 @@ export const getPaginatedApiMachineEventsHandlers = (to: string) => ({
 export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
   service: ApiCallback<RawDataType, QueryType>,
   dataTransformer: (response: RawDataType) => DataType,
-  pollingEnabled: boolean = false
+  options?: {
+    pollingEnabled?: boolean;
+    onBeforeSetResponse?: (previousResponse: DataType[] | undefined) => void;
+  }
 ) {
   const paginatedApiMachineModel = createModel(
     {
@@ -88,7 +92,8 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
         size: 10,
       },
       response: undefined,
-      pollingEnabled,
+      pollingEnabled: options?.pollingEnabled || false,
+      onBeforeSetResponse: options?.onBeforeSetResponse,
       dataTransformer,
     } as PaginatedMachineContext<RawDataType, QueryType, DataType>,
     {
@@ -311,6 +316,9 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
         setResponse: assign((context, e) => {
           if (e.type !== 'setResponse' || e.page !== context.request.page)
             return {};
+          if (context.onBeforeSetResponse) {
+            context.onBeforeSetResponse(context.response?.items);
+          }
           return {
             response: {
               items: e.items.map(i => context.dataTransformer(i)),
