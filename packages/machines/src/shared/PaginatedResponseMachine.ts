@@ -262,9 +262,6 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
             'api.setResponse': {
               actions: 'setResponse',
             },
-            'api.setError': {
-              actions: 'setError',
-            },
           },
           after: {
             INTERVAL: {
@@ -306,7 +303,7 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
             return {};
           return {
             response: {
-              items: undefined,
+              items: context.response?.items || [],
               total: context.response?.total || 0,
               error: e.error,
             },

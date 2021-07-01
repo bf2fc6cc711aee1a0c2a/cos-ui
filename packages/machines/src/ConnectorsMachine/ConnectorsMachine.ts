@@ -32,6 +32,7 @@ type Context = {
   accessToken: () => Promise<string>;
   basePath: string;
   selectedConnector?: Connector;
+  onError?: (error: string) => void;
 };
 
 const connectorsMachineSchema = {
@@ -115,6 +116,9 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
             },
             on: {
               ...getPaginatedApiMachineEventsHandlers(PAGINATED_MACHINE_ID),
+              'api.error': {
+                actions: 'notifyError',
+              },
               actionSuccess: {
                 actions: send('api.query', { to: PAGINATED_MACHINE_ID }),
               },
@@ -148,6 +152,12 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
           selectedConnector: undefined,
         };
       }),
+      notifyError: (context, event) => {
+        console.log(context, event);
+        if (event.type === 'api.error' && context.onError) {
+          context.onError(event.error);
+        }
+      },
     },
   }
 );

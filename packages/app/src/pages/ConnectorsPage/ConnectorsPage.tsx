@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -24,6 +24,7 @@ import { useAppContext } from '../../AppContext';
 import { ConnectorDrawer } from './ConnectorDrawer';
 import { ConnectorsTable } from './ConnectorsTable';
 import { ConnectorsToolbar } from './ConnectorsToolbar';
+import { AlertVariant, useAlert } from '@bf2/ui-shared';
 
 type ConnectedConnectorsPageProps = {
   onCreateConnector: () => void;
@@ -31,9 +32,27 @@ type ConnectedConnectorsPageProps = {
 export const ConnectedConnectorsPage: FunctionComponent<ConnectedConnectorsPageProps> = ({
   onCreateConnector,
 }) => {
+  const { t } = useTranslation();
+  const { addAlert } = useAlert();
   const { basePath, getToken } = useAppContext();
+  const onError = useCallback(
+    (description: string) => {
+      addAlert({
+        id: 'connectors-table-error',
+        variant: AlertVariant.danger,
+        title: t('common.something_went_wrong'),
+        description,
+      });
+    },
+    [addAlert, t]
+  );
+
   return (
-    <ConnectorsMachineProvider accessToken={getToken} basePath={basePath}>
+    <ConnectorsMachineProvider
+      accessToken={getToken}
+      basePath={basePath}
+      onError={onError}
+    >
       <ConnectorsPage onCreateConnector={onCreateConnector} />
     </ConnectorsMachineProvider>
   );

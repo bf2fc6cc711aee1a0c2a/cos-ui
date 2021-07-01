@@ -1,4 +1,6 @@
-import React, { FunctionComponent } from 'react';
+import { AlertVariant, useAlert } from '@bf2/ui-shared';
+import React, { FunctionComponent, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Route, Switch, useHistory } from 'react-router-dom';
 
 import { AppContextProvider } from './AppContext';
@@ -13,13 +15,22 @@ export const CosUiRoutes: FunctionComponent<CosUiRoutesProps> = ({
   getToken,
   apiBasepath,
 }) => {
+  const { t } = useTranslation();
+  const { addAlert } = useAlert();
   const history = useHistory();
-  const goToConnectorsList = () => history.push('/');
-  const goToCreateConnector = () => history.push('/create-connector');
-  const onConnectorSave = () => {
-    // TODO: success notification
+  const goToConnectorsList = useCallback(() => history.push('/'), [history]);
+  const goToCreateConnector = useCallback(
+    () => history.push('/create-connector'),
+    [history]
+  );
+  const onConnectorSave = useCallback(() => {
+    addAlert({
+      id: 'connector-created',
+      variant: AlertVariant.success,
+      title: t('wizard.creation-success'),
+    });
     goToConnectorsList();
-  };
+  }, [addAlert, goToConnectorsList, t]);
   return (
     <AppContextProvider getToken={getToken} basePath={apiBasepath}>
       <Switch>

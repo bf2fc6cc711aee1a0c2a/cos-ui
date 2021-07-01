@@ -1,7 +1,6 @@
 /* eslint-disable testing-library/await-async-utils */
 /* eslint-disable testing-library/await-async-query */
 import React from 'react';
-import { CreationWizardMachineProvider } from '@cos-ui/machines';
 import {
   render,
   fireEvent,
@@ -15,7 +14,7 @@ import {
 import { createModel } from '@xstate/test';
 import { Machine } from 'xstate';
 import * as mockApis from './mockApis';
-import { CreationWizard } from '../src';
+import { CreationWizard, CreationWizardMachineProvider } from '../src';
 
 type TestContext = {
   onClose: () => void;
