@@ -48,24 +48,17 @@ export const CreationWizardMachineProvider: FunctionComponent<CreationWizardMach
       }),
     [fetchConfigurator]
   );
-  const service = useInterpret(
-    creationWizardMachine,
-    {
-      devTools: true,
-      context: {
-        accessToken,
-        basePath,
-      },
-      services: {
-        makeConfiguratorLoaderMachine,
-      },
+  const service = useInterpret(creationWizardMachine, {
+    devTools: true,
+    context: {
+      accessToken,
+      basePath,
+      onSave,
     },
-    state => {
-      if (state.done) {
-        onSave();
-      }
-    }
-  );
+    services: {
+      makeConfiguratorLoaderMachine,
+    },
+  });
   return (
     <CreationWizardMachineService.Provider value={service}>
       {children}

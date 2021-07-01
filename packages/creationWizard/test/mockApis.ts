@@ -11,7 +11,9 @@ export function makeHappyPath() {
   mock
     .onGet('/dummy/api/connector_mgmt/v1/kafka_connector_types')
     .reply<ConnectorTypeList>(200, connectors)
-    .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=')
+    .onGet(
+      'https://api.openshift.com/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search='
+    )
     .reply<KafkaRequestList>(200, kafkaInstances)
     .onGet(
       '/dummy/api/connector_mgmt/v1/kafka_connector_clusters?page=1&size=10'
@@ -33,7 +35,9 @@ export function makeKafkaError() {
   mock
     .onGet('/dummy/api/connector_mgmt/v1/kafka_connector_types')
     .reply<ConnectorTypeList>(200, connectors)
-    .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=')
+    .onGet(
+      'https://api.openshift.com/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search='
+    )
     .reply(404);
   return mock;
 }
@@ -43,7 +47,9 @@ export function makeClusterError() {
   mock
     .onGet('/dummy/api/connector_mgmt/v1/kafka_connector_types')
     .reply<ConnectorTypeList>(200, connectors)
-    .onGet('/dummy/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=')
+    .onGet(
+      'https://api.openshift.com/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search='
+    )
     .reply<KafkaRequestList>(200, kafkaInstances)
     .onGet(
       '/dummy/api/connector_mgmt/v1/kafka_connector_clusters?page=1&size=10'

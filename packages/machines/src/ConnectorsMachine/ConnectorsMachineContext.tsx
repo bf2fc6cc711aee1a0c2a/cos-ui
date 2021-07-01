@@ -16,15 +16,17 @@ const ConnectorsMachineServiceContext = createContext<ConnectorsMachineInterpret
 type ConnectorsMachineProviderPropsType = {
   accessToken: () => Promise<string>;
   basePath: string;
+  onError: (error: string) => void;
 };
 
 export const ConnectorsMachineProvider: FunctionComponent<ConnectorsMachineProviderPropsType> = ({
   children,
   accessToken,
   basePath,
+  onError,
 }) => {
   const service = useInterpret(connectorsMachine, {
-    context: { accessToken, basePath },
+    context: { accessToken, basePath, onError },
     devTools: true,
   });
   return (
@@ -34,7 +36,7 @@ export const ConnectorsMachineProvider: FunctionComponent<ConnectorsMachineProvi
   );
 };
 
-export const useConnectorsMachineService = () => {
+export const useConnectorsMachineService = (): ConnectorsMachineInterpretType => {
   const service = useContext(ConnectorsMachineServiceContext);
   if (!service) {
     throw new Error(

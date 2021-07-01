@@ -28,6 +28,7 @@ type Context = {
   activeConfigurationStep?: number;
   isConfigurationValid?: boolean;
   connectorConfiguration?: unknown;
+  onSave?: () => void;
 };
 
 const creationWizardMachineSchema = {
@@ -273,9 +274,12 @@ export const creationWizardMachine = createMachine<
           }),
           onDone: {
             target: '#creationWizard.saved',
-            actions: assign((_, event) => ({
-              connectorConfiguration: event.data,
-            })),
+            actions: [
+              assign((_, event) => ({
+                connectorConfiguration: event.data,
+              })),
+              'notifySave',
+            ],
           },
           onError: {
             actions: (_context, event) => console.error(event.data.message),
@@ -362,6 +366,13 @@ export const creationWizardMachine = createMachine<
         );
       },
       areThereSubsteps: context => context.activeConfigurationStep! > 0,
+    },
+    actions: {
+      notifySave: context => {
+        if (context.onSave) {
+          context.onSave();
+        }
+      },
     },
     services: {
       makeConfiguratorLoaderMachine: () => configuratorLoaderMachine,

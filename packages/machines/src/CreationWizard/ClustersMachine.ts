@@ -122,16 +122,16 @@ export const clustersMachine = createMachine<typeof clustersMachineModel>(
             },
             states: {
               idle: {
-                entry: send('query', { to: PAGINATED_MACHINE_ID }),
+                entry: send('api.query', { to: PAGINATED_MACHINE_ID }),
                 on: {
-                  ready: 'ready',
+                  'api.ready': 'ready',
                 },
               },
               ready: {},
             },
             on: {
               ...getPaginatedApiMachineEventsHandlers(PAGINATED_MACHINE_ID),
-              success: { actions: 'success' },
+              'api.success': { actions: 'success' },
             },
           },
           selection: {
@@ -187,7 +187,7 @@ export const clustersMachine = createMachine<typeof clustersMachineModel>(
   {
     actions: {
       success: assign((_context, event) => {
-        if (event.type !== 'success') return {};
+        if (event.type !== 'api.success') return {};
         const { type, ...response } = event;
         return {
           response,
@@ -256,7 +256,7 @@ export const useClustersMachine = (actor: ClustersMachineActorRef) => {
   );
   const onQuery = useCallback(
     (request: PaginatedApiRequest<{}>) => {
-      actor.send({ type: 'query', ...request });
+      actor.send({ type: 'api.query', ...request });
     },
     [actor]
   );

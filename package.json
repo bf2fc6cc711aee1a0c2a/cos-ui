@@ -98,9 +98,9 @@
     "start": "lerna run start --stream --parallel --scope @cos-ui/*",
     "test": "lerna run test --",
     "lint": "lerna run lint -- --fix",
-    "build": "lerna run build",
+    "build": "yarn run clear && lerna run build",
     "prepublish": "yarn run api:generate && lerna run build",
-    "start:app:example": "yarn run build && yarn start:app:example:run",
+    "start:app:example": "yarn run build --scope '@cos-ui/*' && yarn start:app:example:run",
     "start:app:example:run": "yarn --cwd example && yarn --cwd example start",
     "start:app:with-sample-configurators": "lerna run start --stream --parallel --scope @cos-ui-apps/* --ignore @cos-ui-apps/cli",
     "start:federate": "lerna run start:federate --stream --parallel --scope @cos-ui-apps/cos-ui",
@@ -113,7 +113,8 @@
     "api:generate": "yarn run api:generate:merge && yarn run api:generate:build",
     "api:generate:merge": "openapi-merge-cli && openapi-generator-cli generate -i ./openapi/merged-openapi.yaml -g typescript-axios -o packages/api --additional-properties=ngVersion=6.1.7,npmName=@cos-ui/api,supportsES6=true,withInterfaces=true --skip-validate-spec && rimraf packages/api/dist",
     "api:generate:build": "lerna run build --scope @cos-ui/api",
-    "i18n": "i18next 'packages/**/*.{ts,tsx}' [-oc] -c './i18next-parser.config.js' -o 'apps/cos-ui/src/locales/$LOCALE/$NAMESPACE.json'"
+    "i18n": "i18next 'packages/**/*.{ts,tsx}' [-oc] -c './i18next-parser.config.js' -o 'apps/cos-ui/src/locales/$LOCALE/$NAMESPACE.json'",
+    "clear": "find packages -name dist -exec rm -rf {} + && find packages -name .cache -exec rm -rf {} +"
   },
   "eslint": {
     "extends": [

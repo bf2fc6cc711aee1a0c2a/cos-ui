@@ -54,27 +54,25 @@ export const getPaginatedApiMachineEvents = <
   QueryType,
   DataType
 >() => ({
-  refresh: () => ({}),
-  nextPage: () => ({}),
-  prevPage: () => ({}),
-  query: (payload: PaginatedApiRequest<QueryType>) => payload,
-  setResponse: (payload: ApiSuccessResponse<RawDataType>) => payload,
-  setError: (payload: ApiErrorResponse) => payload,
+  'api.refresh': () => ({}),
+  'api.nextPage': () => ({}),
+  'api.prevPage': () => ({}),
+  'api.query': (payload: PaginatedApiRequest<QueryType>) => payload,
+  'api.setResponse': (payload: ApiSuccessResponse<RawDataType>) => payload,
+  'api.setError': (payload: ApiErrorResponse) => payload,
 
   // notifyParent
-  ready: () => ({}),
-  loading: (payload: PaginatedApiRequest<QueryType>) => payload,
-  success: (payload: ApiSuccessResponse<DataType>) => payload,
-  error: (payload: { error: string }) => payload,
+  'api.ready': () => ({}),
+  'api.loading': (payload: PaginatedApiRequest<QueryType>) => payload,
+  'api.success': (payload: ApiSuccessResponse<DataType>) => payload,
+  'api.error': (payload: { error: string }) => payload,
 });
 
 export const getPaginatedApiMachineEventsHandlers = (to: string) => ({
-  refresh: { actions: send((_, e) => e, { to }) },
-  nextPage: { actions: send((_, e) => e, { to }) },
-  prevPage: { actions: send((_, e) => e, { to }) },
-  query: { actions: send((_, e) => e, { to }) },
-  setResponse: { actions: send((_, e) => e, { to }) },
-  setError: { actions: send((_, e) => e, { to }) },
+  'api.refresh': { actions: send((_, e) => e, { to }) },
+  'api.nextPage': { actions: send((_, e) => e, { to }) },
+  'api.prevPage': { actions: send((_, e) => e, { to }) },
+  'api.query': { actions: send((_, e) => e, { to }) },
 });
 
 export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
@@ -109,9 +107,9 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
     return service(
       context.request!,
       (payload: ApiSuccessResponse<RawDataType>) =>
-        callback(paginatedApiMachineModel.events.setResponse(payload)),
+        callback(paginatedApiMachineModel.events['api.setResponse'](payload)),
       (payload: ApiErrorResponse) =>
-        callback(paginatedApiMachineModel.events.setError(payload))
+        callback(paginatedApiMachineModel.events['api.setError'](payload))
     );
   };
 
@@ -120,184 +118,157 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
       schema: paginatedApiMachineSchema,
       id: 'paginatedApiMachine',
       context: paginatedApiMachineModel.initialContext,
-      initial: 'idle',
+      type: 'parallel',
       states: {
-        idle: {
-          entry: 'notifyReady',
+        api: {
+          initial: 'idle',
+          states: {
+            idle: {
+              entry: 'notifyReady',
+              on: {
+                'api.query': {
+                  target: 'loading',
+                  actions: 'query',
+                },
+              },
+            },
+            success: {
+              always: [
+                { target: 'queryEmpty', cond: 'isQueryEmpty' },
+                { target: 'queryResults', cond: 'isQuerySuccesful' },
+                { target: 'empty', cond: 'isTotalZero' },
+                { target: 'results' },
+              ],
+            },
+            queryEmpty: {
+              tags: 'queryEmpty',
+              on: {
+                'api.query': {
+                  target: 'loading',
+                  actions: 'query',
+                },
+                'api.prevPage': {
+                  target: 'loading',
+                  actions: 'decreasePage',
+                  cond: 'isNotFirstPage',
+                },
+                'api.refresh': {
+                  target: 'loading',
+                  actions: 'fetch',
+                },
+              },
+            },
+            queryResults: {
+              tags: 'queryResults',
+              on: {
+                'api.query': {
+                  target: 'loading',
+                  actions: 'query',
+                },
+                'api.nextPage': {
+                  target: 'loading',
+                  actions: 'increasePage',
+                  cond: 'isNotLastPage',
+                },
+                'api.prevPage': {
+                  target: 'loading',
+                  actions: 'decreasePage',
+                  cond: 'isNotFirstPage',
+                },
+                'api.refresh': {
+                  target: 'loading',
+                },
+              },
+            },
+            empty: {
+              tags: 'empty',
+              on: {
+                'api.query': {
+                  target: 'loading',
+                  actions: 'query',
+                },
+                'api.refresh': {
+                  target: 'loading',
+                },
+              },
+            },
+            results: {
+              tags: 'results',
+              on: {
+                'api.query': {
+                  target: 'loading',
+                  actions: 'query',
+                },
+                'api.nextPage': {
+                  target: 'loading',
+                  actions: 'increasePage',
+                  cond: 'isNotLastPage',
+                },
+                'api.prevPage': {
+                  target: 'loading',
+                  actions: 'decreasePage',
+                  cond: 'isNotFirstPage',
+                },
+                'api.refresh': {
+                  target: 'loading',
+                },
+              },
+            },
+            error: {
+              tags: 'error',
+              on: {
+                'api.query': {
+                  target: 'loading',
+                  actions: 'query',
+                },
+                'api.refresh': {
+                  target: 'loading',
+                },
+                'api.prevPage': {
+                  target: 'loading',
+                  actions: 'decreasePage',
+                  cond: 'isNotFirstPage',
+                },
+              },
+            },
+            loading: {
+              tags: ['loading'],
+              entry: ['notifyLoading', 'fetch'],
+              on: {
+                'api.query': {
+                  target: 'loading',
+                  actions: 'query',
+                },
+                'api.setResponse': {
+                  target: 'success',
+                  actions: ['setResponse', 'notifySuccess'],
+                },
+                'api.setError': {
+                  target: 'error',
+                  actions: ['setError', 'notifyError'],
+                },
+              },
+            },
+          },
           on: {
-            query: {
-              target: 'loading',
-              actions: 'query',
+            '*': {
+              actions: 'forwardUnknownEventsToParent',
             },
           },
         },
-        success: {
-          always: [
-            { target: 'queryEmpty', cond: 'isQueryEmpty' },
-            { target: 'queryResults', cond: 'isQuerySuccesful' },
-            { target: 'empty', cond: 'isTotalZero' },
-            { target: 'results' },
-          ],
-        },
-        queryEmpty: {
-          tags: 'queryEmpty',
-          on: {
-            query: {
-              target: 'loading',
-              actions: 'query',
-            },
-            prevPage: {
-              target: 'loading',
-              actions: 'decreasePage',
-              cond: 'isNotFirstPage',
-            },
-            refresh: {
-              target: 'loading',
-              actions: 'fetch',
-            },
-          },
-          after: {
-            INTERVAL: {
-              cond: 'isPollingEnabled',
-              target: 'poll',
-            },
-          },
-        },
-        queryResults: {
-          tags: 'queryResults',
-          on: {
-            query: {
-              target: 'loading',
-              actions: 'query',
-            },
-            nextPage: {
-              target: 'loading',
-              actions: 'increasePage',
-              cond: 'isNotLastPage',
-            },
-            prevPage: {
-              target: 'loading',
-              actions: 'decreasePage',
-              cond: 'isNotFirstPage',
-            },
-            refresh: {
-              target: 'loading',
-            },
-          },
-          after: {
-            INTERVAL: {
-              cond: 'isPollingEnabled',
-              target: 'poll',
-            },
-          },
-        },
-        empty: {
-          tags: 'empty',
-          on: {
-            query: {
-              target: 'loading',
-              actions: 'query',
-            },
-            refresh: {
-              target: 'loading',
-            },
-          },
-          after: {
-            INTERVAL: {
-              cond: 'isPollingEnabled',
-              target: 'poll',
-            },
-          },
-        },
-        results: {
-          tags: 'results',
-          on: {
-            query: {
-              target: 'loading',
-              actions: 'query',
-            },
-            nextPage: {
-              target: 'loading',
-              actions: 'increasePage',
-              cond: 'isNotLastPage',
-            },
-            prevPage: {
-              target: 'loading',
-              actions: 'decreasePage',
-              cond: 'isNotFirstPage',
-            },
-            refresh: {
-              target: 'loading',
-            },
-          },
-          after: {
-            INTERVAL: {
-              cond: 'isPollingEnabled',
-              target: 'poll',
-            },
-          },
-        },
-        error: {
-          tags: 'error',
-          on: {
-            query: {
-              target: 'loading',
-              actions: 'query',
-            },
-            refresh: {
-              target: 'loading',
-            },
-            prevPage: {
-              target: 'loading',
-              actions: 'decreasePage',
-              cond: 'isNotFirstPage',
-            },
-          },
-          after: {
-            INTERVAL: {
-              cond: 'isPollingEnabled',
-              target: 'poll',
-            },
-          },
-        },
-        loading: {
-          entry: ['notifyLoading', 'fetch'],
-          on: {
-            query: {
-              target: 'loading',
-              actions: 'query',
-            },
-            setResponse: {
-              target: 'success',
-              actions: ['setResponse', 'notifySuccess'],
-            },
-            setError: {
-              target: 'error',
-              actions: ['setError', 'notifyError'],
-            },
-          },
-        },
-        poll: {
+        polling: {
           entry: 'fetch',
           on: {
-            query: {
-              target: 'loading',
-              actions: 'query',
-            },
-            setResponse: {
-              target: 'success',
+            'api.setResponse': {
               actions: 'setResponse',
             },
-            setError: {
-              target: 'error',
-              actions: 'setError',
+          },
+          after: {
+            INTERVAL: {
+              cond: 'isPollingEnabled',
+              target: 'polling',
             },
           },
-        },
-      },
-      on: {
-        '*': {
-          actions: 'forwardUnknownEventsToParent',
         },
       },
     },
@@ -314,7 +285,7 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
           return { actor };
         }),
         setResponse: assign((context, e) => {
-          if (e.type !== 'setResponse' || e.page !== context.request.page)
+          if (e.type !== 'api.setResponse' || e.page !== context.request.page)
             return {};
           if (context.onBeforeSetResponse) {
             context.onBeforeSetResponse(context.response?.items);
@@ -328,11 +299,11 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
           };
         }),
         setError: assign((context, e) => {
-          if (e.type !== 'setError' || e.page !== context.request.page)
+          if (e.type !== 'api.setError' || e.page !== context.request.page)
             return {};
           return {
             response: {
-              items: undefined,
+              items: context.response?.items || [],
               total: context.response?.total || 0,
               error: e.error,
             },
@@ -352,7 +323,7 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
           };
         }),
         query: assign((context, event) => {
-          if (event.type !== 'query') return {};
+          if (event.type !== 'api.query') return {};
           const { page, size, query } = event;
           return {
             request: {
@@ -363,18 +334,18 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
           };
         }),
         notifyReady: sendParent({
-          type: 'ready',
+          type: 'api.ready',
         }),
         notifySuccess: sendParent(context => ({
-          type: 'success',
+          type: 'api.success',
           ...context.response,
         })),
         notifyError: sendParent(context => ({
-          type: 'error',
+          type: 'api.error',
           error: context.response?.error,
         })),
         notifyLoading: sendParent(context => ({
-          type: 'loading',
+          type: 'api.loading',
           ...context.request,
         })),
         forwardUnknownEventsToParent: pure((_context, event) => {
@@ -436,17 +407,30 @@ export type PaginatedApiActorType<
 
 // These are not _writable_ booleans, they are derived from the machine state!
 // https://discord.com/channels/795785288994652170/799416943324823592/847466843290730527
+export type usePaginationReturnValue<QueryType, DataType> = {
+  request: PaginatedApiRequest<QueryType>;
+  response?: PaginatedApiResponse<DataType>;
+  loading: boolean;
+  queryEmpty: boolean;
+  queryResults: boolean;
+  noResults: boolean;
+  results: boolean;
+  error: boolean;
+  firstRequest: boolean;
+};
 export const usePagination = <RawDataType, QueryType, DataType>(
   actor: PaginatedApiActorType<RawDataType, QueryType, DataType>
-) => {
+): usePaginationReturnValue<QueryType, DataType> => {
   return useSelector(
     actor,
     useCallback(
-      (state: typeof actor.state) => {
+      (
+        state: typeof actor.state
+      ): usePaginationReturnValue<QueryType, DataType> => {
         return {
           request: state.context.request,
           response: state.context.response,
-          loading: state.matches('loading'),
+          loading: state.hasTag('loading'),
           queryEmpty: state.hasTag('queryEmpty'),
           queryResults: state.hasTag('queryResults'),
           noResults: state.hasTag('empty'),

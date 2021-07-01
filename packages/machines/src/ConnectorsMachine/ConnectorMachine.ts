@@ -26,11 +26,12 @@ const connectorMachineModel = createModel(
   } as Context,
   {
     events: {
-      start: () => ({}),
-      stop: () => ({}),
-      remove: () => ({}),
-      success: (payload: { connector: Connector }) => payload,
-      error: (payload: { error: string }) => payload,
+      'connector.start': () => ({}),
+      'connector.stop': () => ({}),
+      'connector.remove': () => ({}),
+      'connector.select': () => ({}),
+      'connector.actionSuccess': (payload: { connector: Connector }) => payload,
+      'connector.actionError': (payload: { error: string }) => payload,
     },
   }
 );
@@ -51,14 +52,14 @@ export const connectorMachine = createMachine<typeof connectorMachineModel>(
       },
       ready: {
         on: {
-          stop: 'stoppingConnector',
-          remove: 'deletingConnector',
+          'connector.stop': 'stoppingConnector',
+          'connector.remove': 'deletingConnector',
         },
       },
       stopped: {
         on: {
-          start: 'startingConnector',
-          remove: 'deletingConnector',
+          'connector.start': 'startingConnector',
+          'connector.remove': 'deletingConnector',
         },
       },
       deleted: {},
@@ -74,11 +75,11 @@ export const connectorMachine = createMachine<typeof connectorMachineModel>(
             }),
         },
         on: {
-          success: {
+          'connector.actionSuccess': {
             target: 'verify',
             actions: ['updateState', 'notifySuccessToParent'],
           },
-          error: {
+          'connector.actionError': {
             target: 'verify',
             actions: 'notifyErrorToParent',
           },
@@ -95,11 +96,11 @@ export const connectorMachine = createMachine<typeof connectorMachineModel>(
             }),
         },
         on: {
-          success: {
+          'connector.actionSuccess': {
             target: 'verify',
             actions: ['updateState', 'notifySuccessToParent'],
           },
-          error: {
+          'connector.actionError': {
             target: 'verify',
             actions: 'notifyErrorToParent',
           },
@@ -116,15 +117,20 @@ export const connectorMachine = createMachine<typeof connectorMachineModel>(
             }),
         },
         on: {
-          success: {
+          'connector.actionSuccess': {
             target: 'deleted',
             actions: ['updateState', 'notifySuccessToParent'],
           },
-          error: {
+          'connector.actionError': {
             target: 'verify',
             actions: 'notifyErrorToParent',
           },
         },
+      },
+    },
+    on: {
+      'connector.select': {
+        actions: 'notifySelectToParent',
       },
     },
   },
@@ -136,13 +142,17 @@ export const connectorMachine = createMachine<typeof connectorMachineModel>(
     },
     actions: {
       updateState: assign((_context, event) => {
-        if (event.type !== 'success') return {};
+        if (event.type !== 'connector.actionSuccess') return {};
         return {
           connector: event.connector,
         };
       }),
-      notifySuccessToParent: sendParent('connector.action-success'),
-      notifyErrorToParent: sendParent('connector.action-failure'),
+      notifySuccessToParent: sendParent('actionSuccess'),
+      notifyErrorToParent: sendParent('actionFailure'),
+      notifySelectToParent: sendParent(({ connector }) => ({
+        type: 'selectConnector',
+        connector,
+      })),
     },
   }
 );
@@ -152,21 +162,54 @@ export const makeConnectorMachine = (context: Context) =>
 
 export type ConnectorMachineActorRef = ActorRefFrom<typeof connectorMachine>;
 
-export const useConnector = (ref: ConnectorMachineActorRef) => {
-  return useSelector(
+export type useConnectorReturnType = {
+  connector: Connector;
+  canStart: boolean;
+  canStop: boolean;
+  canDelete: boolean;
+  onStart: () => void;
+  onStop: () => void;
+  onDelete: () => void;
+  onSelect: () => void;
+};
+export const useConnector = (
+  ref: ConnectorMachineActorRef
+): useConnectorReturnType => {
+  const { connector, canStart, canStop, canDelete } = useSelector(
     ref,
     useCallback(
       (state: typeof ref.state) => ({
         connector: state.context.connector,
-        canStart: connectorMachine.transition(state, 'start').changed === true,
-        canStop: connectorMachine.transition(state, 'stop').changed === true,
+        canStart:
+          connectorMachine.transition(state, 'connector.start').changed ===
+          true,
+        canStop:
+          connectorMachine.transition(state, 'connector.stop').changed === true,
         canDelete:
-          connectorMachine.transition(state, 'remove').changed === true,
-        onStart: () => ref.send({ type: 'start' }),
-        onStop: () => ref.send({ type: 'stop' }),
-        onDelete: () => ref.send({ type: 'remove' }),
+          connectorMachine.transition(state, 'connector.remove').changed ===
+          true,
       }),
       [ref]
     )
   );
+  const onStart = useCallback(() => ref.send({ type: 'connector.start' }), [
+    ref,
+  ]);
+  const onStop = useCallback(() => ref.send({ type: 'connector.stop' }), [ref]);
+  const onDelete = useCallback(() => ref.send({ type: 'connector.remove' }), [
+    ref,
+  ]);
+  const onSelect = useCallback(() => ref.send({ type: 'connector.select' }), [
+    ref,
+  ]);
+  return {
+    connector,
+    canStart,
+    canStop,
+    canDelete,
+    onStart,
+    onStop,
+    onDelete,
+    onSelect,
+  };
 };
