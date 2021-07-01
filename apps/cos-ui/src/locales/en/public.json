@@ -22,5 +22,22 @@
   "id": "id",
   "Ready": "Ready",
   "Deletion in progress": "Deletion in progress",
-  "createConnectors": "Create connector"
+  "createConnectors": "Create connector",
+  "FilterByStatus": "Filter by status",
+  "FilterByCloudProvider": "Filter by cloud provider",
+  "FilterByRegion": "Filter by Region",
+  "aws": "Amazon Web Services",
+  "us-east-1": "US East, N. Virginia",
+  "ready": "Ready",
+  "failed": "Failed",
+  "accepted": "Creation pending",
+  "provisioning": "Creation in progress",
+  "preparing": "Creation in progress",
+  "deprovision": "Deletion in progress",
+  "deleted": "Deletion in progress",
+  "CloudProvider": "Cloud Provider",
+  "region": "Region",
+  "owner": "Owner",
+  "ownerSearchPlaceholder": "Search by owner",
+  "nameSearchPlaceholder": "Search by name"
 }

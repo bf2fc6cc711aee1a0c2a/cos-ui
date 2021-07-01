@@ -8,7 +8,6 @@ import {
   EmptyStateVariant,
   Loading,
   NoMatchFound,
-  useDebounce,
 } from '@cos-ui/utils';
 import {
   Button,
@@ -41,28 +40,29 @@ import {
   DropdownItem,
   DropdownPosition,
 } from '@patternfly/react-core';
-import {
-  // ExclamationCircleIcon,
-  FilterIcon,
-  SearchIcon,
-} from '@patternfly/react-icons';
+import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 import React, {
   FunctionComponent,
   useCallback,
-  useEffect,
   useRef,
   useState,
   SyntheticEvent,
 } from 'react';
 import { useHistory } from 'react-router';
-
+import { useTranslation } from 'react-i18next';
 export function SelectKafkaInstance() {
   const actor = useCreationWizardMachineKafkasActor();
   const isReady = useKafkasMachineIsReady(actor);
 
   return isReady ? <KafkasGallery /> : null;
 }
-
+export type FilterValue = {
+  value: string;
+};
+export type FilterType = {
+  filterKey: string;
+  filterValue: FilterValue[];
+};
 const KafkasGallery: FunctionComponent = () => {
   const history = useHistory();
   const actor = useCreationWizardMachineKafkasActor();
@@ -174,21 +174,19 @@ const KafkaToolbar: FunctionComponent = () => {
   const [regionsToggled, setRegionsToggled] = useState(false);
   const [categoryToggled, setCategoryToggled] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('Name');
-  const {
-    name = '',
-    owner = '',
-    statuses = [],
-    cloudProviders = [],
-    regions = [],
-  } = request.query || {};
-  const clearAllFilters = useCallback(
-    () => onQuery({ page: 1, size: request.size }),
-    [onQuery, request.size]
-  );
+  const [nameFilter, setNameFilter] = useState<string | undefined>();
+  const [ownerFilter, setOwnerFilter] = useState<string | undefined>();
+  const [filteredValue, setFilteredValue] = useState<Array<FilterType>>([]);
+  const { t } = useTranslation();
+
+  const clearAllFilters = useCallback(() => {
+    onQuery({ page: 1, size: request.size });
+    setFilteredValue([]);
+  }, [onQuery, request.size]);
 
   const nameInputRef = useRef<HTMLInputElement | null>(null);
   const ownerInputRef = useRef<HTMLInputElement | null>(null);
-  const debouncedOnQuery = useDebounce(onQuery, 1000);
+
   const defaultPerPageOptions = [
     {
       title: '1',
@@ -203,73 +201,147 @@ const KafkaToolbar: FunctionComponent = () => {
       value: 10,
     },
   ];
+  const updateFilter = (
+    key: string,
+    filter: FilterValue,
+    removeIfPresent: boolean
+  ) => {
+    const newFilterValue: FilterType[] = Object.assign([], filteredValue);
+    const filterIndex = newFilterValue.findIndex(f => f.filterKey === key);
+    if (filterIndex > -1) {
+      const filterValue = newFilterValue[filterIndex];
+      if (filterValue.filterValue && filterValue.filterValue.length > 0) {
+        const filterValueIndex = filterValue.filterValue.findIndex(
+          f => f.value === filter.value
+        );
+        if (filterValueIndex > -1) {
+          if (removeIfPresent) {
+            filterValue.filterValue.splice(filterValueIndex, 1);
+          } else {
+            return;
+          }
+        } else {
+          newFilterValue[filterIndex].filterValue.push(filter);
+        }
+      } else {
+        newFilterValue[filterIndex].filterValue = [filter];
+      }
+    } else {
+      newFilterValue.push({ filterKey: key, filterValue: [filter] });
+    }
+    setFilteredValue(newFilterValue);
+    const currentFilterValue = newFilterValue.reduce((acc, obj) => {
+      const { filterKey: key, filterValue: value } = obj;
+      return { ...acc, [key]: value.map(o => o.value) };
+    }, {});
+    onQuery({
+      ...request,
+      query: {
+        ...(request.query || {}),
+        ...currentFilterValue,
+      },
+    });
+  };
+  const onFilter = (filterType: string) => {
+    if (filterType === 'name' && nameFilter) {
+      updateFilter('name', { value: nameFilter }, false);
+      setNameFilter('');
+    } else if (filterType === 'owner' && ownerFilter) {
+      updateFilter('owner', { value: ownerFilter }, false);
+      setOwnerFilter('');
+    }
+  };
+  const getSelectionForFilter = (key: string) => {
+    const selectedFilters = filteredValue?.filter(
+      filter => filter.filterKey === key
+    );
 
+    if (selectedFilters?.length > 0) {
+      return selectedFilters[0]?.filterValue.map(val => val.value);
+    }
+    return [];
+  };
+
+  const onDeleteChip = (
+    category: string,
+    chip: string | ToolbarChip,
+    filterOptions?: Array<any>
+  ) => {
+    let newFilteredVal: FilterType[] = Object.assign([], filteredValue);
+    const filterIndex = newFilteredVal.findIndex(
+      filter => filter.filterKey === category
+    );
+    const prevFilterValue: FilterValue[] = Object.assign(
+      [],
+      newFilteredVal[filterIndex]?.filterValue
+    );
+    let filterChip: string | undefined = chip.toString();
+    if (filterOptions && filterOptions?.length > 0) {
+      filterChip = filterOptions?.find(
+        option => option.label === chip.toString()
+      )?.value;
+    }
+    const chipIndex = prevFilterValue.findIndex(
+      val => val.value === filterChip
+    );
+    if (chipIndex >= 0) {
+      newFilteredVal[filterIndex].filterValue.splice(chipIndex, 1);
+      setFilteredValue(newFilteredVal);
+      const currentFilterValue = newFilteredVal.reduce((acc, obj) => {
+        const { filterKey: key, filterValue: value } = obj;
+        return { ...acc, [key]: value.map(o => o.value) };
+      }, {});
+      onQuery({
+        ...request,
+        query: {
+          ...(request.query || {}),
+          ...currentFilterValue,
+        },
+      });
+    }
+  };
+  const onDeleteChipGroup = (category: string) => {
+    const newFilteredValue: FilterType[] = Object.assign([], filteredValue);
+    const filterIndex = newFilteredValue.findIndex(
+      filter => filter.filterKey === category
+    );
+    if (filterIndex >= 0) {
+      newFilteredValue.splice(filterIndex, 1);
+      setFilteredValue(newFilteredValue);
+    }
+    onQuery({
+      ...request,
+      query: {
+        ...(request.query || {}),
+        [category]: undefined,
+      },
+    });
+  };
+  const onNameFilterChange = (value?: string) => {
+    setNameFilter(value || '');
+  };
+  const onOwnerFilterChange = (value?: string) => {
+    setOwnerFilter(value);
+  };
   const onSelectStatus = (
     _category: string | ToolbarChipGroup,
     status: string | ToolbarChip
-  ) =>
-    onQuery({
-      ...request,
-      query: {
-        ...(request.query || {}),
-        statuses: statuses?.includes(status as string)
-          ? statuses.filter(s => s !== status)
-          : [...(statuses || []), status as string],
-      },
-    });
-
+  ) => {
+    updateFilter('statuses', { value: status.toString() }, true);
+  };
   const onSelectCloudProvider = (
     _category: string | ToolbarChipGroup,
     cloudProvider: string | ToolbarChip
-  ) =>
-    onQuery({
-      ...request,
-      query: {
-        ...(request.query || {}),
-        cloudProviders: cloudProviders?.includes(cloudProvider as string)
-          ? cloudProviders.filter(s => s !== cloudProvider)
-          : [...(cloudProviders || []), cloudProvider as string],
-      },
-    });
-
+  ) => {
+    updateFilter('cloudProviders', { value: cloudProvider.toString() }, true);
+  };
   const onSelectRegions = (
     _category: string | ToolbarChipGroup,
     region: string | ToolbarChip
-  ) =>
-    onQuery({
-      ...request,
-      query: {
-        ...(request.query || {}),
-        regions: regions?.includes(region as string)
-          ? regions.filter(s => s !== region)
-          : [...(regions || []), region as string],
-      },
-    });
+  ) => {
+    updateFilter('regions', { value: region.toString() }, true);
+  };
 
-  const onDeleteStatusGroup = () =>
-    onQuery({
-      ...request,
-      query: {
-        ...(request.query || {}),
-        statuses: undefined,
-      },
-    });
-  const onDeleteCloudProviderGroup = () =>
-    onQuery({
-      ...request,
-      query: {
-        ...(request.query || {}),
-        cloudProviders: undefined,
-      },
-    });
-  const onDeleteRegionGroup = () =>
-    onQuery({
-      ...request,
-      query: {
-        ...(request.query || {}),
-        regions: undefined,
-      },
-    });
   const onToggleStatuses = useCallback(
     () => setStatusesToggled(prev => !prev),
     []
@@ -286,6 +358,7 @@ const KafkaToolbar: FunctionComponent = () => {
     () => setCategoryToggled(prev => !prev),
     []
   );
+
   const selectCategory = useCallback(
     (event?: SyntheticEvent<HTMLDivElement, Event> | undefined) => {
       const eventTarget = event?.target as HTMLElement;
@@ -298,11 +371,13 @@ const KafkaToolbar: FunctionComponent = () => {
   const filterCategoryMenuItems = filterCategoryOptions.map(
     ({ value, label }) => <DropdownItem key={value}>{label}</DropdownItem>
   );
-  const statusMenuItems = statusOptions.map(({ value, label }) => (
-    <SelectOption key={value} value={value}>
-      {label}
-    </SelectOption>
-  ));
+  const statusMenuItems = statusOptions
+    .filter(option => option.value !== 'preparing')
+    .map(({ value, label }) => (
+      <SelectOption key={value} value={value}>
+        {label}
+      </SelectOption>
+    ));
   const cloudProviderMenuItems = cloudProviderOptions.map(
     ({ value, label }) => (
       <SelectOption key={value} value={value}>
@@ -315,14 +390,6 @@ const KafkaToolbar: FunctionComponent = () => {
       {label}
     </SelectOption>
   ));
-  // ensure the search input value reflects what's specified in the request object
-  useEffect(() => {
-    if (nameInputRef.current) {
-      nameInputRef.current.value = name;
-    } else if (ownerInputRef.current) {
-      ownerInputRef.current.value = owner;
-    }
-  }, [nameInputRef, ownerInputRef, name, owner]);
 
   const filterCategoryDropdown = (
     <ToolbarItem>
@@ -350,119 +417,133 @@ const KafkaToolbar: FunctionComponent = () => {
         {filterCategoryDropdown}
 
         <ToolbarFilter
-          chips={statuses}
-          deleteChip={onSelectStatus}
-          deleteChipGroup={onDeleteStatusGroup}
-          categoryName="Status"
-          showToolbarItem={selectedCategory === 'Status'}
+          chips={getSelectionForFilter('statuses')?.map(status => t(status))}
+          deleteChip={(_category, chip) =>
+            onDeleteChip('statuses', chip, statusOptions)
+          }
+          deleteChipGroup={() => onDeleteChipGroup('statuses')}
+          categoryName={t('status')}
+          showToolbarItem={selectedCategory === t('status')}
         >
           <Select
             variant={'checkbox'}
-            aria-label="Status"
+            aria-label={t('status')}
             onToggle={onToggleStatuses}
             onSelect={(_, value) => onSelectStatus('', value as string)}
-            selections={statuses}
+            selections={getSelectionForFilter('statuses')}
             isOpen={statusesToggled}
-            placeholderText="Status"
+            placeholderText={t('status')}
           >
             {statusMenuItems}
           </Select>
         </ToolbarFilter>
 
         <ToolbarFilter
-          chips={cloudProviders}
-          deleteChip={onSelectCloudProvider}
-          deleteChipGroup={onDeleteCloudProviderGroup}
-          categoryName="Cloud Provider"
-          showToolbarItem={selectedCategory === 'Cloud Provider'}
+          chips={getSelectionForFilter('cloudProviders')?.map(cloudProvider =>
+            t(cloudProvider)
+          )}
+          deleteChip={(_category, chip) =>
+            onDeleteChip('cloudProviders', chip, cloudProviderOptions)
+          }
+          deleteChipGroup={() => onDeleteChipGroup('cloudProviders')}
+          categoryName={t('CloudProvider')}
+          showToolbarItem={selectedCategory === t('CloudProvider')}
         >
           <Select
             variant={'checkbox'}
-            aria-label="Cloud Provider"
+            aria-label={t('CloudProvider')}
             onToggle={onToggleCloudProviders}
             onSelect={(_, value) => onSelectCloudProvider('', value as string)}
-            selections={cloudProviders}
+            selections={getSelectionForFilter('cloudProviders')}
             isOpen={cloudProvidersToggled}
-            placeholderText="Cloud Provider"
+            placeholderText={t('CloudProvider')}
           >
             {cloudProviderMenuItems}
           </Select>
         </ToolbarFilter>
         <ToolbarFilter
-          chips={regions}
-          deleteChip={onSelectRegions}
-          deleteChipGroup={onDeleteRegionGroup}
-          categoryName="Region"
-          showToolbarItem={selectedCategory === 'Region'}
+          chips={getSelectionForFilter('regions')?.map(region => t(region))}
+          deleteChip={(_category, chip) =>
+            onDeleteChip('regions', chip, regionOptions)
+          }
+          deleteChipGroup={() => onDeleteChipGroup('regions')}
+          categoryName={t('region')}
+          showToolbarItem={selectedCategory === t('region')}
         >
           <Select
             variant={'checkbox'}
-            aria-label="Region"
+            aria-label={t('region')}
             onToggle={onToggleRegions}
             onSelect={(_, value) => onSelectRegions('', value as string)}
-            selections={regions}
+            selections={getSelectionForFilter('regions')}
             isOpen={regionsToggled}
-            placeholderText="Region"
+            placeholderText={t('region')}
           >
             {regionMenuItems}
           </Select>
         </ToolbarFilter>
-        {selectedCategory === 'Name' && (
-          <InputGroup>
-            <TextInput
-              name="Name"
-              id="Name"
-              type="search"
-              placeholder="Search by name"
-              aria-label="Search by name"
-              onChange={value =>
-                debouncedOnQuery({
-                  size: request.size,
-                  page: 1,
-                  query: {
-                    name: value,
-                    statuses,
-                  },
-                })
-              }
-              ref={nameInputRef}
-            />
-            <Button
-              variant={'control'}
-              aria-label="search button for name input"
-            >
-              <SearchIcon />
-            </Button>
-          </InputGroup>
-        )}
-        {selectedCategory === 'Owner' && (
-          <InputGroup>
-            <TextInput
-              name="Owner"
-              id="Owner"
-              type="search"
-              placeholder="Search by owner"
-              aria-label="Search by owner"
-              onChange={value =>
-                debouncedOnQuery({
-                  size: request.size,
-                  page: 1,
-                  query: {
-                    name: value,
-                    statuses,
-                  },
-                })
-              }
-              ref={ownerInputRef}
-            />
-            <Button
-              variant={'control'}
-              aria-label="search button for owner input"
-            >
-              <SearchIcon />
-            </Button>
-          </InputGroup>
-        )}
+
+        <ToolbarFilter
+          chips={getSelectionForFilter('name')}
+          deleteChip={(_category, chip) => onDeleteChip('name', chip)}
+          deleteChipGroup={() => onDeleteChipGroup('name')}
+          categoryName={t('name')}
+        >
+          {selectedCategory === t('name') && (
+            <ToolbarItem>
+              <InputGroup>
+                <TextInput
+                  name={t('name')}
+                  id={t('name')}
+                  type="search"
+                  placeholder={t('nameSearchPlaceholder')}
+                  aria-label={t('nameSearchPlaceholder')}
+                  onChange={value => onNameFilterChange(value)}
+                  value={nameFilter || ''}
+                  ref={nameInputRef as React.RefObject<HTMLInputElement>}
+                />
+                <Button
+                  variant={'control'}
+                  aria-label="search button for name input"
+                  onClick={() => onFilter('name')}
+                >
+                  <SearchIcon />
+                </Button>
+              </InputGroup>
+            </ToolbarItem>
+          )}
+        </ToolbarFilter>
+
+        <ToolbarFilter
+          chips={getSelectionForFilter('owner')}
+          deleteChip={(_category, chip) => onDeleteChip('owner', chip)}
+          deleteChipGroup={() => onDeleteChipGroup('owner')}
+          categoryName={t('owner')}
+        >
+          {selectedCategory === t('owner') && (
+            <ToolbarItem>
+              <InputGroup>
+                <TextInput
+                  name={t('owner')}
+                  id={t('owner')}
+                  type="search"
+                  placeholder={t('ownerSearchPlaceholder')}
+                  aria-label={t('ownerSearchPlaceholder')}
+                  onChange={value => onOwnerFilterChange(value)}
+                  value={ownerFilter || ''}
+                  ref={ownerInputRef as React.RefObject<HTMLInputElement>}
+                />
+                <Button
+                  variant={'control'}
+                  aria-label="search button for owner input"
+                  onClick={() => onFilter('owner')}
+                >
+                  <SearchIcon />
+                </Button>
+              </InputGroup>
+            </ToolbarItem>
+          )}
+        </ToolbarFilter>
       </ToolbarGroup>
     </>
   );
@@ -527,7 +608,6 @@ const filterCategoryOptions: KeyValueOptions[] = [
 ];
 
 const cloudProviderOptions: KeyValueOptions[] = [
-  // Only aws is supported for now
   { value: 'aws', label: 'Amazon Web Services' },
 ];
 
@@ -538,15 +618,7 @@ const statusOptions: KeyValueOptions[] = [
   { value: 'provisioning', label: 'Creation in progress' },
   { value: 'preparing', label: 'Creation in progress' },
   { value: 'deprovision', label: 'Deletion in progress' },
-  { value: 'deleted', label: 'Deletion in progress' },
 ];
 const regionOptions: KeyValueOptions[] = [
-  // Only us-east-1 is supported for now
-  { value: 'us-east-1', label: 'us-east-1' },
+  { value: 'us-east-1', label: 'US East, N. Virginia' },
 ];
-
-// const getCloudProviderDisplayName = (value: string) => {
-//   return (
-//     cloudProviderOptions.find(option => option.value === value)?.label || value
-//   );
-// };
