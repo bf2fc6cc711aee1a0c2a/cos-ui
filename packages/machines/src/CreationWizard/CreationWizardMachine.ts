@@ -20,6 +20,7 @@ import { reviewMachine } from './ReviewMachine';
 type Context = {
   accessToken: () => Promise<string>;
   basePath: string;
+  connectorName: string;
   selectedKafkaInstance?: KafkaRequest;
   selectedCluster?: ConnectorCluster;
   selectedConnector?: ConnectorType;
@@ -269,12 +270,13 @@ export const creationWizardMachine = createMachine<
             cluster: context.selectedCluster,
             connectorType: context.selectedConnector,
             initialConfiguration: context.connectorConfiguration,
-            name: '',
+            name: context.connectorName || '',
           }),
           onDone: {
             target: '#creationWizard.saved',
             actions: assign((_, event) => ({
-              connectorConfiguration: event.data,
+              connectorConfiguration: event.data.configuration,
+              connectorName: event.data.connectorName,
             })),
           },
           onError: {

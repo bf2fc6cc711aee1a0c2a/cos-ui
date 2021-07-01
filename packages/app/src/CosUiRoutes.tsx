@@ -9,6 +9,7 @@ import { PageSection } from '@patternfly/react-core';
 import { AppContextProvider } from './AppContext';
 import { ConnectedConnectorsPage } from './ConnectorsPage';
 import { fetchConfigurator } from './FederatedConfigurator';
+import { NotificationProvider } from './components/Notification';
 
 type CosUiRoutesProps = {
   getToken: () => Promise<string>;
@@ -24,25 +25,27 @@ export const CosUiRoutes: FunctionComponent<CosUiRoutesProps> = ({
   const goToConnectorsList = () => history.push('/');
   return (
     <AppContextProvider authToken={getToken} basePath={apiBasepath}>
-      <Switch>
-        <Route path={'/'} exact>
-          <ConnectedConnectorsPage />
-        </Route>
-        <Route path={'/create-connector'}>
-          <PageSection padding={{ default: 'noPadding' }}>
-            <CreationWizardMachineProvider
-              accessToken={getToken}
-              basePath={apiBasepath}
-              fetchConfigurator={connector =>
-                fetchConfigurator(connector, cos.configurators)
-              }
-              onSave={goToConnectorsList}
-            >
-              <CreationWizard onClose={goToConnectorsList} />
-            </CreationWizardMachineProvider>
-          </PageSection>
-        </Route>
-      </Switch>
+      <NotificationProvider>
+        <Switch>
+          <Route path={'/'} exact>
+            <ConnectedConnectorsPage />
+          </Route>
+          <Route path={'/create-connector'}>
+            <PageSection padding={{ default: 'noPadding' }}>
+              <CreationWizardMachineProvider
+                accessToken={getToken}
+                basePath={apiBasepath}
+                fetchConfigurator={connector =>
+                  fetchConfigurator(connector, cos.configurators)
+                }
+                onSave={goToConnectorsList}
+              >
+                <CreationWizard onClose={goToConnectorsList} />
+              </CreationWizardMachineProvider>
+            </PageSection>
+          </Route>
+        </Switch>
+      </NotificationProvider>
     </AppContextProvider>
   );
 };

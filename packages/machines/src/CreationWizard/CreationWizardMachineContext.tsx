@@ -7,6 +7,7 @@ import React, {
   useContext,
 } from 'react';
 import { ClustersMachineActorRef } from './ClustersMachine';
+import { AlertVariant, useAlert } from '@bf2/ui-shared';
 import {
   configuratorLoaderMachine,
   ConnectorConfiguratorResponse,
@@ -39,6 +40,7 @@ export const CreationWizardMachineProvider: FunctionComponent<CreationWizardMach
   fetchConfigurator,
   onSave,
 }) => {
+  const { addAlert } = useAlert();
   const makeConfiguratorLoaderMachine = useCallback(
     () =>
       configuratorLoaderMachine.withConfig({
@@ -62,7 +64,12 @@ export const CreationWizardMachineProvider: FunctionComponent<CreationWizardMach
     },
     state => {
       if (state.done) {
+        debugger;
         onSave();
+        addAlert({
+          title: `${state.context.connectorName} connector created successfully.`,
+          variant: AlertVariant.success,
+        });
       }
     }
   );

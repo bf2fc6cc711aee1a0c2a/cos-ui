@@ -217,6 +217,10 @@ export const reviewMachine = createMachine<typeof reviewMachineModel>(
       },
       saved: {
         type: 'final',
+        data: {
+          configuration: (context: Context) => JSON.parse(context.configString),
+          connectorName: (context: Context) => context.name,
+        },
       },
     },
   },
