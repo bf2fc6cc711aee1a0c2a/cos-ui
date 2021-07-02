@@ -8,6 +8,7 @@ import {
   EmptyStateVariant,
   Loading,
   NoMatchFound,
+  useDebounce,
 } from '@cos-ui/utils';
 import {
   Button,
@@ -47,21 +48,30 @@ import React, {
   useRef,
   useState,
   SyntheticEvent,
+  useEffect,
 } from 'react';
 import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
-export function SelectKafkaInstance() {
+
+const defaultPerPageOptions = [
+  {
+    title: '1',
+    value: 1,
+  },
+  {
+    title: '5',
+    value: 5,
+  },
+  {
+    title: '10',
+    value: 10,
+  },
+];
+
+export const SelectKafkaInstance: FunctionComponent = () => {
   const actor = useCreationWizardMachineKafkasActor();
   const isReady = useKafkasMachineIsReady(actor);
-
   return isReady ? <KafkasGallery /> : null;
-}
-export type FilterValue = {
-  value: string;
-};
-export type FilterType = {
-  filterKey: string;
-  filterValue: FilterValue[];
 };
 const KafkasGallery: FunctionComponent = () => {
   const history = useHistory();
@@ -167,181 +177,16 @@ const KafkasGallery: FunctionComponent = () => {
 };
 
 const KafkaToolbar: FunctionComponent = () => {
+  const { t } = useTranslation();
+
   const actor = useCreationWizardMachineKafkasActor();
   const { request, response, onQuery } = useKafkasMachine(actor);
+
   const [statusesToggled, setStatusesToggled] = useState(false);
   const [cloudProvidersToggled, setCloudProvidersToggled] = useState(false);
   const [regionsToggled, setRegionsToggled] = useState(false);
   const [categoryToggled, setCategoryToggled] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('Name');
-  const [nameFilter, setNameFilter] = useState<string | undefined>();
-  const [ownerFilter, setOwnerFilter] = useState<string | undefined>();
-  const [filteredValue, setFilteredValue] = useState<Array<FilterType>>([]);
-  const { t } = useTranslation();
-
-  const clearAllFilters = useCallback(() => {
-    onQuery({ page: 1, size: request.size });
-    setFilteredValue([]);
-  }, [onQuery, request.size]);
-
-  const nameInputRef = useRef<HTMLInputElement | null>(null);
-  const ownerInputRef = useRef<HTMLInputElement | null>(null);
-
-  const defaultPerPageOptions = [
-    {
-      title: '1',
-      value: 1,
-    },
-    {
-      title: '5',
-      value: 5,
-    },
-    {
-      title: '10',
-      value: 10,
-    },
-  ];
-  const updateFilter = (
-    key: string,
-    filter: FilterValue,
-    removeIfPresent: boolean
-  ) => {
-    const newFilterValue: FilterType[] = Object.assign([], filteredValue);
-    const filterIndex = newFilterValue.findIndex(f => f.filterKey === key);
-    if (filterIndex > -1) {
-      const filterValue = newFilterValue[filterIndex];
-      if (filterValue.filterValue && filterValue.filterValue.length > 0) {
-        const filterValueIndex = filterValue.filterValue.findIndex(
-          f => f.value === filter.value
-        );
-        if (filterValueIndex > -1) {
-          if (removeIfPresent) {
-            filterValue.filterValue.splice(filterValueIndex, 1);
-          } else {
-            return;
-          }
-        } else {
-          newFilterValue[filterIndex].filterValue.push(filter);
-        }
-      } else {
-        newFilterValue[filterIndex].filterValue = [filter];
-      }
-    } else {
-      newFilterValue.push({ filterKey: key, filterValue: [filter] });
-    }
-    setFilteredValue(newFilterValue);
-    const currentFilterValue = newFilterValue.reduce((acc, obj) => {
-      const { filterKey: key, filterValue: value } = obj;
-      return { ...acc, [key]: value.map(o => o.value) };
-    }, {});
-    onQuery({
-      ...request,
-      query: {
-        ...(request.query || {}),
-        ...currentFilterValue,
-      },
-    });
-  };
-  const onFilter = (filterType: string) => {
-    if (filterType === 'name' && nameFilter) {
-      updateFilter('name', { value: nameFilter }, false);
-      setNameFilter('');
-    } else if (filterType === 'owner' && ownerFilter) {
-      updateFilter('owner', { value: ownerFilter }, false);
-      setOwnerFilter('');
-    }
-  };
-  const getSelectionForFilter = (key: string) => {
-    const selectedFilters = filteredValue?.filter(
-      filter => filter.filterKey === key
-    );
-
-    if (selectedFilters?.length > 0) {
-      return selectedFilters[0]?.filterValue.map(val => val.value);
-    }
-    return [];
-  };
-
-  const onDeleteChip = (
-    category: string,
-    chip: string | ToolbarChip,
-    filterOptions?: Array<any>
-  ) => {
-    let newFilteredVal: FilterType[] = Object.assign([], filteredValue);
-    const filterIndex = newFilteredVal.findIndex(
-      filter => filter.filterKey === category
-    );
-    const prevFilterValue: FilterValue[] = Object.assign(
-      [],
-      newFilteredVal[filterIndex]?.filterValue
-    );
-    let filterChip: string | undefined = chip.toString();
-    if (filterOptions && filterOptions?.length > 0) {
-      filterChip = filterOptions?.find(
-        option => option.label === chip.toString()
-      )?.value;
-    }
-    const chipIndex = prevFilterValue.findIndex(
-      val => val.value === filterChip
-    );
-    if (chipIndex >= 0) {
-      newFilteredVal[filterIndex].filterValue.splice(chipIndex, 1);
-      setFilteredValue(newFilteredVal);
-      const currentFilterValue = newFilteredVal.reduce((acc, obj) => {
-        const { filterKey: key, filterValue: value } = obj;
-        return { ...acc, [key]: value.map(o => o.value) };
-      }, {});
-      onQuery({
-        ...request,
-        query: {
-          ...(request.query || {}),
-          ...currentFilterValue,
-        },
-      });
-    }
-  };
-  const onDeleteChipGroup = (category: string) => {
-    const newFilteredValue: FilterType[] = Object.assign([], filteredValue);
-    const filterIndex = newFilteredValue.findIndex(
-      filter => filter.filterKey === category
-    );
-    if (filterIndex >= 0) {
-      newFilteredValue.splice(filterIndex, 1);
-      setFilteredValue(newFilteredValue);
-    }
-    onQuery({
-      ...request,
-      query: {
-        ...(request.query || {}),
-        [category]: undefined,
-      },
-    });
-  };
-  const onNameFilterChange = (value?: string) => {
-    setNameFilter(value || '');
-  };
-  const onOwnerFilterChange = (value?: string) => {
-    setOwnerFilter(value);
-  };
-  const onSelectStatus = (
-    _category: string | ToolbarChipGroup,
-    status: string | ToolbarChip
-  ) => {
-    updateFilter('statuses', { value: status.toString() }, true);
-  };
-  const onSelectCloudProvider = (
-    _category: string | ToolbarChipGroup,
-    cloudProvider: string | ToolbarChip
-  ) => {
-    updateFilter('cloudProviders', { value: cloudProvider.toString() }, true);
-  };
-  const onSelectRegions = (
-    _category: string | ToolbarChipGroup,
-    region: string | ToolbarChip
-  ) => {
-    updateFilter('regions', { value: region.toString() }, true);
-  };
-
   const onToggleStatuses = useCallback(
     () => setStatusesToggled(prev => !prev),
     []
@@ -359,6 +204,64 @@ const KafkaToolbar: FunctionComponent = () => {
     []
   );
 
+  const debouncedOnQuery = useDebounce(onQuery, 1000);
+
+  const { name, owner, cloudProviders = [], regions = [], statuses = [] } =
+    request.query || {};
+
+  const clearAllFilters = useCallback(
+    () => onQuery({ page: 1, size: request.size }),
+    [onQuery, request.size]
+  );
+
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
+  const ownerInputRef = useRef<HTMLInputElement | null>(null);
+
+  const onSelectFilter = (category: string, values: string[], value: string) =>
+    onQuery({
+      ...request,
+      query: {
+        ...(request.query || {}),
+        [category]: values.includes(value)
+          ? values.filter(s => s !== value)
+          : [...(values || []), value],
+      },
+    });
+
+  const onSelectStatus = (
+    _category: string | ToolbarChipGroup,
+    value: string | ToolbarChip
+  ) => {
+    onSelectFilter('statuses', statuses, (value as ToolbarChip).key);
+  };
+
+  const onSelectCloudProvider = (
+    _category: string | ToolbarChipGroup,
+    value: string | ToolbarChip
+  ) => {
+    onSelectFilter(
+      'cloudProviders',
+      cloudProviders,
+      (value as ToolbarChip).key
+    );
+  };
+
+  const onSelectRegion = (
+    _category: string | ToolbarChipGroup,
+    value: string | ToolbarChip
+  ) => {
+    onSelectFilter('regions', regions, (value as ToolbarChip).key);
+  };
+
+  const onDeleteQueryGroup = (category: string) =>
+    onQuery({
+      ...request,
+      query: {
+        ...(request.query || {}),
+        [category]: undefined,
+      },
+    });
+
   const selectCategory = useCallback(
     (event?: SyntheticEvent<HTMLDivElement, Event> | undefined) => {
       const eventTarget = event?.target as HTMLElement;
@@ -368,6 +271,17 @@ const KafkaToolbar: FunctionComponent = () => {
     },
     []
   );
+
+  // ensure the search input value reflects what's specified in the request object
+  useEffect(() => {
+    if (nameInputRef.current) {
+      nameInputRef.current.value = name || '';
+    }
+    if (ownerInputRef.current) {
+      ownerInputRef.current.value = owner || '';
+    }
+  }, [nameInputRef, name, owner]);
+
   const filterCategoryMenuItems = filterCategoryOptions.map(
     ({ value, label }) => <DropdownItem key={value}>{label}</DropdownItem>
   );
@@ -417,11 +331,9 @@ const KafkaToolbar: FunctionComponent = () => {
         {filterCategoryDropdown}
 
         <ToolbarFilter
-          chips={getSelectionForFilter('statuses')?.map(status => t(status))}
-          deleteChip={(_category, chip) =>
-            onDeleteChip('statuses', chip, statusOptions)
-          }
-          deleteChipGroup={() => onDeleteChipGroup('statuses')}
+          chips={statuses.map(v => stringToChip(v, t))}
+          deleteChip={onSelectStatus}
+          deleteChipGroup={() => onDeleteQueryGroup('statuses')}
           categoryName={t('status')}
           showToolbarItem={selectedCategory === t('status')}
         >
@@ -429,23 +341,21 @@ const KafkaToolbar: FunctionComponent = () => {
             variant={'checkbox'}
             aria-label={t('status')}
             onToggle={onToggleStatuses}
-            onSelect={(_, value) => onSelectStatus('', value as string)}
-            selections={getSelectionForFilter('statuses')}
+            onSelect={(_, v) =>
+              onSelectStatus('', stringToChip(v as string, t))
+            }
+            selections={statuses}
             isOpen={statusesToggled}
-            placeholderText={t('status')}
+            placeholderText={t('Filter by status')}
           >
             {statusMenuItems}
           </Select>
         </ToolbarFilter>
 
         <ToolbarFilter
-          chips={getSelectionForFilter('cloudProviders')?.map(cloudProvider =>
-            t(cloudProvider)
-          )}
-          deleteChip={(_category, chip) =>
-            onDeleteChip('cloudProviders', chip, cloudProviderOptions)
-          }
-          deleteChipGroup={() => onDeleteChipGroup('cloudProviders')}
+          chips={cloudProviders.map(v => stringToChip(v, t))}
+          deleteChip={onSelectCloudProvider}
+          deleteChipGroup={() => onDeleteQueryGroup('cloudProviders')}
           categoryName={t('CloudProvider')}
           showToolbarItem={selectedCategory === t('CloudProvider')}
         >
@@ -453,20 +363,21 @@ const KafkaToolbar: FunctionComponent = () => {
             variant={'checkbox'}
             aria-label={t('CloudProvider')}
             onToggle={onToggleCloudProviders}
-            onSelect={(_, value) => onSelectCloudProvider('', value as string)}
-            selections={getSelectionForFilter('cloudProviders')}
+            onSelect={(_, v) =>
+              onSelectCloudProvider('', stringToChip(v as string, t))
+            }
+            selections={cloudProviders}
             isOpen={cloudProvidersToggled}
-            placeholderText={t('CloudProvider')}
+            placeholderText={t('Filter by cloud provider')}
           >
             {cloudProviderMenuItems}
           </Select>
         </ToolbarFilter>
+
         <ToolbarFilter
-          chips={getSelectionForFilter('regions')?.map(region => t(region))}
-          deleteChip={(_category, chip) =>
-            onDeleteChip('regions', chip, regionOptions)
-          }
-          deleteChipGroup={() => onDeleteChipGroup('regions')}
+          chips={regions.map(v => stringToChip(v, t))}
+          deleteChip={onSelectRegion}
+          deleteChipGroup={() => onDeleteQueryGroup('regions')}
           categoryName={t('region')}
           showToolbarItem={selectedCategory === t('region')}
         >
@@ -474,19 +385,20 @@ const KafkaToolbar: FunctionComponent = () => {
             variant={'checkbox'}
             aria-label={t('region')}
             onToggle={onToggleRegions}
-            onSelect={(_, value) => onSelectRegions('', value as string)}
-            selections={getSelectionForFilter('regions')}
+            onSelect={(_, v) =>
+              onSelectRegion('', stringToChip(v as string, t))
+            }
+            selections={regions}
             isOpen={regionsToggled}
-            placeholderText={t('region')}
+            placeholderText={t('Filter by region')}
           >
             {regionMenuItems}
           </Select>
         </ToolbarFilter>
 
         <ToolbarFilter
-          chips={getSelectionForFilter('name')}
-          deleteChip={(_category, chip) => onDeleteChip('name', chip)}
-          deleteChipGroup={() => onDeleteChipGroup('name')}
+          chips={name ? [name] : []}
+          deleteChip={() => onDeleteQueryGroup('name')}
           categoryName={t('name')}
         >
           {selectedCategory === t('name') && (
@@ -498,14 +410,31 @@ const KafkaToolbar: FunctionComponent = () => {
                   type="search"
                   placeholder={t('nameSearchPlaceholder')}
                   aria-label={t('nameSearchPlaceholder')}
-                  onChange={value => onNameFilterChange(value)}
-                  value={nameFilter || ''}
-                  ref={nameInputRef as React.RefObject<HTMLInputElement>}
+                  onChange={name =>
+                    debouncedOnQuery({
+                      size: request.size,
+                      page: 1,
+                      query: {
+                        ...request.query,
+                        name,
+                      },
+                    })
+                  }
+                  ref={nameInputRef}
                 />
                 <Button
                   variant={'control'}
                   aria-label="search button for name input"
-                  onClick={() => onFilter('name')}
+                  onClick={() =>
+                    onQuery({
+                      size: request.size,
+                      page: 1,
+                      query: {
+                        ...request.query,
+                        name: nameInputRef.current?.value || '',
+                      },
+                    })
+                  }
                 >
                   <SearchIcon />
                 </Button>
@@ -515,9 +444,8 @@ const KafkaToolbar: FunctionComponent = () => {
         </ToolbarFilter>
 
         <ToolbarFilter
-          chips={getSelectionForFilter('owner')}
-          deleteChip={(_category, chip) => onDeleteChip('owner', chip)}
-          deleteChipGroup={() => onDeleteChipGroup('owner')}
+          chips={owner ? [owner] : []}
+          deleteChip={() => onDeleteQueryGroup('owner')}
           categoryName={t('owner')}
         >
           {selectedCategory === t('owner') && (
@@ -529,14 +457,31 @@ const KafkaToolbar: FunctionComponent = () => {
                   type="search"
                   placeholder={t('ownerSearchPlaceholder')}
                   aria-label={t('ownerSearchPlaceholder')}
-                  onChange={value => onOwnerFilterChange(value)}
-                  value={ownerFilter || ''}
-                  ref={ownerInputRef as React.RefObject<HTMLInputElement>}
+                  onChange={owner =>
+                    debouncedOnQuery({
+                      size: request.size,
+                      page: 1,
+                      query: {
+                        ...request.query,
+                        owner,
+                      },
+                    })
+                  }
+                  ref={ownerInputRef}
                 />
                 <Button
                   variant={'control'}
                   aria-label="search button for owner input"
-                  onClick={() => onFilter('owner')}
+                  onClick={() =>
+                    onQuery({
+                      size: request.size,
+                      page: 1,
+                      query: {
+                        ...request.query,
+                        owner: ownerInputRef.current?.value || '',
+                      },
+                    })
+                  }
                 >
                   <SearchIcon />
                 </Button>
@@ -622,3 +567,8 @@ const statusOptions: KeyValueOptions[] = [
 const regionOptions: KeyValueOptions[] = [
   { value: 'us-east-1', label: 'US East, N. Virginia' },
 ];
+
+const stringToChip = (
+  value: string,
+  t: (key: string) => string
+): ToolbarChip => ({ key: value, node: t(value) });

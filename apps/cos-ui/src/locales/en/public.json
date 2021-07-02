@@ -19,6 +19,14 @@
   "deleteTypeNameMessage": "Type <1>{{connectorName}}</1> to confirm the deletion.",
   "loading": "Loading",
   "selectOcmCluster": "Select OCM cluster",
+  "Filter by status": "Filter by status",
+  "CloudProvider": "Cloud Provider",
+  "Filter by cloud provider": "Filter by cloud provider",
+  "region": "Region",
+  "Filter by region": "Filter by region",
+  "nameSearchPlaceholder": "Filter by name",
+  "owner": "Owner",
+  "ownerSearchPlaceholder": "Filter by owner",
   "id": "id",
   "Ready": "Ready",
   "Deletion in progress": "Deletion in progress",
@@ -34,10 +42,5 @@
   "provisioning": "Creation in progress",
   "preparing": "Creation in progress",
   "deprovision": "Deletion in progress",
-  "deleted": "Deletion in progress",
-  "CloudProvider": "Cloud Provider",
-  "region": "Region",
-  "owner": "Owner",
-  "ownerSearchPlaceholder": "Search by owner",
-  "nameSearchPlaceholder": "Search by name"
+  "deleted": "Deletion in progress"
 }

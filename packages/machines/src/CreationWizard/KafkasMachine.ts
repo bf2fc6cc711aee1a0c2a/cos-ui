@@ -73,6 +73,7 @@ const fetchKafkaInstances = (
       regionSearch,
     ]
       .filter(Boolean)
+      .map(s => `(${s})`)
       .join(' AND ');
     apisService
       .getKafkas(
