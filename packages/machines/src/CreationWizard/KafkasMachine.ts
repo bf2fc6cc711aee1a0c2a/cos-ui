@@ -26,8 +26,10 @@ const PAGINATED_MACHINE_ID = 'paginatedApi';
 
 type KafkasQuery = {
   name?: string;
+  owner?: string;
   statuses?: string[];
-  cloudProvider?: string[];
+  cloudProviders?: string[];
+  regions?: string[];
 };
 
 const fetchKafkaInstances = (
@@ -46,14 +48,33 @@ const fetchKafkaInstances = (
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     const { page, size, query } = request;
-    const { name, statuses } = query || {};
+    const { name, statuses, owner, cloudProviders, regions } = query || {};
     const nameSearch =
       name && name.length > 0 ? ` name LIKE ${name}` : undefined;
+    const ownerSearch =
+      owner && owner.length > 0 ? ` owner LIKE ${owner}` : undefined;
     const statusSearch =
       statuses && statuses.length > 0
         ? statuses.map(s => `status = ${s}`).join(' OR ')
         : undefined;
-    const search = [nameSearch, statusSearch].filter(Boolean).join(' AND ');
+    const cloudProviderSearch =
+      cloudProviders && cloudProviders.length > 0
+        ? cloudProviders.map(s => `cloud_provider = ${s}`).join(' OR ')
+        : undefined;
+    const regionSearch =
+      regions && regions.length > 0
+        ? regions.map(s => `region = ${s}`).join(' OR ')
+        : undefined;
+    const search = [
+      nameSearch,
+      ownerSearch,
+      statusSearch,
+      cloudProviderSearch,
+      regionSearch,
+    ]
+      .filter(Boolean)
+      .map(s => `(${s})`)
+      .join(' AND ');
     apisService
       .getKafkas(
         `${page}`,

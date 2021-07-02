@@ -33,32 +33,46 @@ import {
   ToolbarChipGroup,
   ToolbarContent,
   ToolbarFilter,
-  // ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
+  Dropdown,
+  DropdownToggle,
+  DropdownItem,
+  DropdownPosition,
 } from '@patternfly/react-core';
-import {
-  // ExclamationCircleIcon,
-  FilterIcon,
-  SearchIcon,
-} from '@patternfly/react-icons';
+import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 import React, {
   FunctionComponent,
   useCallback,
-  useEffect,
   useRef,
   useState,
+  SyntheticEvent,
+  useEffect,
 } from 'react';
 import { useHistory } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
-export function SelectKafkaInstance() {
+const defaultPerPageOptions = [
+  {
+    title: '1',
+    value: 1,
+  },
+  {
+    title: '5',
+    value: 5,
+  },
+  {
+    title: '10',
+    value: 10,
+  },
+];
+
+export const SelectKafkaInstance: FunctionComponent = () => {
   const actor = useCreationWizardMachineKafkasActor();
   const isReady = useKafkasMachineIsReady(actor);
-
   return isReady ? <KafkasGallery /> : null;
-}
-
+};
 const KafkasGallery: FunctionComponent = () => {
   const history = useHistory();
   const actor = useCreationWizardMachineKafkasActor();
@@ -163,119 +177,317 @@ const KafkasGallery: FunctionComponent = () => {
 };
 
 const KafkaToolbar: FunctionComponent = () => {
+  const { t } = useTranslation();
+
   const actor = useCreationWizardMachineKafkasActor();
   const { request, response, onQuery } = useKafkasMachine(actor);
-  const { name = '', statuses = [] } = request.query || {};
+
+  const [statusesToggled, setStatusesToggled] = useState(false);
+  const [cloudProvidersToggled, setCloudProvidersToggled] = useState(false);
+  const [regionsToggled, setRegionsToggled] = useState(false);
+  const [categoryToggled, setCategoryToggled] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('Name');
+  const onToggleStatuses = useCallback(
+    () => setStatusesToggled(prev => !prev),
+    []
+  );
+  const onToggleCloudProviders = useCallback(
+    () => setCloudProvidersToggled(prev => !prev),
+    []
+  );
+  const onToggleRegions = useCallback(
+    () => setRegionsToggled(prev => !prev),
+    []
+  );
+  const onFilterCategoryToggle = useCallback(
+    () => setCategoryToggled(prev => !prev),
+    []
+  );
+
+  const debouncedOnQuery = useDebounce(onQuery, 1000);
+
+  const { name, owner, cloudProviders = [], regions = [], statuses = [] } =
+    request.query || {};
+
   const clearAllFilters = useCallback(
     () => onQuery({ page: 1, size: request.size }),
     [onQuery, request.size]
   );
 
-  const searchInputRef = useRef<HTMLInputElement | null>(null);
-  const debouncedOnQuery = useDebounce(onQuery, 1000);
-  const defaultPerPageOptions = [
-    {
-      title: '1',
-      value: 1,
-    },
-    {
-      title: '5',
-      value: 5,
-    },
-    {
-      title: '10',
-      value: 10,
-    },
-  ];
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
+  const ownerInputRef = useRef<HTMLInputElement | null>(null);
+
+  const onSelectFilter = (category: string, values: string[], value: string) =>
+    onQuery({
+      ...request,
+      query: {
+        ...(request.query || {}),
+        [category]: values.includes(value)
+          ? values.filter(s => s !== value)
+          : [...(values || []), value],
+      },
+    });
 
   const onSelectStatus = (
     _category: string | ToolbarChipGroup,
-    status: string | ToolbarChip
-  ) =>
+    value: string | ToolbarChip
+  ) => {
+    onSelectFilter('statuses', statuses, (value as ToolbarChip).key);
+  };
+
+  const onSelectCloudProvider = (
+    _category: string | ToolbarChipGroup,
+    value: string | ToolbarChip
+  ) => {
+    onSelectFilter(
+      'cloudProviders',
+      cloudProviders,
+      (value as ToolbarChip).key
+    );
+  };
+
+  const onSelectRegion = (
+    _category: string | ToolbarChipGroup,
+    value: string | ToolbarChip
+  ) => {
+    onSelectFilter('regions', regions, (value as ToolbarChip).key);
+  };
+
+  const onDeleteQueryGroup = (category: string) =>
     onQuery({
       ...request,
       query: {
         ...(request.query || {}),
-        statuses: statuses?.includes(status as string)
-          ? statuses.filter(s => s !== status)
-          : [...(statuses || []), status as string],
+        [category]: undefined,
       },
     });
 
-  const onDeleteStatusGroup = () =>
-    onQuery({
-      ...request,
-      query: {
-        ...(request.query || {}),
-        statuses: undefined,
-      },
-    });
-  const [statusesToggled, setStatusesToggled] = useState(false);
-  const onToggleStatuses = useCallback(
-    () => setStatusesToggled(prev => !prev),
+  const selectCategory = useCallback(
+    (event?: SyntheticEvent<HTMLDivElement, Event> | undefined) => {
+      const eventTarget = event?.target as HTMLElement;
+      const selectedCategory = eventTarget.innerText;
+      setSelectedCategory(selectedCategory);
+      setCategoryToggled(prev => !prev);
+    },
     []
   );
 
-  const statusMenuItems = statusOptions.map(({ value, label }) => (
+  // ensure the search input value reflects what's specified in the request object
+  useEffect(() => {
+    if (nameInputRef.current) {
+      nameInputRef.current.value = name || '';
+    }
+    if (ownerInputRef.current) {
+      ownerInputRef.current.value = owner || '';
+    }
+  }, [nameInputRef, name, owner]);
+
+  const filterCategoryMenuItems = filterCategoryOptions.map(
+    ({ value, label }) => <DropdownItem key={value}>{label}</DropdownItem>
+  );
+  const statusMenuItems = statusOptions
+    .filter(option => option.value !== 'preparing')
+    .map(({ value, label }) => (
+      <SelectOption key={value} value={value}>
+        {label}
+      </SelectOption>
+    ));
+  const cloudProviderMenuItems = cloudProviderOptions.map(
+    ({ value, label }) => (
+      <SelectOption key={value} value={value}>
+        {label}
+      </SelectOption>
+    )
+  );
+  const regionMenuItems = regionOptions.map(({ value, label }) => (
     <SelectOption key={value} value={value}>
       {label}
     </SelectOption>
   ));
 
-  // ensure the search input value reflects what's specified in the request object
-  useEffect(() => {
-    if (searchInputRef.current) {
-      searchInputRef.current.value = name;
-    }
-  }, [searchInputRef, name]);
+  const filterCategoryDropdown = (
+    <ToolbarItem>
+      <Dropdown
+        onSelect={event => selectCategory(event)}
+        position={DropdownPosition.left}
+        toggle={
+          <DropdownToggle
+            onToggle={onFilterCategoryToggle}
+            style={{ width: '100%' }}
+          >
+            <FilterIcon size="sm" /> {selectedCategory}
+          </DropdownToggle>
+        }
+        isOpen={categoryToggled}
+        dropdownItems={filterCategoryMenuItems}
+        style={{ width: '100%' }}
+      ></Dropdown>
+    </ToolbarItem>
+  );
 
   const toggleGroupItems = (
     <>
-      <ToolbarItem>
-        <InputGroup>
-          <TextInput
-            name="textInput2"
-            id="textInput2"
-            type="search"
-            aria-label="search input example"
-            onChange={value =>
-              debouncedOnQuery({
-                size: request.size,
-                page: 1,
-                query: {
-                  name: value,
-                  statuses,
-                },
-              })
-            }
-            ref={searchInputRef}
-          />
-          <Button
-            variant={'control'}
-            aria-label="search button for search input"
-          >
-            <SearchIcon />
-          </Button>
-        </InputGroup>
-      </ToolbarItem>
       <ToolbarGroup variant="filter-group">
+        {filterCategoryDropdown}
+
         <ToolbarFilter
-          chips={statuses}
+          chips={statuses.map(v => stringToChip(v, t))}
           deleteChip={onSelectStatus}
-          deleteChipGroup={onDeleteStatusGroup}
-          categoryName="Status"
+          deleteChipGroup={() => onDeleteQueryGroup('statuses')}
+          categoryName={t('status')}
+          showToolbarItem={selectedCategory === t('status')}
         >
           <Select
             variant={'checkbox'}
-            aria-label="Status"
+            aria-label={t('status')}
             onToggle={onToggleStatuses}
-            onSelect={(_, value) => onSelectStatus('', value as string)}
+            onSelect={(_, v) =>
+              onSelectStatus('', stringToChip(v as string, t))
+            }
             selections={statuses}
             isOpen={statusesToggled}
-            placeholderText="Status"
+            placeholderText={t('Filter by status')}
           >
             {statusMenuItems}
           </Select>
+        </ToolbarFilter>
+
+        <ToolbarFilter
+          chips={cloudProviders.map(v => stringToChip(v, t))}
+          deleteChip={onSelectCloudProvider}
+          deleteChipGroup={() => onDeleteQueryGroup('cloudProviders')}
+          categoryName={t('CloudProvider')}
+          showToolbarItem={selectedCategory === t('CloudProvider')}
+        >
+          <Select
+            variant={'checkbox'}
+            aria-label={t('CloudProvider')}
+            onToggle={onToggleCloudProviders}
+            onSelect={(_, v) =>
+              onSelectCloudProvider('', stringToChip(v as string, t))
+            }
+            selections={cloudProviders}
+            isOpen={cloudProvidersToggled}
+            placeholderText={t('Filter by cloud provider')}
+          >
+            {cloudProviderMenuItems}
+          </Select>
+        </ToolbarFilter>
+
+        <ToolbarFilter
+          chips={regions.map(v => stringToChip(v, t))}
+          deleteChip={onSelectRegion}
+          deleteChipGroup={() => onDeleteQueryGroup('regions')}
+          categoryName={t('region')}
+          showToolbarItem={selectedCategory === t('region')}
+        >
+          <Select
+            variant={'checkbox'}
+            aria-label={t('region')}
+            onToggle={onToggleRegions}
+            onSelect={(_, v) =>
+              onSelectRegion('', stringToChip(v as string, t))
+            }
+            selections={regions}
+            isOpen={regionsToggled}
+            placeholderText={t('Filter by region')}
+          >
+            {regionMenuItems}
+          </Select>
+        </ToolbarFilter>
+
+        <ToolbarFilter
+          chips={name ? [name] : []}
+          deleteChip={() => onDeleteQueryGroup('name')}
+          categoryName={t('name')}
+        >
+          {selectedCategory === t('name') && (
+            <ToolbarItem>
+              <InputGroup>
+                <TextInput
+                  name={t('name')}
+                  id={t('name')}
+                  type="search"
+                  placeholder={t('nameSearchPlaceholder')}
+                  aria-label={t('nameSearchPlaceholder')}
+                  onChange={name =>
+                    debouncedOnQuery({
+                      size: request.size,
+                      page: 1,
+                      query: {
+                        ...request.query,
+                        name,
+                      },
+                    })
+                  }
+                  ref={nameInputRef}
+                />
+                <Button
+                  variant={'control'}
+                  aria-label="search button for name input"
+                  onClick={() =>
+                    onQuery({
+                      size: request.size,
+                      page: 1,
+                      query: {
+                        ...request.query,
+                        name: nameInputRef.current?.value || '',
+                      },
+                    })
+                  }
+                >
+                  <SearchIcon />
+                </Button>
+              </InputGroup>
+            </ToolbarItem>
+          )}
+        </ToolbarFilter>
+
+        <ToolbarFilter
+          chips={owner ? [owner] : []}
+          deleteChip={() => onDeleteQueryGroup('owner')}
+          categoryName={t('owner')}
+        >
+          {selectedCategory === t('owner') && (
+            <ToolbarItem>
+              <InputGroup>
+                <TextInput
+                  name={t('owner')}
+                  id={t('owner')}
+                  type="search"
+                  placeholder={t('ownerSearchPlaceholder')}
+                  aria-label={t('ownerSearchPlaceholder')}
+                  onChange={owner =>
+                    debouncedOnQuery({
+                      size: request.size,
+                      page: 1,
+                      query: {
+                        ...request.query,
+                        owner,
+                      },
+                    })
+                  }
+                  ref={ownerInputRef}
+                />
+                <Button
+                  variant={'control'}
+                  aria-label="search button for owner input"
+                  onClick={() =>
+                    onQuery({
+                      size: request.size,
+                      page: 1,
+                      query: {
+                        ...request.query,
+                        owner: ownerInputRef.current?.value || '',
+                      },
+                    })
+                  }
+                >
+                  <SearchIcon />
+                </Button>
+              </InputGroup>
+            </ToolbarItem>
+          )}
         </ToolbarFilter>
       </ToolbarGroup>
     </>
@@ -306,7 +518,6 @@ const KafkaToolbar: FunctionComponent = () => {
       </ToolbarItem>
     </>
   );
-
   return (
     <Toolbar
       id="toolbar-group-types"
@@ -333,16 +544,17 @@ type KeyValueOptions = {
 //   DELETED = 'deleted',
 // }
 
-// const cloudProviderOptions: KeyValueOptions[] = [
-//   { value: 'aws', label: 'Amazon Web Services' },
-//   // Only aws is supported for now
-//   // { value: 'azure', label: 'Microsoft Azure' },
-//   // { value: 'baremetal', label: 'Bare Metal' },
-//   // { value: 'gcp', label: 'Google Cloud Platform' },
-//   // { value: 'libvirt', label: 'Libvirt' },
-//   // { value: 'openstack', label: 'OpenStack' },
-//   // { value: 'vsphere', label: 'VSphere' },
-// ];
+const filterCategoryOptions: KeyValueOptions[] = [
+  { value: 'name', label: 'Name' },
+  { value: 'status', label: 'Status' },
+  { value: 'cloudprovider', label: 'Cloud Provider' },
+  { value: 'region', label: 'Region' },
+  { value: 'owner', label: 'Owner' },
+];
+
+const cloudProviderOptions: KeyValueOptions[] = [
+  { value: 'aws', label: 'Amazon Web Services' },
+];
 
 const statusOptions: KeyValueOptions[] = [
   { value: 'ready', label: 'Ready' },
@@ -351,11 +563,12 @@ const statusOptions: KeyValueOptions[] = [
   { value: 'provisioning', label: 'Creation in progress' },
   { value: 'preparing', label: 'Creation in progress' },
   { value: 'deprovision', label: 'Deletion in progress' },
-  { value: 'deleted', label: 'Deletion in progress' },
+];
+const regionOptions: KeyValueOptions[] = [
+  { value: 'us-east-1', label: 'US East, N. Virginia' },
 ];
 
-// const getCloudProviderDisplayName = (value: string) => {
-//   return (
-//     cloudProviderOptions.find(option => option.value === value)?.label || value
-//   );
-// };
+const stringToChip = (
+  value: string,
+  t: (key: string) => string
+): ToolbarChip => ({ key: value, node: t(value) });
