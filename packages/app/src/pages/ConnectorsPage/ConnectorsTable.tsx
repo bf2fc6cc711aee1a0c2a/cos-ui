@@ -9,7 +9,7 @@ import {
   useConnectorsMachine,
   useConnectorsMachineService,
 } from '@cos-ui/machines';
-import { Flex, FlexItem, PageSection } from '@patternfly/react-core';
+import { Card, Flex, FlexItem } from '@patternfly/react-core';
 import { css } from '@patternfly/react-styles';
 import {
   IActions,
@@ -24,6 +24,7 @@ import {
 import { ConnectorStatusIcon } from './ConnectorStatusIcon';
 import { ConnectorsToolbar } from './ConnectorsToolbar';
 import { DeleteDialog } from './DeleteDialog';
+import { ConnectorsPagination } from './ConnectorsPagination';
 
 export const ConnectorsTable: FunctionComponent = () => {
   const { t } = useTranslation();
@@ -31,28 +32,30 @@ export const ConnectorsTable: FunctionComponent = () => {
   const { response } = useConnectorsMachine(service);
 
   return (
-    <PageSection padding={{ default: 'noPadding' }} isFilled>
+    <Card className={'pf-u-pb-xl'}>
       <ConnectorsToolbar />
-
-      <TableComposable
-        aria-label="Sortable Table"
-        className={css('connectors-table-view__table')}
-      >
-        <Thead>
-          <Tr>
-            <Th>{t('name')}</Th>
-            <Th>{t('type')}</Th>
-            <Th>{t('category')}</Th>
-            <Th>{t('status')}</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {response?.items?.map(ref => (
-            <ConnectorRow connectorRef={ref} key={ref.id} />
-          ))}
-        </Tbody>
-      </TableComposable>
-    </PageSection>
+      <div className={'pf-u-p-md'}>
+        <TableComposable
+          aria-label="Sortable Table"
+          className={css('connectors-table-view__table')}
+        >
+          <Thead>
+            <Tr>
+              <Th>{t('name')}</Th>
+              <Th>{t('type')}</Th>
+              <Th>{t('category')}</Th>
+              <Th>{t('status')}</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {response?.items?.map(ref => (
+              <ConnectorRow connectorRef={ref} key={ref.id} />
+            ))}
+          </Tbody>
+        </TableComposable>
+      </div>
+      <ConnectorsPagination isCompact={false} />
+    </Card>
   );
 };
 
