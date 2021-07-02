@@ -15,6 +15,7 @@ import {
 } from '@cos-ui/utils';
 import {
   ButtonVariant,
+  Card,
   PageSection,
   TextContent,
   Title,
@@ -81,7 +82,6 @@ export type ConnectorsPageBodyProps = {
 const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
   onCreateConnector,
 }: ConnectorsPageBodyProps) => {
-  const { t } = useTranslation();
   const service = useConnectorsMachineService();
   const {
     loading,
@@ -95,27 +95,26 @@ const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
 
   switch (true) {
     case firstRequest:
-      return (
-        <PageSection padding={{ default: 'noPadding' }} isFilled>
-          <Loading />
-        </PageSection>
-      );
+      return <Loading />;
     case queryEmpty:
       return (
-        <PageSection padding={{ default: 'noPadding' }} isFilled>
-          <NoMatchFound
-            onClear={() =>
-              service.send({ type: 'api.query', page: 1, size: 10 })
-            }
-          />
-        </PageSection>
+        <NoMatchFound
+          onClear={() => service.send({ type: 'api.query', page: 1, size: 10 })}
+        />
       );
     case loading:
       return (
-        <PageSection padding={{ default: 'noPadding' }} isFilled>
-          <ConnectorsToolbar />
-          <Loading />
-        </PageSection>
+        <>
+          <PageSection variant={'light'}>
+            <ConnectorsPageTitle />
+          </PageSection>
+          <PageSection padding={{ default: 'noPadding' }} isFilled>
+            <Card>
+              <ConnectorsToolbar />
+              <Loading />
+            </Card>
+          </PageSection>
+        </>
       );
     case noResults || error:
       return (
@@ -136,14 +135,21 @@ const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
       return (
         <ConnectorDrawer>
           <PageSection variant={'light'}>
-            <TextContent>
-              <Title headingLevel="h1">{t('managedConnectors')}</Title>
-            </TextContent>
+            <ConnectorsPageTitle />
           </PageSection>
-          <PageSection variant={'light'} padding={{ default: 'noPadding' }}>
+          <PageSection padding={{ default: 'noPadding' }} isFilled>
             <ConnectorsTable />
           </PageSection>
         </ConnectorDrawer>
       );
   }
+};
+
+const ConnectorsPageTitle: FunctionComponent = () => {
+  const { t } = useTranslation();
+  return (
+    <TextContent>
+      <Title headingLevel="h1">{t('managedConnectors')}</Title>
+    </TextContent>
+  );
 };

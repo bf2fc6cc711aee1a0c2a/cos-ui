@@ -7,7 +7,6 @@ import {
 import {
   EmptyState,
   EmptyStateIcon,
-  PageSection,
   Spinner,
   Title,
 } from '@patternfly/react-core';
@@ -129,20 +128,20 @@ export const Configuration: FunctionComponent = () => {
       );
     case hasCustomConfigurator:
       return (
-        <PageSection variant="light">
+        <div className="pf-u-background-color-200 pf-u-p-md">
           <React.Suspense fallback={null}>
             <ConnectedCustomConfigurator
               actor={configuratorRef}
               Configurator={Configurator as ConnectorConfiguratorComponent}
             />
           </React.Suspense>
-        </PageSection>
+        </div>
       );
     default:
       return (
-        <PageSection variant="light">
+        <div className="pf-u-background-color-200 pf-u-p-md">
           <ConnectedJsonSchemaConfigurator actor={configuratorRef} />
-        </PageSection>
+        </div>
       );
   }
 };

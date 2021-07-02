@@ -5,7 +5,6 @@ import {
   Form,
   FormAlert,
   FormGroup,
-  PageSection,
   Radio,
   TextInput,
 } from '@patternfly/react-core';
@@ -35,7 +34,7 @@ export function Review() {
     // monaco.editor.getModels()[0].updateOptions({ tabSize: 5 });
   }, []);
   return (
-    <PageSection variant="light">
+    <div className="pf-u-background-color-200 pf-u-p-md">
       <Form>
         {savingError && (
           <FormAlert>
@@ -144,6 +143,6 @@ export function Review() {
           </AlertGroup>
         </FormGroup>
       </Form>
-    </PageSection>
+    </div>
   );
 }

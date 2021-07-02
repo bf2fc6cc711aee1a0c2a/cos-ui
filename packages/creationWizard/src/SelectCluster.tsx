@@ -23,7 +23,6 @@ import {
   DescriptionListTerm,
   Gallery,
   InputGroup,
-  PageSection,
   Pagination,
   TextInput,
   Toolbar,
@@ -68,20 +67,20 @@ const ClustersGallery: FunctionComponent = () => {
   switch (true) {
     case firstRequest:
       return (
-        <PageSection padding={{ default: 'noPadding' }} isFilled>
+        <div className={'pf-u-background-color-200'}>
           <Loading />
-        </PageSection>
+        </div>
       );
     case queryEmpty:
       return (
-        <PageSection padding={{ default: 'noPadding' }} isFilled>
+        <div className={'pf-u-background-color-200'}>
           <ClustersToolbar />
           <NoMatchFound onClear={() => onQuery({ page: 1, size: 10 })} />
-        </PageSection>
+        </div>
       );
     case noResults || error:
       return (
-        <PageSection padding={{ default: 'noPadding' }} isFilled>
+        <div className={'pf-u-background-color-200'}>
           <EmptyState
             emptyStateProps={{ variant: EmptyStateVariant.GettingStarted }}
             titleProps={{ title: 'cos.no_clusters_instance' }}
@@ -94,20 +93,20 @@ const ClustersGallery: FunctionComponent = () => {
               onClick: () => history.push('/create-connector'),
             }}
           />
-        </PageSection>
+        </div>
       );
     case loading:
       return (
-        <PageSection padding={{ default: 'noPadding' }} isFilled>
+        <div className={'pf-u-background-color-200'}>
           <ClustersToolbar />
           <Loading />
-        </PageSection>
+        </div>
       );
     default:
       return (
-        <PageSection padding={{ default: 'noPadding' }} isFilled>
+        <div className={'pf-u-background-color-200'}>
           <ClustersToolbar />
-          <PageSection isFilled>
+          <div className={'pf-u-p-md'}>
             <Gallery hasGutter>
               {response?.items?.map(i => (
                 <Card
@@ -139,8 +138,8 @@ const ClustersGallery: FunctionComponent = () => {
                 </Card>
               ))}
             </Gallery>
-          </PageSection>
-        </PageSection>
+          </div>
+        </div>
       );
   }
 };

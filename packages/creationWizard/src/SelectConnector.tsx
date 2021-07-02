@@ -12,7 +12,6 @@ import {
   EmptyStateIcon,
   Gallery,
   InputGroup,
-  PageSection,
   Pagination,
   Select,
   SelectOption,
@@ -151,7 +150,7 @@ export function SelectConnector() {
         </>
       );
       return (
-        <PageSection padding={{ default: 'noPadding' }}>
+        <div className={'pf-u-background-color-200'}>
           <Toolbar
             id="toolbar-group-types"
             collapseListedFiltersBreakpoint="xl"
@@ -159,7 +158,7 @@ export function SelectConnector() {
           >
             <ToolbarContent>{toolbarItems}</ToolbarContent>
           </Toolbar>
-          <PageSection isFilled>
+          <div className="pf-u-p-md">
             <Gallery hasGutter>
               {actor.state.context.connectors?.items
                 .filter(i =>
@@ -202,8 +201,8 @@ export function SelectConnector() {
                   </Card>
                 ))}
             </Gallery>
-          </PageSection>
-        </PageSection>
+          </div>
+        </div>
       );
   }
 }
