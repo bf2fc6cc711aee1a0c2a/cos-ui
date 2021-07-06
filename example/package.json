@@ -8,21 +8,23 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
+    "@patternfly/patternfly": "^4.115.2",
     "@xstate/inspect": "^0.4.1",
     "react-app-polyfill": "^1.0.0"
   },
   "alias": {
+    "@bf2/ui-shared": "../node_modules/@bf2/ui-shared",
     "@cos-ui/api": "../packages/api",
     "@cos-ui/app": "../packages/app",
     "@cos-ui/creation-wizard": "../packages/creationWizard",
     "@cos-ui/json-schema-configurator": "../packages/jsonSchemaConfigurator",
     "@cos-ui/machines": "../packages/machines",
     "@cos-ui/utils": "../packages/utils",
-
+    "@patternfly/patternfly": "../node_modules/@patternfly/patternfly",
     "@patternfly/react-core": "../node_modules/@patternfly/react-core",
     "@patternfly/react-icons": "../node_modules/@patternfly/react-icons",
     "@patternfly/react-styles": "../node_modules/@patternfly/react-styles",
-    "@patternfly/react-table": "../node_modules/@patternfly/react-table",    
+    "@patternfly/react-table": "../node_modules/@patternfly/react-table",
     "axios": "../node_modules/axios",
     "keycloak-js": "../node_modules/keycloak-js",
     "react": "../node_modules/react",

@@ -8,6 +8,7 @@
     "@cos-ui/app": "^1.0.1"
   },
   "peerDependencies": {
+    "@patternfly/patternfly": "^4.108.2",
     "@patternfly/react-core": "^4.87.2",
     "@patternfly/react-icons": "^4.7.11",
     "@patternfly/react-styles": "^4.7.8",

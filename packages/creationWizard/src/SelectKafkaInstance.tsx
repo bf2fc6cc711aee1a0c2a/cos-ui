@@ -92,20 +92,20 @@ const KafkasGallery: FunctionComponent = () => {
   switch (true) {
     case firstRequest:
       return (
-        <div className={'pf-u-background-color-200'}>
+        <div className={'pf-l-stack pf-u-pf-u-background-color-200'}>
           <Loading />
         </div>
       );
     case queryEmpty:
       return (
-        <div className={'pf-u-background-color-200'}>
+        <div className={'pf-l-stack pf-u-background-color-200'}>
           <KafkaToolbar />
           <NoMatchFound onClear={() => onQuery({ page: 1, size: 10 })} />
         </div>
       );
     case noResults || error:
       return (
-        <div className={'pf-u-background-color-200'}>
+        <div className={'pf-l-stack pf-u-background-color-200'}>
           <EmptyState
             emptyStateProps={{ variant: EmptyStateVariant.GettingStarted }}
             titleProps={{ title: 'cos.no_kafka_instance' }}
@@ -122,14 +122,14 @@ const KafkasGallery: FunctionComponent = () => {
       );
     case loading:
       return (
-        <div className={'pf-u-background-color-200'}>
+        <div className={'pf-l-stack pf-u-background-color-200'}>
           <KafkaToolbar />
           <Loading />
         </div>
       );
     default:
       return (
-        <div className={'pf-u-background-color-200'}>
+        <div className={'pf-l-stack pf-u-background-color-200'}>
           <KafkaToolbar />
           <div className={'pf-u-p-md'}>
             <Gallery hasGutter>

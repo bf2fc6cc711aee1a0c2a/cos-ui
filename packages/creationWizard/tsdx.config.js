@@ -1,3 +1,4 @@
+const path = require('path');
 const url = require('@rollup/plugin-url');
 const svgr = require('@svgr/rollup').default;
 const postcss = require('rollup-plugin-postcss');
@@ -26,9 +27,7 @@ module.exports = {
             preset: 'default',
           }),
         ],
-        inject: false,
-        // only write out CSS for the first bundle (avoids pointless extra files):
-        extract: !!options.writeMeta,
+        extract: path.resolve('dist/cos-ui-creation-wizard.css'),
       }),
       ...config.plugins,
     ];
