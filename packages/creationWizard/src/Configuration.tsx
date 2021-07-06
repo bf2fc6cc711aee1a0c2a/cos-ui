@@ -110,25 +110,29 @@ export const Configuration: FunctionComponent = () => {
   switch (true) {
     case isLoading:
       return (
-        <EmptyState>
-          <EmptyStateIcon variant="container" component={Spinner} />
-          <Title size="lg" headingLevel="h4">
-            {t('loading')}
-          </Title>
-        </EmptyState>
+        <div className="pf-u-display-flex">
+          <EmptyState>
+            <EmptyStateIcon variant="container" component={Spinner} />
+            <Title size="lg" headingLevel="h4">
+              {t('loading')}
+            </Title>
+          </EmptyState>
+        </div>
       );
     case hasErrors:
       return (
-        <EmptyState>
-          <EmptyStateIcon icon={ExclamationCircleIcon} />
-          <Title size="lg" headingLevel="h4">
-            Error message
-          </Title>
-        </EmptyState>
+        <div className="pf-u-display-flex">
+          <EmptyState>
+            <EmptyStateIcon icon={ExclamationCircleIcon} />
+            <Title size="lg" headingLevel="h4">
+              Error message
+            </Title>
+          </EmptyState>
+        </div>
       );
     case hasCustomConfigurator:
       return (
-        <div className="pf-u-background-color-200 pf-u-p-md">
+        <div className="pf-l-stack pf-u-background-color-200 pf-u-p-md">
           <React.Suspense fallback={null}>
             <ConnectedCustomConfigurator
               actor={configuratorRef}
@@ -139,7 +143,7 @@ export const Configuration: FunctionComponent = () => {
       );
     default:
       return (
-        <div className="pf-u-background-color-200 pf-u-p-md">
+        <div className="pf-l-stack pf-u-background-color-200 pf-u-p-md">
           <ConnectedJsonSchemaConfigurator actor={configuratorRef} />
         </div>
       );

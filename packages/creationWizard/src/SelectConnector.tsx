@@ -71,12 +71,14 @@ export function SelectConnector() {
   switch (true) {
     case actor.state.matches('loading'):
       return (
-        <EmptyState>
-          <EmptyStateIcon variant="container" component={Spinner} />
-          <Title size="lg" headingLevel="h4">
-            Loading
-          </Title>
-        </EmptyState>
+        <div className={'pf-u-display-flex'}>
+          <EmptyState>
+            <EmptyStateIcon variant="container" component={Spinner} />
+            <Title size="lg" headingLevel="h4">
+              Loading
+            </Title>
+          </EmptyState>
+        </div>
       );
     case actor.state.matches('failure'):
       return <NoMatchFound />;
@@ -150,7 +152,7 @@ export function SelectConnector() {
         </>
       );
       return (
-        <div className={'pf-u-background-color-200'}>
+        <div className={'pf-l-stack pf-u-background-color-200'}>
           <Toolbar
             id="toolbar-group-types"
             collapseListedFiltersBreakpoint="xl"

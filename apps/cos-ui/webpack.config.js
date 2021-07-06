@@ -19,6 +19,7 @@ const singletonDeps = [
   'react-router-dom',
   'react-redux',
   '@bf2/ui-config',
+  '@patternfly/patternfly',
   '@patternfly/react-core',
   '@patternfly/react-charts',
   '@patternfly/react-table',
@@ -91,7 +92,6 @@ module.exports = (env, argv) => {
       new MiniCssExtractPlugin({
         filename: isProduction ? '[id].[contenthash:8].css' : '[name].css',
         chunkFilename: isProduction ? '[id].[contenthash:8].css' : '[id].css',
-        ignoreOrder: true, // Enable to remove warnings about conflicting order
       }),
       new ModuleFederationPlugin({
         name: federatedModuleName,
