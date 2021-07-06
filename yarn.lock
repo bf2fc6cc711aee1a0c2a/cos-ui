@@ -3413,6 +3413,13 @@
     webpack-dev-server "^3.11.0"
     write-file-webpack-plugin "^4.5.1"
 
+"@rhoas/kafka-management-sdk@^0.9.0":
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/@rhoas/kafka-management-sdk/-/kafka-management-sdk-0.9.0.tgz#15381b09229a9a2e171db9160e410aabda0a55e7"
+  integrity sha512-wYSBaRSD7r0zgRVmENc96Am8D8narmR2M3o0dDUR4jkuGmX9yKA4gXetA0iRGUOoYd70B8tRjCusGiwQPRL+Kw==
+  dependencies:
+    axios "0.21.1"
+
 "@rollup/plugin-babel@^5.1.0":
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-babel/-/plugin-babel-5.2.1.tgz#20fc8f8864dc0eaa1c5578408459606808f72924"

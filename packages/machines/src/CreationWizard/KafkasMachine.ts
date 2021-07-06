@@ -1,5 +1,9 @@
 import { getPaginatedApiMachineEventsHandlers } from './../shared/PaginatedResponseMachine';
-import { Configuration, DefaultApi, KafkaRequest } from '@cos-ui/api';
+import {
+  Configuration,
+  DefaultApi,
+  KafkaRequest,
+} from '@rhoas/kafka-management-sdk';
 import { useSelector } from '@xstate/react';
 import axios from 'axios';
 import { useCallback } from 'react';
@@ -87,7 +91,7 @@ const fetchKafkaInstances = (
       )
       .then(response => {
         onSuccess({
-          items: response.data.items,
+          items: response.data.items || [],
           total: response.data.total,
           page: response.data.page,
           size: response.data.size,
