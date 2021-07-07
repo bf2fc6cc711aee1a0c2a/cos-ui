@@ -1,0 +1,8 @@
+schema: https://cos-fm.apps.kammellol.rhmw-integrations.net/api/connector_mgmt/v1/schema.graphql
+documents: './packages/**/*.graphql'
+generates:
+  ./packages/graphql/index.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-graphql-request

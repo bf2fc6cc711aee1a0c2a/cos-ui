@@ -10,7 +10,7 @@ import {
 } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
-import { Connector } from '@cos-ui/api';
+import { ConnectorResult } from '@cos-ui/graphql';
 
 import {
   getPaginatedApiMachineEvents,
@@ -31,7 +31,7 @@ export const PAGINATED_MACHINE_ID = 'paginatedApi';
 type Context = {
   accessToken: () => Promise<string>;
   basePath: string;
-  selectedConnector?: Connector;
+  selectedConnector?: ConnectorResult;
   onError?: (error: string) => void;
 };
 
@@ -48,13 +48,13 @@ const connectorsMachineModel = createModel(
   {
     events: {
       ...getPaginatedApiMachineEvents<
-        Connector,
+        ConnectorResult,
         {},
         ConnectorMachineActorRef
       >(),
       actionSuccess: () => ({}),
       actionFailure: () => ({}),
-      selectConnector: (payload: { connector: Connector }) => payload,
+      selectConnector: (payload: { connector: ConnectorResult }) => payload,
       deselectConnector: () => ({}),
     },
   }
@@ -76,7 +76,7 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
               id: PAGINATED_MACHINE_ID,
               src: context =>
                 makePaginatedApiMachine<
-                  Connector,
+                  ConnectorResult,
                   {},
                   ConnectorMachineActorRef
                 >(
@@ -170,15 +170,15 @@ type useConnectorsMachineReturnType = usePaginationReturnValue<
   {},
   ConnectorMachineActorRef
 > & {
-  selectedConnector: Connector | undefined;
+  selectedConnector: ConnectorResult | undefined;
   deselectConnector: () => void;
 };
 export const useConnectorsMachine = (
   service: ConnectorsMachineInterpretType
 ): useConnectorsMachineReturnType => {
-  const apiData = usePagination<Connector, {}, ConnectorMachineActorRef>(
+  const apiData = usePagination<ConnectorResult, {}, ConnectorMachineActorRef>(
     service.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType<
-      Connector,
+      ConnectorResult,
       {},
       ConnectorMachineActorRef
     >

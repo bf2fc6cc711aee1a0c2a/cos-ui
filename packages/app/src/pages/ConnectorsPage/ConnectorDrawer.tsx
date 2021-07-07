@@ -47,7 +47,7 @@ export const ConnectorDrawer: React.FunctionComponent<ConnectorDrawerProps> = ({
     setActiveTabKey(eventKey);
   };
 
-  const textListItem = (title: string, value?: string) => (
+  const textListItem = (title: string, value: string | undefined | null) => (
     <>
       {value && (
         <>
@@ -126,7 +126,11 @@ export const ConnectorDrawer: React.FunctionComponent<ConnectorDrawerProps> = ({
 
   return (
     <Drawer isExpanded={selectedConnector !== undefined}>
-      <DrawerContent panelContent={panelContent()}>{children}</DrawerContent>
+      <DrawerContent
+        panelContent={selectedConnector ? panelContent() : undefined}
+      >
+        {children}
+      </DrawerContent>
     </Drawer>
   );
 };

@@ -6,7 +6,7 @@
     "baseUrl": ".",    
     "typeRoots": ["./node_modules/@types", "./types"],
     "paths": {
-      "@cos-ui/api": ["packages/api/src"],
+      "@cos-ui/api": ["packages/graphql/src"],
       "@cos-ui/app": ["packages/app/src"],
       "@cos-ui/creation-wizard": ["packages/creationWizard/src"],
       "@cos-ui/machines": ["packages/machines/src"],

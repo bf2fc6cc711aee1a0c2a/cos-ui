@@ -14,6 +14,8 @@
     "@xstate/test": "^0.4.2",
     "ajv": "^8.2.0",
     "axios": "^0.21.1",
+    "graphql-request": "^3.4.0",
+    "graphql-tag": "^2.12.5",
     "i18next": "^19.9.1",
     "i18next-browser-languagedetector": "^6.0.1",
     "i18next-http-backend": "^1.2.2",
@@ -36,6 +38,10 @@
     "@babel/preset-typescript": "^7.13.0",
     "@changesets/changelog-github": "^0.2.7",
     "@changesets/cli": "^2.10.3",
+    "@graphql-codegen/cli": "^1.21.6",
+    "@graphql-codegen/typescript": "^1.22.4",
+    "@graphql-codegen/typescript-graphql-request": "^3.2.4",
+    "@graphql-codegen/typescript-operations": "^1.18.3",
     "@openapitools/openapi-generator-cli": "^2.1.7",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.4.3",
     "@redhat-cloud-services/frontend-components-config": "^4.0.11",
@@ -67,6 +73,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-testing-library": "^4.1.2",
     "file-loader": "^6.1.1",
+    "graphql": "^15.5.1",
     "html-webpack-plugin": "5.3.1",
     "jest-environment-jsdom-sixteen": "^2.0.0",
     "keycloak-js": "^9.0.0",
@@ -97,6 +104,7 @@
   ],
   "scripts": {
     "lerna": "lerna",
+    "prestart": "yarn api:generate",
     "start": "lerna run start --stream --parallel --scope @cos-ui/*",
     "test": "lerna run test --",
     "lint": "lerna run lint -- --fix",
@@ -112,11 +120,14 @@
     "release": "changeset publish",
     "version:canary": "changeset version --snapshot canary",
     "release:canary": "changeset publish --tag canary",
-    "api:generate": "yarn run api:generate:merge && yarn run api:generate:build",
+    "api:generate": "yarn run api:generate:merge && yarn run api:generate:build && yarn graphql:generate && yarn graphql:build",
     "api:generate:merge": "openapi-merge-cli && openapi-generator-cli generate -i ./openapi/merged-openapi.yaml -g typescript-axios -o packages/api --additional-properties=ngVersion=6.1.7,npmName=@cos-ui/api,supportsES6=true,withInterfaces=true --skip-validate-spec && rimraf packages/api/dist",
     "api:generate:build": "lerna run build --scope @cos-ui/api",
+    "graphql:generate": "graphql-codegen",
+    "graphql:build": "lerna run build --scope @cos-ui/graphql",
     "i18n": "i18next 'packages/**/*.{ts,tsx}' [-oc] -c './i18next-parser.config.js' -o 'apps/cos-ui/src/locales/$LOCALE/$NAMESPACE.json'",
-    "clear": "find packages -name dist -exec rm -rf {} + && find packages -name .cache -exec rm -rf {} +"
+    "clear": "find packages -name dist -exec rm -rf {} + && find packages -name .cache -exec rm -rf {} +",
+    "graphiql": "yarn --cwd example && yarn --cwd example graphiql"
   },
   "eslint": {
     "extends": [

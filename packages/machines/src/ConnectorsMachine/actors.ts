@@ -1,12 +1,15 @@
 import axios from 'axios';
 import { Sender } from 'xstate';
-import { Configuration, Connector, ConnectorsApi } from '@cos-ui/api';
+import { Configuration, ConnectorsApi } from '@cos-ui/api';
+import { GraphQLClient } from 'graphql-request';
+import { getSdk, ConnectorResult } from '@cos-ui/graphql';
+
 import { ApiCallback } from '../shared';
 
 type ApiProps = {
   accessToken: () => Promise<string>;
   basePath: string;
-  connector: Connector;
+  connector: ConnectorResult;
 };
 export const startConnector = ({
   accessToken,
@@ -147,37 +150,34 @@ export const deleteConnector = ({
 export const fetchConnectors = (
   accessToken: () => Promise<string>,
   basePath: string
-): ApiCallback<Connector, {}> => {
-  const apisService = new ConnectorsApi(
-    new Configuration({
-      accessToken,
-      basePath,
-    })
-  );
+): ApiCallback<ConnectorResult, {}> => {
+  const url = `${basePath}/api/connector_mgmt/v1/graphql`;
+  const client = new GraphQLClient(url);
+  const sdk = getSdk(client);
   return (request, onSuccess, onError) => {
-    const CancelToken = axios.CancelToken;
-    const source = CancelToken.source();
     const { page, size /*, name = '' */ } = request;
     // const query = name.length > 0 ? `name LIKE ${name}` : undefined;
-    apisService
-      .listConnectors(`${page}`, `${size}`, undefined, {
-        cancelToken: source.token,
-      })
-      .then(response => {
-        onSuccess({
-          items: response.data.items,
-          total: response.data.total,
-          page: response.data.page,
-          size: response.data.size,
-        });
-      })
-      .catch(error => {
-        if (!axios.isCancel(error)) {
-          onError({ error: error.message, page: request.page });
-        }
-      });
-    return () => {
-      source.cancel('Operation canceled by the user.');
-    };
+    accessToken().then(token =>
+      sdk
+        .listConnectors(
+          { page: `${page}`, size: `${size}` },
+          {
+            // eslint-disable-next-line prettier/prettier
+            'Authorization': `Bearer ${token}`,
+          }
+        )
+        .then(response => {
+          onSuccess({
+            items: response.listConnectors!.items as ConnectorResult[],
+            total: response.listConnectors!.total!,
+            page: response.listConnectors!.page!,
+            size: response.listConnectors!.size!,
+          });
+        })
+        .catch(error => {
+          onError(error);
+        })
+    );
+    return () => {};
   };
 };

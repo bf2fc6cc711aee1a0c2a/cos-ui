@@ -3,7 +3,7 @@ import { ActorRefFrom, assign, createMachine, createSchema } from 'xstate';
 import { sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
-import { Connector } from '@cos-ui/api';
+import { ConnectorResult } from '@cos-ui/graphql';
 import { useSelector } from '@xstate/react';
 
 import { deleteConnector, startConnector, stopConnector } from './actors';
@@ -11,7 +11,7 @@ import { deleteConnector, startConnector, stopConnector } from './actors';
 type Context = {
   accessToken: () => Promise<string>;
   basePath: string;
-  connector: Connector;
+  connector: ConnectorResult;
 };
 
 const connectorMachineSchema = {
@@ -30,7 +30,8 @@ const connectorMachineModel = createModel(
       'connector.stop': () => ({}),
       'connector.remove': () => ({}),
       'connector.select': () => ({}),
-      'connector.actionSuccess': (payload: { connector: Connector }) => payload,
+      'connector.actionSuccess': (payload: { connector: ConnectorResult }) =>
+        payload,
       'connector.actionError': (payload: { error: string }) => payload,
     },
   }
@@ -163,7 +164,7 @@ export const makeConnectorMachine = (context: Context) =>
 export type ConnectorMachineActorRef = ActorRefFrom<typeof connectorMachine>;
 
 export type useConnectorReturnType = {
-  connector: Connector;
+  connector: ConnectorResult;
   canStart: boolean;
   canStop: boolean;
   canDelete: boolean;

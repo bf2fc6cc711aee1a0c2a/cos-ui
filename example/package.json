@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "parcel index.html --host prod.foo.redhat.com --https --port 1337",
+    "graphiql": "TOKEN=`ocm token` parcel graphiql.html",
     "build": "parcel build index.html"
   },
   "dependencies": {
@@ -13,18 +14,21 @@
     "react-app-polyfill": "^1.0.0"
   },
   "alias": {
-    "@bf2/ui-shared": "../node_modules/@bf2/ui-shared",
     "@cos-ui/api": "../packages/api",
+    "@cos-ui/graphql": "../packages/graphql",
     "@cos-ui/app": "../packages/app",
     "@cos-ui/creation-wizard": "../packages/creationWizard",
     "@cos-ui/json-schema-configurator": "../packages/jsonSchemaConfigurator",
     "@cos-ui/machines": "../packages/machines",
     "@cos-ui/utils": "../packages/utils",
+    "@bf2/ui-shared": "../node_modules/@bf2/ui-shared",
     "@patternfly/patternfly": "../node_modules/@patternfly/patternfly",
     "@patternfly/react-core": "../node_modules/@patternfly/react-core",
     "@patternfly/react-icons": "../node_modules/@patternfly/react-icons",
     "@patternfly/react-styles": "../node_modules/@patternfly/react-styles",
     "@patternfly/react-table": "../node_modules/@patternfly/react-table",
+    "grapqhl-tag": "../node_modules/grapqhl-tag",
+    "grapqhl-request": "../node_modules/grapqhl-request",
     "axios": "../node_modules/axios",
     "keycloak-js": "../node_modules/keycloak-js",
     "react": "../node_modules/react",

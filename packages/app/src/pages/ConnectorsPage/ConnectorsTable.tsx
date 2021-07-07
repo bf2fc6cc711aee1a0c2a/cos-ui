@@ -135,7 +135,7 @@ export const ConnectorRow: FunctionComponent<ConnectorRowProps> = ({
   return (
     <>
       <DeleteDialog
-        connectorName={connector.metadata?.name}
+        connectorName={connector.metadata!.name!}
         i18nCancel={t('cancel')}
         i18nDelete={t('delete')}
         i18nTitle={t('deleteConnector')}

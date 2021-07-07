@@ -1,0 +1,29 @@
+query listConnectors($page: String, $size: String) {
+  listConnectors(page: $page, size: $size) {
+    page
+    size
+    items {
+      channel
+      connector_type_id
+      deployment_location {
+        cloud_provider
+        kind
+        region
+      }
+      desired_state
+      id
+      kafka {
+        bootstrap_server
+      }
+      kind
+      metadata {
+        name
+        owner
+        created_at
+        updated_at
+      }
+      status
+    }
+    total
+  }
+}

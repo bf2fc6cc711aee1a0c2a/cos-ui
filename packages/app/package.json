@@ -22,6 +22,7 @@
   ],
   "dependencies": {
     "@cos-ui/api": "0.0.3",
+    "@cos-ui/graphql": "0.0.1",
     "@cos-ui/creation-wizard": "^1.0.1",
     "tslib": "^2.2.0"
   },
