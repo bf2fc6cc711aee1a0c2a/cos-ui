@@ -15,8 +15,11 @@ import {
   useCreationWizardMachineReviewActor,
   useReviewMachine,
 } from '@cos-ui/machines';
+import { useTranslation } from 'react-i18next';
+import { BodyLayout } from './BodyLayout';
 
 export function Review() {
+  const { t } = useTranslation();
   const actor = useCreationWizardMachineReviewActor();
   const {
     name,
@@ -36,7 +39,12 @@ export function Review() {
     // monaco.editor.getModels()[0].updateOptions({ tabSize: 5 });
   }, []);
   return (
-    <div className="pf-l-stack pf-u-background-color-200 pf-u-p-md">
+    <BodyLayout
+      title={t('Review')}
+      description={
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
+      }
+    >
       <Card>
         <CardBody>
           <Form>
@@ -153,6 +161,6 @@ export function Review() {
           </Form>
         </CardBody>
       </Card>
-    </div>
+    </BodyLayout>
   );
 }

@@ -38,7 +38,24 @@ import {
   SearchIcon,
 } from '@patternfly/react-icons';
 import React, { FunctionComponent, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
+import { BodyLayout } from './BodyLayout';
+
+const defaultPerPageOptions = [
+  {
+    title: '1',
+    value: 1,
+  },
+  {
+    title: '5',
+    value: 5,
+  },
+  {
+    title: '10',
+    value: 10,
+  },
+];
 
 export function SelectCluster() {
   const actor = useCreationWizardMachineClustersActor();
@@ -48,6 +65,7 @@ export function SelectCluster() {
 }
 
 const ClustersGallery: FunctionComponent = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const actor = useCreationWizardMachineClustersActor();
   const {
@@ -64,106 +82,100 @@ const ClustersGallery: FunctionComponent = () => {
     onQuery,
   } = useClustersMachine(actor);
 
-  switch (true) {
-    case firstRequest:
-      return (
-        <div className={'pf-l-stack pf-u-background-color-200'}>
-          <Loading />
-        </div>
-      );
-    case queryEmpty:
-      return (
-        <div className={'pf-l-stack pf-u-background-color-200'}>
-          <ClustersToolbar />
-          <NoMatchFound onClear={() => onQuery({ page: 1, size: 10 })} />
-        </div>
-      );
-    case noResults || error:
-      return (
-        <div className={'pf-l-stack pf-u-background-color-200'}>
-          <EmptyState
-            emptyStateProps={{ variant: EmptyStateVariant.GettingStarted }}
-            titleProps={{ title: 'cos.no_clusters_instance' }}
-            emptyStateBodyProps={{
-              body: 'cos.no_clusters_instance_body',
-            }}
-            buttonProps={{
-              title: 'cos.create_clusters_instance',
-              variant: ButtonVariant.primary,
-              onClick: () => history.push('/create-connector'),
-            }}
-          />
-        </div>
-      );
-    case loading:
-      return (
-        <div className={'pf-l-stack pf-u-background-color-200'}>
-          <ClustersToolbar />
-          <Loading />
-        </div>
-      );
-    default:
-      return (
-        <div className={'pf-l-stack pf-u-background-color-200'}>
-          <ClustersToolbar />
-          <div className={'pf-u-p-md'}>
-            <Gallery hasGutter>
-              {response?.items?.map(i => (
-                <Card
-                  isHoverable
-                  key={i.id}
-                  isSelectable
-                  isSelected={selectedId === i.id}
-                  onClick={() => onSelect(i.id!)}
-                >
-                  <CardHeader>
-                    <CardTitle>{i.metadata?.name}</CardTitle>
-                  </CardHeader>
-                  <CardBody>
-                    <DescriptionList>
-                      <DescriptionListGroup>
-                        <DescriptionListTerm>Owner</DescriptionListTerm>
-                        <DescriptionListDescription>
-                          {i.metadata?.owner}
-                        </DescriptionListDescription>
-                      </DescriptionListGroup>
-                      <DescriptionListGroup>
-                        <DescriptionListTerm>Created</DescriptionListTerm>
-                        <DescriptionListDescription>
-                          {i.metadata?.created_at}
-                        </DescriptionListDescription>
-                      </DescriptionListGroup>
-                    </DescriptionList>
-                  </CardBody>
-                </Card>
-              ))}
-            </Gallery>
-          </div>
-        </div>
-      );
-  }
+  return (
+    <BodyLayout
+      title={t('OSD cluster')}
+      description={
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
+      }
+    >
+      {(() => {
+        switch (true) {
+          case firstRequest:
+            return <Loading />;
+          case queryEmpty:
+            return (
+              <>
+                <ClustersToolbar />
+                <NoMatchFound onClear={() => onQuery({ page: 1, size: 10 })} />
+              </>
+            );
+          case noResults || error:
+            return (
+              <EmptyState
+                emptyStateProps={{
+                  variant: EmptyStateVariant.GettingStarted,
+                }}
+                titleProps={{ title: 'cos.no_clusters_instance' }}
+                emptyStateBodyProps={{
+                  body: 'cos.no_clusters_instance_body',
+                }}
+                buttonProps={{
+                  title: 'cos.create_clusters_instance',
+                  variant: ButtonVariant.primary,
+                  onClick: () => history.push('/create-connector'),
+                }}
+              />
+            );
+          case loading:
+            return (
+              <>
+                <ClustersToolbar />
+                <Loading />
+              </>
+            );
+          default:
+            return (
+              <>
+                <ClustersToolbar />
+                <div className={'pf-u-p-md'}>
+                  <Gallery hasGutter>
+                    {response?.items?.map(i => (
+                      <Card
+                        isHoverable
+                        key={i.id}
+                        isSelectable
+                        isSelected={selectedId === i.id}
+                        onClick={() => onSelect(i.id!)}
+                      >
+                        <CardHeader>
+                          <CardTitle>{i.metadata?.name}</CardTitle>
+                        </CardHeader>
+                        <CardBody>
+                          <DescriptionList>
+                            <DescriptionListGroup>
+                              <DescriptionListTerm>Owner</DescriptionListTerm>
+                              <DescriptionListDescription>
+                                {i.metadata?.owner}
+                              </DescriptionListDescription>
+                            </DescriptionListGroup>
+                            <DescriptionListGroup>
+                              <DescriptionListTerm>Created</DescriptionListTerm>
+                              <DescriptionListDescription>
+                                {i.metadata?.created_at}
+                              </DescriptionListDescription>
+                            </DescriptionListGroup>
+                          </DescriptionList>
+                        </CardBody>
+                      </Card>
+                    ))}
+                  </Gallery>
+                </div>
+                <ClustersPagination />
+              </>
+            );
+        }
+      })()}
+    </BodyLayout>
+  );
 };
 
 const ClustersToolbar: FunctionComponent = () => {
   const actor = useCreationWizardMachineClustersActor();
-  const { request, response, onQuery } = useClustersMachine(actor);
+  const { request, onQuery } = useClustersMachine(actor);
 
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnQuery = useDebounce(onQuery, 1000);
-  const defaultPerPageOptions = [
-    {
-      title: '1',
-      value: 1,
-    },
-    {
-      title: '5',
-      value: 5,
-    },
-    {
-      title: '10',
-      value: 10,
-    },
-  ];
 
   // const [statuses, setStatuses] = useState<string[]>([
   //   'Pending',
@@ -261,18 +273,7 @@ const ClustersToolbar: FunctionComponent = () => {
         </ToolbarItem>
       </ToolbarGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
-        <Pagination
-          itemCount={response?.total || 0}
-          page={request.page}
-          perPage={request.size}
-          perPageOptions={defaultPerPageOptions}
-          onSetPage={(_, page, size) =>
-            onQuery({ ...request, page, size: size || request.size })
-          }
-          onPerPageSelect={() => false}
-          variant="top"
-          isCompact
-        />
+        <ClustersPagination isCompact />
       </ToolbarItem>
     </>
   );
@@ -285,5 +286,29 @@ const ClustersToolbar: FunctionComponent = () => {
     >
       <ToolbarContent>{toolbarItems}</ToolbarContent>
     </Toolbar>
+  );
+};
+
+type ClustersPaginationProps = {
+  isCompact?: boolean;
+};
+const ClustersPagination: FunctionComponent<ClustersPaginationProps> = ({
+  isCompact = false,
+}) => {
+  const actor = useCreationWizardMachineClustersActor();
+  const { request, response, onQuery } = useClustersMachine(actor);
+  return (
+    <Pagination
+      itemCount={response?.total || 0}
+      page={request.page}
+      perPage={request.size}
+      perPageOptions={defaultPerPageOptions}
+      onSetPage={(_, page, size) =>
+        onQuery({ ...request, page, size: size || request.size })
+      }
+      onPerPageSelect={() => false}
+      variant={isCompact ? 'top' : 'bottom'}
+      isCompact={isCompact}
+    />
   );
 };

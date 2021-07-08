@@ -15,6 +15,7 @@ import { useSelector } from '@xstate/react';
 import { JsonSchemaConfigurator } from '@cos-ui/json-schema-configurator';
 import React, { ComponentType, FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { BodyLayout } from './BodyLayout';
 
 const ConnectedCustomConfigurator: FunctionComponent<{
   Configurator: ConnectorConfiguratorComponent;
@@ -107,45 +108,46 @@ export const Configuration: FunctionComponent = () => {
     )
   );
 
-  switch (true) {
-    case isLoading:
-      return (
-        <div className="pf-u-display-flex">
-          <EmptyState>
-            <EmptyStateIcon variant="container" component={Spinner} />
-            <Title size="lg" headingLevel="h4">
-              {t('loading')}
-            </Title>
-          </EmptyState>
-        </div>
-      );
-    case hasErrors:
-      return (
-        <div className="pf-u-display-flex">
-          <EmptyState>
-            <EmptyStateIcon icon={ExclamationCircleIcon} />
-            <Title size="lg" headingLevel="h4">
-              Error message
-            </Title>
-          </EmptyState>
-        </div>
-      );
-    case hasCustomConfigurator:
-      return (
-        <div className="pf-l-stack pf-u-background-color-200 pf-u-p-md">
-          <React.Suspense fallback={null}>
-            <ConnectedCustomConfigurator
-              actor={configuratorRef}
-              Configurator={Configurator as ConnectorConfiguratorComponent}
-            />
-          </React.Suspense>
-        </div>
-      );
-    default:
-      return (
-        <div className="pf-l-stack pf-u-background-color-200 pf-u-p-md">
-          <ConnectedJsonSchemaConfigurator actor={configuratorRef} />
-        </div>
-      );
-  }
+  return (
+    <BodyLayout
+      title={t('Configurations')}
+      description={
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
+      }
+    >
+      {(() => {
+        switch (true) {
+          case isLoading:
+            return (
+              <EmptyState>
+                <EmptyStateIcon variant="container" component={Spinner} />
+                <Title size="lg" headingLevel="h4">
+                  {t('loading')}
+                </Title>
+              </EmptyState>
+            );
+          case hasErrors:
+            return (
+              <EmptyState>
+                <EmptyStateIcon icon={ExclamationCircleIcon} />
+                <Title size="lg" headingLevel="h4">
+                  Error message
+                </Title>
+              </EmptyState>
+            );
+          case hasCustomConfigurator:
+            return (
+              <React.Suspense fallback={null}>
+                <ConnectedCustomConfigurator
+                  actor={configuratorRef}
+                  Configurator={Configurator as ConnectorConfiguratorComponent}
+                />
+              </React.Suspense>
+            );
+          default:
+            return <ConnectedJsonSchemaConfigurator actor={configuratorRef} />;
+        }
+      })()}
+    </BodyLayout>
+  );
 };
