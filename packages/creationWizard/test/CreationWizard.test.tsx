@@ -53,7 +53,8 @@ const testMachine = Machine({
     selectConnectorEmptyState: {
       meta: {
         noCoverage: true,
-        test: () => waitFor(() => expect(screen.getByText('No results found'))),
+        test: () =>
+          waitFor(() => expect(screen.getByText('cos.no_connector_types'))),
       },
     },
     loadingKafka: {
@@ -175,8 +176,12 @@ describe('@cos-ui/creationWizard', () => {
         clickOnDisabledNext: () => {
           fireEvent.click(screen.getByText('Next'));
         },
-        clickConnector: () => {
-          fireEvent.click(screen.getByText('telegram-source-source'));
+        clickConnector: async () => {
+          fireEvent.change(screen.getByLabelText('filter by connector name'), {
+            target: { value: 'telegram' },
+          });
+          const connector = await screen.findByText('telegram-source-source');
+          fireEvent.click(connector);
           fireEvent.click(screen.getByText('Next'));
         },
         clickKafkaInstance: () => {
@@ -302,8 +307,13 @@ describe('@cos-ui/creationWizard', () => {
           willConnectorsApiFail: false,
         })
       ).withEvents({
-        clickConnector: () => {
-          fireEvent.click(screen.getByText('telegram-source-source'));
+        clickConnector: async () => {
+          fireEvent.change(screen.getByLabelText('filter by connector name'), {
+            target: { value: 'telegram' },
+          });
+          const connector = await screen.findByText('telegram-source-source');
+          fireEvent.click(connector);
+
           fireEvent.click(screen.getByText('Next'));
         },
         onClose: () => {
@@ -352,8 +362,12 @@ describe('@cos-ui/creationWizard', () => {
           willConnectorsApiFail: false,
         })
       ).withEvents({
-        clickConnector: () => {
-          fireEvent.click(screen.getByText('telegram-source-source'));
+        clickConnector: async () => {
+          fireEvent.change(screen.getByLabelText('filter by connector name'), {
+            target: { value: 'telegram' },
+          });
+          const connector = await screen.findByText('telegram-source-source');
+          fireEvent.click(connector);
           fireEvent.click(screen.getByText('Next'));
         },
         clickKafkaInstance: () => {

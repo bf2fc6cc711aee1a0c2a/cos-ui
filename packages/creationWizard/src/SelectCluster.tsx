@@ -41,21 +41,7 @@ import React, { FunctionComponent, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
 import { BodyLayout } from './BodyLayout';
-
-const defaultPerPageOptions = [
-  {
-    title: '1',
-    value: 1,
-  },
-  {
-    title: '5',
-    value: 5,
-  },
-  {
-    title: '10',
-    value: 10,
-  },
-];
+import { defaultPerPageOptions } from './defaultPerPageOptions';
 
 export function SelectCluster() {
   const actor = useCreationWizardMachineClustersActor();
@@ -128,7 +114,7 @@ const ClustersGallery: FunctionComponent = () => {
             return (
               <>
                 <ClustersToolbar />
-                <div className={'pf-u-p-md'}>
+                <div className={'pf-l-stack__item pf-m-fill pf-u-p-md'}>
                   <Gallery hasGutter>
                     {response?.items?.map(i => (
                       <Card
