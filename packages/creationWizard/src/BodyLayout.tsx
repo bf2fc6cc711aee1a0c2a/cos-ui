@@ -23,7 +23,11 @@ export const BodyLayout: FunctionComponent<BodyLayoutProps> = ({
         }
       })()}
     </Level>
-    <div className={'pf-l-stack__item pf-m-fill pf-u-background-color-200'}>
+    <div
+      className={
+        'pf-l-stack__item pf-l-stack pf-m-fill pf-u-background-color-200'
+      }
+    >
       {children}
     </div>
   </div>

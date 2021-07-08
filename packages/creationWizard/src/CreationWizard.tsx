@@ -11,7 +11,7 @@ import {
 } from './UncontrolledWizard';
 import { SelectKafkaInstance } from './SelectKafkaInstance';
 import { SelectCluster } from './SelectCluster';
-import { SelectConnector } from './SelectConnector';
+import { SelectConnectorType } from './SelectConnectorType';
 import { Configuration } from './Configuration';
 import { Review } from './Review';
 import { StepErrorBoundary } from './StepErrorBoundary';
@@ -126,7 +126,7 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
       isActive: state.matches('selectConnector'),
       component: (
         <StepErrorBoundary>
-          <SelectConnector />
+          <SelectConnectorType />
         </StepErrorBoundary>
       ),
       canJumpTo:

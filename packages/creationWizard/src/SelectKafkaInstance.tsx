@@ -54,21 +54,8 @@ import {
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
 import { BodyLayout } from './BodyLayout';
-
-const defaultPerPageOptions = [
-  {
-    title: '1',
-    value: 1,
-  },
-  {
-    title: '5',
-    value: 5,
-  },
-  {
-    title: '10',
-    value: 10,
-  },
-];
+import { stringToChip } from './stringToChip';
+import { defaultPerPageOptions } from './defaultPerPageOptions';
 
 export const SelectKafkaInstance: FunctionComponent = () => {
   const actor = useCreationWizardMachineKafkasActor();
@@ -142,7 +129,7 @@ const KafkasGallery: FunctionComponent = () => {
             return (
               <>
                 <KafkaToolbar />
-                <div className={'pf-u-p-md'}>
+                <div className={'pf-l-stack__item pf-m-fill pf-u-p-md'}>
                   <Gallery hasGutter>
                     {response?.items?.map(i => (
                       <Card
@@ -570,11 +557,6 @@ const statusOptions: KeyValueOptions[] = [
 const regionOptions: KeyValueOptions[] = [
   { value: 'us-east-1', label: 'US East, N. Virginia' },
 ];
-
-const stringToChip = (
-  value: string,
-  t: (key: string) => string
-): ToolbarChip => ({ key: value, node: t(value) });
 
 type KafkasPaginationProps = {
   isCompact?: boolean;

@@ -4,12 +4,15 @@ import {
   ConnectorClusterList,
   KafkaRequestList,
   ConnectorTypeList,
+  ConnectorTypeLabelsEnum,
 } from '@cos-ui/api';
 
 export function makeHappyPath() {
   const mock = new MockAdapter(axios);
   mock
-    .onGet('/dummy/api/connector_mgmt/v1/kafka_connector_types')
+    .onGet(
+      '/dummy/api/connector_mgmt/v1/kafka_connector_types?page=1&size=1000'
+    )
     .reply<ConnectorTypeList>(200, connectors)
     .onGet(
       'https://api.openshift.com/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search='
@@ -26,14 +29,20 @@ export function makeHappyPath() {
 
 export function makeConnectorsError() {
   const mock = new MockAdapter(axios);
-  mock.onGet('/dummy/api/connector_mgmt/v1/kafka_connector_types').reply(404);
+  mock
+    .onGet(
+      '/dummy/api/connector_mgmt/v1/kafka_connector_types?page=1&size=1000'
+    )
+    .reply(404);
   return mock;
 }
 
 export function makeKafkaError() {
   const mock = new MockAdapter(axios);
   mock
-    .onGet('/dummy/api/connector_mgmt/v1/kafka_connector_types')
+    .onGet(
+      '/dummy/api/connector_mgmt/v1/kafka_connector_types?page=1&size=1000'
+    )
     .reply<ConnectorTypeList>(200, connectors)
     .onGet(
       'https://api.openshift.com/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search='
@@ -45,7 +54,9 @@ export function makeKafkaError() {
 export function makeClusterError() {
   const mock = new MockAdapter(axios);
   mock
-    .onGet('/dummy/api/connector_mgmt/v1/kafka_connector_types')
+    .onGet(
+      '/dummy/api/connector_mgmt/v1/kafka_connector_types?page=1&size=1000'
+    )
     .reply<ConnectorTypeList>(200, connectors)
     .onGet(
       'https://api.openshift.com/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search='
@@ -192,6 +203,7 @@ const connectors: ConnectorTypeList = {
   items: [
     {
       id: 'aws-kinesis-source',
+      labels: ['source'] as Array<ConnectorTypeLabelsEnum>,
       kind: 'ConnectorType',
       href: '/api/connector_mgmt/v1/kafka_connector_types/aws-kinesis-source',
       name: 'aws-kinesis-source',
@@ -232,6 +244,7 @@ const connectors: ConnectorTypeList = {
     },
     {
       id: 'aws-sqs-source-v1alpha1',
+      labels: ['source'] as Array<ConnectorTypeLabelsEnum>,
       kind: 'ConnectorType',
       href:
         '/api/connector_mgmt/v1/kafka_connector_types/aws-sqs-source-v1alpha1',
@@ -279,6 +292,7 @@ const connectors: ConnectorTypeList = {
     },
     {
       id: 'jira-source',
+      labels: ['source'] as Array<ConnectorTypeLabelsEnum>,
       kind: 'ConnectorType',
       href: '/api/connector_mgmt/v1/kafka_connector_types/jira-source',
       name: 'jira-source',
@@ -318,6 +332,7 @@ const connectors: ConnectorTypeList = {
     },
     {
       id: 'salesforce-source',
+      labels: ['source'] as Array<ConnectorTypeLabelsEnum>,
       kind: 'ConnectorType',
       href: '/api/connector_mgmt/v1/kafka_connector_types/salesforce-source',
       name: 'salesforce-source-source',
@@ -381,6 +396,7 @@ const connectors: ConnectorTypeList = {
     },
     {
       id: 'slack-source',
+      labels: ['source'] as Array<ConnectorTypeLabelsEnum>,
       kind: 'ConnectorType',
       href: '/api/connector_mgmt/v1/kafka_connector_types/slack-source',
       name: 'slack-source-source',
@@ -410,6 +426,7 @@ const connectors: ConnectorTypeList = {
     },
     {
       id: 'telegram-source',
+      labels: ['source'] as Array<ConnectorTypeLabelsEnum>,
       kind: 'ConnectorType',
       href: '/api/connector_mgmt/v1/kafka_connector_types/telegram-source',
       name: 'telegram-source-source',

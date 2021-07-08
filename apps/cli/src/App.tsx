@@ -125,7 +125,7 @@ const SelectConnector: FunctionComponent<SelectConnectorProps> = ({
     case state.matches('failure'):
       return <Text color="red">{state.context.error}</Text>;
     default:
-      const items = state.context.connectors?.items.map(instanceToSelect) || [];
+      const items = state.context.response?.items.map(instanceToSelect) || [];
       const initialIndex = state.context.selectedConnector
         ? items.findIndex(i => i.value === state.context.selectedConnector?.id)
         : undefined;
