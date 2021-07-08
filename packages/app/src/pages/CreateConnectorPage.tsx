@@ -7,13 +7,16 @@ import { CreationWizardMachineProvider } from '@cos-ui/machines';
 import {
   Breadcrumb,
   BreadcrumbItem,
+  Button,
   Level,
+  Modal,
   PageSection,
   Title,
 } from '@patternfly/react-core';
 
 import { useAppContext } from '../AppContext';
 import { fetchConfigurator } from '../FederatedConfigurator';
+import { useState } from 'react';
 
 type CreateConnectorPageProps = {
   onSave: () => void;
@@ -28,6 +31,9 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> = 
   const { getBasename } = useBasename();
   const { basePath, getToken } = useAppContext();
   const basename = getBasename();
+  const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
+  const openLeaveConfirm = () => setAskForLeaveConfirm(true);
+  const closeLeaveConfirm = () => setAskForLeaveConfirm(false);
   return (
     <>
       <PageSection variant={'light'} hasShadowBottom>
@@ -48,7 +54,25 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> = 
           }
           onSave={onSave}
         >
-          <CreationWizard onClose={onClose} />
+          <CreationWizard onClose={openLeaveConfirm} />
+          <Modal
+            title={t('Leave page?')}
+            variant={'small'}
+            isOpen={askForLeaveConfirm}
+            onClose={closeLeaveConfirm}
+            actions={[
+              <Button key="confirm" variant="primary" onClick={onClose}>
+                Confirm
+              </Button>,
+              <Button key="cancel" variant="link" onClick={closeLeaveConfirm}>
+                Cancel
+              </Button>,
+            ]}
+          >
+            {t(
+              'Changes you have made will be lost and no connector will be created.'
+            )}
+          </Modal>
         </CreationWizardMachineProvider>
       </PageSection>
     </>
