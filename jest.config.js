@@ -13,6 +13,7 @@ module.exports = {
       __dirname,
       './__mocks__/react-code-editor.js'
     ),
+    '@bf2/ui-shared': path.resolve(__dirname, './__mocks__/bf2uisharedMock.js'),
   },
   globals: {
     'ts-jest': {

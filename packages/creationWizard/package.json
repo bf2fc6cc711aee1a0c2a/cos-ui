@@ -21,6 +21,7 @@
     "dist"
   ],
   "peerDependencies": {
+    "@bf2/ui-shared": "^0.3.0",
     "@patternfly/react-code-editor": "^4.2.59",
     "@patternfly/react-core": "^4.87.2",
     "@patternfly/react-icons": "^4.7.11",
@@ -31,6 +32,7 @@
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "react-error-boundary": "^3.1.1",
+    "react-i18next": "^11.8.8",
     "xstate": "^4.17.1"
   },
   "dependencies": {

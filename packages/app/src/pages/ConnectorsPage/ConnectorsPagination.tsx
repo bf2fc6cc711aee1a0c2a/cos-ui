@@ -41,7 +41,7 @@ export const ConnectorsPagination: FunctionComponent<ConnectorsPaginationProps> 
         onChange({ ...request, page, size: size || request.size })
       }
       onPerPageSelect={() => false}
-      variant="top"
+      variant={isCompact ? 'top' : 'bottom'}
       isCompact={isCompact}
     />
   );

@@ -19,6 +19,7 @@ import './CreationWizard.css';
 import { useTranslation } from 'react-i18next';
 
 function useKafkaInstanceStep() {
+  const { t } = useTranslation();
   const service = useCreationWizardMachineService();
   const { isActive, canJumpTo, enableNext } = useSelector(
     service,
@@ -34,7 +35,7 @@ function useKafkaInstanceStep() {
     )
   );
   return {
-    name: 'Select kafka instance',
+    name: t('Kafka instance'),
     isActive,
     component: (
       <StepErrorBoundary>
@@ -47,6 +48,7 @@ function useKafkaInstanceStep() {
 }
 
 function useConfigurationStep() {
+  const { t } = useTranslation();
   const service = useCreationWizardMachineService();
   const {
     isActive,
@@ -76,7 +78,7 @@ function useConfigurationStep() {
     )
   );
   return {
-    name: 'Configuration',
+    name: t('Configurations'),
     isActive,
     canJumpTo,
     steps: steps
@@ -120,7 +122,7 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
 
   const steps = [
     {
-      name: 'Connector',
+      name: t('Connector category'),
       isActive: state.matches('selectConnector'),
       component: (
         <StepErrorBoundary>
@@ -134,7 +136,7 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
     },
     kafkaInstanceStep,
     {
-      name: t('selectOcmCluster'),
+      name: t('OSD cluster'),
       isActive: state.matches('selectCluster'),
       component: (
         <StepErrorBoundary>
@@ -148,7 +150,7 @@ export const CreationWizard: FunctionComponent<CreationWizardProps> = ({
     },
     configurationStep,
     {
-      name: 'Review',
+      name: t('Review'),
       isActive: state.matches('reviewConfiguration'),
       component: (
         <StepErrorBoundary>

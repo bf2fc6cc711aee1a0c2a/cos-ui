@@ -1,3 +1,14 @@
+import React, {
+  FunctionComponent,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { useBasename } from '@bf2/ui-shared';
 import {
   useCreationWizardMachineKafkasActor,
   useKafkasMachine,
@@ -21,6 +32,10 @@ import {
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
+  Dropdown,
+  DropdownItem,
+  DropdownPosition,
+  DropdownToggle,
   Gallery,
   InputGroup,
   Pagination,
@@ -35,22 +50,10 @@ import {
   ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
-  Dropdown,
-  DropdownToggle,
-  DropdownItem,
-  DropdownPosition,
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
-import React, {
-  FunctionComponent,
-  useCallback,
-  useRef,
-  useState,
-  SyntheticEvent,
-  useEffect,
-} from 'react';
-import { useHistory } from 'react-router';
-import { useTranslation } from 'react-i18next';
+
+import { BodyLayout } from './BodyLayout';
 
 const defaultPerPageOptions = [
   {
@@ -73,7 +76,8 @@ export const SelectKafkaInstance: FunctionComponent = () => {
   return isReady ? <KafkasGallery /> : null;
 };
 const KafkasGallery: FunctionComponent = () => {
-  const history = useHistory();
+  const { t } = useTranslation();
+  const { getBasename } = useBasename();
   const actor = useCreationWizardMachineKafkasActor();
   const {
     response,
@@ -89,97 +93,108 @@ const KafkasGallery: FunctionComponent = () => {
     onQuery,
   } = useKafkasMachine(actor);
 
-  switch (true) {
-    case firstRequest:
-      return (
-        <div className={'pf-l-stack pf-u-pf-u-background-color-200'}>
-          <Loading />
-        </div>
-      );
-    case queryEmpty:
-      return (
-        <div className={'pf-l-stack pf-u-background-color-200'}>
-          <KafkaToolbar />
-          <NoMatchFound onClear={() => onQuery({ page: 1, size: 10 })} />
-        </div>
-      );
-    case noResults || error:
-      return (
-        <div className={'pf-l-stack pf-u-background-color-200'}>
-          <EmptyState
-            emptyStateProps={{ variant: EmptyStateVariant.GettingStarted }}
-            titleProps={{ title: 'cos.no_kafka_instance' }}
-            emptyStateBodyProps={{
-              body: 'cos.no_kafka_instance_body',
-            }}
-            buttonProps={{
-              title: 'cos.create_kafka_instance',
-              variant: ButtonVariant.primary,
-              onClick: () => history.push('/create-connector'),
-            }}
-          />
-        </div>
-      );
-    case loading:
-      return (
-        <div className={'pf-l-stack pf-u-background-color-200'}>
-          <KafkaToolbar />
-          <Loading />
-        </div>
-      );
-    default:
-      return (
-        <div className={'pf-l-stack pf-u-background-color-200'}>
-          <KafkaToolbar />
-          <div className={'pf-u-p-md'}>
-            <Gallery hasGutter>
-              {response?.items?.map(i => (
-                <Card
-                  isHoverable
-                  key={i.id}
-                  isSelectable
-                  isSelected={selectedId === i.id}
-                  onClick={() => onSelect(i.id!)}
-                >
-                  <CardHeader>
-                    <CardTitle>{i.name}</CardTitle>
-                  </CardHeader>
-                  <CardBody>
-                    <DescriptionList>
-                      <DescriptionListGroup>
-                        <DescriptionListTerm>Region</DescriptionListTerm>
-                        <DescriptionListDescription>
-                          {i.region}
-                        </DescriptionListDescription>
-                      </DescriptionListGroup>
-                      <DescriptionListGroup>
-                        <DescriptionListTerm>Owner</DescriptionListTerm>
-                        <DescriptionListDescription>
-                          {i.owner}
-                        </DescriptionListDescription>
-                      </DescriptionListGroup>
-                      <DescriptionListGroup>
-                        <DescriptionListTerm>Created</DescriptionListTerm>
-                        <DescriptionListDescription>
-                          {i.created_at}
-                        </DescriptionListDescription>
-                      </DescriptionListGroup>
-                    </DescriptionList>
-                  </CardBody>
-                </Card>
-              ))}
-            </Gallery>
-          </div>
-        </div>
-      );
-  }
+  return (
+    <BodyLayout
+      title={t('Kafka instance')}
+      description={
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
+      }
+    >
+      {(() => {
+        switch (true) {
+          case firstRequest:
+            return <Loading />;
+          case queryEmpty:
+            return (
+              <>
+                <KafkaToolbar />
+                <NoMatchFound onClear={() => onQuery({ page: 1, size: 10 })} />
+              </>
+            );
+          case noResults || error:
+            return (
+              <EmptyState
+                emptyStateProps={{ variant: EmptyStateVariant.GettingStarted }}
+                titleProps={{ title: 'cos.no_kafka_instance' }}
+                emptyStateBodyProps={{
+                  body: 'cos.no_kafka_instance_body',
+                }}
+                buttonProps={{
+                  title: 'cos.create_kafka_instance',
+                  variant: ButtonVariant.primary,
+                  onClick: () =>
+                    window.history.pushState(
+                      null,
+                      'Create Kafka instance',
+                      `${getBasename()}/../streams/kafkas?create=true`
+                    ),
+                }}
+              />
+            );
+          case loading:
+            return (
+              <>
+                <KafkaToolbar />
+                <Loading />
+              </>
+            );
+          default:
+            return (
+              <>
+                <KafkaToolbar />
+                <div className={'pf-u-p-md'}>
+                  <Gallery hasGutter>
+                    {response?.items?.map(i => (
+                      <Card
+                        isHoverable
+                        key={i.id}
+                        isSelectable
+                        isSelected={selectedId === i.id}
+                        onClick={() => onSelect(i.id!)}
+                      >
+                        <CardHeader>
+                          <CardTitle>{i.name}</CardTitle>
+                        </CardHeader>
+                        <CardBody>
+                          <DescriptionList>
+                            <DescriptionListGroup>
+                              <DescriptionListTerm>Region</DescriptionListTerm>
+                              <DescriptionListDescription>
+                                {i.region}
+                              </DescriptionListDescription>
+                            </DescriptionListGroup>
+                            <DescriptionListGroup>
+                              <DescriptionListTerm>Owner</DescriptionListTerm>
+                              <DescriptionListDescription>
+                                {i.owner}
+                              </DescriptionListDescription>
+                            </DescriptionListGroup>
+                            <DescriptionListGroup>
+                              <DescriptionListTerm>Created</DescriptionListTerm>
+                              <DescriptionListDescription>
+                                {i.created_at}
+                              </DescriptionListDescription>
+                            </DescriptionListGroup>
+                          </DescriptionList>
+                        </CardBody>
+                      </Card>
+                    ))}
+                  </Gallery>
+                </div>
+                <KafkasPagination />
+              </>
+            );
+        }
+      })()}
+    </BodyLayout>
+  );
 };
 
 const KafkaToolbar: FunctionComponent = () => {
   const { t } = useTranslation();
 
   const actor = useCreationWizardMachineKafkasActor();
-  const { request, response, onQuery } = useKafkasMachine(actor);
+  const { request, onQuery } = useKafkasMachine(actor);
 
   const [statusesToggled, setStatusesToggled] = useState(false);
   const [cloudProvidersToggled, setCloudProvidersToggled] = useState(false);
@@ -502,18 +517,7 @@ const KafkaToolbar: FunctionComponent = () => {
         </ToolbarItem>
       </ToolbarGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
-        <Pagination
-          itemCount={response?.total || 0}
-          page={request.page}
-          perPage={request.size}
-          perPageOptions={defaultPerPageOptions}
-          onSetPage={(_, page, size) =>
-            onQuery({ ...request, page, size: size || request.size })
-          }
-          onPerPageSelect={() => false}
-          variant="top"
-          isCompact
-        />
+        <KafkasPagination isCompact />
       </ToolbarItem>
     </>
   );
@@ -571,3 +575,28 @@ const stringToChip = (
   value: string,
   t: (key: string) => string
 ): ToolbarChip => ({ key: value, node: t(value) });
+
+type KafkasPaginationProps = {
+  isCompact?: boolean;
+};
+const KafkasPagination: FunctionComponent<KafkasPaginationProps> = ({
+  isCompact = false,
+}) => {
+  const actor = useCreationWizardMachineKafkasActor();
+  const { request, response, onQuery } = useKafkasMachine(actor);
+
+  return (
+    <Pagination
+      itemCount={response?.total || 0}
+      page={request.page}
+      perPage={request.size}
+      perPageOptions={defaultPerPageOptions}
+      onSetPage={(_, page, size) =>
+        onQuery({ ...request, page, size: size || request.size })
+      }
+      onPerPageSelect={() => false}
+      variant={isCompact ? 'top' : 'bottom'}
+      isCompact={isCompact}
+    />
+  );
+};
