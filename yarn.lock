@@ -1810,10 +1810,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@bf2/ui-shared@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@bf2/ui-shared/-/ui-shared-0.3.0.tgz#9a4962fd0a998852d06297d5b8d4459f78be83b1"
-  integrity sha512-HbC4NE/djQRL8d19ypLfobBy6FU1W9Lwu6shrwNOTgaPrezTWCAtsS/3Jhu8aWj6aJHDP6yQyKaBsI+uZ7SVzA==
+"@bf2/ui-shared@0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@bf2/ui-shared/-/ui-shared-0.5.0.tgz#e796cadd3c26baabb8242b53cd0f0657d90e072d"
+  integrity sha512-KlXemRK7UP+9IfsMFFVx/6aQfw7C2PVAyO9rmF8blD+Loh5J6eUCvBiZTxDg/WP2xhoDYKkySlRyGOlZzLQ34A==
   dependencies:
     react "17.0.1"
 

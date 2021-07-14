@@ -12,24 +12,9 @@ const { federatedModuleName } = require('./package.json');
 const { dependencies } = require('../../package.json');
 
 const fileRegEx = /\.(png|woff|woff2|eot|ttf|svg|gif|jpe?g|png)(\?[a-z0-9=.]+)?$/;
-const singletonDeps = [
-  'axios',
-  'react',
-  'react-dom',
-  'react-router-dom',
-  'react-redux',
-  '@bf2/ui-config',
-  '@patternfly/patternfly',
-  '@patternfly/react-core',
-  '@patternfly/react-charts',
-  '@patternfly/react-table',
-  '@patternfly/react-icons',
-  '@patternfly/react-styles',
-  '@patternfly/react-tokens',
-];
 module.exports = (env, argv) => {
   const isProduction = argv && argv.mode === 'production';
-  const isDemoApp = !!argv.hot; // kinda hacky, but if we have hot reload enabled then we are running the demo app, so we need these to be eagerly loaded
+  const isDemoApp = !!process.env.DEMO_APP;
   return {
     entry: {
       // we add an entrypoint with the same name as our name in ModuleFederationPlugin.
@@ -104,13 +89,26 @@ module.exports = (env, argv) => {
         shared: !isDemoApp
           ? {
               ...dependencies,
-              ...singletonDeps.reduce((acc, dep) => {
-                acc[dep] = {
-                  singleton: true,
-                  requiredVersion: dependencies[dep],
-                };
-                return acc;
-              }, {}),
+              react: {
+                eager: true,
+                singleton: true,
+                requiredVersion: dependencies['react'],
+              },
+              'react-dom': {
+                eager: true,
+                singleton: true,
+                requiredVersion: dependencies['react-dom'],
+              },
+              'react-router-dom': {
+                singleton: true,
+                eager: true,
+                requiredVersion: dependencies['react-router-dom'],
+              },
+              '@bf2/ui-shared': {
+                eager: true,
+                singleton: true,
+                requiredVersion: dependencies['@bf2/ui-shared'],
+              },
             }
           : Object.entries(dependencies).reduce((acc, [dep, version]) => {
               acc[dep] = {

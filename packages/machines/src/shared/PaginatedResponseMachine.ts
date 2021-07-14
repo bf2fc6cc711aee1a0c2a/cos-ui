@@ -292,7 +292,7 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
           }
           return {
             response: {
-              items: e.items.map(i => context.dataTransformer(i)),
+              items: e.items?.map(i => context.dataTransformer(i)),
               total: e.total,
               error: undefined,
             },

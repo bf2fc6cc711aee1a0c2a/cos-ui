@@ -23,7 +23,7 @@
   },
   "scripts": {
     "start:federate": "webpack serve --host localhost --port 9002",
-    "start": "webpack serve --https --host prod.foo.redhat.com --port 1337 --hot",
+    "start": "DEMO_APP=true webpack serve --https --host prod.foo.redhat.com --port 1337 --hot",
     "build": "FEDERATE=1 webpack --mode production",
     "serve": "serve dist -p 3001",
     "clean": "rm -rf dist"
