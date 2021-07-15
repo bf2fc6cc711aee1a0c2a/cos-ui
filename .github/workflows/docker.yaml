@@ -2,7 +2,8 @@ name: Managed Connector CI
 
 on:
   push:
-    branches: [ cloud-rh-com ]
+    branches:
+      - master
 
 jobs:
   build:

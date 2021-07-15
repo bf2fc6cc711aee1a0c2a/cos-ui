@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "parcel index.html --host prod.foo.redhat.com --https --port 1337",
+    "e2e": "parcel e2e.html",
     "build": "parcel build index.html"
   },
   "dependencies": {

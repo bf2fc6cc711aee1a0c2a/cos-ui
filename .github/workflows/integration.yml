@@ -3,12 +3,58 @@ on: [pull_request]
 jobs:
   cypress:
     name: Cypress
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
+    # Cypress Docker image with Chrome v78
+    # and Firefox v70 pre-installed
+    container: cypress/browsers:node12.13.0-chrome78-ff70
     steps:
       - uses: actions/checkout@v2
-      - name: Cypress run
-        uses: cypress-io/github-action@v1
+
+      - name: Cache node modules
+        id: lerna-yarn-cache
+        uses: actions/cache@v2
+        env:
+            cache-name: cache-node-modules-v2
         with:
-          start: npm run start:app
+            path: |
+                $(yarn cache dir)
+                ~/.cache/Cypress
+                node_modules
+                */*/node_modules
+            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+            restore-keys: |
+                ${{ runner.os }}-build-${{ env.cache-name }}-
+                ${{ runner.os }}-build-
+                ${{ runner.os }}-
+
+      - name: Install dependencies if needed.
+        if: steps.lerna-yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install --ignore-platform --frozen-lockfile
+
+      - name: Build if cache has been restored.
+        if: steps.lerna-yarn-cache.outputs.cache-hit == 'true'
+        run: yarn build
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          # we have already installed everything
+          install: false
+          start: npm run start:app:e2e
           wait-on: 'http://localhost:1234'
           wait-on-timeout: 120
+
+      - name: upload Cypress screenshots for failed tests
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+      
+      # Test run video was always captured, so this action uses "always()" condition
+      - name: upload Cypress test run video
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: cypress-videos
+          path: cypress/videos          

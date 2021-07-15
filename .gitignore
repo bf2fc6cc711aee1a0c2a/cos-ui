@@ -5,7 +5,6 @@ dist
 
 .idea
 
-node_modules
 package-lock.json
 yarn.lock
 !/yarn.lock
@@ -14,3 +13,6 @@ yarn.lock
 yalc.lock
 
 ./openapi/merged-openapi.yaml
+
+cypress/videos
+cypress/screenshots
