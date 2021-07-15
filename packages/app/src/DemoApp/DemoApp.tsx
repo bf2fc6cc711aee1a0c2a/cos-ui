@@ -86,7 +86,6 @@ export const DemoApp: FunctionComponent = () => {
     </KeycloakContext.Provider>
   );
 };
-
 const ConnectedRoutes = () => {
   const auth = useAuth();
   const { cos } = useConfig();

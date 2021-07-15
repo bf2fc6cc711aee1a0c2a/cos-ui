@@ -1,0 +1,302 @@
+{
+  "kind":"ConnectorTypeList",
+  "page":1,
+  "size":6,
+  "total":6,
+  "items":[
+    {
+      "id":"aws-kinesis-source",
+      "labels":[
+        "source"
+      ],
+      "kind":"ConnectorType",
+      "href":"/api/connector_mgmt/v1/kafka_connector_types/aws-kinesis-source",
+      "name":"aws-kinesis-source",
+      "version":"v1alpha1",
+      "description":"Receive data from AWS Kinesis.",
+      "json_schema":{
+        "type":"object",
+        "description":"Receive data from AWS Kinesis.",
+        "properties":{
+          "accessKey":{
+            "description":"The access key obtained from AWS",
+            "title":"Access Key",
+            "type":"string",
+            "x-descriptors":[
+              "urn:alm:descriptor:com.tectonic.ui:password"
+            ]
+          },
+          "region":{
+            "description":"The AWS region to connect to (capitalized name)",
+            "example":"EU_WEST_1",
+            "title":"AWS Region",
+            "type":"string"
+          },
+          "secretKey":{
+            "description":"The secret key obtained from AWS",
+            "title":"Secret Key",
+            "type":"string",
+            "x-descriptors":[
+              "urn:alm:descriptor:com.tectonic.ui:password"
+            ]
+          },
+          "stream":{
+            "description":"The Kinesis stream that you want to access (needs to be created in advance)",
+            "title":"Stream Name",
+            "type":"string"
+          }
+        },
+        "required":[
+          "stream",
+          "accessKey",
+          "secretKey",
+          "region"
+        ],
+        "title":"AWS Kinesis Source"
+      }
+    },
+    {
+      "id":"aws-sqs-source-v1alpha1",
+      "labels":[
+        "source"
+      ],
+      "kind":"ConnectorType",
+      "href":"/api/connector_mgmt/v1/kafka_connector_types/aws-sqs-source-v1alpha1",
+      "name":"aws-sqs-source",
+      "version":"v1alpha1",
+      "description":"Receive data from AWS SQS.",
+      "json_schema":{
+        "type":"object",
+        "description":"Receive data from AWS SQS.",
+        "properties":{
+          "accessKey":{
+            "description":"The access key obtained from AWS",
+            "title":"Access Key",
+            "type":"string",
+            "x-descriptors":[
+              "urn:alm:descriptor:com.tectonic.ui:password"
+            ]
+          },
+          "deleteAfterRead":{
+            "default":"true",
+            "description":"Delete messages after consuming them",
+            "title":"Auto-delete messages",
+            "type":"boolean",
+            "x-descriptors":[
+              "urn:alm:descriptor:com.tectonic.ui:checkbox"
+            ]
+          },
+          "queueNameOrArn":{
+            "description":"The SQS Queue name or ARN",
+            "title":"Queue Name",
+            "type":"string"
+          },
+          "region":{
+            "description":"The AWS region to connect to",
+            "example":"eu-west-1",
+            "title":"AWS Region",
+            "type":"string"
+          },
+          "secretKey":{
+            "description":"The secret key obtained from AWS",
+            "title":"Secret Key",
+            "type":"string",
+            "x-descriptors":[
+              "urn:alm:descriptor:com.tectonic.ui:password"
+            ]
+          }
+        },
+        "required":[
+          "queueNameOrArn",
+          "accessKey",
+          "secretKey",
+          "region"
+        ],
+        "title":"AWS SQS Source"
+      }
+    },
+    {
+      "id":"jira-source",
+      "labels":[
+        "source"
+      ],
+      "kind":"ConnectorType",
+      "href":"/api/connector_mgmt/v1/kafka_connector_types/jira-source",
+      "name":"jira-source",
+      "version":"v1alpha1",
+      "description":"Receive notifications about new issues from Jira.",
+      "json_schema":{
+        "type":"object",
+        "description":"Receive notifications about new issues from Jira.",
+        "properties":{
+          "jiraUrl":{
+            "description":"The URL of your instance of Jira",
+            "example":"http://my_jira.com:8081",
+            "title":"Jira URL",
+            "type":"string"
+          },
+          "jql":{
+            "description":"A query to filter issues",
+            "example":"project=MyProject",
+            "title":"JQL",
+            "type":"string"
+          },
+          "password":{
+            "description":"The password to access Jira",
+            "title":"Password",
+            "type":"string",
+            "x-descriptors":[
+              "urn:alm:descriptor:com.tectonic.ui:password"
+            ]
+          },
+          "username":{
+            "description":"The username to access Jira",
+            "title":"Username",
+            "type":"string"
+          }
+        },
+        "required":[
+          "jiraUrl",
+          "username",
+          "password"
+        ],
+        "title":"Jira Source"
+      }
+    },
+    {
+      "id":"salesforce-source",
+      "labels":[
+        "source"
+      ],
+      "kind":"ConnectorType",
+      "href":"/api/connector_mgmt/v1/kafka_connector_types/salesforce-source",
+      "name":"salesforce-source-source",
+      "version":"v1alpha1",
+      "description":"Receive updates from Salesforce.",
+      "json_schema":{
+        "type":"object",
+        "description":"Receive updates from Salesforce.",
+        "properties":{
+          "clientId":{
+            "description":"The Salesforce application consumer key",
+            "title":"Consumer Key",
+            "type":"string"
+          },
+          "clientSecret":{
+            "description":"The Salesforce application consumer secret",
+            "title":"Consumer Secret",
+            "type":"string",
+            "x-descriptors":[
+              "urn:alm:descriptor:com.tectonic.ui:password"
+            ]
+          },
+          "loginUrl":{
+            "default":"https://login.salesforce.com",
+            "description":"The Salesforce instance login URL",
+            "title":"Login URL",
+            "type":"string"
+          },
+          "password":{
+            "description":"The Salesforce user password",
+            "title":"Password",
+            "type":"string",
+            "x-descriptors":[
+              "urn:alm:descriptor:com.tectonic.ui:password"
+            ]
+          },
+          "query":{
+            "description":"The query to execute on Salesforce",
+            "example":"SELECT Id, Name, Email, Phone FROM Contact",
+            "title":"Query",
+            "type":"string"
+          },
+          "topicName":{
+            "description":"The name of the topic/channel to use",
+            "example":"ContactTopic",
+            "title":"Topic Name",
+            "type":"string"
+          },
+          "userName":{
+            "description":"The Salesforce username",
+            "title":"Username",
+            "type":"string"
+          }
+        },
+        "required":[
+          "query",
+          "topicName",
+          "clientId",
+          "clientSecret",
+          "userName",
+          "password"
+        ],
+        "title":"Salesforce Source"
+      }
+    },
+    {
+      "id":"slack-source",
+      "labels":[
+        "source"
+      ],
+      "kind":"ConnectorType",
+      "href":"/api/connector_mgmt/v1/kafka_connector_types/slack-source",
+      "name":"slack-source-source",
+      "version":"v1alpha1",
+      "description":"Receive messages from a Slack channel.",
+      "json_schema":{
+        "type":"object",
+        "description":"Receive messages from a Slack channel.",
+        "properties":{
+          "channel":{
+            "description":"The Slack channel to receive messages from",
+            "example":"#myroom",
+            "title":"Channel",
+            "type":"string"
+          },
+          "token":{
+            "description":"The token to access Slack. A Slack app is needed. This app needs to have channels:history and channels:read permissions. The Bot User OAuth Access Token is the kind of token needed.",
+            "title":"Token",
+            "type":"string",
+            "x-descriptors":[
+              "urn:alm:descriptor:com.tectonic.ui:password"
+            ]
+          }
+        },
+        "required":[
+          "channel",
+          "token"
+        ],
+        "title":"Slack Source"
+      }
+    },
+    {
+      "id":"telegram-source",
+      "labels":[
+        "source"
+      ],
+      "kind":"ConnectorType",
+      "href":"/api/connector_mgmt/v1/kafka_connector_types/telegram-source",
+      "name":"telegram-source-source",
+      "version":"v1alpha1",
+      "description":"Receive all messages that people send to your telegram bot.",
+      "json_schema":{
+        "type":"object",
+        "description":"Receive all messages that people send to your telegram bot.",
+        "properties":{
+          "authorizationToken":{
+            "description":"The token to access your bot on Telegram, that you can obtain from the Telegram \"Bot Father\".",
+            "title":"Token",
+            "type":"string",
+            "x-descriptors":[
+              "urn:alm:descriptor:com.tectonic.ui:password"
+            ]
+          }
+        },
+        "required":[
+          "authorizationToken"
+        ],
+        "title":"Telegram Source"
+      }
+    }
+  ]
+}

@@ -170,7 +170,10 @@ export const ConnectorRow: FunctionComponent<ConnectorRowProps> = ({
             <FlexItem>{getStatusLabel(connector.status!)}</FlexItem>
           </Flex>
         </Td>
-        <Td actions={{ items: actions }} />
+        <Td
+          actions={{ items: actions }}
+          data-testid={`actions-for-${connector.id}`}
+        />
       </Tr>
     </>
   );

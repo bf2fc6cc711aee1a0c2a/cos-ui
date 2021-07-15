@@ -1,0 +1,72 @@
+{
+  "kind": "ConnectorList",
+  "page": 1,
+  "size": 2,
+  "total": 2,
+  "items": [
+    {
+      "id": "1vLK2A3Gl34hHjAxMj93Ma8Ajh8",
+      "kind": "Connector",
+      "href": "/api/connector_mgmt/v1/kafka_connectors/1vLK2A3Gl34hHjAxMj93Ma8Ajh8",
+      "metadata": {
+        "kafka_id": "1vGITQO0mK0IMjG6eyqfBAzqdiV",
+        "owner": "lburgazz_kafka_supporting",
+        "name": "dbz-pg-lb",
+        "created_at": "2021-07-15T07:55:19.113612Z",
+        "updated_at": "2021-07-15T07:55:19.107567Z",
+        "resource_version": 716
+      },
+      "deployment_location": {
+        "kind": "addon",
+        "cluster_id": "1uR6GL7Pz4BlxiO1RLnNKmtQeno"
+      },
+      "kafka": {
+        "bootstrap_server": "lb-cos--vgitqo-mk-imjg-eyqfbazqdiv.bf2.kafka.rhcloud.com:443",
+        "client_id": "srvc-acct-41a9b367-0878-4ea2-8c22-bdc37f501b7f"
+      },
+      "connector_type_id": "debezium-postgres-1.5.0.Final",
+      "connector_spec": {
+        "database.dbname": "postgres",
+        "database.hostname": "debezium-pg",
+        "database.password": {},
+        "database.server.name": "fulfillment",
+        "database.user": "postgres"
+      },
+      "channel": "stable",
+      "desired_state": "ready",
+      "status": "ready"
+    },
+    {
+      "id": "1vJTP1djNdu9Gl3hZjWl8nofYtk",
+      "kind": "Connector",
+      "href": "/api/connector_mgmt/v1/kafka_connectors/1vJTP1djNdu9Gl3hZjWl8nofYtk",
+      "metadata": {
+        "kafka_id": "1vGITQO0mK0IMjG6eyqfBAzqdiV",
+        "owner": "asansari_kafka_supporting",
+        "name": "dbz-postgres-conn",
+        "created_at": "2021-07-14T16:12:44.343678Z",
+        "updated_at": "2021-07-15T07:48:51.118606Z",
+        "resource_version": 705
+      },
+      "deployment_location": {
+        "kind": "addon",
+        "cluster_id": "1uR6GL7Pz4BlxiO1RLnNKmtQeno"
+      },
+      "kafka": {
+        "bootstrap_server": "lb-cos--vgitqo-mk-imjg-eyqfbazqdiv.bf2.kafka.rhcloud.com:443",
+        "client_id": "srvc-acct-41a9b367-0878-4ea2-8c22-bdc37f501b7f"
+      },
+      "connector_type_id": "debezium-postgres-1.5.0.Final",
+      "connector_spec": {
+        "database.dbname": "postgres",
+        "database.hostname": "debezium-pg",
+        "database.password": {},
+        "database.server.name": "postgres-conn",
+        "database.user": "postgres"
+      },
+      "channel": "stable",
+      "desired_state": "stopped",
+      "status": "stopped"
+    }
+  ]
+}

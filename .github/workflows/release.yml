@@ -13,12 +13,29 @@ jobs:
           fetch-depth: 0
 
       - name: Use Node.js 14.x
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           version: 14.x
 
-      - name: Install deps and build (with cache)
-        uses: bahmutov/npm-install@v1
+      - name: Cache node modules
+        id: lerna-yarn-cache
+        uses: actions/cache@v2
+        env:
+            cache-name: cache-node-modules-v2
+        with:
+            path: |
+                $(yarn cache dir)
+                ~/.cache/Cypress
+                node_modules
+                */*/node_modules
+            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+            restore-keys: |
+                ${{ runner.os }}-build-${{ env.cache-name }}-
+                ${{ runner.os }}-build-
+                ${{ runner.os }}-
+      - name: Install dependencies if needed.
+        if: steps.lerna-yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install --ignore-platform --frozen-lockfile
 
       - name: Create Release Pull Request or Publish to npm
         uses: changesets/action@master
