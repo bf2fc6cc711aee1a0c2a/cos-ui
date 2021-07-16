@@ -19,7 +19,7 @@ module.exports = {
   "overrides": [
     {
       // 3) Now we enable eslint-plugin-testing-library rules or preset only for matching files!
-      "files": ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[jt]s?(x)"],
+      "files": ["**/__tests__/**/*.[jt]s?(x)", "test/?(*.)+(spec|test).[jt]s?(x)"],
       "extends": ["plugin:testing-library/react"]
     },
   ],

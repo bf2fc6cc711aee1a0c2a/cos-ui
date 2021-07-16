@@ -68,10 +68,10 @@ export const ConnectorsToolbar: FunctionComponent = () => {
       <ToolbarItem>
         <InputGroup>
           <TextInput
-            name="textInput2"
-            id="textInput2"
+            name="name"
+            id="name"
             type="search"
-            aria-label="search input example"
+            aria-label="filter by connector name"
             onChange={value =>
               debouncedOnChange({
                 size: request.size,
