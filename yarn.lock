@@ -3369,7 +3369,7 @@
     schema-utils "^2.6.5"
     source-map "^0.7.3"
 
-"@redhat-cloud-services/frontend-components-config@^4.0.11":
+"@redhat-cloud-services/frontend-components-config@4.0.28":
   version "4.0.28"
   resolved "https://registry.yarnpkg.com/@redhat-cloud-services/frontend-components-config/-/frontend-components-config-4.0.28.tgz#35f2ffe5138504c6697c923c0acbe02afa36ddc9"
   integrity sha512-QTrsD35Crm6+gr9yJnN3H3EzLOF9hgsClVTGAspRgdqlZ9F34ih2odMxOb4gKGqHaVUI+BsRyaG3sPfhmeq7wA==
