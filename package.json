@@ -23,7 +23,7 @@
     "react-error-boundary": "3.1.1",
     "react-i18next": "11.10.0",
     "react-monaco-editor": "0.43.0",
-    "react-router-dom": "^5.2.0",
+    "react-router-dom": "5.2.0",
     "uniforms": "3.4.0",
     "uniforms-bridge-json-schema": "3.4.0",
     "uniforms-patternfly": "4.3.1",
