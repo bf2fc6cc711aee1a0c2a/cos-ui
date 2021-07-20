@@ -9,7 +9,7 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
-    "@patternfly/patternfly": "^4.115.2",
+    "@patternfly/patternfly": "4.115.2",
     "@xstate/inspect": "0.4.1",
     "react-app-polyfill": "1.0.6"
   },
