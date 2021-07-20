@@ -23,7 +23,7 @@
   "dependencies": {
     "@cos-ui/api": "0.0.3",
     "@cos-ui/creation-wizard": "^1.0.1",
-    "tslib": "^2.2.0"
+    "tslib": "2.2.0"
   },
   "peerDependencies": {
     "@bf2/ui-shared": "0.5.0",
