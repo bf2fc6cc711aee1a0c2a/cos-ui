@@ -37,7 +37,7 @@
   "devDependencies": {
     "@types/react": "16.14.11",
     "@types/react-dom": "16.9.14",
-    "parcel": "1.12.4",
+    "parcel": "1.12.3",
     "parcel-plugin-static-files-copy": "2.6.0",
     "typescript": "3.9.10"
   },
