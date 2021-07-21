@@ -18,6 +18,7 @@ const cli = meow(
 	  $ %NAME% --token=xxx
 `,
   {
+    importMeta: import.meta,
     flags: {
       token: {
         type: 'string',
