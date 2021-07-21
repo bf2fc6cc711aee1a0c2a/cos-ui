@@ -45,6 +45,7 @@ export const configuratorLoaderMachine = createMachine<
   schema: configuratorLoaderMachineSchema,
   id: 'configurator',
   initial: 'loading',
+  context: configuratorLoaderMachineModel.initialContext,
   states: {
     loading: {
       invoke: {

@@ -3,6 +3,7 @@
   "include": ["src", "types", "../../types"],
   "compilerOptions": {
     "outDir": "dist",
-    "module": "commonjs"
+    "module": "commonjs",
+    "skipLibCheck": true
   }
 }

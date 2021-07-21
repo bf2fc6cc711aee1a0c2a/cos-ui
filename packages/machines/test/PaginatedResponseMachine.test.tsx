@@ -90,6 +90,7 @@ describe('@cos-ui/machines', () => {
     const testMachine = createMachine<typeof testModel>({
       id: 'test-pagination',
       initial: 'testing',
+      context: testModel.initialContext,
       states: {
         testing: {
           invoke: {
