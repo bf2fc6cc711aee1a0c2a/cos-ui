@@ -14,9 +14,6 @@
     "prepublish": "npm run build"
   },
   "bin": "dist/cli.js",
-  "engines": {
-    "node": ">=10"
-  },
   "files": [
     "README.md",
     "dist"
