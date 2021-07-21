@@ -45,7 +45,11 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> = 
           <Title headingLevel="h1">{t('Create connector')}</Title>
         </Level>
       </PageSection>
-      <PageSection padding={{ default: 'noPadding' }} style={{ zIndex: 0 }}>
+      <PageSection
+        padding={{ default: 'noPadding' }}
+        style={{ zIndex: 0 }}
+        type={'wizard'}
+      >
         <CreationWizardMachineProvider
           accessToken={getToken}
           basePath={basePath}
