@@ -38,7 +38,7 @@
     "@changesets/cli": "2.16.0",
     "@openapitools/openapi-generator-cli": "2.3.7",
     "@pmmmwh/react-refresh-webpack-plugin": "0.4.3",
-    "@redhat-cloud-services/frontend-components-config": "4.3.0",
+    "@redhat-cloud-services/frontend-components-config": "4.3.1",
     "@rollup/plugin-url": "6.0.0",
     "@svgr/rollup": "5.5.0",
     "@testing-library/cypress": "8.0.0",
