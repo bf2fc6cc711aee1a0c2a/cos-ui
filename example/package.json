@@ -35,7 +35,7 @@
     "xstate": "../node_modules/xstate"
   },
   "devDependencies": {
-    "@types/react": "17.0.14",
+    "@types/react": "17.0.15",
     "@types/react-dom": "17.0.9",
     "parcel": "1.12.3",
     "parcel-plugin-static-files-copy": "2.6.0",
