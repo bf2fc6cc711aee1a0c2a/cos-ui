@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useRef } from 'react';
 import { AutoForm, AutoFields, ErrorsField } from 'uniforms-patternfly';
 import { JSONSchemaBridge } from 'uniforms-bridge-json-schema';
 import Ajv, { ValidateFunction } from 'ajv';
-import { DeepPartial, useForm } from 'uniforms/es5';
+import { DeepPartial, useForm } from 'uniforms';
 
 const ajv = new Ajv({
   allErrors: true,
