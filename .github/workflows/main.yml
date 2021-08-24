@@ -20,7 +20,7 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Cache node modules
-        id: lerna-yarn-cache
+        id: yarn-cache
         uses: actions/cache@v2
         env:
             cache-name: cache-node-modules-v2
@@ -36,11 +36,11 @@ jobs:
                 ${{ runner.os }}-build-
                 ${{ runner.os }}-
       - name: Install dependencies if needed.
-        if: steps.lerna-yarn-cache.outputs.cache-hit != 'true'
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --ignore-platform --frozen-lockfile
 
       - name: Build if cache has been restored.
-        if: steps.lerna-yarn-cache.outputs.cache-hit == 'true'
+        if: steps.yarn-cache.outputs.cache-hit == 'true'
         run: yarn build
 
       - name: Test
@@ -48,3 +48,6 @@ jobs:
 
       - name: Lint
         run: yarn lint
+
+      - name: Format
+        run: yarn format:check

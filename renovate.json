@@ -1,4 +1,4 @@
 {
   "extends": [ "github>redhat-developer/app-services-renovate-config" ],
-  "ignoreDeps": ["parcel"]
+  "ignoreDeps": ["parcel", "uniforms", "uniforms-bridge-json-schema"]
 }

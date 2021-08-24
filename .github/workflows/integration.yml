@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Cache node modules
-        id: lerna-yarn-cache
+        id: yarn-cache
         uses: actions/cache@v2
         env:
             cache-name: cache-node-modules-v2
@@ -28,19 +28,15 @@ jobs:
                 ${{ runner.os }}-
 
       - name: Install dependencies if needed.
-        if: steps.lerna-yarn-cache.outputs.cache-hit != 'true'
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --ignore-platform --frozen-lockfile
-
-      - name: Build if cache has been restored.
-        if: steps.lerna-yarn-cache.outputs.cache-hit == 'true'
-        run: yarn build
 
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
           # we have already installed everything
           install: false
-          start: npm run start:app:e2e
+          start: npm run start:e2e
           wait-on: 'http://localhost:1234'
           wait-on-timeout: 120
 
