@@ -24,10 +24,9 @@ type CreateConnectorPageProps = {
 export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
   ({ onSave, onClose }) => {
     const { t } = useTranslation();
-    const { cos } = useConfig();
-    const { getBasename } = useBasename();
+    const config = useConfig();
+    const basename = useBasename();
     const { basePath, getToken } = useAppContext();
-    const basename = getBasename();
     const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
     const openLeaveConfirm = () => setAskForLeaveConfirm(true);
     const closeLeaveConfirm = () => setAskForLeaveConfirm(false);
@@ -35,7 +34,7 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
       <>
         <PageSection variant={'light'} hasShadowBottom>
           <Breadcrumb>
-            <BreadcrumbItem to={basename}>{t('Connectors')}</BreadcrumbItem>
+            <BreadcrumbItem to={basename?.getBasename()}>{t('Connectors')}</BreadcrumbItem>
             <BreadcrumbItem isActive>{t('Create connector')}</BreadcrumbItem>
           </Breadcrumb>
           <Level className={'pf-u-pt-md pf-u-pb-md'}>
@@ -51,7 +50,7 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
             accessToken={getToken}
             basePath={basePath}
             fetchConfigurator={(connector) =>
-              fetchConfigurator(connector, cos.configurators)
+              fetchConfigurator(connector, config?.cos.configurators || {})
             }
             onSave={onSave}
           >

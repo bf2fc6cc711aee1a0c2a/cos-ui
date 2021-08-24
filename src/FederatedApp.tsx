@@ -9,14 +9,17 @@ import i18n from './i18n';
 import { Loading } from './Loading';
 
 export const FederatedApp: FunctionComponent = () => {
-  const { cos } = useConfig();
-  const { kas } = useAuth();
-  const { getBasename } = useBasename();
+  const config = useConfig();
+  const auth = useAuth();
+  const basename = useBasename();
   return (
     <I18nextProvider i18n={i18n}>
       <React.Suspense fallback={<Loading />}>
-        <Router basename={getBasename()}>
-          <CosUiRoutes getToken={kas.getToken} apiBasepath={cos.apiBasePath} />
+        <Router basename={basename?.getBasename()}>
+          <CosUiRoutes
+            getToken={auth?.kas.getToken || (() => Promise.resolve(''))}
+            apiBasepath={config?.cos.apiBasePath || ''}
+          />
         </Router>
       </React.Suspense>
     </I18nextProvider>

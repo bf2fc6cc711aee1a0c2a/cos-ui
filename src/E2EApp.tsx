@@ -77,9 +77,12 @@ export const E2EApp: FunctionComponent = () => {
 
 const ConnectedRoutes = () => {
   const auth = useAuth();
-  const { cos } = useConfig();
+  const config = useConfig();
 
   return (
-    <CosUiRoutes getToken={auth.kas.getToken} apiBasepath={cos.apiBasePath} />
+    <CosUiRoutes
+      getToken={auth?.kas.getToken || (() => Promise.resolve(''))}
+      apiBasepath={config?.cos.apiBasePath || ''}
+    />
   );
 };

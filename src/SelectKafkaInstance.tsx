@@ -58,7 +58,7 @@ export const SelectKafkaInstance: FunctionComponent = () => {
 };
 const KafkasGallery: FunctionComponent = () => {
   const { t } = useTranslation();
-  const { getBasename } = useBasename();
+  const basename = useBasename();
   const actor = useCreationWizardMachineKafkasActor();
   const {
     response,
@@ -107,7 +107,7 @@ const KafkasGallery: FunctionComponent = () => {
                     window.history.pushState(
                       null,
                       'Create Kafka instance',
-                      `${getBasename()}/../streams/kafkas?create=true`
+                      `${basename?.getBasename() || ''}/../streams/kafkas?create=true`
                     ),
                 }}
               />
