@@ -30,18 +30,18 @@ type ConnectedConnectorsPageProps = {
 export const ConnectedConnectorsPage: FunctionComponent<ConnectedConnectorsPageProps> =
   ({ onCreateConnector }) => {
     const { t } = useTranslation();
-    const { addAlert } = useAlert();
+    const alert = useAlert();
     const { basePath, getToken } = useAppContext();
     const onError = useCallback(
       (description: string) => {
-        addAlert({
+        alert?.addAlert({
           id: 'connectors-table-error',
           variant: AlertVariant.danger,
           title: t('common.something_went_wrong'),
           description,
         });
       },
-      [addAlert, t]
+      [alert, t]
     );
 
     return (

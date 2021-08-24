@@ -18,7 +18,7 @@ export const CosUiRoutes: FunctionComponent<CosUiRoutesProps> = ({
   apiBasepath,
 }) => {
   const { t } = useTranslation();
-  const { addAlert } = useAlert();
+  const alert = useAlert();
   const history = useHistory();
   const goToConnectorsList = useCallback(() => history.push('/'), [history]);
   const goToCreateConnector = useCallback(
@@ -26,13 +26,13 @@ export const CosUiRoutes: FunctionComponent<CosUiRoutesProps> = ({
     [history]
   );
   const onConnectorSave = useCallback(() => {
-    addAlert({
+    alert?.addAlert({
       id: 'connector-created',
       variant: AlertVariant.success,
       title: t('wizard.creation-success'),
     });
     goToConnectorsList();
-  }, [addAlert, goToConnectorsList, t]);
+  }, [alert, goToConnectorsList, t]);
   return (
     <AppContextProvider getToken={getToken} basePath={apiBasepath}>
       <Switch>

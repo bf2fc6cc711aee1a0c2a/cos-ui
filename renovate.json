@@ -1,4 +1,10 @@
 {
   "extends": [ "github>redhat-developer/app-services-renovate-config" ],
-  "ignoreDeps": ["parcel", "uniforms", "uniforms-bridge-json-schema"]
+  "ignoreDeps": ["parcel"],
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["^uniforms"],
+      "groupName": "uniforms"
+    }
+  ]
 }
