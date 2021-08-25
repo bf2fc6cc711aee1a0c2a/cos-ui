@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.15.0",
+    "@babel/eslint-parser": "^7.15.0",
     "@babel/preset-react": "7.14.5",
     "@babel/preset-typescript": "7.15.0",
     "@changesets/changelog-github": "0.4.0",
@@ -45,6 +46,7 @@
     "@testing-library/jest-dom": "5.14.1",
     "@testing-library/react": "12.0.0",
     "@testing-library/user-event": "13.2.1",
+    "@trivago/prettier-plugin-sort-imports": "2.0.4",
     "@types/chai": "4.2.21",
     "@types/jest": "27.0.1",
     "@types/lodash.debounce": "4.0.6",
@@ -53,8 +55,8 @@
     "@types/react-router-dom": "5.1.8",
     "@types/simpl-schema": "1.12.0",
     "@types/testing-library__jest-dom": "5.14.1",
-    "@typescript-eslint/eslint-plugin": "^4.29.3",
-    "@typescript-eslint/parser": "^4.29.3",
+    "@typescript-eslint/eslint-plugin": "4.29.3",
+    "@typescript-eslint/parser": "4.29.3",
     "@xstate/inspect": "0.4.1",
     "autoprefixer": "10.3.2",
     "bundle-loader": "0.5.6",
@@ -75,12 +77,15 @@
     "eslint-plugin-react": "7.24.0",
     "eslint-plugin-react-hooks": "4.2.0",
     "eslint-plugin-testing-library": "4.12.0",
+    "eslint-plugin-unused-imports": "^1.1.4",
     "file-loader": "6.2.0",
     "html-webpack-plugin": "5.3.2",
-    "jest": "^27.0.6",
-    "jest-environment-jsdom": "^27.0.6",
+    "husky": "^7.0.2",
+    "jest": "27.0.6",
+    "jest-environment-jsdom": "27.0.6",
     "jest-mock-axios": "4.4.0",
-    "keycloak-js": "^9.0.0",
+    "keycloak-js": "9.0.0",
+    "lint-staged": "^11.1.2",
     "mini-css-extract-plugin": "2.2.0",
     "monaco-editor-webpack-plugin": "4.1.2",
     "postcss": "8.3.6",
@@ -109,9 +114,10 @@
     "start:e2e": "E2E_APP=true webpack serve --port 1234",
     "serve": "serve dist -p 3001",
     "clean": "rimraf dist",
-    "lint": "eslint --ext .tsx,.js ./src ./test",
-    "format": "prettier --write 'src'",
-    "format:check": "prettier --write 'src'",
+    "lint": "eslint --ext .ts,.tsx,.js ./src ./test",
+    "lint:fix": "yarn lint --fix",
+    "format": "prettier --check 'src'",
+    "format:fix": "prettier --write --ignore-unknown 'src'",
     "prepublish": "yarn build",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
@@ -119,9 +125,10 @@
     "release": "changeset publish",
     "version:canary": "changeset version --snapshot canary",
     "release:canary": "changeset publish --tag canary",
-    "i18n": "i18next './src/**/*.{ts,tsx}' [-oc] -c './i18next-parser.config.js' -o './locales/$LOCALE/$NAMESPACE.json'"
+    "i18n": "i18next './src/**/*.{ts,tsx}' [-oc] -c './i18next-parser.config.js' -o './locales/$LOCALE/$NAMESPACE.json'",
+    "lint-staged": "yarn lint:fix && yarn format:fix"
   },
-  "resolutions": {
-    "uniforms": "3.5.1"
+  "lint-staged": {
+    "src/**/*.ts*": "yarn lint-staged"
   }
 }

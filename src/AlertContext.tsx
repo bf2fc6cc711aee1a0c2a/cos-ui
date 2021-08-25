@@ -28,8 +28,8 @@ export const AlertProvider: FunctionComponent = ({ children }) => {
     setTimers([...timers, ...timeOuts]);
     return () =>
       timers.forEach((timer) => timer?.timeOut && clearTimeout(timer.timeOut));
-  // enabling this will cause an infinite render loop
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // enabling this will cause an infinite render loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [alerts]);
 
   const createId = () => new Date().getTime();

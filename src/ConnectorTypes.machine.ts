@@ -1,5 +1,6 @@
-import axios from 'axios';
 import { useCallback } from 'react';
+
+import { useSelector } from '@xstate/react';
 import {
   ActorRefFrom,
   assign,
@@ -10,15 +11,9 @@ import {
 } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
-import {
-  Configuration,
-  ConnectorType,
-  ConnectorTypesApi,
-} from '@rhoas/connector-management-sdk';
-import { useSelector } from '@xstate/react';
+import { ConnectorType } from '@rhoas/connector-management-sdk';
 
 import {
-  ApiCallback,
   ApiSuccessResponse,
   getPaginatedApiMachineEvents,
   getPaginatedApiMachineEventsHandlers,
@@ -27,67 +22,8 @@ import {
   PaginatedApiRequest,
   usePagination,
 } from './PaginatedResponse.machine';
-
-const PAGINATED_MACHINE_ID = 'paginatedApi';
-
-type ConnectorTypesQuery = {
-  name?: string;
-  categories?: string[];
-};
-
-const fetchConnectorTypes = (
-  accessToken: () => Promise<string>,
-  basePath: string
-): ApiCallback<ConnectorType, ConnectorTypesQuery> => {
-  const apisService = new ConnectorTypesApi(
-    new Configuration({
-      accessToken,
-      basePath,
-    })
-  );
-  return (request, onSuccess, onError) => {
-    const CancelToken = axios.CancelToken;
-    const source = CancelToken.source();
-    const { page, size, query } = request;
-    const { name, categories = [] } = query || {};
-    apisService
-      .listConnectorTypes('1', '1000', {
-        cancelToken: source.token,
-      })
-      .then((response) => {
-        const lcName = name ? name.toLowerCase() : undefined;
-        const rawItems = response.data.items || [];
-        let filteredItems = lcName
-          ? rawItems?.filter((c) => c.name?.toLowerCase().includes(lcName))
-          : rawItems;
-        filteredItems =
-          categories.length > 0
-            ? filteredItems?.filter(
-                (c) =>
-                  (c.labels?.filter((l) => categories.includes(l)) || [])
-                    .length > 0
-              )
-            : filteredItems;
-        const total = filteredItems.length;
-        const offset = (page - 1) * size;
-        const items = filteredItems.slice(offset, offset + size);
-        onSuccess({
-          items,
-          total,
-          page,
-          size,
-        });
-      })
-      .catch((error) => {
-        if (!axios.isCancel(error)) {
-          onError({ error: error.message, page: request.page });
-        }
-      });
-    return () => {
-      source.cancel('Operation canceled by the user.');
-    };
-  };
-};
+import { ConnectorTypesQuery, fetchConnectorTypes } from './api';
+import { PAGINATED_MACHINE_ID } from './constants';
 
 type Context = {
   accessToken: () => Promise<string>;
@@ -146,10 +82,7 @@ export const connectorTypesMachine = createMachine<
                   ConnectorType,
                   ConnectorTypesQuery,
                   ConnectorType
-                >(
-                  fetchConnectorTypes(context.accessToken, context.basePath),
-                  (i) => i
-                ),
+                >(fetchConnectorTypes(context), (i) => i),
             },
             states: {
               idle: {

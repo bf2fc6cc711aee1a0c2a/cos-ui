@@ -1,4 +1,6 @@
 import { useCallback } from 'react';
+
+import { useSelector } from '@xstate/react';
 import {
   ActorRef,
   ActorRefFrom,
@@ -10,8 +12,6 @@ import {
 } from 'xstate';
 import { pure, send, sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
-
-import { useSelector } from '@xstate/react';
 
 export type ApiErrorResponse = { page: number; error: string };
 export type ApiSuccessResponse<RawDataType> = {

@@ -5,8 +5,8 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { useAuth, useBasename, useConfig } from '@bf2/ui-shared';
 
 import { CosUiRoutes } from './CosUiRoutes';
-import i18n from './i18n';
 import { Loading } from './Loading';
+import i18n from './i18n';
 
 export const FederatedApp: FunctionComponent = () => {
   const config = useConfig();

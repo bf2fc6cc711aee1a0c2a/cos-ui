@@ -1,5 +1,3 @@
-import './ConnectorDrawer.css';
-
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,8 +23,9 @@ import {
   TitleSizes,
 } from '@patternfly/react-core';
 
-import { useConnectorsMachine } from './Connectors.machine';
-import { useConnectorsMachineService } from './Connectors.machine-context';
+import './ConnectorDrawer.css';
+import { useConnectorsMachine } from './ConnectorsPage.machine';
+import { useConnectorsPageMachineService } from './ConnectorsPageContext';
 
 export type ConnectorDrawerProps = {
   children: React.ReactNode;
@@ -36,7 +35,7 @@ export const ConnectorDrawer: React.FunctionComponent<ConnectorDrawerProps> = ({
   children,
 }: ConnectorDrawerProps) => {
   const { t } = useTranslation();
-  const service = useConnectorsMachineService();
+  const service = useConnectorsPageMachineService();
   const { selectedConnector, deselectConnector } =
     useConnectorsMachine(service);
   const [activeTabKey, setActiveTabKey] = useState<string | number>(0);

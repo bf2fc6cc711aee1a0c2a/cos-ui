@@ -8,34 +8,34 @@ import React, {
 import { useInterpret, useSelector } from '@xstate/react';
 
 import {
-  connectorsMachine,
+  connectorsPageMachine,
   ConnectorsMachineInterpretType,
-} from './Connectors.machine';
+} from './ConnectorsPage.machine';
 
-const ConnectorsMachineServiceContext =
+const ConnectorsPageContext =
   createContext<ConnectorsMachineInterpretType | null>(null);
-type ConnectorsMachineProviderPropsType = {
+type ConnectorsPageProviderPropsType = {
   accessToken: () => Promise<string>;
   basePath: string;
   onError: (error: string) => void;
 };
 
-export const ConnectorsMachineProvider: FunctionComponent<ConnectorsMachineProviderPropsType> =
+export const ConnectorsPageProvider: FunctionComponent<ConnectorsPageProviderPropsType> =
   ({ children, accessToken, basePath, onError }) => {
-    const service = useInterpret(connectorsMachine, {
+    const service = useInterpret(connectorsPageMachine, {
       context: { accessToken, basePath, onError },
       devTools: true,
     });
     return (
-      <ConnectorsMachineServiceContext.Provider value={service}>
+      <ConnectorsPageContext.Provider value={service}>
         {children}
-      </ConnectorsMachineServiceContext.Provider>
+      </ConnectorsPageContext.Provider>
     );
   };
 
-export const useConnectorsMachineService =
+export const useConnectorsPageMachineService =
   (): ConnectorsMachineInterpretType => {
-    const service = useContext(ConnectorsMachineServiceContext);
+    const service = useContext(ConnectorsPageContext);
     if (!service) {
       throw new Error(
         `useConnectorsMachineService() must be used in a child of <ConnectorsMachineProvider>`
@@ -44,9 +44,8 @@ export const useConnectorsMachineService =
     return service;
   };
 
-export const useConnectorsMachineIsReady = (
-  service: ConnectorsMachineInterpretType
-) => {
+export const useConnectorsPageIsReady = () => {
+  const service = useConnectorsPageMachineService();
   return useSelector(
     service,
     useCallback(

@@ -15,8 +15,8 @@ import {
 import { AlertProvider } from './AlertContext';
 import { AppLayout } from './AppLayout';
 import { CosUiRoutes } from './CosUiRoutes';
-import i18n from './i18n';
 import { Loading } from './Loading';
+import i18n from './i18n';
 
 export const E2EApp: FunctionComponent = () => {
   const getBasename = useCallback(() => '/', []);

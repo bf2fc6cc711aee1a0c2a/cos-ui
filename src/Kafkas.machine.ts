@@ -1,5 +1,6 @@
-import axios from 'axios';
 import { useCallback } from 'react';
+
+import { useSelector } from '@xstate/react';
 import {
   ActorRefFrom,
   assign,
@@ -10,15 +11,9 @@ import {
 import { sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
-import {
-  Configuration,
-  DefaultApi,
-  KafkaRequest,
-} from '@rhoas/kafka-management-sdk';
-import { useSelector } from '@xstate/react';
+import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
 import {
-  ApiCallback,
   getPaginatedApiMachineEvents,
   getPaginatedApiMachineEventsHandlers,
   makePaginatedApiMachine,
@@ -27,88 +22,8 @@ import {
   PaginatedApiResponse,
   usePagination,
 } from './PaginatedResponse.machine';
-
-const PAGINATED_MACHINE_ID = 'paginatedApi';
-
-type KafkasQuery = {
-  name?: string;
-  owner?: string;
-  statuses?: string[];
-  cloudProviders?: string[];
-  regions?: string[];
-};
-
-const fetchKafkaInstances = (
-  accessToken: () => Promise<string>,
-  basePath: string
-): ApiCallback<KafkaRequest, KafkasQuery> => {
-  // TODO: remove after demo
-  basePath = 'https://api.openshift.com';
-  const apisService = new DefaultApi(
-    new Configuration({
-      accessToken,
-      basePath,
-    })
-  );
-  return (request, onSuccess, onError) => {
-    const CancelToken = axios.CancelToken;
-    const source = CancelToken.source();
-    const { page, size, query } = request;
-    const { name, statuses, owner, cloudProviders, regions } = query || {};
-    const nameSearch =
-      name && name.length > 0 ? ` name LIKE ${name}` : undefined;
-    const ownerSearch =
-      owner && owner.length > 0 ? ` owner LIKE ${owner}` : undefined;
-    const statusSearch =
-      statuses && statuses.length > 0
-        ? statuses.map((s) => `status = ${s}`).join(' OR ')
-        : undefined;
-    const cloudProviderSearch =
-      cloudProviders && cloudProviders.length > 0
-        ? cloudProviders.map((s) => `cloud_provider = ${s}`).join(' OR ')
-        : undefined;
-    const regionSearch =
-      regions && regions.length > 0
-        ? regions.map((s) => `region = ${s}`).join(' OR ')
-        : undefined;
-    const search = [
-      nameSearch,
-      ownerSearch,
-      statusSearch,
-      cloudProviderSearch,
-      regionSearch,
-    ]
-      .filter(Boolean)
-      .map((s) => `(${s})`)
-      .join(' AND ');
-    apisService
-      .getKafkas(
-        `${page}`,
-        `${size}`,
-        undefined,
-        search as string | undefined,
-        {
-          cancelToken: source.token,
-        }
-      )
-      .then((response) => {
-        onSuccess({
-          items: response.data.items || [],
-          total: response.data.total,
-          page: response.data.page,
-          size: response.data.size,
-        });
-      })
-      .catch((error) => {
-        if (!axios.isCancel(error)) {
-          onError({ error: error.message, page: request.page });
-        }
-      });
-    return () => {
-      source.cancel('Operation canceled by the user.');
-    };
-  };
-};
+import { KafkasQuery, fetchKafkaInstances } from './api';
+import { PAGINATED_MACHINE_ID } from './constants';
 
 type Context = {
   accessToken: () => Promise<string>;
@@ -165,10 +80,7 @@ export const kafkasMachine = createMachine<typeof kafkasMachineModel>(
                   KafkaRequest,
                   KafkasQuery,
                   KafkaRequest
-                >(
-                  fetchKafkaInstances(context.accessToken, context.basePath),
-                  (i) => i
-                ),
+                >(fetchKafkaInstances(context), (i) => i),
             },
             states: {
               idle: {

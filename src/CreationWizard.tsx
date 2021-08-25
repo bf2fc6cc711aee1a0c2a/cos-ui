@@ -1,11 +1,10 @@
-import './CreationWizard.css';
-
 import React, { FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSelector, useActor } from '@xstate/react';
 
 import { Configuration } from './Configuration';
+import './CreationWizard.css';
 import { creationWizardMachine } from './CreationWizard.machine';
 import { useCreationWizardMachineService } from './CreationWizard.machine-context';
 import { Review } from './Review';

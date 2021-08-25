@@ -5,8 +5,9 @@ import React, {
   useContext,
 } from 'react';
 
-import { ConnectorType } from '@rhoas/connector-management-sdk';
 import { useInterpret, useSelector } from '@xstate/react';
+
+import { ConnectorType } from '@rhoas/connector-management-sdk';
 
 import { ClustersMachineActorRef } from './Clusters.machine';
 import {

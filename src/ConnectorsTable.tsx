@@ -1,5 +1,3 @@
-import './ConnectorsTable.css';
-
 import React, { FunctionComponent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -16,16 +14,17 @@ import {
 } from '@patternfly/react-table';
 
 import { ConnectorMachineActorRef, useConnector } from './Connector.machine';
-import { useConnectorsMachine } from './Connectors.machine';
-import { useConnectorsMachineService } from './Connectors.machine-context';
-import { ConnectorsPagination } from './ConnectorsPagination';
 import { ConnectorStatusIcon } from './ConnectorStatusIcon';
+import { useConnectorsMachine } from './ConnectorsPage.machine';
+import { useConnectorsPageMachineService } from './ConnectorsPageContext';
+import { ConnectorsPagination } from './ConnectorsPagination';
+import './ConnectorsTable.css';
 import { ConnectorsToolbar } from './ConnectorsToolbar';
 import { DeleteDialog } from './DeleteDialog';
 
 export const ConnectorsTable: FunctionComponent = () => {
   const { t } = useTranslation();
-  const service = useConnectorsMachineService();
+  const service = useConnectorsPageMachineService();
   const { response } = useConnectorsMachine(service);
 
   return (
@@ -63,7 +62,7 @@ export const ConnectorRow: FunctionComponent<ConnectorRowProps> = ({
   connectorRef,
 }) => {
   const { t } = useTranslation();
-  const service = useConnectorsMachineService();
+  const service = useConnectorsPageMachineService();
   const { selectedConnector } = useConnectorsMachine(service);
 
   const {

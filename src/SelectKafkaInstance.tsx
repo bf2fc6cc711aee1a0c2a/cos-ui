@@ -8,7 +8,6 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useBasename } from '@bf2/ui-shared';
 import {
   Button,
   ButtonVariant,
@@ -41,15 +40,17 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
+import { useBasename } from '@bf2/ui-shared';
+
 import { BodyLayout } from './BodyLayout';
-import { defaultPerPageOptions } from './constants';
 import { useCreationWizardMachineKafkasActor } from './CreationWizard.machine-context';
+import { EmptyState, EmptyStateVariant } from './EmptyState';
 import { useKafkasMachine, useKafkasMachineIsReady } from './Kafkas.machine';
 import { Loading } from './Loading';
 import { NoMatchFound } from './NoMatchFound';
+import { defaultPerPageOptions } from './constants';
 import { stringToChip } from './stringToChip';
 import { useDebounce } from './useDebounce';
-import { EmptyState, EmptyStateVariant } from './EmptyState';
 
 export const SelectKafkaInstance: FunctionComponent = () => {
   const actor = useCreationWizardMachineKafkasActor();
@@ -107,7 +108,9 @@ const KafkasGallery: FunctionComponent = () => {
                     window.history.pushState(
                       null,
                       'Create Kafka instance',
-                      `${basename?.getBasename() || ''}/../streams/kafkas?create=true`
+                      `${
+                        basename?.getBasename() || ''
+                      }/../streams/kafkas?create=true`
                     ),
                 }}
               />
