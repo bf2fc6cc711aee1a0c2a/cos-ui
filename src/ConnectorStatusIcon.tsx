@@ -1,5 +1,3 @@
-import './ConnectorStatusIcon.css';
-
 import React, { FunctionComponent } from 'react';
 
 import { Spinner } from '@patternfly/react-core';
@@ -8,6 +6,8 @@ import {
   ExclamationCircleIcon,
   PendingIcon,
 } from '@patternfly/react-icons';
+
+import './ConnectorStatusIcon.css';
 
 type ConnectorStatusIconProps = {
   id: string;

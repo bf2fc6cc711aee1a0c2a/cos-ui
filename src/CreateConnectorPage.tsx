@@ -1,7 +1,6 @@
 import React, { FunctionComponent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useBasename, useConfig } from '@bf2/ui-shared';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,6 +10,8 @@ import {
   PageSection,
   Title,
 } from '@patternfly/react-core';
+
+import { useBasename, useConfig } from '@bf2/ui-shared';
 
 import { useAppContext } from './AppContext';
 import { CreationWizard } from './CreationWizard';
@@ -34,7 +35,9 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
       <>
         <PageSection variant={'light'} hasShadowBottom>
           <Breadcrumb>
-            <BreadcrumbItem to={basename?.getBasename()}>{t('Connectors')}</BreadcrumbItem>
+            <BreadcrumbItem to={basename?.getBasename()}>
+              {t('Connectors')}
+            </BreadcrumbItem>
             <BreadcrumbItem isActive>{t('Create connector')}</BreadcrumbItem>
           </Breadcrumb>
           <Level className={'pf-u-pt-md pf-u-pb-md'}>

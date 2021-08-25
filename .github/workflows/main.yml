@@ -50,4 +50,4 @@ jobs:
         run: yarn lint
 
       - name: Format
-        run: yarn format:check
+        run: yarn format

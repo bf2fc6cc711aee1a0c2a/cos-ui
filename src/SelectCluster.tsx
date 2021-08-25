@@ -30,12 +30,12 @@ import {
   useClustersMachine,
   useClustersMachineIsReady,
 } from './Clusters.machine';
-import { defaultPerPageOptions } from './constants';
 import { useCreationWizardMachineClustersActor } from './CreationWizard.machine-context';
+import { EmptyState, EmptyStateVariant } from './EmptyState';
 import { Loading } from './Loading';
 import { NoMatchFound } from './NoMatchFound';
+import { defaultPerPageOptions } from './constants';
 import { useDebounce } from './useDebounce';
-import { EmptyState, EmptyStateVariant } from './EmptyState';
 
 export function SelectCluster() {
   const actor = useCreationWizardMachineClustersActor();

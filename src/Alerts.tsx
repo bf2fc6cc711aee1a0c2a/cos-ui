@@ -1,12 +1,13 @@
 import React from 'react';
 
-import { AlertProps } from '@bf2/ui-shared';
 import {
   Alert,
   AlertActionCloseButton,
   AlertGroup,
   AlertVariant,
 } from '@patternfly/react-core';
+
+import { AlertProps } from '@bf2/ui-shared';
 
 type AlertToastGroupProps = {
   alerts: AlertProps[];

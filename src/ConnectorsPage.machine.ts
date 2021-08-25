@@ -1,4 +1,6 @@
 import { useCallback } from 'react';
+
+import { useSelector } from '@xstate/react';
 import {
   assign,
   createMachine,
@@ -10,13 +12,11 @@ import {
 import { createModel } from 'xstate/lib/model';
 
 import { Connector } from '@rhoas/connector-management-sdk';
-import { useSelector } from '@xstate/react';
 
 import {
   ConnectorMachineActorRef,
   makeConnectorMachine,
 } from './Connector.machine';
-import { fetchConnectors } from './Connector.machine-actors';
 import {
   getPaginatedApiMachineEvents,
   getPaginatedApiMachineEventsHandlers,
@@ -25,8 +25,8 @@ import {
   usePagination,
   usePaginationReturnValue,
 } from './PaginatedResponse.machine';
-
-export const PAGINATED_MACHINE_ID = 'paginatedApi';
+import { fetchConnectors } from './api';
+import { PAGINATED_MACHINE_ID } from './constants';
 
 type Context = {
   accessToken: () => Promise<string>;
@@ -35,11 +35,11 @@ type Context = {
   onError?: (error: string) => void;
 };
 
-const connectorsMachineSchema = {
+const connectorsPageMachineSchema = {
   context: createSchema<Context>(),
 };
 
-const connectorsMachineModel = createModel(
+const connectorsPageMachineModel = createModel(
   {
     accessToken: () => Promise.resolve(''),
     basePath: '',
@@ -60,12 +60,14 @@ const connectorsMachineModel = createModel(
   }
 );
 
-export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
+export const connectorsPageMachine = createMachine<
+  typeof connectorsPageMachineModel
+>(
   {
-    schema: connectorsMachineSchema,
+    schema: connectorsPageMachineSchema,
     id: 'connectors',
     initial: 'root',
-    context: connectorsMachineModel.initialContext,
+    context: connectorsPageMachineModel.initialContext,
     states: {
       root: {
         type: 'parallel',
@@ -80,7 +82,7 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
                   {},
                   ConnectorMachineActorRef
                 >(
-                  fetchConnectors(context.accessToken, context.basePath),
+                  fetchConnectors(context),
                   (connector) =>
                     spawn(
                       makeConnectorMachine({
@@ -163,7 +165,7 @@ export const connectorsMachine = createMachine<typeof connectorsMachineModel>(
 );
 
 export type ConnectorsMachineInterpretType = InterpreterFrom<
-  typeof connectorsMachine
+  typeof connectorsPageMachine
 >;
 
 type useConnectorsMachineReturnType = usePaginationReturnValue<

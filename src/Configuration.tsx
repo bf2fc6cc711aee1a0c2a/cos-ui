@@ -1,6 +1,8 @@
 import React, { ComponentType, FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useSelector } from '@xstate/react';
+
 import {
   EmptyState,
   EmptyStateIcon,
@@ -8,7 +10,6 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
-import { useSelector } from '@xstate/react';
 
 import { BodyLayout } from './BodyLayout';
 import { ConfiguratorActorRef } from './Configurator.machine';

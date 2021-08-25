@@ -1,7 +1,6 @@
 import React, { FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { AlertVariant, useAlert } from '@bf2/ui-shared';
 import {
   ButtonVariant,
   Card,
@@ -10,19 +9,21 @@ import {
   Title,
 } from '@patternfly/react-core';
 
+import { AlertVariant, useAlert } from '@bf2/ui-shared';
+
 import { useAppContext } from './AppContext';
 import { ConnectorDrawer } from './ConnectorDrawer';
-import { useConnectorsMachine } from './Connectors.machine';
+import { useConnectorsMachine } from './ConnectorsPage.machine';
 import {
-  ConnectorsMachineProvider,
-  useConnectorsMachineIsReady,
-  useConnectorsMachineService,
-} from './Connectors.machine-context';
+  ConnectorsPageProvider,
+  useConnectorsPageIsReady,
+  useConnectorsPageMachineService,
+} from './ConnectorsPageContext';
 import { ConnectorsTable } from './ConnectorsTable';
 import { ConnectorsToolbar } from './ConnectorsToolbar';
+import { EmptyState, EmptyStateVariant } from './EmptyState';
 import { Loading } from './Loading';
 import { NoMatchFound } from './NoMatchFound';
-import { EmptyState, EmptyStateVariant } from './EmptyState';
 
 type ConnectedConnectorsPageProps = {
   onCreateConnector: () => void;
@@ -45,13 +46,13 @@ export const ConnectedConnectorsPage: FunctionComponent<ConnectedConnectorsPageP
     );
 
     return (
-      <ConnectorsMachineProvider
+      <ConnectorsPageProvider
         accessToken={getToken}
         basePath={basePath}
         onError={onError}
       >
         <ConnectorsPage onCreateConnector={onCreateConnector} />
-      </ConnectorsMachineProvider>
+      </ConnectorsPageProvider>
     );
   };
 
@@ -62,8 +63,7 @@ export type ConnectorsPageProps = {
 export const ConnectorsPage: FunctionComponent<ConnectorsPageProps> = ({
   onCreateConnector,
 }: ConnectorsPageProps) => {
-  const service = useConnectorsMachineService();
-  const isReady = useConnectorsMachineIsReady(service);
+  const isReady = useConnectorsPageIsReady();
   return isReady ? (
     <ConnectorsPageBody onCreateConnector={onCreateConnector} />
   ) : (
@@ -78,7 +78,7 @@ export type ConnectorsPageBodyProps = {
 const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
   onCreateConnector,
 }: ConnectorsPageBodyProps) => {
-  const service = useConnectorsMachineService();
+  const service = useConnectorsPageMachineService();
   const {
     loading,
     error,

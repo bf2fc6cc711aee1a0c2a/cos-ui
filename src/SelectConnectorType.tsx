@@ -39,13 +39,13 @@ import {
   useConnectorTypesMachine,
   useConnectorTypesMachineIsReady,
 } from './ConnectorTypes.machine';
-import { defaultPerPageOptions } from './constants';
 import { useCreationWizardMachineConnectorTypesActor } from './CreationWizard.machine-context';
+import { EmptyState, EmptyStateVariant } from './EmptyState';
 import { Loading } from './Loading';
 import { NoMatchFound } from './NoMatchFound';
+import { defaultPerPageOptions } from './constants';
 import { stringToChip } from './stringToChip';
 import { useDebounce } from './useDebounce';
-import { EmptyState, EmptyStateVariant } from './EmptyState';
 
 export function SelectConnectorType() {
   const actor = useCreationWizardMachineConnectorTypesActor();

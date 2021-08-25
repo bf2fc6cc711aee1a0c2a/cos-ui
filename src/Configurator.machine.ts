@@ -1,4 +1,3 @@
-import { ConnectorType } from '@rhoas/connector-management-sdk';
 import {
   ActorRefFrom,
   assign,
@@ -7,6 +6,8 @@ import {
   sendParent,
 } from 'xstate';
 import { createModel } from 'xstate/lib/model';
+
+import { ConnectorType } from '@rhoas/connector-management-sdk';
 
 type Context = {
   connector: ConnectorType;

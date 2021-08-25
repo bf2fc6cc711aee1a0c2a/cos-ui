@@ -1,31 +1,33 @@
-import {
-  BasenameContext,
-  Config,
-  ConfigContext,
-  useAuth,
-  useConfig
-} from '@bf2/ui-shared';
-import { Spinner } from '@patternfly/react-core';
 import Keycloak from 'keycloak-js';
 import React, {
   FunctionComponent,
   useCallback,
   useEffect,
-  useState
+  useState,
 } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter as Router } from 'react-router-dom';
+
+import { Spinner } from '@patternfly/react-core';
+
+import {
+  BasenameContext,
+  Config,
+  ConfigContext,
+  useAuth,
+  useConfig,
+} from '@bf2/ui-shared';
+
 import { AlertProvider } from './AlertContext';
 import { AppLayout } from './AppLayout';
 import { CosUiRoutes } from './CosUiRoutes';
-import i18n from './i18n';
 import {
   getKeycloakInstance,
   KeycloakAuthProvider,
-  KeycloakContext
+  KeycloakContext,
 } from './Keycloak';
 import { Loading } from './Loading';
-
+import i18n from './i18n';
 
 let keycloak: Keycloak.KeycloakInstance | undefined;
 
@@ -96,6 +98,9 @@ const ConnectedRoutes = () => {
   const config = useConfig();
 
   return (
-    <CosUiRoutes getToken={auth?.kas.getToken || (() => Promise.resolve(''))} apiBasepath={config?.cos.apiBasePath || ''} />
+    <CosUiRoutes
+      getToken={auth?.kas.getToken || (() => Promise.resolve(''))}
+      apiBasepath={config?.cos.apiBasePath || ''}
+    />
   );
 };

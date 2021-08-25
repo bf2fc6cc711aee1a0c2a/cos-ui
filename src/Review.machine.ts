@@ -1,98 +1,23 @@
-import {
-  Configuration,
-  Connector,
-  ConnectorCluster,
-  ConnectorsApi,
-  ConnectorType,
-} from '@rhoas/connector-management-sdk';
-import { KafkaRequest } from '@rhoas/kafka-management-sdk';
-import { useSelector } from '@xstate/react';
-import axios from 'axios';
 import { useCallback } from 'react';
+
+import { useSelector } from '@xstate/react';
 import {
   ActorRefFrom,
   assign,
   createMachine,
   createSchema,
-  Sender,
   sendParent,
 } from 'xstate';
 import { createModel } from 'xstate/lib/model';
+
+import {
+  ConnectorCluster,
+  ConnectorType,
+} from '@rhoas/connector-management-sdk';
+import { KafkaRequest } from '@rhoas/kafka-management-sdk';
+
 import { CreateValidatorType, createValidator } from './JsonSchemaConfigurator';
-
-type SaveConnectorProps = {
-  accessToken: () => Promise<string>;
-  basePath: string;
-
-  kafka: KafkaRequest;
-  cluster: ConnectorCluster;
-  connectorType: ConnectorType;
-
-  configuration: object;
-
-  name: string;
-  userServiceAccount?: ServiceAccount;
-};
-const saveConnector = ({
-  accessToken,
-  basePath,
-  kafka,
-  cluster,
-  connectorType,
-  configuration,
-  name,
-  userServiceAccount,
-}: SaveConnectorProps) => {
-  const apisService = new ConnectorsApi(
-    new Configuration({
-      accessToken,
-      basePath,
-    })
-  );
-  return (callback: Sender<any>) => {
-    const CancelToken = axios.CancelToken;
-    const source = CancelToken.source();
-    const async = true;
-    const connector: Connector = {
-      kind: 'Connector',
-      metadata: {
-        name,
-        kafka_id: kafka.id,
-      },
-      deployment_location: {
-        kind: 'addon',
-        cluster_id: cluster.id,
-      },
-      connector_type_id: connectorType.id,
-      kafka: {
-        bootstrap_server: kafka.bootstrap_server_host || 'demo',
-        client_id: userServiceAccount?.clientId,
-        client_secret: userServiceAccount?.clientSecret,
-      },
-      connector_spec: configuration,
-    };
-    apisService
-      .createConnector(async, connector, {
-        cancelToken: source.token,
-      })
-      .then(() => {
-        callback({ type: 'success' });
-      })
-      .catch((error) => {
-        if (!axios.isCancel(error)) {
-          callback({ type: 'failure', message: error.response.data.reason });
-        }
-      });
-    return () => {
-      source.cancel('Operation canceled by the user.');
-    };
-  };
-};
-
-type ServiceAccount = {
-  clientId: string;
-  clientSecret: string;
-};
+import { saveConnector, UserProvidedServiceAccount } from './api';
 
 type Context = {
   accessToken: () => Promise<string>;
@@ -105,7 +30,7 @@ type Context = {
   initialConfiguration: unknown;
 
   name: string;
-  userServiceAccount?: ServiceAccount;
+  userServiceAccount?: UserProvidedServiceAccount;
   configString: string;
   configStringError?: string;
   configStringWarnings?: string[];
@@ -128,7 +53,7 @@ const reviewMachineModel = createModel(
     events: {
       setName: (payload: { name: string }) => payload,
       setServiceAccount: (payload: {
-        serviceAccount: ServiceAccount | undefined;
+        serviceAccount: UserProvidedServiceAccount | undefined;
       }) => payload,
       updateConfiguration: (payload: { data: string }) => payload,
       save: () => ({}),
@@ -335,7 +260,7 @@ export const useReviewMachine = (actor: ReviewMachineActorRef) => {
     [actor]
   );
   const onSetServiceAccount = useCallback(
-    (serviceAccount: ServiceAccount | undefined) => {
+    (serviceAccount: UserProvidedServiceAccount | undefined) => {
       actor.send({ type: 'setServiceAccount', serviceAccount });
     },
     [actor]

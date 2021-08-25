@@ -1,3 +1,5 @@
+export const PAGINATED_MACHINE_ID = 'paginatedApi';
+
 export const defaultPerPageOptions = [
   {
     title: '1',

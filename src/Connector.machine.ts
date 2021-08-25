@@ -1,16 +1,13 @@
 import { useCallback } from 'react';
+
+import { useSelector } from '@xstate/react';
 import { ActorRefFrom, assign, createMachine, createSchema } from 'xstate';
 import { sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
 import { Connector } from '@rhoas/connector-management-sdk';
-import { useSelector } from '@xstate/react';
 
-import {
-  deleteConnector,
-  startConnector,
-  stopConnector,
-} from './Connector.machine-actors';
+import { deleteConnector, startConnector, stopConnector } from './api';
 
 type Context = {
   accessToken: () => Promise<string>;

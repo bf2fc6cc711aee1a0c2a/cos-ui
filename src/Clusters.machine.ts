@@ -1,5 +1,6 @@
-import axios from 'axios';
 import { useCallback } from 'react';
+
+import { useSelector } from '@xstate/react';
 import {
   ActorRefFrom,
   assign,
@@ -10,16 +11,10 @@ import {
 } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
-import {
-  Configuration,
-  ConnectorCluster,
-  ConnectorClustersApi,
-} from '@rhoas/connector-management-sdk';
+import { ConnectorCluster } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
-import { useSelector } from '@xstate/react';
 
 import {
-  ApiCallback,
   ApiSuccessResponse,
   getPaginatedApiMachineEvents,
   getPaginatedApiMachineEventsHandlers,
@@ -28,45 +23,8 @@ import {
   PaginatedApiRequest,
   usePagination,
 } from './PaginatedResponse.machine';
-
-const PAGINATED_MACHINE_ID = 'paginatedApi';
-
-const fetchClusters = (
-  accessToken: () => Promise<string>,
-  basePath: string
-): ApiCallback<ConnectorCluster, {}> => {
-  const apisService = new ConnectorClustersApi(
-    new Configuration({
-      accessToken,
-      basePath,
-    })
-  );
-  return (request, onSuccess, onError) => {
-    const CancelToken = axios.CancelToken;
-    const source = CancelToken.source();
-    const { page, size } = request;
-    apisService
-      .listConnectorClusters(`${page}`, `${size}`, {
-        cancelToken: source.token,
-      })
-      .then((response) => {
-        onSuccess({
-          items: response.data.items || [],
-          total: response.data.total,
-          page: response.data.page,
-          size: response.data.size,
-        });
-      })
-      .catch((error) => {
-        if (!axios.isCancel(error)) {
-          onError({ error: error.message, page: request.page });
-        }
-      });
-    return () => {
-      source.cancel('Operation canceled by the user.');
-    };
-  };
-};
+import { fetchClusters } from './api';
+import { PAGINATED_MACHINE_ID } from './constants';
 
 type Context = {
   accessToken: () => Promise<string>;
@@ -116,7 +74,7 @@ export const clustersMachine = createMachine<typeof clustersMachineModel>(
               id: PAGINATED_MACHINE_ID,
               src: (context) =>
                 makePaginatedApiMachine<KafkaRequest, {}, KafkaRequest>(
-                  fetchClusters(context.accessToken, context.basePath),
+                  fetchClusters(context),
                   (i) => i
                 ),
             },
