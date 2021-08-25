@@ -1295,17 +1295,17 @@
     webpack-dev-server "^3.11.2"
     write-file-webpack-plugin "^4.5.1"
 
-"@rhoas/connector-management-sdk@0.12.2":
-  version "0.12.2"
-  resolved "https://registry.yarnpkg.com/@rhoas/connector-management-sdk/-/connector-management-sdk-0.12.2.tgz#dd4590be1459becd981601f56828807340b20820"
-  integrity sha512-JBP+Xs5p2EmjFbdAzAENcILv0AHGKZob8yyVX/BrxQpAeccyv2+LqpO3tH9a6Tu/MFNp1Ny4sa8kP512FZkTtA==
+"@rhoas/connector-management-sdk@0.12.3":
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/@rhoas/connector-management-sdk/-/connector-management-sdk-0.12.3.tgz#77da4009974d5012bde68da6d9865f6fb8427741"
+  integrity sha512-INokaDMF8dTBBLFuJBPyr9hlH+MnbxwyFkFixmbhM/yP12/viz9mAFghRGyXBvUmIo7xuNUx9d8UXj+SYIvTmA==
   dependencies:
     axios "0.21.1"
 
-"@rhoas/kafka-management-sdk@0.12.2":
-  version "0.12.2"
-  resolved "https://registry.yarnpkg.com/@rhoas/kafka-management-sdk/-/kafka-management-sdk-0.12.2.tgz#bf34c53ac3bbd21051683c2ad4f8618400d4b54e"
-  integrity sha512-dbXzOsEZGvgr2xTrcjOlKZIQ35Y1MXQBo0Q44sKuWM//YIBRMVDaxlFIIVnK677gdW+LnG2w0HyWUAjTW31CnA==
+"@rhoas/kafka-management-sdk@0.12.3":
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/@rhoas/kafka-management-sdk/-/kafka-management-sdk-0.12.3.tgz#653b5778bc737e9a2d15a4aa2f7e5990189e5828"
+  integrity sha512-WTXEDXxX3nPfClGx/EttBPLWSNO9OdHz1cfafW15sNSDz5hETivfe4dbe3fKuauGkAv9p60R/uaePGQNNMjOyw==
   dependencies:
     axios "0.21.1"
 
