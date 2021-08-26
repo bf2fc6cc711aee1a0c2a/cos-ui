@@ -1,10 +1,4 @@
-import {
-  ActorRefFrom,
-  assign,
-  createMachine,
-  createSchema,
-  sendParent,
-} from 'xstate';
+import { ActorRefFrom, assign, createSchema, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import { ConnectorType } from '@rhoas/connector-management-sdk';
@@ -51,9 +45,7 @@ const configuratorMachineModel = createModel(
   }
 );
 
-export const configuratorMachine = createMachine<
-  typeof configuratorMachineModel
->(
+export const configuratorMachine = configuratorMachineModel.createMachine(
   {
     schema: configuratorMachineSchema,
     id: 'configurator',

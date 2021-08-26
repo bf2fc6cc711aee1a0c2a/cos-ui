@@ -14,8 +14,8 @@ import {
 import { useBasename, useConfig } from '@bf2/ui-shared';
 
 import { useAppContext } from './AppContext';
-import { CreationWizard } from './CreationWizard';
-import { CreationWizardMachineProvider } from './CreationWizard.machine-context';
+import { CreateConnectionWizard } from './CreateConnectorWizard';
+import { CreateConnectorWizardProvider } from './CreateConnectorWizardContext';
 import { fetchConfigurator } from './FederatedConfigurator';
 
 type CreateConnectorPageProps = {
@@ -49,7 +49,7 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
           style={{ zIndex: 0 }}
           type={'wizard'}
         >
-          <CreationWizardMachineProvider
+          <CreateConnectorWizardProvider
             accessToken={getToken}
             basePath={basePath}
             fetchConfigurator={(connector) =>
@@ -57,7 +57,7 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
             }
             onSave={onSave}
           >
-            <CreationWizard onClose={openLeaveConfirm} />
+            <CreateConnectionWizard onClose={openLeaveConfirm} />
             <Modal
               title={t('Leave page?')}
               variant={'small'}
@@ -76,7 +76,7 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
                 'Changes you have made will be lost and no connector will be created.'
               )}
             </Modal>
-          </CreationWizardMachineProvider>
+          </CreateConnectorWizardProvider>
         </PageSection>
       </>
     );

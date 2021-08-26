@@ -38,8 +38,7 @@ import { BodyLayout } from './BodyLayout';
 import {
   useConnectorTypesMachine,
   useConnectorTypesMachineIsReady,
-} from './ConnectorTypes.machine';
-import { useCreationWizardMachineConnectorTypesActor } from './CreationWizard.machine-context';
+} from './CreateConnectorWizardContext';
 import { EmptyState, EmptyStateVariant } from './EmptyState';
 import { Loading } from './Loading';
 import { NoMatchFound } from './NoMatchFound';
@@ -48,15 +47,13 @@ import { stringToChip } from './stringToChip';
 import { useDebounce } from './useDebounce';
 
 export function SelectConnectorType() {
-  const actor = useCreationWizardMachineConnectorTypesActor();
-  const isReady = useConnectorTypesMachineIsReady(actor);
+  const isReady = useConnectorTypesMachineIsReady();
 
   return isReady ? <ConnectorTypesGallery /> : null;
 }
 
 export function ConnectorTypesGallery() {
   const { t } = useTranslation();
-  const actor = useCreationWizardMachineConnectorTypesActor();
   const {
     response,
     loading,
@@ -69,7 +66,7 @@ export function ConnectorTypesGallery() {
     selectedId,
     onSelect,
     onQuery,
-  } = useConnectorTypesMachine(actor);
+  } = useConnectorTypesMachine();
 
   return (
     <BodyLayout
@@ -159,8 +156,7 @@ export function ConnectorTypesGallery() {
 
 const ConnectorTypesToolbar: FunctionComponent = () => {
   const { t } = useTranslation();
-  const actor = useCreationWizardMachineConnectorTypesActor();
-  const { request, onQuery } = useConnectorTypesMachine(actor);
+  const { request, onQuery } = useConnectorTypesMachine();
   const [categoriesToggled, setCategoriesToggled] = useState(false);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnQuery = useDebounce(onQuery, 1000);
@@ -298,8 +294,7 @@ type ConnectorTypesPaginationProps = {
 };
 const ConnectorTypesPagination: FunctionComponent<ConnectorTypesPaginationProps> =
   ({ isCompact = false }) => {
-    const actor = useCreationWizardMachineConnectorTypesActor();
-    const { request, response, onQuery } = useConnectorTypesMachine(actor);
+    const { request, response, onQuery } = useConnectorTypesMachine();
     return (
       <Pagination
         itemCount={response?.total || 0}

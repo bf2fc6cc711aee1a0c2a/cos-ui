@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
 import { useSelector } from '@xstate/react';
-import { ActorRefFrom, assign, createMachine, createSchema } from 'xstate';
+import { ActorRefFrom, assign, createSchema } from 'xstate';
 import { sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
@@ -37,7 +37,7 @@ const connectorMachineModel = createModel(
   }
 );
 
-export const connectorMachine = createMachine<typeof connectorMachineModel>(
+export const connectorMachine = connectorMachineModel.createMachine(
   {
     schema: connectorMachineSchema,
     id: 'connector',

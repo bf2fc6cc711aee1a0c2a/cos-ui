@@ -1,14 +1,7 @@
 import { useCallback } from 'react';
 
 import { useSelector } from '@xstate/react';
-import {
-  assign,
-  createMachine,
-  createSchema,
-  InterpreterFrom,
-  send,
-  spawn,
-} from 'xstate';
+import { assign, createSchema, InterpreterFrom, send, spawn } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import { Connector } from '@rhoas/connector-management-sdk';
@@ -60,9 +53,7 @@ const connectorsPageMachineModel = createModel(
   }
 );
 
-export const connectorsPageMachine = createMachine<
-  typeof connectorsPageMachineModel
->(
+export const connectorsPageMachine = connectorsPageMachineModel.createMachine(
   {
     schema: connectorsPageMachineSchema,
     id: 'connectors',

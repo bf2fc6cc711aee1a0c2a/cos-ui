@@ -1,10 +1,4 @@
-import {
-  assign,
-  createMachine,
-  createSchema,
-  InterpreterFrom,
-  send,
-} from 'xstate';
+import { assign, createSchema, InterpreterFrom, send } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import {
@@ -13,15 +7,15 @@ import {
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
-import { clustersMachine } from './Clusters.machine';
-import { configuratorMachine } from './Configurator.machine';
+import { clustersMachine } from './CreateConnectorWizardStep.Clusters.machine';
+import { configuratorMachine } from './CreateConnectorWizardStep.Configurator.machine';
 import {
   configuratorLoaderMachine,
   ConnectorConfiguratorType,
-} from './ConfiguratorLoader.machine';
-import { connectorTypesMachine } from './ConnectorTypes.machine';
-import { kafkasMachine } from './Kafkas.machine';
-import { reviewMachine } from './Review.machine';
+} from './CreateConnectorWizardStep.ConfiguratorLoader.machine';
+import { connectorTypesMachine } from './CreateConnectorWizardStep.ConnectorTypes.machine';
+import { kafkasMachine } from './CreateConnectorWizardStep.Kafkas.machine';
+import { reviewMachine } from './CreateConnectorWizardStep.Review.machine';
 
 type Context = {
   accessToken: () => Promise<string>;
@@ -58,9 +52,7 @@ const creationWizardMachineModel = createModel({} as Context, {
   },
 });
 
-export const creationWizardMachine = createMachine<
-  typeof creationWizardMachineModel
->(
+export const creationWizardMachine = creationWizardMachineModel.createMachine(
   {
     schema: creationWizardMachineSchema,
     id: 'creationWizard',

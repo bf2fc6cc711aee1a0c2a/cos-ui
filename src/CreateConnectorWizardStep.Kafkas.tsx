@@ -43,9 +43,11 @@ import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 import { useBasename } from '@bf2/ui-shared';
 
 import { BodyLayout } from './BodyLayout';
-import { useCreationWizardMachineKafkasActor } from './CreationWizard.machine-context';
+import {
+  useKafkasMachineIsReady,
+  useKafkasMachine,
+} from './CreateConnectorWizardContext';
 import { EmptyState, EmptyStateVariant } from './EmptyState';
-import { useKafkasMachine, useKafkasMachineIsReady } from './Kafkas.machine';
 import { Loading } from './Loading';
 import { NoMatchFound } from './NoMatchFound';
 import { defaultPerPageOptions } from './constants';
@@ -53,14 +55,12 @@ import { stringToChip } from './stringToChip';
 import { useDebounce } from './useDebounce';
 
 export const SelectKafkaInstance: FunctionComponent = () => {
-  const actor = useCreationWizardMachineKafkasActor();
-  const isReady = useKafkasMachineIsReady(actor);
+  const isReady = useKafkasMachineIsReady();
   return isReady ? <KafkasGallery /> : null;
 };
 const KafkasGallery: FunctionComponent = () => {
   const { t } = useTranslation();
   const basename = useBasename();
-  const actor = useCreationWizardMachineKafkasActor();
   const {
     response,
     loading,
@@ -73,7 +73,7 @@ const KafkasGallery: FunctionComponent = () => {
     firstRequest,
     onSelect,
     onQuery,
-  } = useKafkasMachine(actor);
+  } = useKafkasMachine();
 
   return (
     <BodyLayout
@@ -177,8 +177,7 @@ const KafkasGallery: FunctionComponent = () => {
 const KafkaToolbar: FunctionComponent = () => {
   const { t } = useTranslation();
 
-  const actor = useCreationWizardMachineKafkasActor();
-  const { request, onQuery } = useKafkasMachine(actor);
+  const { request, onQuery } = useKafkasMachine();
 
   const [statusesToggled, setStatusesToggled] = useState(false);
   const [cloudProvidersToggled, setCloudProvidersToggled] = useState(false);
@@ -566,8 +565,7 @@ type KafkasPaginationProps = {
 const KafkasPagination: FunctionComponent<KafkasPaginationProps> = ({
   isCompact = false,
 }) => {
-  const actor = useCreationWizardMachineKafkasActor();
-  const { request, response, onQuery } = useKafkasMachine(actor);
+  const { request, response, onQuery } = useKafkasMachine();
 
   return (
     <Pagination

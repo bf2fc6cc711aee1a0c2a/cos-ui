@@ -1,4 +1,4 @@
-import { assign, createMachine, createSchema } from 'xstate';
+import { assign, createSchema } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 type Context<T> = {
@@ -16,7 +16,7 @@ export function makeFetchMachine<T>() {
     error: undefined,
   } as Context<T>);
 
-  return createMachine<typeof fetchMachineModel>({
+  return fetchMachineModel.createMachine({
     schema: fetchMachineSchema,
     id: 'fetchMachine',
     context: {},

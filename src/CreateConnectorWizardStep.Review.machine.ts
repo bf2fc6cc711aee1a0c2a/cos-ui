@@ -1,13 +1,4 @@
-import { useCallback } from 'react';
-
-import { useSelector } from '@xstate/react';
-import {
-  ActorRefFrom,
-  assign,
-  createMachine,
-  createSchema,
-  sendParent,
-} from 'xstate';
+import { ActorRefFrom, assign, createSchema, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import {
@@ -63,7 +54,7 @@ const reviewMachineModel = createModel(
   }
 );
 
-export const reviewMachine = createMachine<typeof reviewMachineModel>(
+export const reviewMachine = reviewMachineModel.createMachine(
   {
     schema: reviewMachineSchema,
     id: 'review',
@@ -228,59 +219,3 @@ function verifyData(
 }
 
 export type ReviewMachineActorRef = ActorRefFrom<typeof reviewMachine>;
-
-export const useReviewMachine = (actor: ReviewMachineActorRef) => {
-  const {
-    name,
-    serviceAccount,
-    configString,
-    configStringError,
-    configStringWarnings,
-    isSaving,
-    savingError,
-  } = useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => ({
-        name: state.context.name,
-        serviceAccount: state.context.userServiceAccount,
-        configString: state.context.configString,
-        configStringError: state.context.configStringError,
-        configStringWarnings: state.context.configStringWarnings,
-        isSaving: state.hasTag('saving'),
-        savingError: state.context.savingError,
-      }),
-      [actor]
-    )
-  );
-  const onSetName = useCallback(
-    (name: string) => {
-      actor.send({ type: 'setName', name });
-    },
-    [actor]
-  );
-  const onSetServiceAccount = useCallback(
-    (serviceAccount: UserProvidedServiceAccount | undefined) => {
-      actor.send({ type: 'setServiceAccount', serviceAccount });
-    },
-    [actor]
-  );
-  const onUpdateConfiguration = useCallback(
-    (data?: string) => {
-      actor.send({ type: 'updateConfiguration', data: data || '' });
-    },
-    [actor]
-  );
-  return {
-    name,
-    serviceAccount,
-    configString,
-    configStringError,
-    configStringWarnings,
-    isSaving,
-    savingError,
-    onSetName,
-    onSetServiceAccount,
-    onUpdateConfiguration,
-  };
-};
