@@ -1,14 +1,4 @@
-import { useCallback } from 'react';
-
-import { useSelector } from '@xstate/react';
-import {
-  ActorRefFrom,
-  assign,
-  createMachine,
-  createSchema,
-  send,
-  sendParent,
-} from 'xstate';
+import { ActorRefFrom, assign, createSchema, send, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import { ConnectorType } from '@rhoas/connector-management-sdk';
@@ -18,9 +8,6 @@ import {
   getPaginatedApiMachineEvents,
   getPaginatedApiMachineEventsHandlers,
   makePaginatedApiMachine,
-  PaginatedApiActorType,
-  PaginatedApiRequest,
-  usePagination,
 } from './PaginatedResponse.machine';
 import { ConnectorTypesQuery, fetchConnectorTypes } from './api';
 import { PAGINATED_MACHINE_ID } from './constants';
@@ -61,9 +48,7 @@ const connectorTypesMachineModel = createModel(
   }
 );
 
-export const connectorTypesMachine = createMachine<
-  typeof connectorTypesMachineModel
->(
+export const connectorTypesMachine = connectorTypesMachineModel.createMachine(
   {
     schema: connectorTypesMachineSchema,
     context: connectorTypesMachineModel.initialContext,
@@ -190,56 +175,3 @@ export const connectorTypesMachine = createMachine<
 export type ConnectorTypesMachineActorRef = ActorRefFrom<
   typeof connectorTypesMachine
 >;
-
-export const useConnectorTypesMachineIsReady = (
-  actor: ConnectorTypesMachineActorRef
-) => {
-  return useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => {
-        return state.matches({ root: { api: 'ready' } });
-      },
-      [actor]
-    )
-  );
-};
-
-export const useConnectorTypesMachine = (
-  actor: ConnectorTypesMachineActorRef
-) => {
-  const api = usePagination<ConnectorType, ConnectorTypesQuery, ConnectorType>(
-    actor.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType<
-      ConnectorType,
-      ConnectorTypesQuery,
-      ConnectorType
-    >
-  );
-  const { selectedId } = useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => ({
-        selectedId: state.context.selectedConnector?.id,
-      }),
-      [actor]
-    )
-  );
-  const onSelect = useCallback(
-    (selectedConnector: string) => {
-      actor.send({ type: 'selectConnector', selectedConnector });
-    },
-    [actor]
-  );
-  const onQuery = useCallback(
-    (request: PaginatedApiRequest<ConnectorTypesQuery>) => {
-      actor.send({ type: 'api.query', ...request });
-    },
-    [actor]
-  );
-  return {
-    ...api,
-    selectedId,
-    onSelect,
-    onQuery,
-  };
-};

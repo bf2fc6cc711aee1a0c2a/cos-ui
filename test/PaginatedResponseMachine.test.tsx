@@ -1,9 +1,12 @@
-import {
-  ApiCallback, getPaginatedApiMachineEvents, getPaginatedApiMachineEventsHandlers,
-  makePaginatedApiMachine
-} from '../src/PaginatedResponse.machine';
 import { createMachine, interpret } from 'xstate';
 import { createModel } from 'xstate/lib/model';
+
+import {
+  ApiCallback,
+  getPaginatedApiMachineEvents,
+  getPaginatedApiMachineEventsHandlers,
+  makePaginatedApiMachine,
+} from '../src/PaginatedResponse.machine';
 
 describe('@cos-ui/machines', () => {
   describe('makePaginatedApiMachine', () => {
@@ -68,7 +71,7 @@ describe('@cos-ui/machines', () => {
       TestResultType,
       TestQueryType,
       TestResultType
-    >(testApi, i => i);
+    >(testApi, (i) => i);
 
     const testModel = createModel(
       {},

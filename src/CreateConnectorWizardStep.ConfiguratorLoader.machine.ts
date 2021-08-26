@@ -1,6 +1,6 @@
 import { ComponentType } from 'react';
 
-import { assign, createMachine, createSchema } from 'xstate';
+import { assign, createSchema } from 'xstate';
 import { escalate } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
@@ -40,39 +40,38 @@ const configuratorLoaderMachineModel = createModel({
   error: undefined,
 } as Context);
 
-export const configuratorLoaderMachine = createMachine<
-  typeof configuratorLoaderMachineModel
->({
-  schema: configuratorLoaderMachineSchema,
-  id: 'configurator',
-  initial: 'loading',
-  context: configuratorLoaderMachineModel.initialContext,
-  states: {
-    loading: {
-      invoke: {
-        id: 'fetchConfigurator',
-        src: 'fetchConfigurator',
-        onDone: {
-          target: 'success',
-          actions: assign((_context, event) => event.data),
-        },
-        onError: {
-          target: 'failure',
-          actions: assign({
-            error: (_context, event) => event.data,
-          }),
+export const configuratorLoaderMachine =
+  configuratorLoaderMachineModel.createMachine({
+    schema: configuratorLoaderMachineSchema,
+    id: 'configurator',
+    initial: 'loading',
+    context: configuratorLoaderMachineModel.initialContext,
+    states: {
+      loading: {
+        invoke: {
+          id: 'fetchConfigurator',
+          src: 'fetchConfigurator',
+          onDone: {
+            target: 'success',
+            actions: assign((_context, event) => event.data),
+          },
+          onError: {
+            target: 'failure',
+            actions: assign({
+              error: (_context, event) => event.data,
+            }),
+          },
         },
       },
+      failure: {
+        entry: escalate((context) => ({ message: context.error })),
+      },
+      success: {
+        type: 'final',
+        data: ({ Configurator, steps }: Context) => ({
+          Configurator: Configurator!,
+          steps: steps as string[] | false,
+        }),
+      },
     },
-    failure: {
-      entry: escalate((context) => ({ message: context.error })),
-    },
-    success: {
-      type: 'final',
-      data: ({ Configurator, steps }: Context) => ({
-        Configurator: Configurator!,
-        steps: steps as string[] | false,
-      }),
-    },
-  },
-});
+  });

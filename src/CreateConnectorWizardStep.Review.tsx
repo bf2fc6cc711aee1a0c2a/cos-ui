@@ -15,12 +15,10 @@ import {
 } from '@patternfly/react-core';
 
 import { BodyLayout } from './BodyLayout';
-import { useCreationWizardMachineReviewActor } from './CreationWizard.machine-context';
-import { useReviewMachine } from './Review.machine';
+import { useReviewMachine } from './CreateConnectorWizardContext';
 
 export function Review() {
   const { t } = useTranslation();
-  const actor = useCreationWizardMachineReviewActor();
   const {
     name,
     serviceAccount,
@@ -32,7 +30,7 @@ export function Review() {
     onSetName,
     onSetServiceAccount,
     onUpdateConfiguration,
-  } = useReviewMachine(actor);
+  } = useReviewMachine();
   const onEditorDidMount = useCallback((editor: any, _monaco: any) => {
     editor.layout();
     editor.focus();

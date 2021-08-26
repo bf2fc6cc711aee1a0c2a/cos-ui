@@ -27,10 +27,9 @@ import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
 import { BodyLayout } from './BodyLayout';
 import {
-  useClustersMachine,
   useClustersMachineIsReady,
-} from './Clusters.machine';
-import { useCreationWizardMachineClustersActor } from './CreationWizard.machine-context';
+  useClustersMachine,
+} from './CreateConnectorWizardContext';
 import { EmptyState, EmptyStateVariant } from './EmptyState';
 import { Loading } from './Loading';
 import { NoMatchFound } from './NoMatchFound';
@@ -38,8 +37,7 @@ import { defaultPerPageOptions } from './constants';
 import { useDebounce } from './useDebounce';
 
 export function SelectCluster() {
-  const actor = useCreationWizardMachineClustersActor();
-  const isReady = useClustersMachineIsReady(actor);
+  const isReady = useClustersMachineIsReady();
 
   return isReady ? <ClustersGallery /> : null;
 }
@@ -47,7 +45,6 @@ export function SelectCluster() {
 const ClustersGallery: FunctionComponent = () => {
   const { t } = useTranslation();
   const history = useHistory();
-  const actor = useCreationWizardMachineClustersActor();
   const {
     response,
     selectedId,
@@ -60,7 +57,7 @@ const ClustersGallery: FunctionComponent = () => {
     firstRequest,
     onSelect,
     onQuery,
-  } = useClustersMachine(actor);
+  } = useClustersMachine();
 
   return (
     <BodyLayout
@@ -151,8 +148,7 @@ const ClustersGallery: FunctionComponent = () => {
 };
 
 const ClustersToolbar: FunctionComponent = () => {
-  const actor = useCreationWizardMachineClustersActor();
-  const { request, onQuery } = useClustersMachine(actor);
+  const { request, onQuery } = useClustersMachine();
 
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnQuery = useDebounce(onQuery, 1000);
@@ -275,8 +271,7 @@ type ClustersPaginationProps = {
 const ClustersPagination: FunctionComponent<ClustersPaginationProps> = ({
   isCompact = false,
 }) => {
-  const actor = useCreationWizardMachineClustersActor();
-  const { request, response, onQuery } = useClustersMachine(actor);
+  const { request, response, onQuery } = useClustersMachine();
   return (
     <Pagination
       itemCount={response?.total || 0}

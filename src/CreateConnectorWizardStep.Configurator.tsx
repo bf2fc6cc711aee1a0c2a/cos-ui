@@ -12,12 +12,12 @@ import {
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
 import { BodyLayout } from './BodyLayout';
-import { ConfiguratorActorRef } from './Configurator.machine';
+import { useCreateConnectorWizardService } from './CreateConnectorWizardContext';
+import { ConfiguratorActorRef } from './CreateConnectorWizardStep.Configurator.machine';
 import {
   ConnectorConfiguratorComponent,
   ConnectorConfiguratorProps,
-} from './ConfiguratorLoader.machine';
-import { useCreationWizardMachineService } from './CreationWizard.machine-context';
+} from './CreateConnectorWizardStep.ConfiguratorLoader.machine';
 import { JsonSchemaConfigurator } from './JsonSchemaConfigurator';
 
 const ConnectedCustomConfigurator: FunctionComponent<{
@@ -73,13 +73,13 @@ const ConnectedJsonSchemaConfigurator: FunctionComponent<{
   );
 };
 
-export type ConfigurationProps = {
+export type ConfiguratorStepProps = {
   Configurator: ComponentType<ConnectorConfiguratorProps> | false;
 };
 
-export const Configuration: FunctionComponent = () => {
+export const ConfiguratorStep: FunctionComponent = () => {
   const { t } = useTranslation();
-  const service = useCreationWizardMachineService();
+  const service = useCreateConnectorWizardService();
   const {
     isLoading,
     hasErrors,

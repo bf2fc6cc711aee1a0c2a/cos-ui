@@ -1,14 +1,4 @@
-import { useCallback } from 'react';
-
-import { useSelector } from '@xstate/react';
-import {
-  ActorRefFrom,
-  assign,
-  createMachine,
-  createSchema,
-  send,
-  sendParent,
-} from 'xstate';
+import { ActorRefFrom, assign, createSchema, send, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import { ConnectorCluster } from '@rhoas/connector-management-sdk';
@@ -19,9 +9,6 @@ import {
   getPaginatedApiMachineEvents,
   getPaginatedApiMachineEventsHandlers,
   makePaginatedApiMachine,
-  PaginatedApiActorType,
-  PaginatedApiRequest,
-  usePagination,
 } from './PaginatedResponse.machine';
 import { fetchClusters } from './api';
 import { PAGINATED_MACHINE_ID } from './constants';
@@ -58,7 +45,7 @@ const clustersMachineModel = createModel(
   }
 );
 
-export const clustersMachine = createMachine<typeof clustersMachineModel>(
+export const clustersMachine = clustersMachineModel.createMachine(
   {
     schema: clustersMachineSchema,
     id: 'clusters',
@@ -176,52 +163,3 @@ export const clustersMachine = createMachine<typeof clustersMachineModel>(
 );
 
 export type ClustersMachineActorRef = ActorRefFrom<typeof clustersMachine>;
-
-export const useClustersMachineIsReady = (actor: ClustersMachineActorRef) => {
-  return useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => {
-        return state.matches({ root: { api: 'ready' } });
-      },
-      [actor]
-    )
-  );
-};
-
-export const useClustersMachine = (actor: ClustersMachineActorRef) => {
-  const api = usePagination<ConnectorCluster, {}, ConnectorCluster>(
-    actor.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType<
-      ConnectorCluster,
-      {},
-      ConnectorCluster
-    >
-  );
-  const { selectedId } = useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => ({
-        selectedId: state.context.selectedCluster?.id,
-      }),
-      [actor]
-    )
-  );
-  const onSelect = useCallback(
-    (selectedCluster: string) => {
-      actor.send({ type: 'selectCluster', selectedCluster });
-    },
-    [actor]
-  );
-  const onQuery = useCallback(
-    (request: PaginatedApiRequest<{}>) => {
-      actor.send({ type: 'api.query', ...request });
-    },
-    [actor]
-  );
-  return {
-    ...api,
-    selectedId,
-    onSelect,
-    onQuery,
-  };
-};

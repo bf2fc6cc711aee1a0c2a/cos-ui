@@ -4,11 +4,11 @@
 declare const __DEV__: boolean;
 declare const __VERSION__: string;
 declare const $FixMe: any;
-declare module "*.svg" {
+declare module '*.svg' {
   const content: any;
   export default content;
 }
 
 declare function __webpack_init_sharing__(s: string): Promise<void>;
-declare const __webpack_share_scopes__: {[key: string]: any};
+declare const __webpack_share_scopes__: { [key: string]: any };
 declare const __webpack_public_path__: string;

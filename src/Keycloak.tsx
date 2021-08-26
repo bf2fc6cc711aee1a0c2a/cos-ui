@@ -30,10 +30,12 @@ export const init = async () => {
       realm: 'redhat-external',
       url: 'https://sso.redhat.com/auth/',
       clientId: 'cloud-services',
+      promiseType: 'native',
     });
     if (keycloak) {
       await keycloak.init({
         onLoad: 'login-required',
+        promiseType: 'native',
       });
     }
   } catch (e) {
