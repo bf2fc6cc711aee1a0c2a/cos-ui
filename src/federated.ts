@@ -1,3 +1,3 @@
-import { FederatedApp } from './FederatedApp';
+import { AppFederated } from './AppFederated';
 
-export default FederatedApp;
+export default AppFederated;

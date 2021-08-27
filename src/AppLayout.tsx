@@ -18,6 +18,9 @@ interface IAppLayout {
   children: ReactNode;
 }
 
+/**
+ * Mocks the chrome of an app running on consoles.redhat.com
+ */
 export const AppLayout: FunctionComponent<IAppLayout> = ({ children }) => {
   const [isNavOpen, setIsNavOpen] = useState(true);
   const [isMobileView, setIsMobileView] = useState(true);

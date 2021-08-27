@@ -11,7 +11,6 @@ import {
 
 import { AlertVariant, useAlert } from '@bf2/ui-shared';
 
-import { useAppContext } from './AppContext';
 import { ConnectorDrawer } from './ConnectorDrawer';
 import { useConnectorsMachine } from './ConnectorsPage.machine';
 import {
@@ -21,6 +20,7 @@ import {
 } from './ConnectorsPageContext';
 import { ConnectorsTable } from './ConnectorsTable';
 import { ConnectorsToolbar } from './ConnectorsToolbar';
+import { useCos } from './CosContext';
 import { EmptyState, EmptyStateVariant } from './EmptyState';
 import { Loading } from './Loading';
 import { NoMatchFound } from './NoMatchFound';
@@ -32,7 +32,7 @@ export const ConnectedConnectorsPage: FunctionComponent<ConnectedConnectorsPageP
   ({ onCreateConnector }) => {
     const { t } = useTranslation();
     const alert = useAlert();
-    const { basePath, getToken } = useAppContext();
+    const { basePath, getToken } = useCos();
     const onError = useCallback(
       (description: string) => {
         alert?.addAlert({
@@ -87,6 +87,8 @@ const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
     queryEmpty,
     // queryResults,
     firstRequest,
+    selectedConnector,
+    deselectConnector,
   } = useConnectorsMachine(service);
 
   switch (true) {
@@ -129,7 +131,10 @@ const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
       );
     default:
       return (
-        <ConnectorDrawer>
+        <ConnectorDrawer
+          connector={selectedConnector}
+          onClose={deselectConnector}
+        >
           <PageSection variant={'light'}>
             <ConnectorsPageTitle />
           </PageSection>

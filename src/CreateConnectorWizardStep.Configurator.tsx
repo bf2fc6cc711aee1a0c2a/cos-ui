@@ -11,7 +11,7 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
-import { BodyLayout } from './BodyLayout';
+import { CreateConnectorWizardBodyLayout } from './CreateConnectorWizardBodyLayout';
 import { useCreateConnectorWizardService } from './CreateConnectorWizardContext';
 import { ConfiguratorActorRef } from './CreateConnectorWizardStep.Configurator.machine';
 import {
@@ -112,7 +112,7 @@ export const ConfiguratorStep: FunctionComponent = () => {
   );
 
   return (
-    <BodyLayout
+    <CreateConnectorWizardBodyLayout
       title={t('Configurations')}
       description={
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
@@ -151,6 +151,6 @@ export const ConfiguratorStep: FunctionComponent = () => {
             return <ConnectedJsonSchemaConfigurator actor={configuratorRef} />;
         }
       })()}
-    </BodyLayout>
+    </CreateConnectorWizardBodyLayout>
   );
 };

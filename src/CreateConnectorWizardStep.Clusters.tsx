@@ -25,7 +25,7 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
-import { BodyLayout } from './BodyLayout';
+import { CreateConnectorWizardBodyLayout } from './CreateConnectorWizardBodyLayout';
 import {
   useClustersMachineIsReady,
   useClustersMachine,
@@ -60,7 +60,7 @@ const ClustersGallery: FunctionComponent = () => {
   } = useClustersMachine();
 
   return (
-    <BodyLayout
+    <CreateConnectorWizardBodyLayout
       title={t('OSD cluster')}
       description={
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
@@ -143,7 +143,7 @@ const ClustersGallery: FunctionComponent = () => {
             );
         }
       })()}
-    </BodyLayout>
+    </CreateConnectorWizardBodyLayout>
   );
 };
 

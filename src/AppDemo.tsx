@@ -18,9 +18,9 @@ import {
   useConfig,
 } from '@bf2/ui-shared';
 
-import { AlertProvider } from './AlertContext';
+import { AlertsProvider } from './Alerts';
 import { AppLayout } from './AppLayout';
-import { CosUiRoutes } from './CosUiRoutes';
+import { CosRoutes } from './CosRoutes';
 import {
   getKeycloakInstance,
   KeycloakAuthProvider,
@@ -31,7 +31,18 @@ import i18n from './i18n';
 
 let keycloak: Keycloak.KeycloakInstance | undefined;
 
-export const DemoApp: FunctionComponent = () => {
+/**
+ * Initializes the COS UI with an app that mimicks the console.redhat.com
+ * experience.
+ *
+ * It uses Keycloak to authenticate the user against sso.redhat.com.
+ * For it to work it requires the dev server to run at address
+ * https://prod.foo.redhat.com:1337.
+ *
+ * The `baseUrl` for the API can be specified setting the `BASE_PATH` env
+ * variable.
+ */
+export const AppDemo: FunctionComponent = () => {
   const [initialized, setInitialized] = useState(false);
 
   const getBasename = useCallback(() => '/', []);
@@ -77,7 +88,7 @@ export const DemoApp: FunctionComponent = () => {
         <BasenameContext.Provider value={{ getBasename }}>
           <ConfigContext.Provider value={config}>
             <I18nextProvider i18n={i18n}>
-              <AlertProvider>
+              <AlertsProvider>
                 <React.Suspense fallback={<Loading />}>
                   <Router>
                     <AppLayout>
@@ -85,7 +96,7 @@ export const DemoApp: FunctionComponent = () => {
                     </AppLayout>
                   </Router>
                 </React.Suspense>
-              </AlertProvider>
+              </AlertsProvider>
             </I18nextProvider>
           </ConfigContext.Provider>
         </BasenameContext.Provider>
@@ -98,7 +109,7 @@ const ConnectedRoutes = () => {
   const config = useConfig();
 
   return (
-    <CosUiRoutes
+    <CosRoutes
       getToken={auth?.kas.getToken || (() => Promise.resolve(''))}
       apiBasepath={config?.cos.apiBasePath || ''}
     />

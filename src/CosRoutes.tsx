@@ -4,16 +4,16 @@ import { Route, Switch, useHistory } from 'react-router-dom';
 
 import { AlertVariant, useAlert } from '@bf2/ui-shared';
 
-import { AppContextProvider } from './AppContext';
 import { ConnectedConnectorsPage } from './ConnectorsPage';
+import { CosContextProvider } from './CosContext';
 import { CreateConnectorPage } from './CreateConnectorPage';
 
-type CosUiRoutesProps = {
+type CosRoutesProps = {
   getToken: () => Promise<string>;
   apiBasepath: string;
 };
 
-export const CosUiRoutes: FunctionComponent<CosUiRoutesProps> = ({
+export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
   getToken,
   apiBasepath,
 }) => {
@@ -34,7 +34,7 @@ export const CosUiRoutes: FunctionComponent<CosUiRoutesProps> = ({
     goToConnectorsList();
   }, [alert, goToConnectorsList, t]);
   return (
-    <AppContextProvider getToken={getToken} basePath={apiBasepath}>
+    <CosContextProvider getToken={getToken} basePath={apiBasepath}>
       <Switch>
         <Route path={'/'} exact>
           <ConnectedConnectorsPage onCreateConnector={goToCreateConnector} />
@@ -46,6 +46,6 @@ export const CosUiRoutes: FunctionComponent<CosUiRoutesProps> = ({
           />
         </Route>
       </Switch>
-    </AppContextProvider>
+    </CosContextProvider>
   );
 };
