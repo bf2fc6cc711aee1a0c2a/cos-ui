@@ -214,7 +214,11 @@ function verifyData(
       error: undefined,
     };
   } catch (e) {
-    return { warnings: undefined, error: `Invalid JSON: ${e.message}` };
+    const maybeMessage = (e as any)?.message;
+    return {
+      warnings: undefined,
+      error: `Invalid JSON: ${maybeMessage || JSON.stringify(e)}`,
+    };
   }
 }
 
