@@ -42,7 +42,7 @@ import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
 import { useBasename } from '@bf2/ui-shared';
 
-import { BodyLayout } from './BodyLayout';
+import { CreateConnectorWizardBodyLayout } from './CreateConnectorWizardBodyLayout';
 import {
   useKafkasMachineIsReady,
   useKafkasMachine,
@@ -76,7 +76,7 @@ const KafkasGallery: FunctionComponent = () => {
   } = useKafkasMachine();
 
   return (
-    <BodyLayout
+    <CreateConnectorWizardBodyLayout
       title={t('Kafka instance')}
       description={
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
@@ -170,7 +170,7 @@ const KafkasGallery: FunctionComponent = () => {
             );
         }
       })()}
-    </BodyLayout>
+    </CreateConnectorWizardBodyLayout>
   );
 };
 

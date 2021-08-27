@@ -46,7 +46,7 @@ describe('Connectors page', () => {
     // should open the drawer with the details of the connector
     cy.findByText('dbz-postgres-conn').click();
     cy.findByText('Connector name').should('exist');
-    cy.findByText('Overview').should('exist');
+    cy.findByText('Details').should('exist');
     cy.findByText(
       'lb-cos--vgitqo-mk-imjg-eyqfbazqdiv.bf2.kafka.rhcloud.com:443'
     ).should('exist');
@@ -55,9 +55,9 @@ describe('Connectors page', () => {
 
     // should open the actions dropdown
     cy.findByTestId('actions-for-1vLK2A3Gl34hHjAxMj93Ma8Ajh8').click();
-    cy.findByText('Overview').click();
+    cy.findByText('Details').click();
     cy.findByText('Connector name').should('exist');
-    cy.findByText('Overview').should('exist');
+    cy.findByText('Details').should('exist');
     cy.findByText(
       'lb-cos--vgitqo-mk-imjg-eyqfbazqdiv.bf2.kafka.rhcloud.com:443'
     ).should('exist');
@@ -84,7 +84,7 @@ describe('Connectors page', () => {
     cy.findByText('Start').should('have.attr', 'aria-disabled', 'true');
     cy.findByText('Stop').click();
     cy.wait('@stopPatch');
-    cy.get('@stopPatch').should(req => {
+    cy.get('@stopPatch').should((req) => {
       expect(req.request.body).to.deep.equal({ desired_state: 'stopped' });
     });
 
@@ -96,7 +96,7 @@ describe('Connectors page', () => {
     cy.findByText('Stop').should('have.attr', 'aria-disabled', 'true');
     cy.findByText('Start').click();
     cy.wait('@startPatch');
-    cy.get('@startPatch').should(req => {
+    cy.get('@startPatch').should((req) => {
       expect(req.request.body).to.deep.equal({ desired_state: 'ready' });
     });
   });

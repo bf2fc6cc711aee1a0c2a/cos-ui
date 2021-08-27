@@ -13,7 +13,7 @@ import {
 
 import { useBasename, useConfig } from '@bf2/ui-shared';
 
-import { useAppContext } from './AppContext';
+import { useCos } from './CosContext';
 import { CreateConnectionWizard } from './CreateConnectorWizard';
 import { CreateConnectorWizardProvider } from './CreateConnectorWizardContext';
 import { fetchConfigurator } from './FederatedConfigurator';
@@ -27,7 +27,7 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
     const { t } = useTranslation();
     const config = useConfig();
     const basename = useBasename();
-    const { basePath, getToken } = useAppContext();
+    const { basePath, getToken } = useCos();
     const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
     const openLeaveConfirm = () => setAskForLeaveConfirm(true);
     const closeLeaveConfirm = () => setAskForLeaveConfirm(false);

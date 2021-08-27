@@ -10,11 +10,11 @@ import {
 import './ConnectorStatusIcon.css';
 
 type ConnectorStatusIconProps = {
-  id: string;
+  name: string;
   status: string;
 };
 export const ConnectorStatusIcon: FunctionComponent<ConnectorStatusIconProps> =
-  ({ id, status }) => {
+  ({ name, status }) => {
     switch (status?.toLowerCase()) {
       case 'ready':
         return (
@@ -31,7 +31,7 @@ export const ConnectorStatusIcon: FunctionComponent<ConnectorStatusIconProps> =
         return (
           <Spinner
             size="md"
-            aria-label={id}
+            aria-label={name}
             aria-valuetext="Creation in progress"
           />
         );

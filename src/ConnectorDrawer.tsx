@@ -1,4 +1,9 @@
-import React, { useState } from 'react';
+import React, {
+  FunctionComponent,
+  ReactNode,
+  useState,
+  MouseEvent,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -9,6 +14,8 @@ import {
   DrawerHead,
   DrawerPanelBody,
   DrawerPanelContent,
+  Flex,
+  FlexItem,
   Tab,
   Tabs,
   TabTitleText,
@@ -23,43 +30,99 @@ import {
   TitleSizes,
 } from '@patternfly/react-core';
 
+import { AddonClusterTarget, Connector } from '@rhoas/connector-management-sdk';
+
 import './ConnectorDrawer.css';
-import { useConnectorsMachine } from './ConnectorsPage.machine';
-import { useConnectorsPageMachineService } from './ConnectorsPageContext';
+import { ConnectorStatusIcon } from './ConnectorStatusIcon';
+import { useConnectorStatusLabel } from './useConnectorStatusLabel';
 
 export type ConnectorDrawerProps = {
-  children: React.ReactNode;
+  children: ReactNode;
+  connector?: Connector;
+  onClose: () => void;
 };
 
-export const ConnectorDrawer: React.FunctionComponent<ConnectorDrawerProps> = ({
+export const ConnectorDrawer: FunctionComponent<ConnectorDrawerProps> = ({
   children,
-}: ConnectorDrawerProps) => {
-  const { t } = useTranslation();
-  const service = useConnectorsPageMachineService();
-  const { selectedConnector, deselectConnector } =
-    useConnectorsMachine(service);
-  const [activeTabKey, setActiveTabKey] = useState<string | number>(0);
-
-  const selectActiveKey = (_: React.MouseEvent, eventKey: string | number) => {
-    setActiveTabKey(eventKey);
-  };
-
-  const textListItem = (title: string, value?: string) => (
-    <>
-      {value && (
-        <>
-          <TextListItem component={TextListItemVariants.dt}>
-            {title}
-          </TextListItem>
-          <TextListItem component={TextListItemVariants.dd}>
-            {value}
-          </TextListItem>
-        </>
-      )}
-    </>
+  connector,
+  onClose,
+}) => {
+  return (
+    <Drawer isExpanded={connector !== undefined}>
+      <DrawerContent
+        panelContent={
+          connector ? (
+            <ConnectorDrawerPanelContent
+              name={connector.metadata!.name!}
+              bootstrapServer={connector.kafka!.bootstrap_server!}
+              kafkaId={connector.metadata!.kafka_id!}
+              owner={connector.metadata!.owner!}
+              cluster={
+                (connector.deployment_location as AddonClusterTarget)
+                  .cluster_id!
+              }
+              createdAt={connector.metadata!.created_at!}
+              updatedAt={connector.metadata!.updated_at!}
+              status={connector.status!}
+              onClose={onClose}
+            />
+          ) : undefined
+        }
+      >
+        {children}
+      </DrawerContent>
+    </Drawer>
   );
+};
 
-  const panelContent = () => {
+export type ConnectorDrawerPanelContentProps = {
+  name: string;
+  bootstrapServer: string;
+  kafkaId: string;
+  owner: string;
+  cluster: string;
+  createdAt: string;
+  updatedAt: string;
+  status: string;
+  onClose: () => void;
+};
+
+export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanelContentProps> =
+  ({
+    name,
+    bootstrapServer,
+    kafkaId,
+    owner,
+    cluster,
+    createdAt,
+    updatedAt,
+    status,
+    onClose,
+  }) => {
+    const { t } = useTranslation();
+    const statusLabel = useConnectorStatusLabel(status);
+
+    const [activeTabKey, setActiveTabKey] = useState<string | number>(0);
+
+    const selectActiveKey = (_: MouseEvent, eventKey: string | number) => {
+      setActiveTabKey(eventKey);
+    };
+
+    const textListItem = (title: string, value?: string) => (
+      <>
+        {value && (
+          <>
+            <TextListItem component={TextListItemVariants.dt}>
+              {title}
+            </TextListItem>
+            <TextListItem component={TextListItemVariants.dd}>
+              {value}
+            </TextListItem>
+          </>
+        )}
+      </>
+    );
+
     return (
       <DrawerPanelContent widths={{ default: 'width_50' }}>
         <DrawerHead>
@@ -71,40 +134,42 @@ export const ConnectorDrawer: React.FunctionComponent<ConnectorDrawerProps> = ({
               Connector name
             </Text>
 
-            <Title
-              headingLevel={'h2'}
-              size={TitleSizes['xl']}
-              className="connector-drawer__header-title"
-            >
-              {selectedConnector?.metadata?.name}
-            </Title>
+            <Flex>
+              <FlexItem>
+                <Title
+                  headingLevel={'h2'}
+                  size={TitleSizes['xl']}
+                  className="connector-drawer__header-title"
+                >
+                  {name}
+                </Title>
+              </FlexItem>
+              <FlexItem spacer={{ default: 'spacerSm' }}>
+                <ConnectorStatusIcon name={name} status={status} />
+              </FlexItem>
+              <FlexItem>{statusLabel}</FlexItem>
+            </Flex>
           </TextContent>
           <DrawerActions>
-            <DrawerCloseButton onClick={deselectConnector} />
+            <DrawerCloseButton onClick={onClose} />
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody>
           <Tabs activeKey={activeTabKey} onSelect={selectActiveKey}>
             <Tab
               eventKey={0}
-              title={<TabTitleText>{t('overview')}</TabTitleText>}
+              title={<TabTitleText>{t('Details')}</TabTitleText>}
             >
               <div className="connector-drawer__tab-content">
                 <TextContent>
                   <TextList component={TextListVariants.dl}>
-                    {textListItem(
-                      'Bootstrap server',
-                      selectedConnector?.kafka?.bootstrap_server
-                    )}
-                    {textListItem(
-                      'Connector',
-                      selectedConnector?.metadata?.name
-                    )}
-                    {textListItem(
-                      'Kafka_instance',
-                      selectedConnector?.metadata?.kafka_id
-                    )}
-                    {textListItem('Owner', selectedConnector?.metadata?.owner)}
+                    {textListItem('Bootstrap server', bootstrapServer)}
+                    {textListItem('Connector', name)}
+                    {textListItem('Kafka_instance', kafkaId)}
+                    {textListItem('Targeted OSD Cluster', cluster)}
+                    {textListItem('Owner', owner)}
+                    {textListItem('Time created', createdAt)}
+                    {textListItem('Time updated', updatedAt)}
                   </TextList>
                 </TextContent>
               </div>
@@ -120,10 +185,3 @@ export const ConnectorDrawer: React.FunctionComponent<ConnectorDrawerProps> = ({
       </DrawerPanelContent>
     );
   };
-
-  return (
-    <Drawer isExpanded={selectedConnector !== undefined}>
-      <DrawerContent panelContent={panelContent()}>{children}</DrawerContent>
-    </Drawer>
-  );
-};

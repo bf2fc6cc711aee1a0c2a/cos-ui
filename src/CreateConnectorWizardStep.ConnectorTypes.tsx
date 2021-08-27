@@ -34,7 +34,7 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
-import { BodyLayout } from './BodyLayout';
+import { CreateConnectorWizardBodyLayout } from './CreateConnectorWizardBodyLayout';
 import {
   useConnectorTypesMachine,
   useConnectorTypesMachineIsReady,
@@ -69,7 +69,7 @@ export function ConnectorTypesGallery() {
   } = useConnectorTypesMachine();
 
   return (
-    <BodyLayout
+    <CreateConnectorWizardBodyLayout
       title={t('Connector category')}
       description={
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
@@ -150,7 +150,7 @@ export function ConnectorTypesGallery() {
             );
         }
       })()}
-    </BodyLayout>
+    </CreateConnectorWizardBodyLayout>
   );
 }
 

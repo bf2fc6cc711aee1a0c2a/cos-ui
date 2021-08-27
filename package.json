@@ -42,6 +42,10 @@
     "@changesets/cli": "2.16.0",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.0-rc.5",
     "@redhat-cloud-services/frontend-components-config": "4.3.4",
+    "@storybook/addon-actions": "^6.3.7",
+    "@storybook/addon-essentials": "^6.3.7",
+    "@storybook/addon-links": "^6.3.7",
+    "@storybook/react": "^6.3.7",
     "@testing-library/cypress": "8.0.0",
     "@testing-library/jest-dom": "5.14.1",
     "@testing-library/react": "12.0.0",
@@ -59,6 +63,8 @@
     "@typescript-eslint/parser": "4.29.3",
     "@xstate/inspect": "0.4.1",
     "autoprefixer": "10.3.3",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.2.2",
     "bundle-loader": "0.5.6",
     "chai": "4.3.4",
     "copy-webpack-plugin": "9.0.1",
@@ -106,6 +112,9 @@
     "webpack-cli": "4.8.0",
     "webpack-dev-server": "4.0.0"
   },
+  "resolutions": {
+    "uniforms": "3.5.1"
+  },
   "scripts": {
     "build": "FEDERATE=1 webpack --mode production",
     "test": "jest test/*.test.ts*",
@@ -126,7 +135,9 @@
     "version:canary": "changeset version --snapshot canary",
     "release:canary": "changeset publish --tag canary",
     "i18n": "i18next './src/**/*.{ts,tsx}' [-oc] -c './i18next-parser.config.js' -o './locales/$LOCALE/$NAMESPACE.json'",
-    "lint-staged": "yarn lint:fix && yarn format:fix"
+    "lint-staged": "yarn lint:fix && yarn format:fix",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "lint-staged": {
     "src/**/*.ts*": "yarn lint-staged"

@@ -21,6 +21,7 @@ import { ConnectorsPagination } from './ConnectorsPagination';
 import './ConnectorsTable.css';
 import { ConnectorsToolbar } from './ConnectorsToolbar';
 import { DeleteDialog } from './DeleteDialog';
+import { useConnectorStatusLabel } from './useConnectorStatusLabel';
 
 export const ConnectorsTable: FunctionComponent = () => {
   const { t } = useTranslation();
@@ -76,6 +77,8 @@ export const ConnectorRow: FunctionComponent<ConnectorRowProps> = ({
     onSelect,
   } = useConnector(connectorRef);
 
+  const statusLabel = useConnectorStatusLabel(connector.status!);
+
   const [showDeleteConnectorConfirm, setShowDeleteConnectorConfirm] =
     useState(false);
 
@@ -108,24 +111,10 @@ export const ConnectorRow: FunctionComponent<ConnectorRowProps> = ({
       isSeparator: true,
     },
     {
-      title: 'Overview',
+      title: 'Details',
       onClick: onSelect,
     },
   ];
-
-  const statusOptions = [
-    { value: 'ready', label: t('Running') },
-    { value: 'failed', label: t('Failed') },
-    { value: 'assigning', label: t('Creation pending') },
-    { value: 'assigned', label: t('Creation in progress') },
-    { value: 'updating', label: t('Creation in progress') },
-    { value: 'provisioning', label: t('Creation in progress') },
-    { value: 'deleting', label: t('Deleting') },
-    { value: 'deleted', label: t('Deleting') },
-  ];
-
-  const getStatusLabel = (status: string) =>
-    statusOptions.find((s) => s.value === status)?.label || status;
 
   return (
     <>
@@ -158,11 +147,11 @@ export const ConnectorRow: FunctionComponent<ConnectorRowProps> = ({
           <Flex>
             <FlexItem spacer={{ default: 'spacerSm' }}>
               <ConnectorStatusIcon
-                id={connector.id!}
+                name={connector.metadata!.name!}
                 status={connector.status!}
               />
             </FlexItem>
-            <FlexItem>{getStatusLabel(connector.status!)}</FlexItem>
+            <FlexItem>{statusLabel}</FlexItem>
           </Flex>
         </Td>
         <Td

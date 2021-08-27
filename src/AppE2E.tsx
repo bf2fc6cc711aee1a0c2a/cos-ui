@@ -12,13 +12,20 @@ import {
   useConfig,
 } from '@bf2/ui-shared';
 
-import { AlertProvider } from './AlertContext';
+import { AlertsProvider } from './Alerts';
 import { AppLayout } from './AppLayout';
-import { CosUiRoutes } from './CosUiRoutes';
+import { CosRoutes } from './CosRoutes';
 import { Loading } from './Loading';
 import i18n from './i18n';
 
-export const E2EApp: FunctionComponent = () => {
+/**
+ * Initializes the COS UI with an app that mimicks the console.redhat.com
+ * experience without any authentication, to allow E2E tests to be run by a CI
+ * pipeline.
+ *
+ * The `baseUrl` for the API is statically set to `localhost`.
+ */
+export const AppE2E: FunctionComponent = () => {
   const getBasename = useCallback(() => '/', []);
 
   const config = {
@@ -59,7 +66,7 @@ export const E2EApp: FunctionComponent = () => {
       <BasenameContext.Provider value={{ getBasename }}>
         <ConfigContext.Provider value={config}>
           <I18nextProvider i18n={i18n}>
-            <AlertProvider>
+            <AlertsProvider>
               <React.Suspense fallback={<Loading />}>
                 <Router>
                   <AppLayout>
@@ -67,7 +74,7 @@ export const E2EApp: FunctionComponent = () => {
                   </AppLayout>
                 </Router>
               </React.Suspense>
-            </AlertProvider>
+            </AlertsProvider>
           </I18nextProvider>
         </ConfigContext.Provider>
       </BasenameContext.Provider>
@@ -80,7 +87,7 @@ const ConnectedRoutes = () => {
   const config = useConfig();
 
   return (
-    <CosUiRoutes
+    <CosRoutes
       getToken={auth?.kas.getToken || (() => Promise.resolve(''))}
       apiBasepath={config?.cos.apiBasePath || ''}
     />
