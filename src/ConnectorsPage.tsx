@@ -75,7 +75,7 @@ export type ConnectorsPageBodyProps = {
   onCreateConnector: () => void;
 };
 
-const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
+export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
   onCreateConnector,
 }: ConnectorsPageBodyProps) => {
   const service = useConnectorsPageMachineService();
@@ -150,7 +150,7 @@ const ConnectorsPageTitle: FunctionComponent = () => {
   const { t } = useTranslation();
   return (
     <TextContent>
-      <Title headingLevel="h1">{t('managedConnectors')}</Title>
+      <Title headingLevel="h1">{t('Connectors')}</Title>
     </TextContent>
   );
 };

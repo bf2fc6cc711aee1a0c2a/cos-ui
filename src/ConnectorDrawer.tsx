@@ -61,8 +61,8 @@ export const ConnectorDrawer: FunctionComponent<ConnectorDrawerProps> = ({
                 (connector.deployment_location as AddonClusterTarget)
                   .cluster_id!
               }
-              createdAt={connector.metadata!.created_at!}
-              updatedAt={connector.metadata!.updated_at!}
+              createdAt={new Date(connector.metadata!.created_at!)}
+              updatedAt={new Date(connector.metadata!.updated_at!)}
               status={connector.status!}
               onClose={onClose}
             />
@@ -81,8 +81,8 @@ export type ConnectorDrawerPanelContentProps = {
   kafkaId: string;
   owner: string;
   cluster: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
   status: string;
   onClose: () => void;
 };
@@ -108,7 +108,7 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
       setActiveTabKey(eventKey);
     };
 
-    const textListItem = (title: string, value?: string) => (
+    const textListItem = (title: string, value?: ReactNode) => (
       <>
         {value && (
           <>
@@ -168,8 +168,24 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
                     {textListItem('Kafka_instance', kafkaId)}
                     {textListItem('Targeted OSD Cluster', cluster)}
                     {textListItem('Owner', owner)}
-                    {textListItem('Time created', createdAt)}
-                    {textListItem('Time updated', updatedAt)}
+                    {textListItem(
+                      'Time created',
+                      <time
+                        title={t('{{date}}', { date: createdAt })}
+                        dateTime={createdAt.toISOString()}
+                      >
+                        {t('{{ date, ago }}', { date: createdAt })}
+                      </time>
+                    )}
+                    {textListItem(
+                      'Time updated',
+                      <time
+                        title={t('{{date}}', { date: updatedAt })}
+                        dateTime={updatedAt.toISOString()}
+                      >
+                        {t('{{ date, ago }}', { date: updatedAt })}
+                      </time>
+                    )}
                   </TextList>
                 </TextContent>
               </div>

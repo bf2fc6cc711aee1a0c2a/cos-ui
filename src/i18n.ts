@@ -1,7 +1,20 @@
+import {
+  format as formatDate,
+  formatDistance,
+  formatRelative,
+  isDate,
+} from 'date-fns';
+import { enUS } from 'date-fns/locale';
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import Backend from 'i18next-http-backend';
 import { initReactI18next } from 'react-i18next';
+
+// import all locales we need
+
+const locales: { [key: string]: any } = {
+  en: enUS,
+}; // used to look up the required locale
 
 // don't want to use this?
 // have a look at the Quick start guide
@@ -32,14 +45,27 @@ i18n
     defaultNS: 'public',
     nsSeparator: ':',
     keySeparator: '.',
-    react: {
-      useSuspense: true,
-      wait: true,
-    },
 
     interpolation: {
       defaultVariables: undefined,
       escapeValue: false, // not needed for react as it escapes by default
+      format: (value, format, lng) => {
+        if (isDate(value) && format) {
+          const locale = lng ? locales[lng] : enUS;
+          if (format === 'short') return formatDate(value, 'P', { locale });
+          if (format === 'long') return formatDate(value, 'PPPP', { locale });
+          if (format === 'relative')
+            return formatRelative(value, new Date(), { locale });
+          if (format === 'ago')
+            return formatDistance(value, new Date(), {
+              locale,
+              addSuffix: true,
+            });
+
+          return formatDate(value, format, { locale });
+        }
+        return value;
+      },
     },
   });
 

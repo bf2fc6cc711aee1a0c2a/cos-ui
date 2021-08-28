@@ -16,6 +16,7 @@
     "@xstate/test": "0.4.2",
     "ajv": "8.6.2",
     "axios": "0.21.1",
+    "date-fns": "^2.23.0",
     "i18next": "20.4.0",
     "i18next-browser-languagedetector": "6.1.2",
     "i18next-http-backend": "1.3.0",
@@ -95,6 +96,8 @@
     "lint-staged": "11.1.2",
     "mini-css-extract-plugin": "2.2.0",
     "monaco-editor-webpack-plugin": "4.1.2",
+    "msw": "^0.35.0",
+    "msw-storybook-addon": "^1.2.0",
     "postcss": "8.3.6",
     "prettier": "2.3.2",
     "raw-loader": "4.0.2",
@@ -137,11 +140,14 @@
     "release:canary": "changeset publish --tag canary",
     "i18n": "i18next './src/**/*.{ts,tsx}' [-oc] -c './i18next-parser.config.js' -o './locales/$LOCALE/$NAMESPACE.json'",
     "lint-staged": "yarn lint:fix && yarn format:fix",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
+    "storybook": "start-storybook -s public -p 6006",
+    "build-storybook": "build-storybook -s public",
     "chromatic": "npx chromatic"
   },
   "lint-staged": {
     "src/**/*.ts*": "yarn lint-staged"
+  },
+  "msw": {
+    "workerDirectory": "public"
   }
 }
