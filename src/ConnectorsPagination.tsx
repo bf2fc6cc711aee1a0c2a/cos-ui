@@ -2,8 +2,7 @@ import React, { FunctionComponent } from 'react';
 
 import { Pagination } from '@patternfly/react-core';
 
-import { useConnectorsMachine } from './ConnectorsPage.machine';
-import { useConnectorsPageMachineService } from './ConnectorsPageContext';
+import { useConnectorsMachine } from './ConnectorsPageContext';
 import { PaginatedApiRequest } from './PaginatedResponse.machine';
 
 type ConnectorsPaginationProps = {
@@ -11,11 +10,9 @@ type ConnectorsPaginationProps = {
 };
 export const ConnectorsPagination: FunctionComponent<ConnectorsPaginationProps> =
   ({ isCompact = false }) => {
-    const service = useConnectorsPageMachineService();
-    const { request, response } = useConnectorsMachine(service);
+    const { request, response, query } = useConnectorsMachine();
 
-    const onChange = (request: PaginatedApiRequest<{}>) =>
-      service.send({ type: 'api.query', ...request });
+    const onChange = (request: PaginatedApiRequest<{}>) => query(request);
     const defaultPerPageOptions = [
       {
         title: '1',

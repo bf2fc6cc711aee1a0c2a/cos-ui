@@ -13,18 +13,15 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
-import { useConnectorsMachine } from './ConnectorsPage.machine';
-import { useConnectorsPageMachineService } from './ConnectorsPageContext';
+import { useConnectorsMachine } from './ConnectorsPageContext';
 import { ConnectorsPagination } from './ConnectorsPagination';
 import { PaginatedApiRequest } from './PaginatedResponse.machine';
 import { useDebounce } from './useDebounce';
 
 export const ConnectorsToolbar: FunctionComponent = () => {
-  const service = useConnectorsPageMachineService();
-  const { request } = useConnectorsMachine(service);
+  const { request, query } = useConnectorsMachine();
 
-  const onChange = (request: PaginatedApiRequest<{}>) =>
-    service.send({ type: 'api.query', ...request });
+  const onChange = (request: PaginatedApiRequest<{}>) => query(request);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnChange = useDebounce(onChange, 1000);
 

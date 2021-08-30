@@ -33,8 +33,7 @@ import {
 import { AddonClusterTarget, Connector } from '@rhoas/connector-management-sdk';
 
 import './ConnectorDrawer.css';
-import { ConnectorStatusIcon } from './ConnectorStatusIcon';
-import { useConnectorStatusLabel } from './useConnectorStatusLabel';
+import { ConnectorStatus } from './ConnectorStatus';
 
 export type ConnectorDrawerProps = {
   children: ReactNode;
@@ -100,8 +99,6 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
     onClose,
   }) => {
     const { t } = useTranslation();
-    const statusLabel = useConnectorStatusLabel(status);
-
     const [activeTabKey, setActiveTabKey] = useState<string | number>(0);
 
     const selectActiveKey = (_: MouseEvent, eventKey: string | number) => {
@@ -145,9 +142,8 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
                 </Title>
               </FlexItem>
               <FlexItem spacer={{ default: 'spacerSm' }}>
-                <ConnectorStatusIcon name={name} status={status} />
+                <ConnectorStatus name={name} status={status} />
               </FlexItem>
-              <FlexItem>{statusLabel}</FlexItem>
             </Flex>
           </TextContent>
           <DrawerActions>
