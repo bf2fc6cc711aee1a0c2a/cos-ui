@@ -26,6 +26,7 @@ export const parameters = {
       date: /Date$/,
     },
   },
+  xstate: true
 };
 
 export const decorators = [
