@@ -39,4 +39,5 @@ const Template: ComponentStory<typeof ConnectorDrawerPanelContent> = (args) => (
   <ConnectorDrawerPanelContent {...args} />
 );
 
-export const Example = Template.bind({});
+export const ConnectorDrawer = Template.bind({});
+ConnectorDrawer.storyName = 'Drawer';

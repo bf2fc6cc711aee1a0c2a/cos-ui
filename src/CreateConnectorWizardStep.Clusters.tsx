@@ -1,10 +1,8 @@
 import React, { FunctionComponent, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router';
 
 import {
   Button,
-  ButtonVariant,
   Card,
   CardBody,
   CardHeader,
@@ -30,9 +28,9 @@ import {
   useClustersMachineIsReady,
   useClustersMachine,
 } from './CreateConnectorWizardContext';
-import { EmptyState, EmptyStateVariant } from './EmptyState';
+import { EmptyStateNoMatchesFound } from './EmptyStateNoMatchesFound';
+import { EmptyStateNoOSDCluster } from './EmptyStateNoOSDCluster';
 import { Loading } from './Loading';
-import { NoMatchFound } from './NoMatchFound';
 import { defaultPerPageOptions } from './constants';
 import { useDebounce } from './useDebounce';
 
@@ -44,7 +42,7 @@ export function SelectCluster() {
 
 const ClustersGallery: FunctionComponent = () => {
   const { t } = useTranslation();
-  const history = useHistory();
+  // const history = useHistory();
   const {
     response,
     selectedId,
@@ -74,23 +72,16 @@ const ClustersGallery: FunctionComponent = () => {
             return (
               <>
                 <ClustersToolbar />
-                <NoMatchFound onClear={() => onQuery({ page: 1, size: 10 })} />
+                <EmptyStateNoMatchesFound
+                  onClear={() => onQuery({ page: 1, size: 10 })}
+                />
               </>
             );
           case noResults || error:
             return (
-              <EmptyState
-                emptyStateProps={{
-                  variant: EmptyStateVariant.GettingStarted,
-                }}
-                titleProps={{ title: 'cos.no_clusters_instance' }}
-                emptyStateBodyProps={{
-                  body: 'cos.no_clusters_instance_body',
-                }}
-                buttonProps={{
-                  title: 'cos.create_clusters_instance',
-                  variant: ButtonVariant.primary,
-                  onClick: () => history.push('/create-connector'),
+              <EmptyStateNoOSDCluster
+                onHelp={function (): void {
+                  throw new Error('Function not implemented.');
                 }}
               />
             );

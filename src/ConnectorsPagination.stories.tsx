@@ -19,4 +19,4 @@ const Template: ComponentStory<typeof ConnectorsPagination> = (args) => (
   <ConnectorsPagination {...args} />
 );
 
-export const Default = Template.bind({});
+export const Pagination = Template.bind({});

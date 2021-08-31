@@ -1,13 +1,7 @@
 import React, { FunctionComponent, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-  ButtonVariant,
-  Card,
-  PageSection,
-  TextContent,
-  Title,
-} from '@patternfly/react-core';
+import { Card, PageSection, TextContent, Title } from '@patternfly/react-core';
 
 import { AlertVariant, useAlert } from '@bf2/ui-shared';
 
@@ -24,10 +18,11 @@ import { ConnectorsPagination } from './ConnectorsPagination';
 import { ConnectorsTable, ConnectorsTableRow } from './ConnectorsTable';
 import { ConnectorsToolbar } from './ConnectorsToolbar';
 import { useCos } from './CosContext';
-import { DeleteDialog } from './DeleteDialog';
-import { EmptyState, EmptyStateVariant } from './EmptyState';
+import { DialogDeleteConnector } from './DialogDeleteConnector';
+import { EmptyStateGenericError } from './EmptyStateGenericError';
+import { EmptyStateGettingStarted } from './EmptyStateGettingStarted';
+import { EmptyStateNoMatchesFound } from './EmptyStateNoMatchesFound';
 import { Loading } from './Loading';
-import { NoMatchFound } from './NoMatchFound';
 
 type ConnectedConnectorsPageProps = {
   onCreateConnector: () => void;
@@ -99,7 +94,11 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
     case firstRequest:
       return <Loading />;
     case queryEmpty:
-      return <NoMatchFound onClear={() => query({ page: 1, size: 10 })} />;
+      return (
+        <EmptyStateNoMatchesFound
+          onClear={() => query({ page: 1, size: 10 })}
+        />
+      );
     case loading:
       return (
         <>
@@ -119,21 +118,17 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
           </PageSection>
         </>
       );
-    case noResults || error:
+    case noResults:
       return (
-        <EmptyState
-          emptyStateProps={{ variant: EmptyStateVariant.GettingStarted }}
-          titleProps={{ title: 'cos.welcome_to_cos' }}
-          emptyStateBodyProps={{
-            body: 'cos.welcome_empty_state_body',
-          }}
-          buttonProps={{
-            title: 'cos.create_cos',
-            variant: ButtonVariant.primary,
-            onClick: onCreateConnector,
+        <EmptyStateGettingStarted
+          onCreate={onCreateConnector}
+          onHelp={function (): void {
+            throw new Error('Function not implemented.');
           }}
         />
       );
+    case error:
+      return <EmptyStateGenericError />;
     default:
       return (
         <ConnectorDrawer
@@ -201,7 +196,6 @@ const ConnectedRow: FunctionComponent<ConnectedRowProps> = ({
   connectorRef,
   selectedConnector,
 }) => {
-  const { t } = useTranslation();
   const {
     connector,
     canStart,
@@ -227,11 +221,8 @@ const ConnectedRow: FunctionComponent<ConnectedRowProps> = ({
 
   return (
     <>
-      <DeleteDialog
+      <DialogDeleteConnector
         connectorName={connector.metadata?.name}
-        i18nCancel={t('cancel')}
-        i18nDelete={t('delete')}
-        i18nTitle={t('deleteConnector')}
         showDialog={showDeleteConnectorConfirm}
         onCancel={doCancelDeleteConnector}
         onConfirm={doDeleteConnector}

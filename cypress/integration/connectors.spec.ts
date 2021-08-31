@@ -34,7 +34,6 @@ describe('Connectors page', () => {
     );
 
     cy.findByText('Create Connector').click();
-    cy.findAllByText('Connector category').should('exist');
   });
 
   it('opens the details for a connector', () => {
@@ -106,8 +105,8 @@ describe('Connectors page', () => {
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'noConnectors.json',
     });
-    cy.findByText('cos.create_cos').click();
-    cy.findAllByText('Connector category').should('exist');
+    cy.findByText('Welcome to Managed Connectors').click();
+    cy.findAllByText('Create Connector').should('exist');
   });
 
   it('shows an empty state with an API error and shows an error notification', () => {
@@ -115,8 +114,7 @@ describe('Connectors page', () => {
     cy.intercept(Cypress.env('connectorsApiPath'), {
       statusCode: 404,
     });
-    cy.findByText('common.something_went_wrong').should('exist');
-    cy.findByText('cos.welcome_to_cos').should('exist');
+    cy.findByText('Something went wrong').should('exist');
   });
 
   it('errors on the API while polling are not shown to the user', () => {
@@ -132,7 +130,7 @@ describe('Connectors page', () => {
     });
     cy.tick(5000);
     cy.findByText('dbz-postgres-conn').should('exist');
-    cy.findAllByText('common.something_went_wrong').should('have.length', 0);
+    cy.findAllByText('Something went wrong').should('have.length', 0);
   });
 
   xit('can search for a connector', () => {

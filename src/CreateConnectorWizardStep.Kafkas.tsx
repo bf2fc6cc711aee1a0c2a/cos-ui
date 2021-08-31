@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 
 import {
   Button,
-  ButtonVariant,
   Card,
   CardBody,
   CardHeader,
@@ -40,16 +39,15 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
-import { useBasename } from '@bf2/ui-shared';
-
+// import { useBasename } from '@bf2/ui-shared';
 import { CreateConnectorWizardBodyLayout } from './CreateConnectorWizardBodyLayout';
 import {
   useKafkasMachineIsReady,
   useKafkasMachine,
 } from './CreateConnectorWizardContext';
-import { EmptyState, EmptyStateVariant } from './EmptyState';
+import { EmptyStateNoKafkaInstances } from './EmptyStateNoKafkaInstances';
+import { EmptyStateNoMatchesFound } from './EmptyStateNoMatchesFound';
 import { Loading } from './Loading';
-import { NoMatchFound } from './NoMatchFound';
 import { defaultPerPageOptions } from './constants';
 import { stringToChip } from './stringToChip';
 import { useDebounce } from './useDebounce';
@@ -60,7 +58,7 @@ export const SelectKafkaInstance: FunctionComponent = () => {
 };
 const KafkasGallery: FunctionComponent = () => {
   const { t } = useTranslation();
-  const basename = useBasename();
+  // const basename = useBasename();
   const {
     response,
     loading,
@@ -90,28 +88,16 @@ const KafkasGallery: FunctionComponent = () => {
             return (
               <>
                 <KafkaToolbar />
-                <NoMatchFound onClear={() => onQuery({ page: 1, size: 10 })} />
+                <EmptyStateNoMatchesFound
+                  onClear={() => onQuery({ page: 1, size: 10 })}
+                />
               </>
             );
           case noResults || error:
             return (
-              <EmptyState
-                emptyStateProps={{ variant: EmptyStateVariant.GettingStarted }}
-                titleProps={{ title: 'cos.no_kafka_instance' }}
-                emptyStateBodyProps={{
-                  body: 'cos.no_kafka_instance_body',
-                }}
-                buttonProps={{
-                  title: 'cos.create_kafka_instance',
-                  variant: ButtonVariant.primary,
-                  onClick: () =>
-                    window.history.pushState(
-                      null,
-                      'Create Kafka instance',
-                      `${
-                        basename?.getBasename() || ''
-                      }/../streams/kafkas?create=true`
-                    ),
+              <EmptyStateNoKafkaInstances
+                onHelp={function (): void {
+                  throw new Error('Function not implemented.');
                 }}
               />
             );

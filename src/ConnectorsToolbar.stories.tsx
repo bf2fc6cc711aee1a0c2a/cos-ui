@@ -18,4 +18,4 @@ const Template: ComponentStory<typeof ConnectorsToolbar> = (args) => (
   <ConnectorsToolbar {...args} />
 );
 
-export const Default = Template.bind({});
+export const Toolbar = Template.bind({});

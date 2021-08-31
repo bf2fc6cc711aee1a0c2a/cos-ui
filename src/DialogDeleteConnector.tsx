@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import {
   Button,
@@ -10,11 +10,8 @@ import {
   TextInput,
 } from '@patternfly/react-core';
 
-export interface IDeleteConnectorConfirmDialogProps {
+export interface DialogDeleteConnectorProps {
   connectorName: string | undefined;
-  i18nCancel: string;
-  i18nDelete: string;
-  i18nTitle: string;
   onCancel: () => void;
   onConfirm: () => void;
   showDialog: boolean;
@@ -23,16 +20,9 @@ export interface IDeleteConnectorConfirmDialogProps {
 /**
  * A modal dialog to display confirmation for connector deletion.
  */
-export const DeleteDialog: React.FunctionComponent<IDeleteConnectorConfirmDialogProps> =
-  ({
-    connectorName,
-    i18nCancel,
-    i18nDelete,
-    i18nTitle,
-    onCancel,
-    onConfirm,
-    showDialog,
-  }) => {
+export const DialogDeleteConnector: React.FunctionComponent<DialogDeleteConnectorProps> =
+  ({ connectorName, onCancel, onConfirm, showDialog }) => {
+    const { t } = useTranslation();
     const [nameValue, setNameValue] = useState('');
     const canDelete = nameValue === connectorName;
 
@@ -49,7 +39,7 @@ export const DeleteDialog: React.FunctionComponent<IDeleteConnectorConfirmDialog
     return (
       <Modal
         variant={ModalVariant.small}
-        title={i18nTitle}
+        title={t('Delete connector')}
         titleIconVariant="warning"
         isOpen={showDialog}
         onClose={onCancel}
@@ -60,21 +50,21 @@ export const DeleteDialog: React.FunctionComponent<IDeleteConnectorConfirmDialog
             isDisabled={!canDelete}
             onClick={onConfirmDelete}
           >
-            {i18nDelete}
+            {t('Delete')}
           </Button>,
           <Button key="cancel" variant="link" onClick={onCancelDelete}>
-            {i18nCancel}
+            {t('Cancel')}
           </Button>,
         ]}
       >
         <Stack>
           <StackItem>
-            <Trans i18nKey="deleteConfirmMessage">
+            <Trans>
               Connector <strong>{{ connectorName }}</strong> will be deleted.
             </Trans>
           </StackItem>
           <StackItem>
-            <Trans i18nKey="deleteTypeNameMessage">
+            <Trans>
               Type <strong>{{ connectorName }}</strong> to confirm the deletion.
             </Trans>
           </StackItem>
