@@ -19,7 +19,6 @@ import {
   ConnectorsPageProvider,
   useConnectorsMachine,
   useConnectorsPageIsReady,
-  useConnectorsPageMachineService,
 } from './ConnectorsPageContext';
 import { ConnectorsPagination } from './ConnectorsPagination';
 import { ConnectorsTable, ConnectorsTableRow } from './ConnectorsTable';
@@ -83,28 +82,24 @@ export type ConnectorsPageBodyProps = {
 export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
   onCreateConnector,
 }: ConnectorsPageBodyProps) => {
-  const service = useConnectorsPageMachineService();
   const {
     loading,
     error,
     noResults,
     queryEmpty,
-    // queryResults,
     firstRequest,
+    request,
     response,
     selectedConnector,
     deselectConnector,
+    query,
   } = useConnectorsMachine();
 
   switch (true) {
     case firstRequest:
       return <Loading />;
     case queryEmpty:
-      return (
-        <NoMatchFound
-          onClear={() => service.send({ type: 'api.query', page: 1, size: 10 })}
-        />
-      );
+      return <NoMatchFound onClear={() => query({ page: 1, size: 10 })} />;
     case loading:
       return (
         <>
@@ -113,7 +108,12 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
           </PageSection>
           <PageSection padding={{ default: 'noPadding' }} isFilled>
             <Card>
-              <ConnectorsToolbar />
+              <ConnectorsToolbar
+                itemCount={response?.total || 0}
+                page={request.page}
+                perPage={request.size}
+                onChange={(page, size) => query({ page, size })}
+              />
               <Loading />
             </Card>
           </PageSection>
@@ -144,10 +144,7 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
             <ConnectorsPageTitle />
           </PageSection>
           <PageSection padding={{ default: 'noPadding' }} isFilled>
-            <ConnectedTable
-              connectors={response!.items!}
-              selectedConnector={selectedConnector}
-            />
+            <ConnectedTable />
           </PageSection>
         </ConnectorDrawer>
       );
@@ -163,21 +160,20 @@ const ConnectorsPageTitle: FunctionComponent = () => {
   );
 };
 
-type ConnectedTableProps = {
-  connectors: Array<ConnectorMachineActorRef>;
-  selectedConnector?: Connector;
-};
-
-export const ConnectedTable: FunctionComponent<ConnectedTableProps> = ({
-  connectors,
-  selectedConnector,
-}) => {
+export const ConnectedTable: FunctionComponent = () => {
+  const { request, response, selectedConnector, query } =
+    useConnectorsMachine();
   return (
     <Card className={'pf-u-pb-xl'}>
-      <ConnectorsToolbar />
+      <ConnectorsToolbar
+        itemCount={response?.total || 0}
+        page={request.page}
+        perPage={request.size}
+        onChange={(page, size) => query({ page, size })}
+      />
       <div className={'pf-u-p-md'}>
         <ConnectorsTable>
-          {connectors.map((ref) => (
+          {response?.items?.map((ref) => (
             <ConnectedRow
               connectorRef={ref}
               key={ref.id}
@@ -186,7 +182,13 @@ export const ConnectedTable: FunctionComponent<ConnectedTableProps> = ({
           ))}
         </ConnectorsTable>
       </div>
-      <ConnectorsPagination isCompact={false} />
+      <ConnectorsPagination
+        itemCount={response?.total || 0}
+        page={request.page}
+        perPage={request.size}
+        onChange={(page, size) => query({ page, size })}
+        isCompact={false}
+      />
     </Card>
   );
 };

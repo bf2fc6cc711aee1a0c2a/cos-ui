@@ -24,10 +24,10 @@ export const ConnectorsTable: FunctionComponent = ({ children }) => {
     >
       <Thead>
         <Tr>
-          <Th>{t('name')}</Th>
-          <Th>{t('type')}</Th>
-          <Th>{t('category')}</Th>
-          <Th>{t('status')}</Th>
+          <Th>{t('Name')}</Th>
+          <Th>{t('Type')}</Th>
+          <Th>{t('Category')}</Th>
+          <Th>{t('Status')}</Th>
         </Tr>
       </Thead>
       <Tbody>{children}</Tbody>
@@ -106,10 +106,10 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
         isSelected && 'pf-m-selected'
       )}
     >
-      <Td dataLabel={t('name')}>{name}</Td>
-      <Td dataLabel={t('type')}>{type}</Td>
-      <Td dataLabel={t('category')}>{category}</Td>
-      <Td dataLabel={t('status')}>
+      <Td dataLabel={t('Name')}>{name}</Td>
+      <Td dataLabel={t('Type')}>{type}</Td>
+      <Td dataLabel={t('Category')}>{category}</Td>
+      <Td dataLabel={t('Status')}>
         <ConnectorStatus name={name} status={status} />
       </Td>
       <Td

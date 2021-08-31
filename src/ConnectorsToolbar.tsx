@@ -13,15 +13,19 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
-import { useConnectorsMachine } from './ConnectorsPageContext';
-import { ConnectorsPagination } from './ConnectorsPagination';
-import { PaginatedApiRequest } from './PaginatedResponse.machine';
+import {
+  ConnectorsPagination,
+  ConnectorsPaginationProps,
+} from './ConnectorsPagination';
 import { useDebounce } from './useDebounce';
 
-export const ConnectorsToolbar: FunctionComponent = () => {
-  const { request, query } = useConnectorsMachine();
-
-  const onChange = (request: PaginatedApiRequest<{}>) => query(request);
+type ConnectorsToolbarProps = {} & ConnectorsPaginationProps;
+export const ConnectorsToolbar: FunctionComponent<ConnectorsToolbarProps> = ({
+  itemCount,
+  page,
+  perPage,
+  onChange,
+}) => {
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnChange = useDebounce(onChange, 1000);
 
@@ -70,7 +74,7 @@ export const ConnectorsToolbar: FunctionComponent = () => {
             aria-label="filter by connector name"
             onChange={(value) =>
               debouncedOnChange({
-                size: request.size,
+                size: perPage,
                 page: 1,
                 name: value,
               })
@@ -123,7 +127,13 @@ export const ConnectorsToolbar: FunctionComponent = () => {
         </ToolbarItem>
       </ToolbarGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
-        <ConnectorsPagination isCompact={true} />
+        <ConnectorsPagination
+          itemCount={itemCount}
+          page={page}
+          perPage={perPage}
+          onChange={onChange}
+          isCompact={true}
+        />
       </ToolbarItem>
     </>
   );
