@@ -1,38 +1,46 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
 
+import { ConnectorStatuses } from './ConnectorStatus';
 import { ConnectorsTable, ConnectorsTableRow } from './ConnectorsTable';
 
-export default {
-  title: 'UI/Connectors/Table',
+const RowStory = {
   component: ConnectorsTableRow,
   args: {
     connectorId: 'abc',
     name: 'Sample name',
     type: 'MariaDB',
     category: 'Source',
-    status: 'running',
+    status: 'ready',
     isSelected: false,
     canStart: true,
     canStop: false,
     canDelete: true,
   },
-  parameters: {},
-  decorators: [
-    (Story) => (
-      <ConnectorsTable>
-        <Story />
-      </ConnectorsTable>
-    ),
-  ],
 } as ComponentMeta<typeof ConnectorsTableRow>;
 
-const Template: ComponentStory<typeof ConnectorsTableRow> = (args) => (
-  <ConnectorsTableRow {...args} />
+export default {
+  title: 'UI/Connectors/Table',
+  component: ConnectorsTable,
+} as ComponentMeta<typeof ConnectorsTable>;
+
+const Template: ComponentStory<typeof ConnectorsTable> = (args) => (
+  <ConnectorsTable {...args} />
 );
 
-export const Default = Template.bind({});
-export const Selected = Template.bind({});
-Selected.args = {
-  isSelected: true,
+export const Table = Template.bind({});
+Table.args = {
+  children: [
+    <ConnectorsTableRow
+      key={1}
+      {...RowStory.args}
+      status={ConnectorStatuses.Deleting}
+    />,
+    <ConnectorsTableRow key={2} {...RowStory.args} isSelected={true} />,
+    <ConnectorsTableRow
+      key={3}
+      {...RowStory.args}
+      status={ConnectorStatuses.Failed}
+    />,
+  ],
 };

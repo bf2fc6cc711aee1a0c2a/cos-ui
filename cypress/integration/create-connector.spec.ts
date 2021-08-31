@@ -1,5 +1,4 @@
 /// <reference types="cypress" />
-
 import { createModel, TestModel } from '@xstate/test';
 import { Machine } from 'xstate';
 
@@ -16,11 +15,11 @@ const testMachine = Machine({
       always: [
         {
           target: 'selectConnector',
-          cond: ctx => !ctx.willConnectorsApiFail,
+          cond: (ctx) => !ctx.willConnectorsApiFail,
         },
         {
           target: 'selectConnectorEmptyState',
-          cond: ctx => ctx.willConnectorsApiFail,
+          cond: (ctx) => ctx.willConnectorsApiFail,
         },
       ],
     },
@@ -35,13 +34,16 @@ const testMachine = Machine({
     selectConnectorEmptyState: {
       meta: {
         noCoverage: true,
-        test: () => cy.findByText('cos.no_connector_types').should('exist'),
+        test: () => cy.findByText('Something went wrong').should('exist'),
       },
     },
     loadingKafka: {
       always: [
-        { target: 'selectKafka', cond: ctx => !ctx.willKafkaApiFail },
-        { target: 'selectKafkaEmptyState', cond: ctx => ctx.willKafkaApiFail },
+        { target: 'selectKafka', cond: (ctx) => !ctx.willKafkaApiFail },
+        {
+          target: 'selectKafkaEmptyState',
+          cond: (ctx) => ctx.willKafkaApiFail,
+        },
       ],
     },
     selectKafka: {
@@ -55,18 +57,19 @@ const testMachine = Machine({
     selectKafkaEmptyState: {
       meta: {
         noCoverage: true,
-        test: () => cy.findByText('cos.no_kafka_instance').should('exist'),
+        test: () =>
+          cy.findByText('No Kafka instance available').should('exist'),
       },
     },
     loadingClusters: {
       always: [
         {
           target: 'selectCluster',
-          cond: ctx => !ctx.willClusterApiFail,
+          cond: (ctx) => !ctx.willClusterApiFail,
         },
         {
           target: 'selectClusterEmptyState',
-          cond: ctx => ctx.willClusterApiFail,
+          cond: (ctx) => ctx.willClusterApiFail,
         },
       ],
     },
@@ -81,7 +84,7 @@ const testMachine = Machine({
     selectClusterEmptyState: {
       meta: {
         noCoverage: true,
-        test: () => cy.findByText('cos.no_clusters_instance').should('exist'),
+        test: () => cy.findByText('No OSD Cluster available').should('exist'),
       },
     },
     configureConnector: {
@@ -134,10 +137,10 @@ const testMachine = Machine({
 
 function runTheTests(testModel: TestModel<any, any>) {
   const testPlans = testModel.getSimplePathPlans();
-  testPlans.forEach(plan => {
+  testPlans.forEach((plan) => {
     describe(plan.description, () => {
       // beforeEach(mockApis.makeHappyPath);
-      plan.paths.forEach(path => {
+      plan.paths.forEach((path) => {
         it(path.description, () => {
           // const onClose = jest.fn();
           // const onSave = jest.fn();
@@ -181,9 +184,7 @@ describe('Connector creation', () => {
       },
       configure: () => {
         cy.findByLabelText('Token *').type('some-token');
-        cy.findByText('Next')
-          .should('be.enabled')
-          .click();
+        cy.findByText('Next').should('be.enabled').click();
       },
       saveConnector: () => {
         cy.findByLabelText('Name *').type('my-connector');

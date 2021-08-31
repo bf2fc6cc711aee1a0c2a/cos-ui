@@ -39,9 +39,9 @@ import {
   useConnectorTypesMachine,
   useConnectorTypesMachineIsReady,
 } from './CreateConnectorWizardContext';
-import { EmptyState, EmptyStateVariant } from './EmptyState';
+import { EmptyStateGenericError } from './EmptyStateGenericError';
+import { EmptyStateNoMatchesFound } from './EmptyStateNoMatchesFound';
 import { Loading } from './Loading';
-import { NoMatchFound } from './NoMatchFound';
 import { defaultPerPageOptions } from './constants';
 import { stringToChip } from './stringToChip';
 import { useDebounce } from './useDebounce';
@@ -83,19 +83,13 @@ export function ConnectorTypesGallery() {
             return (
               <>
                 <ConnectorTypesToolbar />
-                <NoMatchFound onClear={() => onQuery({ page: 1, size: 10 })} />
+                <EmptyStateNoMatchesFound
+                  onClear={() => onQuery({ page: 1, size: 10 })}
+                />
               </>
             );
           case noResults || error:
-            return (
-              <EmptyState
-                emptyStateProps={{ variant: EmptyStateVariant.GettingStarted }}
-                titleProps={{ title: 'cos.no_connector_types' }}
-                emptyStateBodyProps={{
-                  body: 'cos.no_connector_types_body',
-                }}
-              />
-            );
+            return <EmptyStateGenericError />;
           case loading:
             return (
               <>

@@ -23,7 +23,7 @@ export default {
   ],
   args: {},
   parameters: {
-    chromatic: { delay: 300 },
+    xstate: true,
   },
 } as ComponentMeta<typeof ConnectorsPage>;
 
