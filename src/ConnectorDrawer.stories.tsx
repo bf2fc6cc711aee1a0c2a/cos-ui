@@ -8,7 +8,7 @@ import { ConnectorDrawerPanelContent } from './ConnectorDrawer';
 import { ConnectorStatuses } from './ConnectorStatus';
 
 export default {
-  title: 'UI/ConnectorDrawer',
+  title: 'UI/Connector/Drawer',
   component: ConnectorDrawerPanelContent,
   decorators: [
     (Story) => (

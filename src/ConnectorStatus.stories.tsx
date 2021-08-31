@@ -4,7 +4,7 @@ import React from 'react';
 import { ConnectorStatus } from './ConnectorStatus';
 
 export default {
-  title: 'UI/ConnectorStatus',
+  title: 'UI/Connector/Status',
   component: ConnectorStatus,
   args: {
     name: 'Sample name',

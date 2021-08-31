@@ -4,7 +4,7 @@ import React from 'react';
 import { ConnectorsTable, ConnectorsTableRow } from './ConnectorsTable';
 
 export default {
-  title: 'UI/ConnectorsTable',
+  title: 'UI/Connectors/Table',
   component: ConnectorsTableRow,
   args: {
     connectorId: 'abc',
