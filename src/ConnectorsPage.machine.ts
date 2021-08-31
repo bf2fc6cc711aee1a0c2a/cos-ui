@@ -1,6 +1,3 @@
-import { useCallback } from 'react';
-
-import { useSelector } from '@xstate/react';
 import { assign, createSchema, InterpreterFrom, send, spawn } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
@@ -14,9 +11,6 @@ import {
   getPaginatedApiMachineEvents,
   getPaginatedApiMachineEventsHandlers,
   makePaginatedApiMachine,
-  PaginatedApiActorType,
-  usePagination,
-  usePaginationReturnValue,
 } from './PaginatedResponse.machine';
 import { fetchConnectors } from './api';
 import { PAGINATED_MACHINE_ID } from './constants';
@@ -158,40 +152,3 @@ export const connectorsPageMachine = connectorsPageMachineModel.createMachine(
 export type ConnectorsMachineInterpretType = InterpreterFrom<
   typeof connectorsPageMachine
 >;
-
-type useConnectorsMachineReturnType = usePaginationReturnValue<
-  {},
-  ConnectorMachineActorRef
-> & {
-  selectedConnector: Connector | undefined;
-  deselectConnector: () => void;
-};
-export const useConnectorsMachine = (
-  service: ConnectorsMachineInterpretType
-): useConnectorsMachineReturnType => {
-  const apiData = usePagination<Connector, {}, ConnectorMachineActorRef>(
-    service.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType<
-      Connector,
-      {},
-      ConnectorMachineActorRef
-    >
-  );
-  const { selectedConnector } = useSelector(
-    service,
-    useCallback(
-      (state: typeof service.state) => ({
-        selectedConnector: state.context.selectedConnector,
-      }),
-      [service]
-    )
-  );
-  const deselectConnector = useCallback(() => {
-    service.send({ type: 'deselectConnector' });
-  }, [service]);
-
-  return {
-    ...apiData,
-    selectedConnector,
-    deselectConnector,
-  };
-};

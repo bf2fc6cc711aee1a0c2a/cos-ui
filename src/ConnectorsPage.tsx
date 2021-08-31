@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { FunctionComponent, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -11,16 +11,21 @@ import {
 
 import { AlertVariant, useAlert } from '@bf2/ui-shared';
 
+import { Connector } from '@rhoas/connector-management-sdk';
+
+import { ConnectorMachineActorRef, useConnector } from './Connector.machine';
 import { ConnectorDrawer } from './ConnectorDrawer';
-import { useConnectorsMachine } from './ConnectorsPage.machine';
 import {
   ConnectorsPageProvider,
+  useConnectorsMachine,
   useConnectorsPageIsReady,
   useConnectorsPageMachineService,
 } from './ConnectorsPageContext';
-import { ConnectorsTable } from './ConnectorsTable';
+import { ConnectorsPagination } from './ConnectorsPagination';
+import { ConnectorsTable, ConnectorsTableRow } from './ConnectorsTable';
 import { ConnectorsToolbar } from './ConnectorsToolbar';
 import { useCos } from './CosContext';
+import { DeleteDialog } from './DeleteDialog';
 import { EmptyState, EmptyStateVariant } from './EmptyState';
 import { Loading } from './Loading';
 import { NoMatchFound } from './NoMatchFound';
@@ -83,13 +88,13 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
     loading,
     error,
     noResults,
-    // results,
     queryEmpty,
     // queryResults,
     firstRequest,
+    response,
     selectedConnector,
     deselectConnector,
-  } = useConnectorsMachine(service);
+  } = useConnectorsMachine();
 
   switch (true) {
     case firstRequest:
@@ -139,7 +144,10 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
             <ConnectorsPageTitle />
           </PageSection>
           <PageSection padding={{ default: 'noPadding' }} isFilled>
-            <ConnectorsTable />
+            <ConnectedTable
+              connectors={response!.items!}
+              selectedConnector={selectedConnector}
+            />
           </PageSection>
         </ConnectorDrawer>
       );
@@ -152,5 +160,95 @@ const ConnectorsPageTitle: FunctionComponent = () => {
     <TextContent>
       <Title headingLevel="h1">{t('Connectors')}</Title>
     </TextContent>
+  );
+};
+
+type ConnectedTableProps = {
+  connectors: Array<ConnectorMachineActorRef>;
+  selectedConnector?: Connector;
+};
+
+export const ConnectedTable: FunctionComponent<ConnectedTableProps> = ({
+  connectors,
+  selectedConnector,
+}) => {
+  return (
+    <Card className={'pf-u-pb-xl'}>
+      <ConnectorsToolbar />
+      <div className={'pf-u-p-md'}>
+        <ConnectorsTable>
+          {connectors.map((ref) => (
+            <ConnectedRow
+              connectorRef={ref}
+              key={ref.id}
+              selectedConnector={selectedConnector}
+            />
+          ))}
+        </ConnectorsTable>
+      </div>
+      <ConnectorsPagination isCompact={false} />
+    </Card>
+  );
+};
+
+type ConnectedRowProps = {
+  connectorRef: ConnectorMachineActorRef;
+  selectedConnector?: Connector;
+};
+const ConnectedRow: FunctionComponent<ConnectedRowProps> = ({
+  connectorRef,
+  selectedConnector,
+}) => {
+  const { t } = useTranslation();
+  const {
+    connector,
+    canStart,
+    canStop,
+    canDelete,
+    onStart,
+    onStop,
+    onDelete,
+    onSelect,
+  } = useConnector(connectorRef);
+
+  const [showDeleteConnectorConfirm, setShowDeleteConnectorConfirm] =
+    useState(false);
+
+  const doCancelDeleteConnector = () => {
+    setShowDeleteConnectorConfirm(false);
+  };
+
+  const doDeleteConnector = () => {
+    setShowDeleteConnectorConfirm(false);
+    onDelete();
+  };
+
+  return (
+    <>
+      <DeleteDialog
+        connectorName={connector.metadata?.name}
+        i18nCancel={t('cancel')}
+        i18nDelete={t('delete')}
+        i18nTitle={t('deleteConnector')}
+        showDialog={showDeleteConnectorConfirm}
+        onCancel={doCancelDeleteConnector}
+        onConfirm={doDeleteConnector}
+      />
+      <ConnectorsTableRow
+        connectorId={connector.id!}
+        name={connector.metadata!.name!}
+        type={connector.connector_type_id!}
+        category={'TODO: MISSING'}
+        status={connector.status!}
+        isSelected={selectedConnector?.id === connector.id}
+        canStart={canStart}
+        canStop={canStop}
+        canDelete={canDelete}
+        onStart={onStart}
+        onStop={onStop}
+        onSelect={onSelect}
+        onDelete={() => setShowDeleteConnectorConfirm(true)}
+      />
+    </>
   );
 };

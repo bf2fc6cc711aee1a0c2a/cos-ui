@@ -5,6 +5,7 @@ import React from 'react';
 import { Drawer, DrawerContent } from '@patternfly/react-core';
 
 import { ConnectorDrawerPanelContent } from './ConnectorDrawer';
+import { ConnectorStatuses } from './ConnectorStatus';
 
 export default {
   title: 'UI/ConnectorDrawer',
@@ -26,41 +27,16 @@ export default {
     updatedAt: subMinutes(new Date(), 28),
     status: 'ready',
   },
+  argTypes: {
+    status: {
+      options: Object.values(ConnectorStatuses),
+      control: 'radio',
+    },
+  },
 } as ComponentMeta<typeof ConnectorDrawerPanelContent>;
 
 const Template: ComponentStory<typeof ConnectorDrawerPanelContent> = (args) => (
   <ConnectorDrawerPanelContent {...args} />
 );
 
-export const Ready = Template.bind({});
-Ready.args = {
-  status: 'ready',
-};
-export const Failed = Template.bind({});
-Failed.args = {
-  status: 'failed',
-};
-export const Assigning = Template.bind({});
-Assigning.args = {
-  status: 'assigning',
-};
-export const Assigned = Template.bind({});
-Assigned.args = {
-  status: 'assigned',
-};
-export const Updating = Template.bind({});
-Updating.args = {
-  status: 'updating',
-};
-export const Provisioning = Template.bind({});
-Provisioning.args = {
-  status: 'provisioning',
-};
-export const Deleting = Template.bind({});
-Deleting.args = {
-  status: 'deleting',
-};
-export const Deleted = Template.bind({});
-Deleted.args = {
-  status: 'deleted',
-};
+export const Example = Template.bind({});
