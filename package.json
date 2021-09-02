@@ -29,9 +29,9 @@
     "react-i18next": "11.11.4",
     "react-monaco-editor": "0.44.0",
     "react-router-dom": "5.2.0",
-    "uniforms": "3.5.1",
-    "uniforms-bridge-json-schema": "3.5.1",
-    "uniforms-patternfly": "4.7.0",
+    "uniforms": "3.5.5",
+    "uniforms-bridge-json-schema": "3.5.5",
+    "uniforms-patternfly": "4.7.3",
     "xstate": "4.23.1"
   },
   "devDependencies": {
@@ -118,7 +118,7 @@
     "webpack-dev-server": "4.0.0"
   },
   "resolutions": {
-    "uniforms": "3.5.1"
+    "uniforms": "3.5.5"
   },
   "scripts": {
     "build": "FEDERATE=1 webpack --mode production",
