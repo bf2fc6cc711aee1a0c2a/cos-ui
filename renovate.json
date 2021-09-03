@@ -5,6 +5,10 @@
     {
       "matchPackagePatterns": ["^uniforms"],
       "groupName": "uniforms"
+    },
+    {
+      "matchPackagePatterns": ["^@?xstate"],
+      "groupName": "xstate"
     }
   ]
 }
