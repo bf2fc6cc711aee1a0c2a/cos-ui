@@ -15,7 +15,7 @@
     "@xstate/react": "1.5.1",
     "@xstate/test": "0.4.2",
     "ajv": "8.6.2",
-    "axios": "0.21.2",
+    "axios": "0.21.3",
     "date-fns": "2.23.0",
     "i18next": "20.6.0",
     "i18next-browser-languagedetector": "6.1.2",
