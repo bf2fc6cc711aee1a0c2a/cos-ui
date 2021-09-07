@@ -1,4 +1,4 @@
-import { ActorRefFrom, assign, createSchema, sendParent } from 'xstate';
+import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import {
@@ -29,11 +29,7 @@ type Context = {
   validator: CreateValidatorType;
 };
 
-const reviewMachineSchema = {
-  context: createSchema<Context>(),
-};
-
-const reviewMachineModel = createModel(
+const model = createModel(
   {
     initialConfiguration: undefined,
     configString: '',
@@ -54,16 +50,51 @@ const reviewMachineModel = createModel(
   }
 );
 
-export const reviewMachine = reviewMachineModel.createMachine(
+const initialize = model.assign((context) => ({
+  configString: dataToPrettyString(context.initialConfiguration),
+  validator: createValidator(context.connectorType.json_schema!),
+}));
+const setName = model.assign(
   {
-    schema: reviewMachineSchema,
+    name: (_, event) => event.name,
+  },
+  'setName'
+);
+const setServiceAccount = model.assign(
+  (_, event) => ({
+    userServiceAccount: event.serviceAccount,
+  }),
+  'setServiceAccount'
+);
+const updateConfiguration = model.assign(
+  (_, event) => ({
+    configString: event.data,
+  }),
+  'updateConfiguration'
+);
+const verifyConfigString = model.assign((context) => {
+  const { warnings, error } = verifyData(
+    context.configString,
+    context.validator!
+  );
+  return { configStringWarnings: warnings, configStringError: error };
+});
+const setSavingError = model.assign(
+  (_, event) => ({
+    savingError: event.message,
+  }),
+  'failure'
+);
+
+export const reviewMachine = model.createMachine(
+  {
     id: 'review',
     initial: 'verify',
-    context: reviewMachineModel.initialContext,
-    entry: 'initialize',
+    context: model.initialContext,
+    entry: initialize,
     states: {
       verify: {
-        entry: 'verifyConfigString',
+        entry: verifyConfigString,
         always: [
           { target: 'valid', cond: 'isAllConfigured' },
           { target: 'reviewing' },
@@ -74,15 +105,15 @@ export const reviewMachine = reviewMachineModel.createMachine(
         on: {
           setName: {
             target: 'verify',
-            actions: 'setName',
+            actions: setName,
           },
           setServiceAccount: {
             target: 'verify',
-            actions: 'setServiceAccount',
+            actions: setServiceAccount,
           },
           updateConfiguration: {
             target: 'verify',
-            actions: 'updateConfiguration',
+            actions: updateConfiguration,
           },
         },
       },
@@ -92,15 +123,15 @@ export const reviewMachine = reviewMachineModel.createMachine(
         on: {
           setName: {
             target: 'verify',
-            actions: 'setName',
+            actions: setName,
           },
           setServiceAccount: {
             target: 'verify',
-            actions: 'setServiceAccount',
+            actions: setServiceAccount,
           },
           updateConfiguration: {
             target: 'verify',
-            actions: 'updateConfiguration',
+            actions: updateConfiguration,
           },
           save: 'saving',
         },
@@ -123,7 +154,7 @@ export const reviewMachine = reviewMachineModel.createMachine(
           success: 'saved',
           failure: {
             target: 'valid',
-            actions: 'setSavingError',
+            actions: setSavingError,
           },
         },
         tags: ['saving'],
@@ -134,46 +165,6 @@ export const reviewMachine = reviewMachineModel.createMachine(
     },
   },
   {
-    actions: {
-      initialize: assign((context) => ({
-        configString: dataToPrettyString(context.initialConfiguration),
-        validator: createValidator(context.connectorType.json_schema!),
-      })),
-      setName: assign((_, event) =>
-        event.type === 'setName'
-          ? {
-              name: event.name,
-            }
-          : {}
-      ),
-      setServiceAccount: assign((_, event) =>
-        event.type === 'setServiceAccount'
-          ? {
-              userServiceAccount: event.serviceAccount,
-            }
-          : {}
-      ),
-      updateConfiguration: assign((_, event) =>
-        event.type === 'updateConfiguration'
-          ? {
-              configString: event.data,
-            }
-          : {}
-      ),
-      verifyConfigString: assign((context) => {
-        const { warnings, error } = verifyData(
-          context.configString,
-          context.validator!
-        );
-        return { configStringWarnings: warnings, configStringError: error };
-      }),
-      setSavingError: assign((_, event) => {
-        if (event.type !== 'failure') return {};
-        return {
-          savingError: event.message,
-        };
-      }),
-    },
     guards: {
       isAllConfigured: (context) =>
         context.configString !== undefined &&

@@ -1,4 +1,4 @@
-import { ActorRefFrom, assign, createSchema, send, sendParent } from 'xstate';
+import { ActorRefFrom, send, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import { ConnectorCluster } from '@rhoas/connector-management-sdk';
@@ -7,7 +7,6 @@ import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 import {
   ApiSuccessResponse,
   getPaginatedApiMachineEvents,
-  getPaginatedApiMachineEventsHandlers,
   makePaginatedApiMachine,
 } from './PaginatedResponse.machine';
 import { fetchClusters } from './api';
@@ -21,11 +20,7 @@ type Context = {
   error?: Object;
 };
 
-const clustersMachineSchema = {
-  context: createSchema<Context>(),
-};
-
-const clustersMachineModel = createModel(
+const model = createModel(
   {
     accessToken: () => Promise.resolve(''),
     basePath: '',
@@ -45,12 +40,34 @@ const clustersMachineModel = createModel(
   }
 );
 
-export const clustersMachine = clustersMachineModel.createMachine(
+const success = model.assign((_context, event) => {
+  const { type, ...response } = event;
+  return {
+    response,
+  };
+}, 'api.success');
+const selectCluster = model.assign(
   {
-    schema: clustersMachineSchema,
+    selectedCluster: (context, event) => {
+      return context.response?.items?.find(
+        (i) => i.id === event.selectedCluster
+      );
+    },
+  },
+  'selectCluster'
+);
+const reset = model.assign(
+  {
+    selectedCluster: undefined,
+  },
+  'deselectCluster'
+);
+
+export const clustersMachine = model.createMachine(
+  {
     id: 'clusters',
     initial: 'root',
-    context: clustersMachineModel.initialContext,
+    context: model.initialContext,
     states: {
       root: {
         type: 'parallel',
@@ -75,8 +92,19 @@ export const clustersMachine = clustersMachineModel.createMachine(
               ready: {},
             },
             on: {
-              ...getPaginatedApiMachineEventsHandlers(PAGINATED_MACHINE_ID),
-              'api.success': { actions: 'success' },
+              'api.refresh': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
+              'api.nextPage': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
+              'api.prevPage': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
+              'api.query': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
+              'api.success': { actions: success },
             },
           },
           selection: {
@@ -94,7 +122,7 @@ export const clustersMachine = clustersMachineModel.createMachine(
                 on: {
                   selectCluster: {
                     target: 'valid',
-                    actions: 'selectCluster',
+                    actions: selectCluster,
                   },
                 },
               },
@@ -103,12 +131,12 @@ export const clustersMachine = clustersMachineModel.createMachine(
                 on: {
                   selectCluster: {
                     target: 'verify',
-                    actions: 'selectCluster',
+                    actions: selectCluster,
                     cond: (_, event) => event.selectedCluster !== undefined,
                   },
                   deselectCluster: {
                     target: 'verify',
-                    actions: 'reset',
+                    actions: reset,
                   },
                   confirm: {
                     target: '#done',
@@ -130,31 +158,6 @@ export const clustersMachine = clustersMachineModel.createMachine(
     },
   },
   {
-    actions: {
-      success: assign((_context, event) => {
-        if (event.type !== 'api.success') return {};
-        const { type, ...response } = event;
-        return {
-          response,
-        };
-      }),
-      selectCluster: assign({
-        selectedCluster: (context, event) => {
-          if (event.type === 'selectCluster') {
-            return context.response?.items?.find(
-              (i) => i.id === event.selectedCluster
-            );
-          }
-          return context.selectedCluster;
-        },
-      }),
-      reset: assign({
-        selectedCluster: (context, event) =>
-          event.type === 'deselectCluster'
-            ? undefined
-            : context.selectedCluster,
-      }),
-    },
     guards: {
       clusterSelected: (context) => context.selectedCluster !== undefined,
       noClusterSelected: (context) => context.selectedCluster === undefined,

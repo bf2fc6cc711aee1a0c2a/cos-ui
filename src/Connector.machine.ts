@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
 import { useSelector } from '@xstate/react';
-import { ActorRefFrom, assign, createSchema } from 'xstate';
+import { ActorRefFrom } from 'xstate';
 import { sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
@@ -15,11 +15,7 @@ type Context = {
   connector: Connector;
 };
 
-const connectorMachineSchema = {
-  context: createSchema<Context>(),
-};
-
-const connectorMachineModel = createModel(
+const model = createModel(
   {
     accessToken: () => Promise.resolve(''),
     basePath: '',
@@ -34,15 +30,28 @@ const connectorMachineModel = createModel(
       'connector.actionSuccess': (payload: { connector: Connector }) => payload,
       'connector.actionError': (payload: { error: string }) => payload,
     },
+    actions: {
+      notifySuccess: () => ({}),
+      notifyError: () => ({}),
+      notifySelect: ({ connector }: { connector: Connector }) => ({
+        connector,
+      }),
+    },
   }
 );
 
-export const connectorMachine = connectorMachineModel.createMachine(
+const updateState = model.assign(
+  (_context, event) => ({
+    connector: event.connector,
+  }),
+  'connector.actionSuccess'
+);
+
+export const connectorMachine = model.createMachine(
   {
-    schema: connectorMachineSchema,
     id: 'connector',
     initial: 'verify',
-    context: connectorMachineModel.initialContext,
+    context: model.initialContext,
     states: {
       verify: {
         always: [
@@ -78,11 +87,11 @@ export const connectorMachine = connectorMachineModel.createMachine(
         on: {
           'connector.actionSuccess': {
             target: 'verify',
-            actions: ['updateState', 'notifySuccessToParent'],
+            actions: [updateState, 'notifySuccess'],
           },
           'connector.actionError': {
             target: 'verify',
-            actions: 'notifyErrorToParent',
+            actions: 'notifyError',
           },
         },
       },
@@ -99,11 +108,11 @@ export const connectorMachine = connectorMachineModel.createMachine(
         on: {
           'connector.actionSuccess': {
             target: 'verify',
-            actions: ['updateState', 'notifySuccessToParent'],
+            actions: ['updateState', 'notifySuccess'],
           },
           'connector.actionError': {
             target: 'verify',
-            actions: 'notifyErrorToParent',
+            actions: 'notifyError',
           },
         },
       },
@@ -120,18 +129,18 @@ export const connectorMachine = connectorMachineModel.createMachine(
         on: {
           'connector.actionSuccess': {
             target: 'deleted',
-            actions: ['updateState', 'notifySuccessToParent'],
+            actions: ['updateState', 'notifySuccess'],
           },
           'connector.actionError': {
             target: 'verify',
-            actions: 'notifyErrorToParent',
+            actions: 'notifyError',
           },
         },
       },
     },
     on: {
       'connector.select': {
-        actions: 'notifySelectToParent',
+        actions: 'notifySelect',
       },
     },
   },
@@ -142,15 +151,9 @@ export const connectorMachine = connectorMachineModel.createMachine(
       isDeleted: (context) => context.connector.desired_state === 'deleted',
     },
     actions: {
-      updateState: assign((_context, event) => {
-        if (event.type !== 'connector.actionSuccess') return {};
-        return {
-          connector: event.connector,
-        };
-      }),
-      notifySuccessToParent: sendParent('actionSuccess'),
-      notifyErrorToParent: sendParent('actionFailure'),
-      notifySelectToParent: sendParent(({ connector }) => ({
+      notifySuccess: sendParent('actionSuccess'),
+      notifyError: sendParent('actionFailure'),
+      notifySelect: sendParent(({ connector }) => ({
         type: 'selectConnector',
         connector,
       })),

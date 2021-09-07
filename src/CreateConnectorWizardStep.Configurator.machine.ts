@@ -1,4 +1,4 @@
-import { ActorRefFrom, assign, createSchema, sendParent } from 'xstate';
+import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import { ConnectorType } from '@rhoas/connector-management-sdk';
@@ -11,11 +11,7 @@ type Context = {
   configuration: unknown;
 };
 
-const configuratorMachineSchema = {
-  context: createSchema<Context>(),
-};
-
-const configuratorMachineModel = createModel(
+const model = createModel(
   {
     connector: {
       id: 'something',
@@ -42,12 +38,36 @@ const configuratorMachineModel = createModel(
       prev: () => ({}),
       complete: () => ({}),
     },
+    actions: {
+      changedStep: () => ({}),
+    },
   }
 );
 
-export const configuratorMachine = configuratorMachineModel.createMachine(
+const nextStep = model.assign(
+  (context) => ({
+    activeStep: Math.min(context.activeStep + 1, context.steps.length - 1),
+    isActiveStepValid: false,
+  }),
+  'next'
+);
+const prevStep = model.assign(
+  (context) => ({
+    activeStep: Math.max(context.activeStep - 1, 0),
+    isActiveStepValid: false,
+  }),
+  'prev'
+);
+const change = model.assign(
+  (_, event) => ({
+    configuration: event.configuration,
+    isActiveStepValid: event.isValid,
+  }),
+  'change'
+);
+
+export const configuratorMachine = model.createMachine(
   {
-    schema: configuratorMachineSchema,
     id: 'configurator',
     initial: 'configuring',
     context: {
@@ -82,7 +102,7 @@ export const configuratorMachine = configuratorMachineModel.createMachine(
             on: {
               next: {
                 target: '#configurator.configuring',
-                actions: ['nextStep', 'changedStep'],
+                actions: [nextStep, 'changedStep'],
               },
             },
           },
@@ -101,32 +121,16 @@ export const configuratorMachine = configuratorMachineModel.createMachine(
     on: {
       change: {
         target: 'configuring',
-        actions: 'change',
+        actions: change,
       },
       prev: {
         target: 'configuring',
-        actions: ['prevStep', 'changedStep'],
+        actions: [prevStep, 'changedStep'],
       },
     },
   },
   {
     actions: {
-      nextStep: assign((context) => ({
-        activeStep: Math.min(context.activeStep + 1, context.steps.length - 1),
-        isActiveStepValid: false,
-      })),
-      prevStep: assign((context) => ({
-        activeStep: Math.max(context.activeStep - 1, 0),
-        isActiveStepValid: false,
-      })),
-      change: assign((_, event) =>
-        event.type === 'change'
-          ? {
-              configuration: event.configuration,
-              isActiveStepValid: event.isValid,
-            }
-          : {}
-      ),
       changedStep: sendParent((context) => ({
         type: 'changedStep',
         step: context.activeStep,

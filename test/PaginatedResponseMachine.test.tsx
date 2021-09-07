@@ -1,10 +1,9 @@
-import { createMachine, interpret } from 'xstate';
+import { interpret, send } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import {
   ApiCallback,
   getPaginatedApiMachineEvents,
-  getPaginatedApiMachineEventsHandlers,
   makePaginatedApiMachine,
 } from '../src/PaginatedResponse.machine';
 
@@ -88,7 +87,7 @@ describe('@cos-ui/machines', () => {
 
     const ID = 'paginatedApiMachineId';
 
-    const testMachine = createMachine<typeof testModel>({
+    const testMachine = testModel.createMachine({
       id: 'test-pagination',
       initial: 'testing',
       context: testModel.initialContext,
@@ -101,7 +100,18 @@ describe('@cos-ui/machines', () => {
         },
       },
       on: {
-        ...getPaginatedApiMachineEventsHandlers(ID),
+        'api.refresh': {
+          actions: send((_, e) => e, { to: ID }),
+        },
+        'api.nextPage': {
+          actions: send((_, e) => e, { to: ID }),
+        },
+        'api.prevPage': {
+          actions: send((_, e) => e, { to: ID }),
+        },
+        'api.query': {
+          actions: send((_, e) => e, { to: ID }),
+        },
         'api.loading': { actions: onLoadingSpy },
         'api.success': { actions: onSuccessSpy },
         'api.error': { actions: onErrorSpy },

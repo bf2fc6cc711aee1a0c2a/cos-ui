@@ -1,4 +1,4 @@
-import { ActorRefFrom, assign, createSchema, send, sendParent } from 'xstate';
+import { ActorRefFrom, send, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import { ConnectorType } from '@rhoas/connector-management-sdk';
@@ -6,7 +6,6 @@ import { ConnectorType } from '@rhoas/connector-management-sdk';
 import {
   ApiSuccessResponse,
   getPaginatedApiMachineEvents,
-  getPaginatedApiMachineEventsHandlers,
   makePaginatedApiMachine,
 } from './PaginatedResponse.machine';
 import { ConnectorTypesQuery, fetchConnectorTypes } from './api';
@@ -20,11 +19,7 @@ type Context = {
   error?: Object;
 };
 
-const connectorTypesMachineSchema = {
-  context: createSchema<Context>(),
-};
-
-const connectorTypesMachineModel = createModel(
+const model = createModel(
   {
     accessToken: () => Promise.resolve(''),
     basePath: '',
@@ -48,10 +43,32 @@ const connectorTypesMachineModel = createModel(
   }
 );
 
-export const connectorTypesMachine = connectorTypesMachineModel.createMachine(
+const success = model.assign((_context, event) => {
+  const { type, ...response } = event;
+  return {
+    response,
+  };
+}, 'api.success');
+const selectConnector = model.assign(
   {
-    schema: connectorTypesMachineSchema,
-    context: connectorTypesMachineModel.initialContext,
+    selectedConnector: (context, event) => {
+      return context.response?.items?.find(
+        (i) => i.id === event.selectedConnector
+      );
+    },
+  },
+  'selectConnector'
+);
+const reset = model.assign(
+  {
+    selectedConnector: undefined,
+  },
+  'deselectConnector'
+);
+
+export const connectorTypesMachine = model.createMachine(
+  {
+    context: model.initialContext,
     id: 'connectors',
     initial: 'root',
     states: {
@@ -85,8 +102,19 @@ export const connectorTypesMachine = connectorTypesMachineModel.createMachine(
               ready: {},
             },
             on: {
-              ...getPaginatedApiMachineEventsHandlers(PAGINATED_MACHINE_ID),
-              'api.success': { actions: 'success' },
+              'api.refresh': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
+              'api.nextPage': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
+              'api.prevPage': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
+              'api.query': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
+              'api.success': { actions: success },
             },
           },
           selection: {
@@ -104,7 +132,7 @@ export const connectorTypesMachine = connectorTypesMachineModel.createMachine(
                 on: {
                   selectConnector: {
                     target: 'valid',
-                    actions: 'selectConnector',
+                    actions: selectConnector,
                     cond: (_, event) => event.selectedConnector !== undefined,
                   },
                 },
@@ -114,11 +142,11 @@ export const connectorTypesMachine = connectorTypesMachineModel.createMachine(
                 on: {
                   selectConnector: {
                     target: 'verify',
-                    actions: 'selectConnector',
+                    actions: selectConnector,
                   },
                   deselectConnector: {
                     target: 'verify',
-                    actions: 'reset',
+                    actions: reset,
                   },
                   confirm: {
                     target: '#done',
@@ -140,31 +168,6 @@ export const connectorTypesMachine = connectorTypesMachineModel.createMachine(
     },
   },
   {
-    actions: {
-      success: assign((_context, event) => {
-        if (event.type !== 'api.success') return {};
-        const { type, ...response } = event;
-        return {
-          response,
-        };
-      }),
-      selectConnector: assign({
-        selectedConnector: (context, event) => {
-          if (event.type === 'selectConnector') {
-            return context.response?.items?.find(
-              (i) => i.id === event.selectedConnector
-            );
-          }
-          return context.selectedConnector;
-        },
-      }),
-      reset: assign({
-        selectedConnector: (context, event) =>
-          event.type === 'deselectConnector'
-            ? undefined
-            : context.selectedConnector,
-      }),
-    },
     guards: {
       connectorSelected: (context) => context.selectedConnector !== undefined,
       noConnectorSelected: (context) => context.selectedConnector === undefined,
