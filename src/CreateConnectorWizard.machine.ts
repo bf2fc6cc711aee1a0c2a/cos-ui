@@ -1,4 +1,4 @@
-import { assign, createSchema, InterpreterFrom, send } from 'xstate';
+import { assign, InterpreterFrom, send } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import {
@@ -31,11 +31,7 @@ type Context = {
   onSave?: () => void;
 };
 
-const creationWizardMachineSchema = {
-  context: createSchema<Context>(),
-};
-
-const creationWizardMachineModel = createModel({} as Context, {
+const model = createModel({} as Context, {
   events: {
     isValid: () => ({}),
     isInvalid: () => ({}),
@@ -50,14 +46,16 @@ const creationWizardMachineModel = createModel({} as Context, {
     }),
     jumpToReviewConfiguration: () => ({}),
   },
+  actions: {
+    notifySave: () => ({}),
+  },
 });
 
-export const creationWizardMachine = creationWizardMachineModel.createMachine(
+export const creationWizardMachine = model.createMachine(
   {
-    schema: creationWizardMachineSchema,
     id: 'creationWizard',
     initial: 'selectConnector',
-    context: creationWizardMachineModel.initialContext,
+    context: model.initialContext,
     states: {
       selectConnector: {
         initial: 'selecting',

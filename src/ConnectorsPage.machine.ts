@@ -1,4 +1,4 @@
-import { assign, createSchema, InterpreterFrom, send, spawn } from 'xstate';
+import { InterpreterFrom, send, spawn } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import { Connector } from '@rhoas/connector-management-sdk';
@@ -9,7 +9,6 @@ import {
 } from './Connector.machine';
 import {
   getPaginatedApiMachineEvents,
-  getPaginatedApiMachineEventsHandlers,
   makePaginatedApiMachine,
 } from './PaginatedResponse.machine';
 import { fetchConnectors } from './api';
@@ -22,11 +21,7 @@ type Context = {
   onError?: (error: string) => void;
 };
 
-const connectorsPageMachineSchema = {
-  context: createSchema<Context>(),
-};
-
-const connectorsPageMachineModel = createModel(
+const model = createModel(
   {
     accessToken: () => Promise.resolve(''),
     basePath: '',
@@ -39,20 +34,33 @@ const connectorsPageMachineModel = createModel(
         {},
         ConnectorMachineActorRef
       >(),
-      actionSuccess: () => ({}),
-      actionFailure: () => ({}),
       selectConnector: (payload: { connector: Connector }) => payload,
       deselectConnector: () => ({}),
+    },
+    actions: {
+      notifyError: () => ({}),
     },
   }
 );
 
-export const connectorsPageMachine = connectorsPageMachineModel.createMachine(
+const setSelectedConnector = model.assign(
+  (_context, event) => ({
+    selectedConnector: event.connector,
+  }),
+  'selectConnector'
+);
+const unsetSelectedConnector = model.assign(
+  (_context) => ({
+    selectedConnector: undefined,
+  }),
+  'deselectConnector'
+);
+
+export const connectorsPageMachine = model.createMachine(
   {
-    schema: connectorsPageMachineSchema,
     id: 'connectors',
     initial: 'root',
-    context: connectorsPageMachineModel.initialContext,
+    context: model.initialContext,
     states: {
       root: {
         type: 'parallel',
@@ -102,21 +110,26 @@ export const connectorsPageMachine = connectorsPageMachineModel.createMachine(
               },
             },
             on: {
-              ...getPaginatedApiMachineEventsHandlers(PAGINATED_MACHINE_ID),
+              'api.refresh': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
+              'api.nextPage': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
+              'api.prevPage': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
+              'api.query': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
               'api.error': {
                 actions: 'notifyError',
               },
-              actionSuccess: {
-                actions: send('api.query', { to: PAGINATED_MACHINE_ID }),
-              },
-              actionFailure: {
-                actions: send('api.query', { to: PAGINATED_MACHINE_ID }),
-              },
               selectConnector: {
-                actions: 'setSelectedConnector',
+                actions: setSelectedConnector,
               },
               deselectConnector: {
-                actions: 'unsetSelectedConnector',
+                actions: unsetSelectedConnector,
               },
             },
           },
@@ -127,18 +140,6 @@ export const connectorsPageMachine = connectorsPageMachineModel.createMachine(
   },
   {
     actions: {
-      setSelectedConnector: assign((_context, event) => {
-        if (event.type !== 'selectConnector') return {};
-        return {
-          selectedConnector: event.connector,
-        };
-      }),
-      unsetSelectedConnector: assign((_context, event) => {
-        if (event.type !== 'deselectConnector') return {};
-        return {
-          selectedConnector: undefined,
-        };
-      }),
       notifyError: (context, event) => {
         console.log(context, event);
         if (event.type === 'api.error' && context.onError) {

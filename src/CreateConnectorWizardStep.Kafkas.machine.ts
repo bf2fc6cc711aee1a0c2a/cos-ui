@@ -1,4 +1,4 @@
-import { ActorRefFrom, assign, createSchema, send } from 'xstate';
+import { ActorRefFrom, send } from 'xstate';
 import { sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
@@ -6,7 +6,6 @@ import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
 import {
   getPaginatedApiMachineEvents,
-  getPaginatedApiMachineEventsHandlers,
   makePaginatedApiMachine,
   PaginatedApiResponse,
 } from './PaginatedResponse.machine';
@@ -21,11 +20,7 @@ type Context = {
   error?: Object;
 };
 
-const kafkasMachineSchema = {
-  context: createSchema<Context>(),
-};
-
-const kafkasMachineModel = createModel(
+const model = createModel(
   {
     accessToken: () => Promise.resolve(''),
     basePath: '',
@@ -49,12 +44,34 @@ const kafkasMachineModel = createModel(
   }
 );
 
-export const kafkasMachine = kafkasMachineModel.createMachine(
+const success = model.assign((_context, event) => {
+  const { type, ...response } = event;
+  return {
+    response,
+  };
+}, 'api.success');
+const selectInstance = model.assign(
   {
-    schema: kafkasMachineSchema,
+    selectedInstance: (context, event) => {
+      return context.response?.items?.find(
+        (i) => i.id === event.selectedInstance
+      );
+    },
+  },
+  'selectInstance'
+);
+const reset = model.assign(
+  {
+    selectedInstance: undefined,
+  },
+  'deselectInstance'
+);
+
+export const kafkasMachine = model.createMachine(
+  {
     id: 'kafkas',
     initial: 'root',
-    context: kafkasMachineModel.initialContext,
+    context: model.initialContext,
     states: {
       root: {
         type: 'parallel',
@@ -80,8 +97,19 @@ export const kafkasMachine = kafkasMachineModel.createMachine(
               ready: {},
             },
             on: {
-              ...getPaginatedApiMachineEventsHandlers(PAGINATED_MACHINE_ID),
-              'api.success': { actions: 'success' },
+              'api.refresh': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
+              'api.nextPage': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
+              'api.prevPage': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
+              'api.query': {
+                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
+              },
+              'api.success': { actions: success },
             },
           },
           selection: {
@@ -99,7 +127,7 @@ export const kafkasMachine = kafkasMachineModel.createMachine(
                 on: {
                   selectInstance: {
                     target: 'valid',
-                    actions: 'selectInstance',
+                    actions: selectInstance,
                   },
                 },
               },
@@ -108,12 +136,12 @@ export const kafkasMachine = kafkasMachineModel.createMachine(
                 on: {
                   selectInstance: {
                     target: 'verify',
-                    actions: 'selectInstance',
+                    actions: selectInstance,
                     cond: (_, event) => event.selectedInstance !== undefined,
                   },
                   deselectInstance: {
                     target: 'verify',
-                    actions: 'reset',
+                    actions: reset,
                   },
                   confirm: {
                     target: '#done',
@@ -135,31 +163,6 @@ export const kafkasMachine = kafkasMachineModel.createMachine(
     },
   },
   {
-    actions: {
-      success: assign((_context, event) => {
-        if (event.type !== 'api.success') return {};
-        const { type, ...response } = event;
-        return {
-          response,
-        };
-      }),
-      selectInstance: assign({
-        selectedInstance: (context, event) => {
-          if (event.type === 'selectInstance') {
-            return context.response?.items?.find(
-              (i) => i.id === event.selectedInstance
-            );
-          }
-          return context.selectedInstance;
-        },
-      }),
-      reset: assign({
-        selectedInstance: (context, event) =>
-          event.type === 'deselectInstance'
-            ? undefined
-            : context.selectedInstance,
-      }),
-    },
     guards: {
       instanceSelected: (context) => context.selectedInstance !== undefined,
       noInstanceSelected: (context) => context.selectedInstance === undefined,

@@ -1,16 +1,8 @@
 import { useCallback } from 'react';
 
 import { useSelector } from '@xstate/react';
-import {
-  ActorRef,
-  ActorRefFrom,
-  assign,
-  createMachine,
-  createSchema,
-  Sender,
-  spawn,
-} from 'xstate';
-import { pure, send, sendParent } from 'xstate/lib/actions';
+import { ActorRef, ActorRefFrom, Sender, spawn } from 'xstate';
+import { pure, sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
 export type ApiErrorResponse = { page: number; error: string };
@@ -45,10 +37,6 @@ export type PaginatedMachineContext<RawDataType, QueryType, DataType> = {
   onBeforeSetResponse?: (previousData: DataType[] | undefined) => void;
 };
 
-const paginatedApiMachineSchema = {
-  context: createSchema<PaginatedMachineContext<any, any, any>>(),
-};
-
 export const getPaginatedApiMachineEvents = <
   RawDataType,
   QueryType,
@@ -68,13 +56,6 @@ export const getPaginatedApiMachineEvents = <
   'api.error': (payload: { error: string }) => payload,
 });
 
-export const getPaginatedApiMachineEventsHandlers = (to: string) => ({
-  'api.refresh': { actions: send((_, e) => e, { to }) },
-  'api.nextPage': { actions: send((_, e) => e, { to }) },
-  'api.prevPage': { actions: send((_, e) => e, { to }) },
-  'api.query': { actions: send((_, e) => e, { to }) },
-});
-
 export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
   service: ApiCallback<RawDataType, QueryType>,
   dataTransformer: (response: RawDataType) => DataType,
@@ -83,7 +64,7 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
     onBeforeSetResponse?: (previousResponse: DataType[] | undefined) => void;
   }
 ) {
-  const paginatedApiMachineModel = createModel(
+  const model = createModel(
     {
       request: {
         page: 1,
@@ -98,8 +79,70 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
       events: {
         ...getPaginatedApiMachineEvents<RawDataType, QueryType, DataType>(),
       },
+      actions: {
+        notifyReady: () => ({}),
+        notifyLoading: () => ({}),
+        notifySuccess: () => ({}),
+        notifyError: () => ({}),
+        forwardUnknownEventsToParent: () => ({}),
+      },
     }
   );
+
+  const setResponse = model.assign((context, e) => {
+    if (e.page !== context.request.page) return {};
+    if (context.onBeforeSetResponse) {
+      context.onBeforeSetResponse(context.response?.items);
+    }
+    return {
+      response: {
+        items: e.items?.map((i) => context.dataTransformer(i)),
+        total: e.total,
+        error: undefined,
+      },
+    };
+  }, 'api.setResponse');
+
+  const fetch = model.assign((context) => {
+    if (context.actor && context.actor.stop) {
+      context.actor.stop();
+    }
+    const actor = spawn(callApi(context));
+    return { actor };
+  });
+  const setError = model.assign((context, e) => {
+    if (e.page !== context.request.page) return {};
+    return {
+      response: {
+        items: context.response?.items || [],
+        total: context.response?.total || 0,
+        error: e.error,
+      },
+    };
+  }, 'api.setError');
+  const increasePage = model.assign((context) => {
+    return {
+      request: {
+        ...context.request,
+        page: context.request.page + 1,
+      },
+    };
+  }, 'api.nextPage');
+  const decreasePage = model.assign((context) => {
+    return {
+      request: { ...context.request, page: context.request.page - 1 },
+    };
+  }, 'api.prevPage');
+  const query = model.assign((context, event) => {
+    const { page, size, query } = event;
+    return {
+      request: {
+        page: page || context.request.page,
+        size: size || context.request.size,
+        query,
+      },
+    };
+  }, 'api.query');
 
   const callApi =
     (context: PaginatedMachineContext<RawDataType, QueryType, DataType>) =>
@@ -107,28 +150,27 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
       return service(
         context.request!,
         (payload: ApiSuccessResponse<RawDataType>) =>
-          callback(paginatedApiMachineModel.events['api.setResponse'](payload)),
+          callback(model.events['api.setResponse'](payload)),
         (payload: ApiErrorResponse) =>
-          callback(paginatedApiMachineModel.events['api.setError'](payload))
+          callback(model.events['api.setError'](payload))
       );
     };
 
-  return createMachine<typeof paginatedApiMachineModel>(
+  return model.createMachine(
     {
-      schema: paginatedApiMachineSchema,
       id: 'paginatedApiMachine',
-      context: paginatedApiMachineModel.initialContext,
+      context: model.initialContext,
       type: 'parallel',
       states: {
         api: {
           initial: 'idle',
           states: {
             idle: {
-              entry: 'notifyReady',
+              entry: model.actions.notifyReady(),
               on: {
                 'api.query': {
                   target: 'loading',
-                  actions: 'query',
+                  actions: query,
                 },
               },
             },
@@ -145,16 +187,15 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
               on: {
                 'api.query': {
                   target: 'loading',
-                  actions: 'query',
+                  actions: query,
                 },
                 'api.prevPage': {
                   target: 'loading',
-                  actions: 'decreasePage',
+                  actions: decreasePage,
                   cond: 'isNotFirstPage',
                 },
                 'api.refresh': {
                   target: 'loading',
-                  actions: 'fetch',
                 },
               },
             },
@@ -163,16 +204,16 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
               on: {
                 'api.query': {
                   target: 'loading',
-                  actions: 'query',
+                  actions: query,
                 },
                 'api.nextPage': {
                   target: 'loading',
-                  actions: 'increasePage',
+                  actions: increasePage,
                   cond: 'isNotLastPage',
                 },
                 'api.prevPage': {
                   target: 'loading',
-                  actions: 'decreasePage',
+                  actions: decreasePage,
                   cond: 'isNotFirstPage',
                 },
                 'api.refresh': {
@@ -185,7 +226,7 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
               on: {
                 'api.query': {
                   target: 'loading',
-                  actions: 'query',
+                  actions: query,
                 },
                 'api.refresh': {
                   target: 'loading',
@@ -197,16 +238,16 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
               on: {
                 'api.query': {
                   target: 'loading',
-                  actions: 'query',
+                  actions: query,
                 },
                 'api.nextPage': {
                   target: 'loading',
-                  actions: 'increasePage',
+                  actions: increasePage,
                   cond: 'isNotLastPage',
                 },
                 'api.prevPage': {
                   target: 'loading',
-                  actions: 'decreasePage',
+                  actions: decreasePage,
                   cond: 'isNotFirstPage',
                 },
                 'api.refresh': {
@@ -219,33 +260,33 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
               on: {
                 'api.query': {
                   target: 'loading',
-                  actions: 'query',
+                  actions: query,
                 },
                 'api.refresh': {
                   target: 'loading',
                 },
                 'api.prevPage': {
                   target: 'loading',
-                  actions: 'decreasePage',
+                  actions: decreasePage,
                   cond: 'isNotFirstPage',
                 },
               },
             },
             loading: {
               tags: ['loading'],
-              entry: ['notifyLoading', 'fetch'],
+              entry: [model.actions.notifyLoading(), fetch],
               on: {
                 'api.query': {
                   target: 'loading',
-                  actions: 'query',
+                  actions: query,
                 },
                 'api.setResponse': {
                   target: 'success',
-                  actions: ['setResponse', 'notifySuccess'],
+                  actions: [setResponse, model.actions.notifySuccess()],
                 },
                 'api.setError': {
                   target: 'error',
-                  actions: ['setError', 'notifyError'],
+                  actions: [setError, model.actions.notifyError()],
                 },
               },
             },
@@ -257,10 +298,10 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
           },
         },
         polling: {
-          entry: 'fetch',
+          entry: fetch,
           on: {
             'api.setResponse': {
-              actions: 'setResponse',
+              actions: setResponse,
             },
           },
           after: {
@@ -277,62 +318,6 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
         INTERVAL: 5000,
       },
       actions: {
-        fetch: assign((context) => {
-          if (context.actor && context.actor.stop) {
-            context.actor.stop();
-          }
-          const actor = spawn(callApi(context));
-          return { actor };
-        }),
-        setResponse: assign((context, e) => {
-          if (e.type !== 'api.setResponse' || e.page !== context.request.page)
-            return {};
-          if (context.onBeforeSetResponse) {
-            context.onBeforeSetResponse(context.response?.items);
-          }
-          return {
-            response: {
-              items: e.items?.map((i) => context.dataTransformer(i)),
-              total: e.total,
-              error: undefined,
-            },
-          };
-        }),
-        setError: assign((context, e) => {
-          if (e.type !== 'api.setError' || e.page !== context.request.page)
-            return {};
-          return {
-            response: {
-              items: context.response?.items || [],
-              total: context.response?.total || 0,
-              error: e.error,
-            },
-          };
-        }),
-        increasePage: assign((context) => {
-          return {
-            request: {
-              ...context.request,
-              page: context.request.page + 1,
-            },
-          };
-        }),
-        decreasePage: assign((context) => {
-          return {
-            request: { ...context.request, page: context.request.page - 1 },
-          };
-        }),
-        query: assign((context, event) => {
-          if (event.type !== 'api.query') return {};
-          const { page, size, query } = event;
-          return {
-            request: {
-              page: page || context.request.page,
-              size: size || context.request.size,
-              query,
-            },
-          };
-        }),
         notifyReady: sendParent({
           type: 'api.ready',
         }),
@@ -349,11 +334,7 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
           ...context.request,
         })),
         forwardUnknownEventsToParent: pure((_context, event) => {
-          if (
-            Object.keys(paginatedApiMachineModel.events).includes(
-              event.type
-            ) === false
-          ) {
+          if (Object.keys(model.events).includes(event.type) === false) {
             return sendParent((_context, _event, meta) => {
               return meta._event.data;
             });
