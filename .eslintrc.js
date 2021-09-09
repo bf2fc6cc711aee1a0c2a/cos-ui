@@ -6,8 +6,15 @@ module.exports = {
 
     'plugin:jest-dom/recommended',
     'plugin:react-hooks/recommended',
+    'plugin:xstate/all',
   ],
-  plugins: ['react-hooks', 'jest-dom', 'testing-library', 'unused-imports'],
+  plugins: [
+    'react-hooks',
+    'jest-dom',
+    'testing-library',
+    'unused-imports',
+    'xstate',
+  ],
   settings: {
     react: {
       version: '999.999.999',

@@ -107,6 +107,7 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
     if (context.actor && context.actor.stop) {
       context.actor.stop();
     }
+    // eslint-disable-next-line xstate/spawn-usage
     const actor = spawn(callApi(context));
     return { actor };
   });

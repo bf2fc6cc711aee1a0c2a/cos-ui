@@ -77,6 +77,7 @@ export const connectorsPageMachine = model.createMachine(
                 >(
                   fetchConnectors(context),
                   (connector) =>
+                    // eslint-disable-next-line xstate/spawn-usage
                     spawn(
                       makeConnectorMachine({
                         accessToken: context.accessToken,
