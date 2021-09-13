@@ -14,7 +14,7 @@
     "@rhoas/kafka-management-sdk": "0.12.3",
     "@xstate/react": "1.6.1",
     "@xstate/test": "0.4.2",
-    "ajv": "8.6.2",
+    "ajv": "8.6.3",
     "axios": "0.21.4",
     "date-fns": "2.23.0",
     "i18next": "20.6.1",
