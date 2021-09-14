@@ -32,7 +32,7 @@
     "uniforms": "3.6.0",
     "uniforms-bridge-json-schema": "3.6.0",
     "uniforms-patternfly": "4.7.3",
-    "xstate": "4.23.4"
+    "xstate": "4.24.0"
   },
   "devDependencies": {
     "@babel/core": "7.15.5",
