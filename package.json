@@ -57,7 +57,7 @@
     "@types/lodash.debounce": "4.0.6",
     "@types/react": "17.0.20",
     "@types/react-dom": "17.0.9",
-    "@types/react-router-dom": "5.1.8",
+    "@types/react-router-dom": "5.1.9",
     "@types/simpl-schema": "1.12.0",
     "@types/testing-library__jest-dom": "5.14.1",
     "@typescript-eslint/eslint-plugin": "4.31.1",
