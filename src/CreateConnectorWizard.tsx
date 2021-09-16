@@ -6,12 +6,12 @@ import { useSelector, useActor } from '@xstate/react';
 import './CreateConnectorWizard.css';
 import { creationWizardMachine } from './CreateConnectorWizard.machine';
 import { useCreateConnectorWizardService } from './CreateConnectorWizardContext';
-import { SelectCluster } from './CreateConnectorWizardStep.Clusters';
-import { ConfiguratorStep } from './CreateConnectorWizardStep.Configurator';
-import { SelectConnectorType } from './CreateConnectorWizardStep.ConnectorTypes';
-import { SelectKafkaInstance } from './CreateConnectorWizardStep.Kafkas';
-import { Review } from './CreateConnectorWizardStep.Review';
+import { SelectCluster } from './StepClusters';
+import { ConfiguratorStep } from './StepConfigurator';
+import { SelectConnectorType } from './StepConnectorTypes';
 import { StepErrorBoundary } from './StepErrorBoundary';
+import { SelectKafkaInstance } from './StepKafkas';
+import { Review } from './StepReview';
 import {
   getFlattenedSteps,
   UncontrolledWizard,
@@ -97,11 +97,11 @@ function useConfigurationStep() {
   };
 }
 
-export type CreateConnectionWizardProps = {
+export type CreateConnectorWizardProps = {
   onClose: () => void;
 };
 
-export const CreateConnectionWizard: FunctionComponent<CreateConnectionWizardProps> =
+export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps> =
   ({ onClose }) => {
     const { t } = useTranslation();
 

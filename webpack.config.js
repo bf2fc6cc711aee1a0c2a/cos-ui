@@ -14,7 +14,8 @@ const { dependencies } = require('./package.json');
 
 module.exports = (env, argv) => {
   const isProduction = argv && argv.mode === 'production';
-  const isStandalone = !!process.env.DEMO_APP === true || !!process.env.E2E_APP === true;
+  const isStandalone =
+    !!process.env.DEMO_APP === true || !!process.env.E2E_APP === true;
   return {
     entry: {
       // we add an entrypoint with the same name as our name in ModuleFederationPlugin.
@@ -64,7 +65,7 @@ module.exports = (env, argv) => {
         {
           test: /\.css$/,
           use: [MiniCssExtractPlugin.loader, 'css-loader'],
-          sideEffects: true
+          sideEffects: true,
         },
         {
           test: /\.(svg|jpg|jpeg|png|gif)$/i,
@@ -74,9 +75,9 @@ module.exports = (env, argv) => {
               options: {
                 limit: 5000,
                 name: isProduction ? '[contenthash:8].[ext]' : '[name].[ext]',
-              }
-            }
-          ]
+              },
+            },
+          ],
         },
       ],
     },
@@ -101,7 +102,7 @@ module.exports = (env, argv) => {
           isProduction ? '[chunkhash:8]' : ''
         }.js`,
         exposes: {
-          './OpenshiftManagedConnectors': './src/federated',
+          './OpenshiftManagedConnectors': './src/AppFederated',
         },
         shared: !isStandalone
           ? {

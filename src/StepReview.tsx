@@ -14,8 +14,8 @@ import {
   TextInput,
 } from '@patternfly/react-core';
 
-import { CreateConnectorWizardBodyLayout } from './CreateConnectorWizardBodyLayout';
 import { useReviewMachine } from './CreateConnectorWizardContext';
+import { StepBodyLayout } from './StepBodyLayout';
 
 export function Review() {
   const { t } = useTranslation();
@@ -37,7 +37,7 @@ export function Review() {
     // monaco.editor.getModels()[0].updateOptions({ tabSize: 5 });
   }, []);
   return (
-    <CreateConnectorWizardBodyLayout
+    <StepBodyLayout
       title={t('Review')}
       description={
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
@@ -159,6 +159,6 @@ export function Review() {
           </Form>
         </CardBody>
       </Card>
-    </CreateConnectorWizardBodyLayout>
+    </StepBodyLayout>
   );
 }

@@ -2582,7 +2582,7 @@
     prop-types "^15.7.2"
     regenerator-runtime "^0.13.7"
 
-"@storybook/addons@6.3.8":
+"@storybook/addons@6.3.8", "@storybook/addons@^6.3.6":
   version "6.3.8"
   resolved "https://registry.yarnpkg.com/@storybook/addons/-/addons-6.3.8.tgz#c4a839ae9b86fb4a1183466db6eb16201c1a0553"
   integrity sha512-TzYk1f/wvfoGDkLxXIx85ii5ED7IfGP/6eu00/i2Hyn4uGqdNi/ltSOJxnxa+DZv8KjYQRVAEo/Fbh95IEXI1Q==
@@ -2638,7 +2638,7 @@
     ts-dedent "^2.0.0"
     util-deprecate "^1.0.2"
 
-"@storybook/api@6.3.8":
+"@storybook/api@6.3.8", "@storybook/api@^6.3.6":
   version "6.3.8"
   resolved "https://registry.yarnpkg.com/@storybook/api/-/api-6.3.8.tgz#251bcf6cc3a4e0b908bea7fb0aa9e48d6c48d720"
   integrity sha512-8b61KnWhN+sA+Gq+AHH3M4qM0L8pNS9DtdfPi5GUGWzOg6IZ1EgYVsk9afEwkNESxyZ+GM2O6mGu05J0HfyqNg==
@@ -2771,7 +2771,7 @@
     ts-dedent "^2.0.0"
     util-deprecate "^1.0.2"
 
-"@storybook/client-api@6.3.8":
+"@storybook/client-api@6.3.8", "@storybook/client-api@^6.3.6":
   version "6.3.8"
   resolved "https://registry.yarnpkg.com/@storybook/client-api/-/client-api-6.3.8.tgz#60e608a5c2afbe6d63a4a063e616bedde8466584"
   integrity sha512-71HT0K1lswyMSkRRgB1+TGu7X6kFazmoXT3t5wkU6NWIflEngiiJ3w+PMpOGzd6E3Gp3ZOvfkfrzaby5VlBORw==
@@ -2811,7 +2811,7 @@
     core-js "^3.8.2"
     global "^4.4.0"
 
-"@storybook/components@6.3.8":
+"@storybook/components@6.3.8", "@storybook/components@^6.3.6":
   version "6.3.8"
   resolved "https://registry.yarnpkg.com/@storybook/components/-/components-6.3.8.tgz#cb84b0245d8784d41e7e6be25a0d5774363e5b87"
   integrity sha512-zIvCk7MAL9z17EI58h7WE/TgFTm0njGwFkQrbXOgGkkKYoFt/yrrs8HqylcqBqfTivJNiXJNnmmx0ooJ83PIwA==
@@ -2955,7 +2955,7 @@
   dependencies:
     core-js "^3.8.2"
 
-"@storybook/core-events@6.3.8":
+"@storybook/core-events@6.3.8", "@storybook/core-events@^6.3.6":
   version "6.3.8"
   resolved "https://registry.yarnpkg.com/@storybook/core-events/-/core-events-6.3.8.tgz#4c9a3deb9334b10116befbf2db5534d1319d2f39"
   integrity sha512-M3d2iX842YfopqmOHlXzL/Xy4fICzaRnet99GdfOqWjZhC2CVSemVk1b/vgfQv4MFYOQkSLsAjkbDH/kU8n9Aw==
@@ -3214,7 +3214,7 @@
     resolve-from "^5.0.0"
     ts-dedent "^2.0.0"
 
-"@storybook/theming@6.3.8":
+"@storybook/theming@6.3.8", "@storybook/theming@^6.3.6":
   version "6.3.8"
   resolved "https://registry.yarnpkg.com/@storybook/theming/-/theming-6.3.8.tgz#3af76408aa8a4f13e217cf407e63a03db217eedc"
   integrity sha512-Np51rvecnuHNevZ7Em0uElT5UkgASP5K2u8NpHcCxP/Hd73wxS/h//6XnjA9Aich7h/JanG71jAC3qqhZabatA==
@@ -6549,7 +6549,7 @@ create-react-context@0.3.0:
     gud "^1.0.0"
     warning "^4.0.3"
 
-cross-fetch@3.1.4:
+cross-fetch@3.1.4, cross-fetch@^3.1.4:
   version "3.1.4"
   resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.4.tgz#9723f3a3a247bf8b89039f3a380a9244e8fa2f39"
   integrity sha512-1eAtFWdIubi6T4XPy6ei9iUFoKpUkIF971QLN8lIvvvwueI65+Nw5haMNKUwfJxabqlIIDODJKGrQ66gxC0PbQ==
@@ -13740,7 +13740,7 @@ qs@6.7.0:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
   integrity sha512-VCdBRNFTX1fyE7Nb6FYoURo/SPe62QCaAyzJvUjwRaIsc+NePBEniHlvxFmmX56+HZphIGtV0XeCirBtpDrTyQ==
 
-qs@^6.10.0:
+qs@^6.10.0, qs@^6.10.1:
   version "6.10.1"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.10.1.tgz#4931482fa8d647a5aab799c5271d2133b981fb6a"
   integrity sha512-M528Hph6wsSVOBiYUnGf+K/7w0hNshs/duGsNXPUCLH5XAqjEtiPGwNONLV0tBH8NoGb0mvD5JubnUTrujKDTg==
@@ -15399,6 +15399,22 @@ storybook-addon-outline@^1.4.1:
     "@storybook/components" "^6.3.0"
     "@storybook/core-events" "^6.3.0"
     ts-dedent "^2.1.1"
+
+storybook-fixtures@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/storybook-fixtures/-/storybook-fixtures-0.10.0.tgz#4949999d45669bf4f6c3c99419c3e173f3d6fdb5"
+  integrity sha512-mXYv+nIAkslKnHTwF1v/6B4oMzKN0iJNsOS414Mh0HLyhdUMQpRqYY2tLVkz6w2ZDHlq1Ou4pog4wCwDu+yVig==
+  dependencies:
+    "@storybook/addons" "^6.3.6"
+    "@storybook/api" "^6.3.6"
+    "@storybook/client-api" "^6.3.6"
+    "@storybook/components" "^6.3.6"
+    "@storybook/core-events" "^6.3.6"
+    "@storybook/theming" "^6.3.6"
+    cross-fetch "^3.1.4"
+    lodash "^4.17.21"
+    qs "^6.10.1"
+    store2 "^2.12.0"
 
 storybook-xstate-addon@1.1.5:
   version "1.1.5"

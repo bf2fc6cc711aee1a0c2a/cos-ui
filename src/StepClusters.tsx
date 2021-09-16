@@ -13,7 +13,6 @@ import {
   DescriptionListTerm,
   Gallery,
   InputGroup,
-  Pagination,
   TextInput,
   Toolbar,
   ToolbarContent,
@@ -23,7 +22,6 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
-import { CreateConnectorWizardBodyLayout } from './CreateConnectorWizardBodyLayout';
 import {
   useClustersMachineIsReady,
   useClustersMachine,
@@ -31,7 +29,8 @@ import {
 import { EmptyStateNoMatchesFound } from './EmptyStateNoMatchesFound';
 import { EmptyStateNoOSDCluster } from './EmptyStateNoOSDCluster';
 import { Loading } from './Loading';
-import { defaultPerPageOptions } from './constants';
+import { Pagination } from './Pagination';
+import { StepBodyLayout } from './StepBodyLayout';
 import { useDebounce } from './useDebounce';
 
 export function SelectCluster() {
@@ -58,7 +57,7 @@ const ClustersGallery: FunctionComponent = () => {
   } = useClustersMachine();
 
   return (
-    <CreateConnectorWizardBodyLayout
+    <StepBodyLayout
       title={t('OSD cluster')}
       description={
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
@@ -129,12 +128,11 @@ const ClustersGallery: FunctionComponent = () => {
                     ))}
                   </Gallery>
                 </div>
-                <ClustersPagination />
               </>
             );
         }
       })()}
-    </CreateConnectorWizardBodyLayout>
+    </StepBodyLayout>
   );
 };
 
@@ -268,12 +266,7 @@ const ClustersPagination: FunctionComponent<ClustersPaginationProps> = ({
       itemCount={response?.total || 0}
       page={request.page}
       perPage={request.size}
-      perPageOptions={defaultPerPageOptions}
-      onSetPage={(_, page, size) =>
-        onQuery({ ...request, page, size: size || request.size })
-      }
-      onPerPageSelect={() => false}
-      variant={isCompact ? 'top' : 'bottom'}
+      onChange={(page, size) => onQuery({ page, size })}
       isCompact={isCompact}
     />
   );

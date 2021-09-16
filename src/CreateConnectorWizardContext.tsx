@@ -18,19 +18,19 @@ import {
   CreationWizardMachineInterpreterFromType,
   creationWizardMachine,
 } from './CreateConnectorWizard.machine';
-import { ClustersMachineActorRef } from './CreateConnectorWizardStep.Clusters.machine';
-import {
-  ConnectorConfiguratorResponse,
-  configuratorLoaderMachine,
-} from './CreateConnectorWizardStep.ConfiguratorLoader.machine';
-import { ConnectorTypesMachineActorRef } from './CreateConnectorWizardStep.ConnectorTypes.machine';
-import { KafkaMachineActorRef } from './CreateConnectorWizardStep.Kafkas.machine';
-import { ReviewMachineActorRef } from './CreateConnectorWizardStep.Review.machine';
 import {
   usePagination,
   PaginatedApiActorType,
   PaginatedApiRequest,
 } from './PaginatedResponse.machine';
+import { ClustersMachineActorRef } from './StepClusters.machine';
+import {
+  ConnectorConfiguratorResponse,
+  configuratorLoaderMachine,
+} from './StepConfiguratorLoader.machine';
+import { ConnectorTypesMachineActorRef } from './StepConnectorTypes.machine';
+import { KafkaMachineActorRef } from './StepKafkas.machine';
+import { ReviewMachineActorRef } from './StepReview.machine';
 import {
   ConnectorTypesQuery,
   KafkasQuery,

@@ -13,13 +13,10 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
-import {
-  ConnectorsPagination,
-  ConnectorsPaginationProps,
-} from './ConnectorsPagination';
+import { Pagination, PaginationProps } from './Pagination';
 import { useDebounce } from './useDebounce';
 
-type ConnectorsToolbarProps = {} & ConnectorsPaginationProps;
+type ConnectorsToolbarProps = {} & PaginationProps;
 export const ConnectorsToolbar: FunctionComponent<ConnectorsToolbarProps> = ({
   itemCount,
   page,
@@ -127,7 +124,7 @@ export const ConnectorsToolbar: FunctionComponent<ConnectorsToolbarProps> = ({
         </ToolbarItem>
       </ToolbarGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
-        <ConnectorsPagination
+        <Pagination
           itemCount={itemCount}
           page={page}
           perPage={perPage}

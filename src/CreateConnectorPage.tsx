@@ -14,9 +14,9 @@ import {
 import { useBasename, useConfig } from '@bf2/ui-shared';
 
 import { useCos } from './CosContext';
-import { CreateConnectionWizard } from './CreateConnectorWizard';
+import { CreateConnectorWizard } from './CreateConnectorWizard';
 import { CreateConnectorWizardProvider } from './CreateConnectorWizardContext';
-import { fetchConfigurator } from './FederatedConfigurator';
+import { fetchConfigurator } from './loadFederatedConfigurator';
 
 type CreateConnectorPageProps = {
   onSave: () => void;
@@ -57,7 +57,7 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
             }
             onSave={onSave}
           >
-            <CreateConnectionWizard onClose={openLeaveConfirm} />
+            <CreateConnectorWizard onClose={openLeaveConfirm} />
             <Modal
               title={t('Leave page?')}
               variant={'small'}
