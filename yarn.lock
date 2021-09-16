@@ -15395,7 +15395,7 @@ storybook-addon-outline@^1.4.1:
     "@storybook/core-events" "^6.3.0"
     ts-dedent "^2.1.1"
 
-storybook-fixtures@^0.10.0:
+storybook-fixtures@0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/storybook-fixtures/-/storybook-fixtures-0.10.0.tgz#4949999d45669bf4f6c3c99419c3e173f3d6fdb5"
   integrity sha512-mXYv+nIAkslKnHTwF1v/6B4oMzKN0iJNsOS414Mh0HLyhdUMQpRqYY2tLVkz6w2ZDHlq1Ou4pog4wCwDu+yVig==
