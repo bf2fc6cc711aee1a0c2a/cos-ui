@@ -19,7 +19,6 @@ import {
   DescriptionListTerm,
   Gallery,
   InputGroup,
-  Pagination,
   Select,
   SelectOption,
   TextInput,
@@ -34,7 +33,6 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
-import { CreateConnectorWizardBodyLayout } from './CreateConnectorWizardBodyLayout';
 import {
   useConnectorTypesMachine,
   useConnectorTypesMachineIsReady,
@@ -42,7 +40,8 @@ import {
 import { EmptyStateGenericError } from './EmptyStateGenericError';
 import { EmptyStateNoMatchesFound } from './EmptyStateNoMatchesFound';
 import { Loading } from './Loading';
-import { defaultPerPageOptions } from './constants';
+import { Pagination } from './Pagination';
+import { StepBodyLayout } from './StepBodyLayout';
 import { stringToChip } from './stringToChip';
 import { useDebounce } from './useDebounce';
 
@@ -69,7 +68,7 @@ export function ConnectorTypesGallery() {
   } = useConnectorTypesMachine();
 
   return (
-    <CreateConnectorWizardBodyLayout
+    <StepBodyLayout
       title={t('Connector category')}
       description={
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
@@ -139,12 +138,11 @@ export function ConnectorTypesGallery() {
                     ))}
                   </Gallery>
                 </div>
-                <ConnectorTypesPagination />
               </>
             );
         }
       })()}
-    </CreateConnectorWizardBodyLayout>
+    </StepBodyLayout>
   );
 }
 
@@ -294,12 +292,7 @@ const ConnectorTypesPagination: FunctionComponent<ConnectorTypesPaginationProps>
         itemCount={response?.total || 0}
         page={request.page}
         perPage={request.size}
-        perPageOptions={defaultPerPageOptions}
-        onSetPage={(_, page, size) =>
-          onQuery({ ...request, page, size: size || request.size })
-        }
-        onPerPageSelect={() => false}
-        variant={isCompact ? 'top' : 'bottom'}
+        onChange={(page, size) => onQuery({ page, size })}
         isCompact={isCompact}
       />
     );

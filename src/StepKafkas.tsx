@@ -24,7 +24,6 @@ import {
   DropdownToggle,
   Gallery,
   InputGroup,
-  Pagination,
   Select,
   SelectOption,
   TextInput,
@@ -39,8 +38,6 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
-// import { useBasename } from '@bf2/ui-shared';
-import { CreateConnectorWizardBodyLayout } from './CreateConnectorWizardBodyLayout';
 import {
   useKafkasMachineIsReady,
   useKafkasMachine,
@@ -48,7 +45,9 @@ import {
 import { EmptyStateNoKafkaInstances } from './EmptyStateNoKafkaInstances';
 import { EmptyStateNoMatchesFound } from './EmptyStateNoMatchesFound';
 import { Loading } from './Loading';
-import { defaultPerPageOptions } from './constants';
+import { Pagination } from './Pagination';
+// import { useBasename } from '@bf2/ui-shared';
+import { StepBodyLayout } from './StepBodyLayout';
 import { stringToChip } from './stringToChip';
 import { useDebounce } from './useDebounce';
 
@@ -74,7 +73,7 @@ const KafkasGallery: FunctionComponent = () => {
   } = useKafkasMachine();
 
   return (
-    <CreateConnectorWizardBodyLayout
+    <StepBodyLayout
       title={t('Kafka instance')}
       description={
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
@@ -151,12 +150,11 @@ const KafkasGallery: FunctionComponent = () => {
                     ))}
                   </Gallery>
                 </div>
-                <KafkasPagination />
               </>
             );
         }
       })()}
-    </CreateConnectorWizardBodyLayout>
+    </StepBodyLayout>
   );
 };
 
@@ -558,12 +556,7 @@ const KafkasPagination: FunctionComponent<KafkasPaginationProps> = ({
       itemCount={response?.total || 0}
       page={request.page}
       perPage={request.size}
-      perPageOptions={defaultPerPageOptions}
-      onSetPage={(_, page, size) =>
-        onQuery({ ...request, page, size: size || request.size })
-      }
-      onPerPageSelect={() => false}
-      variant={isCompact ? 'top' : 'bottom'}
+      onChange={(page, size) => onQuery({ page, size })}
       isCompact={isCompact}
     />
   );

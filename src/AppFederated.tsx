@@ -34,3 +34,5 @@ export const AppFederated: FunctionComponent = () => {
     </I18nextProvider>
   );
 };
+
+export default AppFederated;

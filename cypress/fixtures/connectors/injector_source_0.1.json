@@ -1,0 +1,119 @@
+{
+  "connector_type" : {
+    "json_schema" : {
+      "type" : "object",
+      "properties" : {
+        "connector" : {
+          "type" : "object",
+          "title" : "Injector",
+          "required" : [ ],
+          "properties" : {
+            "delay" : {
+              "title" : "Delay",
+              "description" : "Delay",
+              "type" : "string"
+            },
+            "multiLine" : {
+              "title" : "Multi Line",
+              "description" : "Multi Line",
+              "type" : "boolean",
+              "default" : false
+            },
+            "showAll" : {
+              "title" : "Show All",
+              "description" : "Show All",
+              "type" : "boolean",
+              "default" : false
+            }
+          }
+        },
+        "kafka" : {
+          "type" : "object",
+          "title" : "Managed Kafka Sink",
+          "required" : [ "topic" ],
+          "properties" : {
+            "topic" : {
+              "title" : "Topic names",
+              "description" : "Comma separated list of Kafka topic names",
+              "type" : "string"
+            }
+          }
+        },
+        "steps" : {
+          "type" : "array",
+          "items" : {
+            "oneOf" : [ {
+              "type" : "object",
+              "required" : [ "insert-field" ],
+              "properties" : {
+                "insert-field" : {
+                  "title" : "Insert Field Action",
+                  "description" : "Adds a custom field with a constant value to the message in transit.\n\nThis action works with Json Object. So it will expect a Json Array or a Json Object.\n\nIf for example you have an array like '{ \"foo\":\"John\", \"bar\":30 }' and your action has been configured with field as 'element' and value as 'hello', you'll get '{ \"foo\":\"John\", \"bar\":30, \"element\":\"hello\" }'\n\nNo headers mapping supported, only constant values.",
+                  "required" : [ "field", "value" ],
+                  "properties" : {
+                    "field" : {
+                      "title" : "Field",
+                      "description" : "The name of the field to be added",
+                      "type" : "string"
+                    },
+                    "value" : {
+                      "title" : "Value",
+                      "description" : "The value of the field",
+                      "type" : "string"
+                    }
+                  },
+                  "type" : "object"
+                }
+              }
+            }, {
+              "type" : "object",
+              "required" : [ "extract-field" ],
+              "properties" : {
+                "extract-field" : {
+                  "title" : "Extract Field Action",
+                  "description" : "Extract a field from the body",
+                  "required" : [ "field" ],
+                  "properties" : {
+                    "field" : {
+                      "title" : "Field",
+                      "description" : "The name of the field to be added",
+                      "type" : "string"
+                    }
+                  },
+                  "type" : "object"
+                }
+              }
+            } ]
+          }
+        }
+      }
+    },
+    "id" : "injector_source_0.1",
+    "kind" : "ConnectorType",
+    "icon_href" : "TODO",
+    "name" : "Injector Source",
+    "description" : "Injector Source",
+    "version" : "0.1",
+    "labels" : [ "source" ],
+    "channels" : [ "stable" ]
+  },
+  "channels" : {
+    "stable" : {
+      "shard_metadata" : {
+        "connector_revision" : "3",
+        "connector_type" : "source",
+        "connector_image" : "quay.io/lburgazzoli/mci:0.1.3-injector-source-0.1",
+        "operators" : [ {
+          "type" : "camel-connector-operator",
+          "version" : "[1.0.0,2.0.0)"
+        } ],
+        "kamelets" : {
+          "connector" : "injector-source",
+          "kafka" : "managed-kafka-sink",
+          "insert-field" : "insert-field-action",
+          "extract-field" : "extract-field-action"
+        }
+      }
+    }
+  }
+}

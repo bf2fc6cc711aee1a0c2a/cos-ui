@@ -14,7 +14,6 @@ import {
   useConnectorsMachine,
   useConnectorsPageIsReady,
 } from './ConnectorsPageContext';
-import { ConnectorsPagination } from './ConnectorsPagination';
 import { ConnectorsTable, ConnectorsTableRow } from './ConnectorsTable';
 import { ConnectorsToolbar } from './ConnectorsToolbar';
 import { useCos } from './CosContext';
@@ -23,6 +22,7 @@ import { EmptyStateGenericError } from './EmptyStateGenericError';
 import { EmptyStateGettingStarted } from './EmptyStateGettingStarted';
 import { EmptyStateNoMatchesFound } from './EmptyStateNoMatchesFound';
 import { Loading } from './Loading';
+import { Pagination } from './Pagination';
 
 type ConnectedConnectorsPageProps = {
   onCreateConnector: () => void;
@@ -177,7 +177,7 @@ export const ConnectedTable: FunctionComponent = () => {
           ))}
         </ConnectorsTable>
       </div>
-      <ConnectorsPagination
+      <Pagination
         itemCount={response?.total || 0}
         page={request.page}
         perPage={request.size}

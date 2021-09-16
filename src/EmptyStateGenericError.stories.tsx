@@ -7,7 +7,6 @@ export default {
   title: 'UI/Empty states/Generic Error',
   component: EmptyStateGenericError,
   args: {},
-  parameters: {},
 } as ComponentMeta<typeof EmptyStateGenericError>;
 
 const Template: ComponentStory<typeof EmptyStateGenericError> = (args) => (

@@ -7,15 +7,15 @@ import {
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
-import { clustersMachine } from './CreateConnectorWizardStep.Clusters.machine';
-import { configuratorMachine } from './CreateConnectorWizardStep.Configurator.machine';
+import { clustersMachine } from './StepClusters.machine';
+import { configuratorMachine } from './StepConfigurator.machine';
 import {
   configuratorLoaderMachine,
   ConnectorConfiguratorType,
-} from './CreateConnectorWizardStep.ConfiguratorLoader.machine';
-import { connectorTypesMachine } from './CreateConnectorWizardStep.ConnectorTypes.machine';
-import { kafkasMachine } from './CreateConnectorWizardStep.Kafkas.machine';
-import { reviewMachine } from './CreateConnectorWizardStep.Review.machine';
+} from './StepConfiguratorLoader.machine';
+import { connectorTypesMachine } from './StepConnectorTypes.machine';
+import { kafkasMachine } from './StepKafkas.machine';
+import { reviewMachine } from './StepReview.machine';
 
 type Context = {
   accessToken: () => Promise<string>;

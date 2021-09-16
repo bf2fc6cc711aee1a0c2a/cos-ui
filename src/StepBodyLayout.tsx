@@ -6,7 +6,7 @@ type CreateConnectorWizardBodyLayoutProps = {
   title: string;
   description?: ReactNode;
 };
-export const CreateConnectorWizardBodyLayout: FunctionComponent<CreateConnectorWizardBodyLayoutProps> =
+export const StepBodyLayout: FunctionComponent<CreateConnectorWizardBodyLayoutProps> =
   ({ title, description, children }) => (
     <div className={'pf-l-stack'}>
       <Level className={'pf-u-p-md pf-l-stack__item'}>
