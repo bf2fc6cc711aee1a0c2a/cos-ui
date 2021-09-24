@@ -6,7 +6,11 @@ import {
   AlertActionCloseButton,
 } from '@patternfly/react-core';
 
-import { AlertContext, AlertProps, AlertVariant } from '@bf2/ui-shared';
+import {
+  AlertContext,
+  AlertProps,
+  AlertVariant,
+} from '@rhoas/app-services-ui-shared';
 
 type TimeOut = {
   key: string | undefined;

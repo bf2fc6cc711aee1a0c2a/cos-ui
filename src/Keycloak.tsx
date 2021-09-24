@@ -1,7 +1,7 @@
 import Keycloak, { KeycloakInstance, KeycloakProfile } from 'keycloak-js';
 import React from 'react';
 
-import { Auth, AuthContext } from '@bf2/ui-shared';
+import { Auth, AuthContext } from '@rhoas/app-services-ui-shared';
 
 export let keycloak: Keycloak.KeycloakInstance | undefined;
 

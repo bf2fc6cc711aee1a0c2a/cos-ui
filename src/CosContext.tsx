@@ -4,7 +4,7 @@ type AppContextType = {
   /**
    * Gets the JWT needed by all the API calls. The token comes from Keycloak
    * when running the app in development mode. In production, it will come from
-   * the `@bf2/ui-shared` package.
+   * the `@rhoas/app-services-ui-shared` package.
    */
   getToken: () => Promise<string>;
   /**

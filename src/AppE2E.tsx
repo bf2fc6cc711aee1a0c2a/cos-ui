@@ -10,7 +10,7 @@ import {
   ConfigContext,
   useAuth,
   useConfig,
-} from '@bf2/ui-shared';
+} from '@rhoas/app-services-ui-shared';
 
 import { AlertsProvider } from './Alerts';
 import { AppLayout } from './AppLayout';
@@ -88,7 +88,7 @@ const ConnectedRoutes = () => {
 
   return (
     <CosRoutes
-      getToken={auth?.kas.getToken || (() => Promise.resolve(''))}
+      getToken={async () => (await auth?.kas.getToken()) || ''}
       apiBasepath={config?.cos.apiBasePath || ''}
     />
   );

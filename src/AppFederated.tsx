@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-import { useAuth, useBasename, useConfig } from '@bf2/ui-shared';
+import { useAuth, useBasename, useConfig } from '@rhoas/app-services-ui-shared';
 
 import { CosRoutes } from './CosRoutes';
 import { Loading } from './Loading';
@@ -26,7 +26,7 @@ export const AppFederated: FunctionComponent = () => {
       <React.Suspense fallback={<Loading />}>
         <Router basename={basename?.getBasename()}>
           <CosRoutes
-            getToken={auth?.kas.getToken || (() => Promise.resolve(''))}
+            getToken={async () => (await auth?.kas.getToken()) || ''}
             apiBasepath={config?.cos.apiBasePath || ''}
           />
         </Router>

@@ -46,7 +46,7 @@ import { EmptyStateNoKafkaInstances } from './EmptyStateNoKafkaInstances';
 import { EmptyStateNoMatchesFound } from './EmptyStateNoMatchesFound';
 import { Loading } from './Loading';
 import { Pagination } from './Pagination';
-// import { useBasename } from '@bf2/ui-shared';
+// import { useBasename } from '@rhoas/app-services-ui-shared';
 import { StepBodyLayout } from './StepBodyLayout';
 import { stringToChip } from './stringToChip';
 import { useDebounce } from './useDebounce';

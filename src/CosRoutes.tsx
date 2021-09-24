@@ -2,7 +2,7 @@ import React, { FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Route, Switch, useHistory } from 'react-router-dom';
 
-import { AlertVariant, useAlert } from '@bf2/ui-shared';
+import { AlertVariant, useAlert } from '@rhoas/app-services-ui-shared';
 
 import { ConnectedConnectorsPage } from './ConnectorsPage';
 import { CosContextProvider } from './CosContext';

@@ -11,7 +11,7 @@ import {
   Title,
 } from '@patternfly/react-core';
 
-import { useBasename, useConfig } from '@bf2/ui-shared';
+import { useBasename, useConfig } from '@rhoas/app-services-ui-shared';
 
 import { useCos } from './CosContext';
 import { CreateConnectorWizard } from './CreateConnectorWizard';

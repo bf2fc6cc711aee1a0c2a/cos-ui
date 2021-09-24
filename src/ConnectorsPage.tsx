@@ -3,8 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Card, PageSection, TextContent, Title } from '@patternfly/react-core';
 
-import { AlertVariant, useAlert } from '@bf2/ui-shared';
-
+import { AlertVariant, useAlert } from '@rhoas/app-services-ui-shared';
 import { Connector } from '@rhoas/connector-management-sdk';
 
 import { ConnectorMachineActorRef, useConnector } from './Connector.machine';
