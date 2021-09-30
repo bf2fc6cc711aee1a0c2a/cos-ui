@@ -68,7 +68,7 @@
     "babel-loader": "8.2.2",
     "bundle-loader": "0.5.6",
     "chai": "4.3.4",
-    "chromatic": "5.10.1",
+    "chromatic": "5.10.2",
     "copy-webpack-plugin": "9.0.1",
     "css-loader": "6.3.0",
     "cssnano": "5.0.8",
