@@ -94,7 +94,7 @@
     "jest-environment-jsdom": "27.2.4",
     "jest-mock-axios": "4.4.1",
     "keycloak-js": "9.0.0",
-    "lint-staged": "11.1.2",
+    "lint-staged": "11.2.0",
     "mini-css-extract-plugin": "2.3.0",
     "monaco-editor-webpack-plugin": "4.2.0",
     "msw": "0.35.0",
