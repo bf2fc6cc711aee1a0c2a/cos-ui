@@ -8,5 +8,6 @@
     "clustersApiPath": "/localhost/api/connector_mgmt/v1/kafka_connector_clusters?page=1&size=10"
   },
   "viewportWidth": 1280,
-  "viewportHeight": 720
+  "viewportHeight": 720,
+  "modifyObstructiveCode": false
 }

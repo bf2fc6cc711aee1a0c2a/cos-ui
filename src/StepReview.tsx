@@ -1,7 +1,6 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CodeEditor, Language } from '@patternfly/react-code-editor';
 import {
   Alert,
   AlertGroup,
@@ -11,6 +10,7 @@ import {
   FormAlert,
   FormGroup,
   Radio,
+  TextArea,
   TextInput,
 } from '@patternfly/react-core';
 
@@ -31,11 +31,6 @@ export function Review() {
     onSetServiceAccount,
     onUpdateConfiguration,
   } = useReviewMachine();
-  const onEditorDidMount = useCallback((editor: any, _monaco: any) => {
-    editor.layout();
-    editor.focus();
-    // monaco.editor.getModels()[0].updateOptions({ tabSize: 5 });
-  }, []);
   return (
     <StepBodyLayout
       title={t('Review')}
@@ -137,18 +132,10 @@ export function Review() {
                   : 'default'
               }
             >
-              <CodeEditor
-                id="configuration"
-                isDarkTheme={false}
-                isLineNumbersVisible={true}
-                isReadOnly={isSaving}
-                isMinimapVisible={false}
-                isLanguageLabelVisible
-                code={configString}
+              <TextArea
+                value={configString}
                 onChange={onUpdateConfiguration}
-                language={Language.json}
-                onEditorDidMount={onEditorDidMount}
-                height="400px"
+                autoResize={true}
               />
               <AlertGroup>
                 {configStringWarnings?.map((w, idx) => (
