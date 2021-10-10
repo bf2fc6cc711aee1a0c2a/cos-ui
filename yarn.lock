@@ -2381,10 +2381,10 @@
     webpack-dev-server "^4.3.0"
     write-file-webpack-plugin "^4.5.1"
 
-"@rhoas/app-services-ui-shared@0.14.1":
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/@rhoas/app-services-ui-shared/-/app-services-ui-shared-0.14.1.tgz#8d0e93a1c728a3015c4463b2261a4b26e4d53f03"
-  integrity sha512-MIfLDf5nSGFxTues488+SsDd70rTmFlca/zL1i4WL779ZGPQlVnlFQ8MMJFyam9xO+oV9ZOkbI1L89bo2pPD+g==
+"@rhoas/app-services-ui-shared@0.15.0":
+  version "0.15.0"
+  resolved "https://registry.yarnpkg.com/@rhoas/app-services-ui-shared/-/app-services-ui-shared-0.15.0.tgz#76416ad8d864cec6a8758f35440dc700ada0082e"
+  integrity sha512-x4PDJx4DfwiCCT5pWhkWiOHEqjtVcuV5HXjEuduVcK/PvD0iRklStRGFWJmjJ84SOuUpCP8aE92Fn/g7veA9zA==
   dependencies:
     react "17.0.2"
     tslib "2.3.1"
