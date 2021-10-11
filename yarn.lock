@@ -3541,10 +3541,10 @@
     "@babel/runtime" "^7.12.5"
     "@testing-library/dom" "^8.0.0"
 
-"@testing-library/user-event@13.2.1":
-  version "13.2.1"
-  resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-13.2.1.tgz#7a71a39e50b4a733afbe2916fa2b99966e941f98"
-  integrity sha512-cczlgVl+krjOb3j1625usarNEibI0IFRJrSWX9UsJ1HKYFgCQv9Nb7QAipUDXl3Xdz8NDTsiS78eAkPSxlzTlw==
+"@testing-library/user-event@13.3.0":
+  version "13.3.0"
+  resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-13.3.0.tgz#2ce50953b885c452a2b2df880a1998637599dcf5"
+  integrity sha512-f8AJ8ybUna88Lmx3l5fuPMhzyyrcopQk/vgVDHVKOnOf2kkjfVSb0Px77iduHmh6uFUcXsD/z6qp4G13rObVrw==
   dependencies:
     "@babel/runtime" "^7.12.5"
 
@@ -6886,10 +6886,10 @@ css-declaration-sorter@^6.0.3:
   dependencies:
     timsort "^0.3.0"
 
-css-loader@6.3.0:
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/css-loader/-/css-loader-6.3.0.tgz#334d3500ff0a0c14cfbd4b0670088dbb5b5c1530"
-  integrity sha512-9NGvHOR+L6ps13Ilw/b216++Q8q+5RpJcVufCdW9S/9iCzs4KBDNa8qnA/n3FK/sSfWmH35PAIK/cfPi7LOSUg==
+css-loader@6.4.0:
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/css-loader/-/css-loader-6.4.0.tgz#01c57ea776024e18ca193428dcad3ff6b42a0130"
+  integrity sha512-Dlt6qfsxI/w1vU0r8qDd4BtMPxWqJeY5qQU7SmmZfvbpe6Xl18McO4GhyaMLns24Y2VNPiZwJPQ8JSbg4qvQLw==
   dependencies:
     icss-utils "^5.1.0"
     postcss "^8.2.15"
@@ -9878,10 +9878,10 @@ i18next-parser@4.7.0:
     vinyl-fs "^3.0.2"
     vue-template-compiler "^2.6.11"
 
-i18next@21.2.4:
-  version "21.2.4"
-  resolved "https://registry.yarnpkg.com/i18next/-/i18next-21.2.4.tgz#ac56044099c83a0a8e2c596acf57f35da8ca327e"
-  integrity sha512-+81XmiwJOLWJFjRZJK5ASFahAo5TXZGz5IrBT4CfLJ3CyXho61A1cj1Kmh8za8TYtGFou0cEkUSjEaqfya7Wfg==
+i18next@21.2.6:
+  version "21.2.6"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-21.2.6.tgz#a551fcba5f5e0b36a19801c0296265940889120f"
+  integrity sha512-xnCodgPo1ASLfdPs2/GS8jQFqQsaWrQKdsqfYgf5juANavIos4kjahgBkrMU8SUCn2kv7TSssfnyVu5LZjBWXw==
   dependencies:
     "@babel/runtime" "^7.12.0"
 
@@ -11568,10 +11568,10 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
   integrity sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=
 
-lint-staged@11.2.0:
-  version "11.2.0"
-  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-11.2.0.tgz#6b9774a74b3eb4bef5c59fb6475bff84d6853008"
-  integrity sha512-0KIcRuO4HQS2Su7qWtjrfTXgSklvyIb9Fk9qVWRZkGHa5S81Vj6WBbs+ogQBvHUwLJYq1eQ4R+H82GSak4OM7w==
+lint-staged@11.2.3:
+  version "11.2.3"
+  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-11.2.3.tgz#fc3f4569cc4f46553309dfc1447b8aef69f744fb"
+  integrity sha512-Tfmhk8O2XFMD25EswHPv+OYhUjsijy5D7liTdxeXvhG2rsadmOLFtyj8lmlfoFFXY8oXWAIOKpoI+lJe1DB1mw==
   dependencies:
     cli-truncate "2.1.0"
     colorette "^1.4.0"
@@ -12211,10 +12211,10 @@ mini-create-react-context@^0.4.0:
     "@babel/runtime" "^7.12.1"
     tiny-warning "^1.0.3"
 
-mini-css-extract-plugin@2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/mini-css-extract-plugin/-/mini-css-extract-plugin-2.4.1.tgz#3f3eb6576fb29dd00c423c365e6d3aa59c48ca2a"
-  integrity sha512-97R1JD3GCG7wN5DNM6JrJMxnWNGf2oDlwRgoDc4HOQ5GprahF98mvcPvDMTb5eI1n3vmmMzCpbXH8tpcnr/Nmw==
+mini-css-extract-plugin@2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/mini-css-extract-plugin/-/mini-css-extract-plugin-2.4.2.tgz#b3508191ea479388a4715018c99dd3e6dd40d2d2"
+  integrity sha512-ZmqShkn79D36uerdED+9qdo1ZYG8C1YsWvXu0UMJxurZnSdgz7gQKO2EGv8T55MhDqG3DYmGtizZNpM/UbTlcA==
   dependencies:
     schema-utils "^3.1.0"
 
@@ -12352,10 +12352,10 @@ monaco-editor-webpack-plugin@4.2.0:
   dependencies:
     loader-utils "^2.0.0"
 
-monaco-editor@0.28.1:
-  version "0.28.1"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.28.1.tgz#732788ff2172d59e6d436b206da8cac715413940"
-  integrity sha512-P1vPqxB4B1ZFzTeR1ScggSp9/5NoQrLCq88fnlNUsuRAP1usEBN4TIpI2lw0AYIZNVIanHk0qwjze2uJwGOHUw==
+monaco-editor@0.29.1:
+  version "0.29.1"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.29.1.tgz#6ee93d8a5320704d48fd7058204deed72429c020"
+  integrity sha512-rguaEG/zrPQSaKzQB7IfX/PpNa0qxF1FY8ZXRkN4WIl8qZdTQRSRJCtRto7IMcSgrU6H53RXI+fTcywOBC4aVw==
 
 monaco-editor@^0.27.0:
   version "0.27.0"
@@ -12394,10 +12394,10 @@ ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-msw-storybook-addon@1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/msw-storybook-addon/-/msw-storybook-addon-1.3.0.tgz#2f3f0c4d0b25a112d5c5064704825abdb90bc352"
-  integrity sha512-QLVsEtaaNPvdXAfvc4Z7v1FuSzd98fyZAj/UwRxxaDVua1LuuG/ql8n9JqQgNMcm8snMorbF5/2v7+/CInFQtw==
+msw-storybook-addon@1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/msw-storybook-addon/-/msw-storybook-addon-1.4.0.tgz#e88ba0648bcb870ad323a5493ebe119a44016fa5"
+  integrity sha512-QyJwGEWTv1s6WPvO1NuYOBgsLnkWkr85h23a0K5FL6ntN5mSIxvXh9fLbEn/Z71yn8lcLeXuqDlJGtmKzGC2Sw==
   dependencies:
     "@storybook/addons" "^6.0.0"
     is-node-process "^1.0.1"
@@ -17449,10 +17449,10 @@ webpack@4:
     watchpack "^1.7.4"
     webpack-sources "^1.4.1"
 
-webpack@5.57.1:
-  version "5.57.1"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.57.1.tgz#ead5ace2c17ecef2ae8126f143bfeaa7f55eab44"
-  integrity sha512-kHszukYjTPVfCOEyrUthA3jqJwduY/P3eO8I0gMNOZGIQWKAwZftxmp5hq6paophvwo9NoUrcZOecs9ulOyyTg==
+webpack@5.58.1:
+  version "5.58.1"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.58.1.tgz#df8aad72b617a9d0db8c89d4f410784ee93320d7"
+  integrity sha512-4Z/dmbTU+VmkCb2XNgW7wkE5TfEcSooclprn/UEuVeAkwHhn07OcgUsyaKHGtCY/VobjnsYBlyhKeMLiSoOqPg==
   dependencies:
     "@types/eslint-scope" "^3.7.0"
     "@types/estree" "^0.0.50"
