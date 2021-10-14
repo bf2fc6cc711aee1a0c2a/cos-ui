@@ -200,7 +200,7 @@ export const creationWizardMachine = model.createMachine(
           },
           configure: {
             id: 'configure',
-            initial: 'configuring',
+            initial: 'submittable',
             invoke: {
               id: 'configuratorRef',
               src: configuratorMachine,
@@ -222,17 +222,17 @@ export const creationWizardMachine = model.createMachine(
               },
             },
             states: {
-              configuring: {
+              submittable: {
                 on: {
-                  isValid: 'valid',
-                },
-              },
-              valid: {
-                on: {
-                  isInvalid: 'configuring',
+                  isInvalid: 'invalid',
                   next: {
                     actions: send('next', { to: 'configuratorRef' }),
                   },
+                },
+              },
+              invalid: {
+                on: {
+                  isValid: 'submittable',
                 },
               },
             },

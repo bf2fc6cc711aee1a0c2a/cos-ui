@@ -25,7 +25,7 @@ const testMachine = Machine({
     },
     selectConnector: {
       on: {
-        clickConnector: 'loadingKafka',
+        CLICK_CONNECTOR: 'loadingKafka',
       },
       meta: {
         test: () => cy.findByText('telegram-source-source').should('exist'),
@@ -48,7 +48,7 @@ const testMachine = Machine({
     },
     selectKafka: {
       on: {
-        clickKafkaInstance: 'loadingClusters',
+        CLICK_KAFKA_INSTANCE: 'loadingClusters',
       },
       meta: {
         test: () => cy.findByText('badwords').should('exist'),
@@ -75,7 +75,7 @@ const testMachine = Machine({
     },
     selectCluster: {
       on: {
-        clickCluster: 'configureConnector',
+        CLICK_CLUSTER: 'configureConnector',
       },
       meta: {
         test: () => cy.findByText('megalord').should('exist'),
@@ -89,7 +89,7 @@ const testMachine = Machine({
     },
     configureConnector: {
       on: {
-        configure: 'review',
+        CONFIGURE: 'review',
       },
       meta: {
         test: () => cy.findByText('Token').should('exist'),
@@ -97,10 +97,10 @@ const testMachine = Machine({
     },
     review: {
       on: {
-        saveConnector: 'saved',
+        SAVE_CONNECTOR: 'saved',
       },
       meta: {
-        test: () => {
+        TEST: () => {
           cy.findByText('Please review the configuration data.').should(
             'exist'
           );
@@ -113,25 +113,25 @@ const testMachine = Machine({
     saved: {
       type: 'final',
       meta: {
-        test: () => {
+        TEST: () => {
           // await waitForElementToBeRemoved(() =>
           //   screen.queryByText('Create connector')
           // );
         },
       },
       on: {
-        onClose: undefined,
+        ON_CLOSE: undefined,
       },
     },
     closed: {
       type: 'final',
       meta: {
-        test: () => {},
+        TEST: () => {},
       },
     },
   },
   on: {
-    onClose: 'closed',
+    ON_CLOSE: 'closed',
   },
 });
 
@@ -139,7 +139,7 @@ function runTheTests(testModel: TestModel<any, any>) {
   const testPlans = testModel.getSimplePathPlans();
   testPlans.forEach((plan) => {
     describe(plan.description, () => {
-      // beforeEach(mockApis.makeHappyPath);
+      // beforeEach(async mockApis.makeHappyPath);
       plan.paths.forEach((path) => {
         it(path.description, () => {
           // const onClose = jest.fn();
@@ -166,33 +166,34 @@ describe('Connector creation', () => {
       });
     });
     const testModel = createModel(testMachine).withEvents({
-      clickOnDisabledNext: () => {
+      CLICK_ON_DISABLED_NEXT: () => {
         cy.findByText('Next').click();
       },
-      clickConnector: () => {
+      CLICK_CONNECTOR: () => {
         cy.findByLabelText('filter by connector name').type('telegram');
         cy.findByText('telegram-source-source').click();
         cy.findByText('Next').click();
       },
-      clickKafkaInstance: () => {
+      CLICK_KAFKA_INSTANCE: () => {
         cy.findByText('badwords').click();
         cy.findByText('Next').click();
       },
-      clickCluster: () => {
+      CLICK_CLUSTER: () => {
         cy.findByText('megalord').click();
         cy.findByText('Next').click();
       },
-      configure: () => {
+      CONFIGURE: () => {
         cy.findByLabelText('Token *').type('some-token');
+        cy.findByText('Verify configuration').click();
         cy.findByText('Next').should('be.enabled').click();
       },
-      saveConnector: () => {
+      SAVE_CONNECTOR: () => {
         cy.findByLabelText('Name *').type('my-connector');
         cy.findByRole('button', { name: 'Create connector' })
           .should('be.enabled')
           .click();
       },
-      onClose: () => {
+      ON_CLOSE: () => {
         cy.findByText('Cancel').click();
       },
     });
@@ -213,7 +214,7 @@ describe('Connector creation', () => {
         willConnectorsApiFail: true,
       })
     ).withEvents({
-      onClose: () => {
+      ON_CLOSE: () => {
         cy.findByText('Cancel').click();
       },
     });
@@ -237,13 +238,13 @@ describe('Connector creation', () => {
         willConnectorsApiFail: false,
       })
     ).withEvents({
-      clickConnector: () => {
+      CLICK_CONNECTOR: () => {
         cy.findByLabelText('filter by connector name').type('telegram');
         cy.findByText('telegram-source-source').click();
 
         cy.findByText('Next').click();
       },
-      onClose: () => {
+      ON_CLOSE: () => {
         cy.findByText('Cancel').click();
       },
     });
@@ -270,16 +271,16 @@ describe('Connector creation', () => {
         willConnectorsApiFail: false,
       })
     ).withEvents({
-      clickConnector: () => {
+      CLICK_CONNECTOR: () => {
         cy.findByLabelText('filter by connector name').type('telegram');
         cy.findByText('telegram-source-source').click();
         cy.findByText('Next').click();
       },
-      clickKafkaInstance: () => {
+      CLICK_KAFKA_INSTANCE: () => {
         cy.findByText('badwords').click();
         cy.findByText('Next').click();
       },
-      onClose: () => {
+      ON_CLOSE: () => {
         cy.findByText('Cancel').click();
       },
     });
