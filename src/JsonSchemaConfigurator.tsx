@@ -1,8 +1,10 @@
 import Ajv, { ValidateFunction } from 'ajv';
-import React, { FunctionComponent, useEffect, useRef } from 'react';
-import { DeepPartial, useForm } from 'uniforms';
+import React, { FunctionComponent } from 'react';
+import { AutoForm, ValidatedQuickForm } from 'uniforms';
 import { JSONSchemaBridge } from 'uniforms-bridge-json-schema';
-import { AutoFields, AutoForm, ErrorsField } from 'uniforms-patternfly';
+import { AutoFields, SubmitField } from 'uniforms-patternfly';
+
+import { Card, CardBody } from '@patternfly/react-core';
 
 const ajv = new Ajv({
   allErrors: true,
@@ -32,33 +34,59 @@ type JsonSchemaConfiguratorProps = {
 export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorProps> =
   ({ schema, configuration, onChange }) => {
     schema.type = schema.type || 'object';
+    // suppress the experimental steps from the UI for the moment
+    try {
+      delete schema.properties.steps;
+    } catch (e) {}
     const schemaValidator = createValidator(schema);
     const bridge = new JSONSchemaBridge(schema, schemaValidator);
     return (
-      <AutoForm
+      <KameletForm
         schema={bridge}
         model={configuration}
-        autosave
-        autosaveDelay={0}
+        onChangeModel={(model: any) => onChange(model, false)}
+        onSubmit={(model: any) => onChange(model, true)}
+        // autosave
+        // autosaveDelay={0}
       >
         <AutoFields />
-        <ErrorsField />
-        <WizardNext onChange={onChange} />
-      </AutoForm>
+
+        <Card isPlain>
+          <CardBody>
+            <SubmitField value={'Verify configuration'} />
+          </CardBody>
+        </Card>
+        {/* <WizardNext onChange={onChange} /> */}
+      </KameletForm>
     );
   };
 
-const WizardNext: FunctionComponent<{
-  onChange: (data: unknown, isValid: boolean) => void;
-}> = ({ onChange }) => {
-  const { changed, submitted, error, model } = useForm();
-  const isValid = !error;
-  const prevChangeModel = useRef<DeepPartial<unknown>>();
-  useEffect(() => {
-    if (prevChangeModel.current !== model && changed && submitted) {
-      prevChangeModel.current = model;
-      onChange(isValid ? model : undefined, isValid);
+// const WizardNext: FunctionComponent<{
+//   onChange: (data: unknown, isValid: boolean) => void;
+// }> = ({ onChange }) => {
+//   const { changed, submitted, error, model } = useForm();
+//   const isValid = !error;
+//   const prevChangeModel = useRef<DeepPartial<unknown>>();
+//   useEffect(() => {
+//     if (prevChangeModel.current !== model && changed && submitted) {
+//       prevChangeModel.current = model;
+//       onChange(, isValid);
+//     }
+//   }, [prevChangeModel, changed, submitted, isValid, model, onChange]);
+//   return null;
+// };
+
+function Auto(parent: any): any {
+  class _ extends AutoForm.Auto(parent) {
+    static Auto = Auto;
+    onChange(key: string, value: unknown) {
+      if (value === '') return super.onChange(key, undefined);
+
+      super.onChange(key, value);
     }
-  }, [prevChangeModel, changed, submitted, isValid, model, onChange]);
-  return null;
-};
+  }
+
+  return _;
+}
+
+const KameletForm = Auto(ValidatedQuickForm);

@@ -26,7 +26,7 @@ export const ConnectorsTable: FunctionComponent = ({ children }) => {
         <Tr>
           <Th>{t('Name')}</Th>
           <Th>{t('Type')}</Th>
-          <Th>{t('Category')}</Th>
+          {/* <Th>{t('Category')}</Th> */}
           <Th>{t('Status')}</Th>
         </Tr>
       </Thead>
@@ -108,7 +108,7 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
     >
       <Td dataLabel={t('Name')}>{name}</Td>
       <Td dataLabel={t('Type')}>{type}</Td>
-      <Td dataLabel={t('Category')}>{category}</Td>
+      {/* <Td dataLabel={t('Category')}>{category}</Td> */}
       <Td dataLabel={t('Status')}>
         <ConnectorStatus name={name} status={status} />
       </Td>

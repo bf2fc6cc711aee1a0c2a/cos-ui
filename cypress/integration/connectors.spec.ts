@@ -3,13 +3,16 @@
 describe('Connectors page', () => {
   it('should render a list of connectors and poll for updates, the call to action to create a connector works', () => {
     cy.clock();
-    cy.visit('http://localhost:1234');
-
     // first load, we should see a single connector
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'connectors.json',
-    });
+    }).as('initialConnectors');
+
+    cy.visit('http://localhost:1234');
+
     cy.tick(1000);
+    cy.wait('@initialConnectors');
+
     cy.findByText('Managed connectors').should('exist');
     cy.findByText('dbz-postgres-conn').should('exist');
     cy.findAllByText(
@@ -21,12 +24,16 @@ describe('Connectors page', () => {
     // test polling, we should see a second connector
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'connectorsPolling.json',
-    });
+    }).as('polledConnectors');
     cy.tick(5000);
+    cy.wait('@polledConnectors');
+
     cy.findByText('dbz-pg-lb').should('exist');
 
     // further requests should not add more connectors
     cy.tick(5000);
+    cy.wait('@polledConnectors');
+
     cy.findAllByText(
       (_, element) =>
         element?.className === 'pf-c-pagination__total-items' &&
@@ -40,8 +47,8 @@ describe('Connectors page', () => {
     cy.visit('http://localhost:1234');
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'connectorsPolling.json',
-    });
-
+    }).as('connectors');
+    cy.wait('@connectors');
     // should open the drawer with the details of the connector
     cy.findByText('dbz-postgres-conn').click();
     cy.findByText('Connector name').should('exist');
@@ -67,7 +74,8 @@ describe('Connectors page', () => {
     cy.visit('http://localhost:1234');
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'connectorsPolling.json',
-    });
+    }).as('connectors');
+    cy.wait('@connectors');
 
     // should open the actions dropdown
     cy.findByTestId('actions-for-1vLK2A3Gl34hHjAxMj93Ma8Ajh8').click();
@@ -119,16 +127,20 @@ describe('Connectors page', () => {
 
   it('errors on the API while polling are not shown to the user', () => {
     cy.clock();
-    cy.visit('http://localhost:1234');
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'connectors.json',
-    });
+    }).as('connectors');
+    cy.visit('http://localhost:1234');
     cy.tick(1000);
+    cy.wait('@connectors');
+
     cy.findByText('dbz-postgres-conn').should('exist');
+
     cy.intercept(Cypress.env('connectorsApiPath'), {
       statusCode: 404,
-    });
+    }).as('connectorsWithError');
     cy.tick(5000);
+    cy.wait('@connectorsWithError');
     cy.findByText('dbz-postgres-conn').should('exist');
     cy.findAllByText('Something went wrong').should('have.length', 0);
   });
@@ -138,7 +150,8 @@ describe('Connectors page', () => {
     cy.visit('http://localhost:1234');
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'connectorsPolling.json',
-    });
+    }).as('connectors');
+    cy.wait('@connectors');
     cy.tick(1000);
     cy.findByLabelText('filter by connector name').type('dbz-pg-lb');
     cy.findByLabelText('search button for search input').click();
