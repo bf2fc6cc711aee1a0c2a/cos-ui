@@ -16738,15 +16738,15 @@ unified@9.2.0:
     trough "^1.0.0"
     vfile "^4.0.0"
 
-uniforms-bridge-json-schema@3.6.0:
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/uniforms-bridge-json-schema/-/uniforms-bridge-json-schema-3.6.0.tgz#9d216a105076cfc1abc2672b236120afb1ffd1d7"
-  integrity sha512-Y7uxLsE4ReRHSfMhda0PsLd/J/k4BN2oyMFrnTIn9Kn6OUfettAsz9EeGPJSmm6eoIQaZZ4Sr7ua0VKL92rYGA==
+uniforms-bridge-json-schema@3.6.1:
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/uniforms-bridge-json-schema/-/uniforms-bridge-json-schema-3.6.1.tgz#25cb3c47cdd6354038ca510a17e84aa02228b3f7"
+  integrity sha512-YXJwV4bAaQJVL+HaCENP463a4FgZgbQ1KyQ0DfqAB+DbDia9nYE9+RDyuTsX07xKcImhaHyfm1tZsnDhWFy5YQ==
   dependencies:
     invariant "^2.0.0"
     lodash "^4.0.0"
     tslib "^2.2.0"
-    uniforms "^3.6.0"
+    uniforms "^3.6.1"
 
 uniforms-patternfly@4.7.3:
   version "4.7.3"
@@ -16759,10 +16759,10 @@ uniforms-patternfly@4.7.3:
     tslib "^2.2.0"
     uniforms "^3.5.5"
 
-uniforms@3.6.0, uniforms@^3.5.5, uniforms@^3.6.0:
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/uniforms/-/uniforms-3.6.0.tgz#1678b010a68089e82e9f91d9e0a406041ad83825"
-  integrity sha512-6dw1fAvred5arnsogdQYHwv9SNhNH1paw1ARNNK1xfK5smY4m2AU9uf5BZF1zGXMma9cKRa/5zrgnDiyBdzPdA==
+uniforms@3.6.1, uniforms@^3.5.5, uniforms@^3.6.1:
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/uniforms/-/uniforms-3.6.1.tgz#943c3eb8e3a5cb9e1d5c06236572c088f17c7ba0"
+  integrity sha512-ckflfZ9kWIDpkYgKSNL18aFt8G+AP25uhgGcNmDBjKr655kDIDLKJidi/HgQplBgVobLNjkfrMWOIZnWEWsX7g==
   dependencies:
     invariant "^2.0.0"
     lodash "^4.0.0"
