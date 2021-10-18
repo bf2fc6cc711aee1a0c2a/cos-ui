@@ -72,7 +72,7 @@
     "cssnano": "5.0.8",
     "cypress": "8.6.0",
     "dotenv-webpack": "7.0.3",
-    "eslint": "8.0.1",
+    "eslint": "7.32.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-config-react-app": "6.0.0",
     "eslint-plugin-flowtype": "6.1.0",
