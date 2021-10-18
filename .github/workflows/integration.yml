@@ -3,12 +3,24 @@ on: [pull_request]
 jobs:
   cypress:
     name: Cypress
-    runs-on: ubuntu-latest
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node: ['16.6.2']
+        os: [ubuntu-latest]
+
     # Cypress Docker image with Chrome v78
     # and Firefox v70 pre-installed
     container: cypress/browsers:latest
+    
     steps:
       - uses: actions/checkout@v2
+
+      - name: Use Node ${{ matrix.node }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
 
       - name: Cache node modules
         id: yarn-cache
