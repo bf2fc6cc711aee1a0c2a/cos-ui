@@ -13,7 +13,7 @@ import { PAGINATED_MACHINE_ID } from './constants';
 
 type Context = {
   accessToken: () => Promise<string>;
-  basePath: string;
+  connectorsApiBasePath: string;
   response?: ApiSuccessResponse<ConnectorType>;
   selectedConnector?: ConnectorType;
   error?: Object;
@@ -22,7 +22,7 @@ type Context = {
 const model = createModel(
   {
     accessToken: () => Promise.resolve(''),
-    basePath: '',
+    connectorsApiBasePath: '',
     response: undefined,
     selectedConnector: undefined,
     error: undefined,

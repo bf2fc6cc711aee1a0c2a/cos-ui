@@ -19,7 +19,8 @@ import { reviewMachine } from './StepReview.machine';
 
 type Context = {
   accessToken: () => Promise<string>;
-  basePath: string;
+  connectorsApiBasePath: string;
+  kafkaManagementApiBasePath: string;
   selectedKafkaInstance?: KafkaRequest;
   selectedCluster?: ConnectorCluster;
   selectedConnector?: ConnectorType;
@@ -64,7 +65,7 @@ export const creationWizardMachine = model.createMachine(
           src: connectorTypesMachine,
           data: (context) => ({
             accessToken: context.accessToken,
-            basePath: context.basePath,
+            connectorsApiBasePath: context.connectorsApiBasePath,
             selectedConnector: context.selectedConnector,
           }),
           onDone: {
@@ -103,7 +104,7 @@ export const creationWizardMachine = model.createMachine(
           src: kafkasMachine,
           data: (context) => ({
             accessToken: context.accessToken,
-            basePath: context.basePath,
+            connectorsApiBasePath: context.connectorsApiBasePath,
             selectedInstance: context.selectedKafkaInstance,
             request: {
               page: 1,
@@ -145,7 +146,7 @@ export const creationWizardMachine = model.createMachine(
           src: clustersMachine,
           data: (context) => ({
             accessToken: context.accessToken,
-            basePath: context.basePath,
+            connectorsApiBasePath: context.connectorsApiBasePath,
             selectedCluster: context.selectedCluster,
           }),
           onDone: {
@@ -261,7 +262,8 @@ export const creationWizardMachine = model.createMachine(
           src: reviewMachine,
           data: (context) => ({
             accessToken: context.accessToken,
-            basePath: context.basePath,
+            connectorsApiBasePath: context.connectorsApiBasePath,
+            kafkaManagementApiBasePath: context.kafkaManagementApiBasePath,
             kafka: context.selectedKafkaInstance,
             cluster: context.selectedCluster,
             connectorType: context.selectedConnector,

@@ -14,7 +14,7 @@ import { PAGINATED_MACHINE_ID } from './constants';
 
 type Context = {
   accessToken: () => Promise<string>;
-  basePath: string;
+  kafkaManagementBasePath: string;
   response?: PaginatedApiResponse<KafkaRequest>;
   selectedInstance?: KafkaRequest;
   error?: Object;
@@ -23,7 +23,7 @@ type Context = {
 const model = createModel(
   {
     accessToken: () => Promise.resolve(''),
-    basePath: '',
+    kafkaManagementBasePath: '',
     instances: undefined,
     selectedInstance: undefined,
     error: undefined,

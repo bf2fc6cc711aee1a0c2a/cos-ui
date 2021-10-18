@@ -47,7 +47,7 @@ const CreateConnectorWizardMachineService =
 
 type CreateConnectorWizardProviderProps = {
   accessToken: () => Promise<string>;
-  basePath: string;
+  connectorsApiBasePath: string;
   fetchConfigurator: (
     connector: ConnectorType
   ) => Promise<ConnectorConfiguratorResponse>;
@@ -55,7 +55,13 @@ type CreateConnectorWizardProviderProps = {
 };
 
 export const CreateConnectorWizardProvider: FunctionComponent<CreateConnectorWizardProviderProps> =
-  ({ children, accessToken, basePath, fetchConfigurator, onSave }) => {
+  ({
+    children,
+    accessToken,
+    connectorsApiBasePath,
+    fetchConfigurator,
+    onSave,
+  }) => {
     const makeConfiguratorLoaderMachine = useCallback(
       () =>
         configuratorLoaderMachine.withConfig({
@@ -70,7 +76,7 @@ export const CreateConnectorWizardProvider: FunctionComponent<CreateConnectorWiz
       devTools: true,
       context: {
         accessToken,
-        basePath,
+        connectorsApiBasePath,
         onSave,
       },
       services: {

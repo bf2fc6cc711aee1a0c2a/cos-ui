@@ -16,7 +16,7 @@ import { PAGINATED_MACHINE_ID } from './constants';
 
 type Context = {
   accessToken: () => Promise<string>;
-  basePath: string;
+  connectorsApiBasePath: string;
   selectedConnector?: Connector;
   onError?: (error: string) => void;
 };
@@ -24,7 +24,7 @@ type Context = {
 const model = createModel(
   {
     accessToken: () => Promise.resolve(''),
-    basePath: '',
+    connectorsApiBasePath: '',
     selectedConnector: undefined,
   } as Context,
   {
@@ -81,7 +81,7 @@ export const connectorsPageMachine = model.createMachine(
                     spawn(
                       makeConnectorMachine({
                         accessToken: context.accessToken,
-                        basePath: context.basePath,
+                        connectorsApiBasePath: context.connectorsApiBasePath,
                         connector,
                       }),
                       `connector-${connector.id}`

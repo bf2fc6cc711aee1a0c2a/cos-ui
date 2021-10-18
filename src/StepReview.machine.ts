@@ -12,7 +12,8 @@ import { saveConnector, UserProvidedServiceAccount } from './api';
 
 type Context = {
   accessToken: () => Promise<string>;
-  basePath: string;
+  connectorsApiBasePath: string;
+  kafkaManagementApiBasePath: string;
 
   kafka: KafkaRequest;
   cluster: ConnectorCluster;
@@ -141,7 +142,8 @@ export const reviewMachine = model.createMachine(
           src: (context) =>
             saveConnector({
               accessToken: context.accessToken,
-              basePath: context.basePath,
+              connectorsApiBasePath: context.connectorsApiBasePath,
+              kafkaManagementApiBasePath: context.kafkaManagementApiBasePath,
               kafka: context.kafka,
               cluster: context.cluster,
               connectorType: context.connectorType,
