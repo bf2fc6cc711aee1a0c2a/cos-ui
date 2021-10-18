@@ -145,7 +145,7 @@ function runTheTests(testModel: TestModel<any, any>) {
           // const onClose = jest.fn();
           // const onSave = jest.fn();
 
-          cy.visit('http://localhost:1234/create-connector').then(path.test);
+          cy.visit(Cypress.env('wizard')).then(path.test);
         });
       });
     });

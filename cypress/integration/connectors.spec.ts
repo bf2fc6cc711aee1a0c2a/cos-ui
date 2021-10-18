@@ -8,7 +8,7 @@ describe('Connectors page', () => {
       fixture: 'connectors.json',
     }).as('initialConnectors');
 
-    cy.visit('http://localhost:1234');
+    cy.visit(Cypress.env('homepage'));
 
     cy.tick(1000);
     cy.wait('@initialConnectors');
@@ -44,10 +44,10 @@ describe('Connectors page', () => {
   });
 
   it('opens the details for a connector', () => {
-    cy.visit('http://localhost:1234');
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'connectorsPolling.json',
     }).as('connectors');
+    cy.visit(Cypress.env('homepage'));
     cy.wait('@connectors');
     // should open the drawer with the details of the connector
     cy.findByText('dbz-postgres-conn').click();
@@ -71,10 +71,10 @@ describe('Connectors page', () => {
   });
 
   it('allows actions to be triggered', () => {
-    cy.visit('http://localhost:1234');
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'connectorsPolling.json',
     }).as('connectors');
+    cy.visit(Cypress.env('homepage'));
     cy.wait('@connectors');
 
     // should open the actions dropdown
@@ -84,44 +84,51 @@ describe('Connectors page', () => {
     cy.findByText('Delete').should('exist');
 
     // assert that the PATCH calls gets fired with the right payload
-    cy.intercept(
-      'PATCH',
-      `${Cypress.env('connectorsActionApiPath')}1vLK2A3Gl34hHjAxMj93Ma8Ajh8`
-    ).as('stopPatch');
-    cy.findByText('Start').should('have.attr', 'aria-disabled', 'true');
-    cy.findByText('Stop').click();
-    cy.wait('@stopPatch');
-    cy.get('@stopPatch').should((req) => {
-      expect(req.request.body).to.deep.equal({ desired_state: 'stopped' });
+    cy.fixture('connectorsPolling.json').then((response) => {
+      cy.intercept(
+        'PATCH',
+        `${Cypress.env('connectorsActionApiPath')}1vLK2A3Gl34hHjAxMj93Ma8Ajh8`,
+        response.items.find(
+          (item: any) => item.id === '1vLK2A3Gl34hHjAxMj93Ma8Ajh8'
+        )
+      ).as('stopPatch');
+      cy.intercept(
+        'PATCH',
+        `${Cypress.env('connectorsActionApiPath')}1vJTP1djNdu9Gl3hZjWl8nofYtk`,
+        response.items.find(
+          (item: any) => item.id === '1vJTP1djNdu9Gl3hZjWl8nofYtk'
+        )
+      ).as('startPatch');
     });
 
+    cy.findByText('Start').should('have.attr', 'aria-disabled', 'true');
+    cy.findByText('Stop').click();
+    cy.wait('@stopPatch')
+      .its('request.body')
+      .should('deep.equal', { desired_state: 'stopped' });
+
     cy.findByTestId('actions-for-1vJTP1djNdu9Gl3hZjWl8nofYtk').click();
-    cy.intercept(
-      'PATCH',
-      `${Cypress.env('connectorsActionApiPath')}1vJTP1djNdu9Gl3hZjWl8nofYtk`
-    ).as('startPatch');
     cy.findByText('Stop').should('have.attr', 'aria-disabled', 'true');
     cy.findByText('Start').click();
-    cy.wait('@startPatch');
-    cy.get('@startPatch').should((req) => {
-      expect(req.request.body).to.deep.equal({ desired_state: 'ready' });
-    });
+    cy.wait('@startPatch')
+      .its('request.body')
+      .should('deep.equal', { desired_state: 'ready' });
   });
 
   it('shows an empty state with no connectors, the call to action to create a connector works', () => {
-    cy.visit('http://localhost:1234');
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'noConnectors.json',
     });
+    cy.visit(Cypress.env('homepage'));
     cy.findByText('Welcome to Managed Connectors').click();
     cy.findAllByText('Create Connector').should('exist');
   });
 
   it('shows an empty state with an API error and shows an error notification', () => {
-    cy.visit('http://localhost:1234');
     cy.intercept(Cypress.env('connectorsApiPath'), {
       statusCode: 404,
     });
+    cy.visit(Cypress.env('homepage'));
     cy.findByText('Something went wrong').should('exist');
   });
 
@@ -130,7 +137,7 @@ describe('Connectors page', () => {
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'connectors.json',
     }).as('connectors');
-    cy.visit('http://localhost:1234');
+    cy.visit(Cypress.env('homepage'));
     cy.tick(1000);
     cy.wait('@connectors');
 
@@ -147,10 +154,10 @@ describe('Connectors page', () => {
 
   xit('can search for a connector', () => {
     cy.clock();
-    cy.visit('http://localhost:1234');
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'connectorsPolling.json',
     }).as('connectors');
+    cy.visit(Cypress.env('homepage'));
     cy.wait('@connectors');
     cy.tick(1000);
     cy.findByLabelText('filter by connector name').type('dbz-pg-lb');
