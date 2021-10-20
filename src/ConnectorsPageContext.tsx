@@ -26,14 +26,14 @@ const ConnectorsPageContext =
   createContext<ConnectorsMachineInterpretType | null>(null);
 type ConnectorsPageProviderPropsType = {
   accessToken: () => Promise<string>;
-  basePath: string;
+  connectorsApiBasePath: string;
   onError: (error: string) => void;
 };
 
 export const ConnectorsPageProvider: FunctionComponent<ConnectorsPageProviderPropsType> =
-  ({ children, accessToken, basePath, onError }) => {
+  ({ children, accessToken, connectorsApiBasePath, onError }) => {
     const service = useInterpret(connectorsPageMachine, {
-      context: { accessToken, basePath, onError },
+      context: { accessToken, connectorsApiBasePath, onError },
       devTools: true,
     });
     return (

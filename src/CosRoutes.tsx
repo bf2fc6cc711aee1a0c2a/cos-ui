@@ -10,12 +10,14 @@ import { CreateConnectorPage } from './CreateConnectorPage';
 
 type CosRoutesProps = {
   getToken: () => Promise<string>;
-  apiBasepath: string;
+  connectorsApiBasePath: string;
+  kafkaManagementApiBasePath: string;
 };
 
 export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
   getToken,
-  apiBasepath,
+  connectorsApiBasePath,
+  kafkaManagementApiBasePath,
 }) => {
   const { t } = useTranslation();
   const alert = useAlert();
@@ -34,7 +36,11 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
     goToConnectorsList();
   }, [alert, goToConnectorsList, t]);
   return (
-    <CosContextProvider getToken={getToken} basePath={apiBasepath}>
+    <CosContextProvider
+      getToken={getToken}
+      connectorsApiBasePath={connectorsApiBasePath}
+      kafkaManagementApiBasePath={kafkaManagementApiBasePath}
+    >
       <Switch>
         <Route path={'/'} exact>
           <ConnectedConnectorsPage onCreateConnector={goToCreateConnector} />

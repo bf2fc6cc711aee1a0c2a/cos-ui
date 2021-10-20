@@ -11,14 +11,14 @@ import { deleteConnector, startConnector, stopConnector } from './api';
 
 type Context = {
   accessToken: () => Promise<string>;
-  basePath: string;
+  connectorsApiBasePath: string;
   connector: Connector;
 };
 
 const model = createModel(
   {
     accessToken: () => Promise.resolve(''),
-    basePath: '',
+    connectorsApiBasePath: '',
     connector: {},
   } as Context,
   {
@@ -80,7 +80,7 @@ export const connectorMachine = model.createMachine(
           src: (context) =>
             startConnector({
               accessToken: context.accessToken,
-              basePath: context.basePath,
+              connectorsApiBasePath: context.connectorsApiBasePath,
               connector: context.connector,
             }),
         },
@@ -101,7 +101,7 @@ export const connectorMachine = model.createMachine(
           src: (context) =>
             stopConnector({
               accessToken: context.accessToken,
-              basePath: context.basePath,
+              connectorsApiBasePath: context.connectorsApiBasePath,
               connector: context.connector,
             }),
         },
@@ -122,7 +122,7 @@ export const connectorMachine = model.createMachine(
           src: (context) =>
             deleteConnector({
               accessToken: context.accessToken,
-              basePath: context.basePath,
+              connectorsApiBasePath: context.connectorsApiBasePath,
               connector: context.connector,
             }),
         },

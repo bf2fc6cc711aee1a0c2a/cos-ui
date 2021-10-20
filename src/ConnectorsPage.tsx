@@ -30,7 +30,7 @@ export const ConnectedConnectorsPage: FunctionComponent<ConnectedConnectorsPageP
   ({ onCreateConnector }) => {
     const { t } = useTranslation();
     const alert = useAlert();
-    const { basePath, getToken } = useCos();
+    const { connectorsApiBasePath, getToken } = useCos();
     const onError = useCallback(
       (description: string) => {
         alert?.addAlert({
@@ -46,7 +46,7 @@ export const ConnectedConnectorsPage: FunctionComponent<ConnectedConnectorsPageP
     return (
       <ConnectorsPageProvider
         accessToken={getToken}
-        basePath={basePath}
+        connectorsApiBasePath={connectorsApiBasePath}
         onError={onError}
       >
         <ConnectorsPage onCreateConnector={onCreateConnector} />

@@ -9,19 +9,27 @@ type AppContextType = {
   getToken: () => Promise<string>;
   /**
    * The base path that gets prepended to all API urls.
-   * Eg. A `basePath` of `http://my.api.com/something` for an API `/my-api` will
+   * Eg. A `connectorsApiBasePath` of `http://my.api.com/something` for an API `/my-api` will
    * generate an URL like `http://my.api.com/something/my-api`
    */
-  basePath: string;
+  connectorsApiBasePath: string;
+  kafkaManagementApiBasePath: string;
 };
 const CosContext = createContext<AppContextType | null>(null);
 
 export const CosContextProvider: FunctionComponent<AppContextType> = ({
   getToken,
-  basePath,
+  connectorsApiBasePath,
+  kafkaManagementApiBasePath,
   children,
 }) => (
-  <CosContext.Provider value={{ getToken, basePath }}>
+  <CosContext.Provider
+    value={{
+      getToken,
+      connectorsApiBasePath,
+      kafkaManagementApiBasePath,
+    }}
+  >
     {children}
   </CosContext.Provider>
 );

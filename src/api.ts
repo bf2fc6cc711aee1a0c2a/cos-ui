@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { CancelTokenSource } from 'axios';
 
 import { Sender } from 'xstate';
 
@@ -11,13 +11,17 @@ import {
   ConnectorType,
   ConnectorTypesApi,
 } from '@rhoas/connector-management-sdk';
-import { KafkaRequest, DefaultApi } from '@rhoas/kafka-management-sdk';
+import {
+  KafkaRequest,
+  DefaultApi,
+  SecurityApi,
+} from '@rhoas/kafka-management-sdk';
 
 import { ApiCallback } from './PaginatedResponse.machine';
 
 type CommonApiProps = {
   accessToken: () => Promise<string>;
-  basePath: string;
+  connectorsApiBasePath: string;
 };
 
 type ConnectorApiProps = {
@@ -26,19 +30,19 @@ type ConnectorApiProps = {
 
 export const startConnector = ({
   accessToken,
-  basePath,
+  connectorsApiBasePath,
   connector,
 }: ConnectorApiProps) => {
-  const apisService = new ConnectorsApi(
+  const connectorsAPI = new ConnectorsApi(
     new Configuration({
       accessToken,
-      basePath,
+      basePath: connectorsApiBasePath,
     })
   );
   return (callback: Sender<any>) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
-    apisService
+    connectorsAPI
       .patchConnector(
         connector.id!,
         {
@@ -74,19 +78,19 @@ export const startConnector = ({
 
 export const stopConnector = ({
   accessToken,
-  basePath,
+  connectorsApiBasePath,
   connector,
 }: ConnectorApiProps) => {
-  const apisService = new ConnectorsApi(
+  const connectorsAPI = new ConnectorsApi(
     new Configuration({
       accessToken,
-      basePath,
+      basePath: connectorsApiBasePath,
     })
   );
   return (callback: Sender<any>) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
-    apisService
+    connectorsAPI
       .patchConnector(
         connector.id!,
         {
@@ -122,19 +126,19 @@ export const stopConnector = ({
 
 export const deleteConnector = ({
   accessToken,
-  basePath,
+  connectorsApiBasePath,
   connector,
 }: ConnectorApiProps) => {
-  const apisService = new ConnectorsApi(
+  const connectorsAPI = new ConnectorsApi(
     new Configuration({
       accessToken,
-      basePath,
+      basePath: connectorsApiBasePath,
     })
   );
   return (callback: Sender<any>) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
-    apisService
+    connectorsAPI
       .deleteConnector(connector.id!, undefined, {
         cancelToken: source.token,
       })
@@ -164,12 +168,12 @@ export const deleteConnector = ({
 
 export const fetchConnectors = ({
   accessToken,
-  basePath,
+  connectorsApiBasePath,
 }: CommonApiProps): ApiCallback<Connector, {}> => {
-  const apisService = new ConnectorsApi(
+  const connectorsAPI = new ConnectorsApi(
     new Configuration({
       accessToken,
-      basePath,
+      basePath: connectorsApiBasePath,
     })
   );
   return (request, onSuccess, onError) => {
@@ -177,7 +181,7 @@ export const fetchConnectors = ({
     const source = CancelToken.source();
     const { page, size /*, name = '' */ } = request;
     // const query = name.length > 0 ? `name LIKE ${name}` : undefined;
-    apisService
+    connectorsAPI
       .listConnectors(`${page}`, `${size}`, undefined, {
         cancelToken: source.token,
       })
@@ -202,19 +206,19 @@ export const fetchConnectors = ({
 
 export const fetchClusters = ({
   accessToken,
-  basePath,
+  connectorsApiBasePath,
 }: CommonApiProps): ApiCallback<ConnectorCluster, {}> => {
-  const apisService = new ConnectorClustersApi(
+  const connectorsAPI = new ConnectorClustersApi(
     new Configuration({
       accessToken,
-      basePath,
+      basePath: connectorsApiBasePath,
     })
   );
   return (request, onSuccess, onError) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     const { page, size } = request;
-    apisService
+    connectorsAPI
       .listConnectorClusters(`${page}`, `${size}`, {
         cancelToken: source.token,
       })
@@ -244,12 +248,12 @@ export type ConnectorTypesQuery = {
 
 export const fetchConnectorTypes = ({
   accessToken,
-  basePath,
+  connectorsApiBasePath,
 }: CommonApiProps): ApiCallback<ConnectorType, ConnectorTypesQuery> => {
-  const apisService = new ConnectorTypesApi(
+  const connectorsAPI = new ConnectorTypesApi(
     new Configuration({
       accessToken,
-      basePath,
+      basePath: connectorsApiBasePath,
     })
   );
   return (request, onSuccess, onError) => {
@@ -257,7 +261,7 @@ export const fetchConnectorTypes = ({
     const source = CancelToken.source();
     const { page, size, query } = request;
     const { name, categories = [] } = query || {};
-    apisService
+    connectorsAPI
       .listConnectorTypes('1', '1000', {
         cancelToken: source.token,
       })
@@ -296,6 +300,11 @@ export const fetchConnectorTypes = ({
   };
 };
 
+type KafkaManagementApiProps = {
+  accessToken: () => Promise<string>;
+  kafkaManagementBasePath: string;
+};
+
 export type KafkasQuery = {
   name?: string;
   owner?: string;
@@ -306,14 +315,12 @@ export type KafkasQuery = {
 
 export const fetchKafkaInstances = ({
   accessToken,
-  basePath,
-}: CommonApiProps): ApiCallback<KafkaRequest, KafkasQuery> => {
-  // TODO: remove after demo
-  basePath = 'https://api.openshift.com';
-  const apisService = new DefaultApi(
+  kafkaManagementBasePath,
+}: KafkaManagementApiProps): ApiCallback<KafkaRequest, KafkasQuery> => {
+  const connectorsAPI = new DefaultApi(
     new Configuration({
       accessToken,
-      basePath,
+      basePath: kafkaManagementBasePath,
     })
   );
   return (request, onSuccess, onError) => {
@@ -347,7 +354,7 @@ export const fetchKafkaInstances = ({
       .filter(Boolean)
       .map((s) => `(${s})`)
       .join(' AND ');
-    apisService
+    connectorsAPI
       .getKafkas(
         `${page}`,
         `${size}`,
@@ -390,11 +397,13 @@ export type SaveConnectorProps = {
 
   name: string;
   userServiceAccount?: UserProvidedServiceAccount;
+  kafkaManagementApiBasePath: string;
 } & CommonApiProps;
 
 export const saveConnector = ({
   accessToken,
-  basePath,
+  connectorsApiBasePath,
+  kafkaManagementApiBasePath,
   kafka,
   cluster,
   connectorType,
@@ -402,46 +411,77 @@ export const saveConnector = ({
   name,
   userServiceAccount,
 }: SaveConnectorProps) => {
-  const apisService = new ConnectorsApi(
+  const connectorsAPI = new ConnectorsApi(
     new Configuration({
       accessToken,
-      basePath,
+      basePath: connectorsApiBasePath,
     })
   );
+  const securityAPI = new SecurityApi(
+    new Configuration({
+      accessToken,
+      basePath: kafkaManagementApiBasePath,
+    })
+  );
+
+  const getOrCreateServiceAccount = async (source: CancelTokenSource) => {
+    if (userServiceAccount) return Promise.resolve(userServiceAccount);
+
+    // the passed service account info is undefined, we have to create a new SA
+    // automatically on behalf of the user
+    const response = await securityAPI.createServiceAccount(
+      {
+        name: `connector-${connectorType.id?.replaceAll(
+          /[_\.]/g,
+          '-'
+        )}-${Date.now()}`,
+      },
+      {
+        cancelToken: source.token,
+      }
+    );
+    return {
+      clientId: response.data.client_id!,
+      clientSecret: response.data.client_secret!,
+    };
+  };
+
   return (callback: Sender<any>) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     const async = true;
-    const connector: Connector = {
-      kind: 'Connector',
-      metadata: {
-        name,
-        kafka_id: kafka.id,
-      },
-      deployment_location: {
-        kind: 'addon',
-        cluster_id: cluster.id,
-      },
-      connector_type_id: connectorType.id,
-      kafka: {
-        bootstrap_server: kafka.bootstrap_server_host || 'demo',
-        client_id: userServiceAccount?.clientId,
-        client_secret: userServiceAccount?.clientSecret,
-      },
-      connector_spec: configuration,
-    };
-    apisService
-      .createConnector(async, connector, {
-        cancelToken: source.token,
-      })
-      .then(() => {
-        callback({ type: 'success' });
-      })
-      .catch((error) => {
-        if (!axios.isCancel(error)) {
-          callback({ type: 'failure', message: error.response.data.reason });
-        }
-      });
+    getOrCreateServiceAccount(source).then(({ clientId, clientSecret }) => {
+      const connector: Connector = {
+        kind: 'Connector',
+        metadata: {
+          name,
+          kafka_id: kafka.id,
+        },
+        deployment_location: {
+          kind: 'addon',
+          cluster_id: cluster.id,
+        },
+        connector_type_id: connectorType.id,
+        kafka: {
+          bootstrap_server: kafka.bootstrap_server_host || 'demo',
+          client_id: clientId,
+          client_secret: clientSecret,
+        },
+        connector_spec: configuration,
+      };
+      connectorsAPI
+        .createConnector(async, connector, {
+          cancelToken: source.token,
+        })
+        .then(() => {
+          callback({ type: 'success' });
+        })
+        .catch((error) => {
+          if (!axios.isCancel(error)) {
+            callback({ type: 'failure', message: error.response.data.reason });
+          }
+        });
+    });
     return () => {
       source.cancel('Operation canceled by the user.');
     };

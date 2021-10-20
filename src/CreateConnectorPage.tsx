@@ -27,7 +27,7 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
     const { t } = useTranslation();
     const config = useConfig();
     const basename = useBasename();
-    const { basePath, getToken } = useCos();
+    const { connectorsApiBasePath, getToken } = useCos();
     const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
     const openLeaveConfirm = () => setAskForLeaveConfirm(true);
     const closeLeaveConfirm = () => setAskForLeaveConfirm(false);
@@ -51,7 +51,7 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
         >
           <CreateConnectorWizardProvider
             accessToken={getToken}
-            basePath={basePath}
+            connectorsApiBasePath={connectorsApiBasePath}
             fetchConfigurator={(connector) =>
               fetchConfigurator(connector, config?.cos.configurators || {})
             }

@@ -14,7 +14,7 @@ export default {
     (Story) => (
       <ConnectorsPageProvider
         accessToken={() => Promise.resolve('')}
-        basePath={'https://dummy.server'}
+        connectorsApiBasePath={'https://dummy.server'}
         onError={() => false}
       >
         <Story />
