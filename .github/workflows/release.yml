@@ -18,29 +18,29 @@ jobs:
           version: 16.6.2
 
       - name: Cache node modules
-        id: lerna-yarn-cache
+        id: lerna-npm-cache
         uses: actions/cache@v2
         env:
             cache-name: cache-node-modules-v2
         with:
             path: |
-                $(yarn cache dir)
+                ~/.npm
                 ~/.cache/Cypress
                 node_modules
                 */*/node_modules
-            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
             restore-keys: |
                 ${{ runner.os }}-build-${{ env.cache-name }}-
                 ${{ runner.os }}-build-
                 ${{ runner.os }}-
       - name: Install dependencies if needed.
-        if: steps.lerna-yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install --ignore-platform --frozen-lockfile
+        if: steps.lerna-npm-cache.outputs.cache-hit != 'true'
+        run: npm ci
 
       - name: Create Release Pull Request or Publish to npm
         uses: changesets/action@master
         with:
-          publish: yarn release
+          publish: npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -49,8 +49,8 @@ jobs:
         if: steps.changesets.outputs.published != 'true'
         run: |
           git checkout master
-          yarn version:canary
-          yarn release:canary
+          npm run version:canary
+          npm run release:canary
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

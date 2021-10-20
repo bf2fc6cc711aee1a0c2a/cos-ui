@@ -1,7 +1,6 @@
 module.exports = {
+  parser: '@typescript-eslint/parser',
   extends: [
-    'react-app',
-
     'prettier', // Enables eslint-plugin-prettier and eslint-config-prettier. This will display prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
 
     'plugin:jest-dom/recommended',
@@ -9,10 +8,10 @@ module.exports = {
     'plugin:xstate/all',
   ],
   plugins: [
+    '@typescript-eslint',
     'react-hooks',
     'jest-dom',
     'testing-library',
-    'unused-imports',
     'xstate',
   ],
   settings: {
@@ -33,15 +32,5 @@ module.exports = {
   rules: {
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
-    'unused-imports/no-unused-imports': 'error',
-    'unused-imports/no-unused-vars': [
-      'warn',
-      {
-        vars: 'all',
-        varsIgnorePattern: '^_',
-        args: 'after-used',
-        argsIgnorePattern: '^_',
-      },
-    ],
   },
 };

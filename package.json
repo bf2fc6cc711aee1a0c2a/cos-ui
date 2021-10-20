@@ -1,5 +1,6 @@
 {
   "name": "cos-ui",
+  "version": "0.0.1",
   "federatedModuleName": "cos",
   "private": true,
   "dependencies": {
@@ -74,8 +75,6 @@
     "dotenv-webpack": "7.0.3",
     "eslint": "7.32.0",
     "eslint-config-prettier": "8.3.0",
-    "eslint-config-react-app": "6.0.0",
-    "eslint-plugin-flowtype": "6.1.1",
     "eslint-plugin-import": "2.25.2",
     "eslint-plugin-jest-dom": "3.9.2",
     "eslint-plugin-jsx-a11y": "6.4.1",
@@ -83,7 +82,6 @@
     "eslint-plugin-react": "7.26.1",
     "eslint-plugin-react-hooks": "4.2.0",
     "eslint-plugin-testing-library": "4.12.4",
-    "eslint-plugin-unused-imports": "1.1.5",
     "eslint-plugin-xstate": "0.13.1",
     "file-loader": "6.2.0",
     "html-webpack-plugin": "5.4.0",
@@ -106,7 +104,6 @@
     "serve": "12.0.1",
     "source-map-loader": "3.0.0",
     "storybook-fixtures": "0.10.0",
-    "storybook-xstate-addon": "1.1.6",
     "style-loader": "3.3.0",
     "svg-url-loader": "7.1.1",
     "ts-jest": "27.0.7",
@@ -118,22 +115,19 @@
     "webpack-cli": "4.9.1",
     "webpack-dev-server": "4.3.1"
   },
-  "resolutions": {
-    "uniforms": "3.6.2"
-  },
   "scripts": {
     "build": "FEDERATE=1 webpack --mode production --config webpack.prod.js",
     "test": "jest test/*.test.ts*",
     "start": "DEMO_APP=true webpack serve --https --host prod.foo.redhat.com --port 1337 --hot --config webpack.dev.js",
     "start:federate": "webpack serve --host localhost --port 9002 --config webpack.dev.js",
-    "start:e2e": "E2E_APP=true webpack --mode production --config webpack.prod.js && yarn serve",
+    "start:e2e": "E2E_APP=true webpack --mode production --config webpack.prod.js && npm run serve",
     "serve": "serve dist -s -p 3001",
     "clean": "rimraf dist",
     "lint": "eslint --ext .ts,.tsx,.js ./src ./test",
-    "lint:fix": "yarn lint --fix",
+    "lint:fix": "npm run lint --fix",
     "format": "prettier --check 'src'",
     "format:fix": "prettier --write --ignore-unknown 'src'",
-    "prepublish": "yarn build",
+    "prepublish": "npm run build",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
     "changeset": "changeset",
@@ -141,13 +135,13 @@
     "version:canary": "changeset version --snapshot canary",
     "release:canary": "changeset publish --tag canary",
     "i18n": "i18next './src/**/*.{ts,tsx}' [-oc] -c './i18next-parser.config.js' -o './locales/$LOCALE/$NAMESPACE.json'",
-    "lint-staged": "yarn lint:fix && yarn format:fix",
+    "lint-staged": "npm run lint:fix && npm run format:fix",
     "storybook": "start-storybook -s public -p 6006",
     "build-storybook": "build-storybook -s public",
     "chromatic": "npx chromatic"
   },
   "lint-staged": {
-    "src/**/*.ts*": "yarn lint-staged"
+    "src/**/*.ts*": "npm run lint-staged"
   },
   "msw": {
     "workerDirectory": "public"

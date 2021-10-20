@@ -20,34 +20,34 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Cache node modules
-        id: yarn-cache
+        id: npm-cache
         uses: actions/cache@v2
         env:
             cache-name: cache-node-modules-v2
         with:
             path: |
-                $(yarn cache dir)
+                ~/.npm
                 ~/.cache/Cypress
                 node_modules
                 */*/node_modules
-            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
             restore-keys: |
                 ${{ runner.os }}-build-${{ env.cache-name }}-
                 ${{ runner.os }}-build-
                 ${{ runner.os }}-
       - name: Install dependencies if needed.
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install --ignore-platform --frozen-lockfile
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm ci
 
       - name: Build if cache has been restored.
-        if: steps.yarn-cache.outputs.cache-hit == 'true'
-        run: yarn build
+        if: steps.npm-cache.outputs.cache-hit == 'true'
+        run: npm run build
 
       - name: Test
-        run: yarn test --ci --coverage --maxWorkers=2
+        run: npm run test --ci --coverage --maxWorkers=2
 
       - name: Lint
-        run: yarn lint
+        run: npm run lint
 
       - name: Format
-        run: yarn format
+        run: npm run format

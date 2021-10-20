@@ -6,14 +6,11 @@ dist
 .idea
 .vscode
 
-package-lock.json
 yarn.lock
 !/yarn.lock
 
 .yalc
 yalc.lock
-
-./openapi/merged-openapi.yaml
 
 cypress/videos
 cypress/screenshots
