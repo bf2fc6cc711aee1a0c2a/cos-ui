@@ -63,7 +63,7 @@
     "@xstate/inspect": "0.5.0",
     "autoprefixer": "10.3.7",
     "babel-eslint": "10.1.0",
-    "babel-loader": "8.2.2",
+    "babel-loader": "8.2.3",
     "bundle-loader": "0.5.6",
     "chai": "4.3.4",
     "chromatic": "6.0.4",
