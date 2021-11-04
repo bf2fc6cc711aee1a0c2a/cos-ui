@@ -53,6 +53,8 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
 
         <Card isPlain>
           <CardBody>
+            {/*
+            // @ts-expect-error */}
             <SubmitField value={'Verify configuration'} />
           </CardBody>
         </Card>

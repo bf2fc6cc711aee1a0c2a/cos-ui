@@ -54,7 +54,6 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
   connectorId,
   name,
   type,
-  category,
   status,
   isSelected,
   canStart,
