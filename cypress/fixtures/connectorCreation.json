@@ -1,0 +1,29 @@
+{
+  "id": "xyz",
+  "kind": "Connector",
+  "href": "/api/connector_mgmt/v1/kafka_connectors/xyz",
+  "metadata": {
+    "kafka_id": "c64kfqla5bkhm18frpdg",
+    "owner": "rforina_kafka_supporting",
+    "name": "ssss",
+    "created_at": "2021-11-08T15:53:50.935587Z",
+    "updated_at": "2021-11-08T15:53:50.932402Z",
+    "resource_version": 291
+  },
+  "deployment_location": {
+    "kind": "addon",
+    "cluster_id": "zzzz"
+  },
+  "kafka": {
+    "bootstrap_server": "demo",
+    "client_id": "srvc-acct-xyz"
+  },
+  "connector_type_id": "log_sink_0.1",
+  "connector_spec": {
+    "connector": { "multiLine": true },
+    "kafka": { "topic": "ddd" }
+  },
+  "channel": "stable",
+  "desired_state": "ready",
+  "status": "assigning"
+}
