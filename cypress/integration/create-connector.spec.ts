@@ -114,9 +114,7 @@ const testMachine = Machine({
       type: 'final',
       meta: {
         TEST: () => {
-          // await waitForElementToBeRemoved(() =>
-          //   screen.queryByText('Create connector')
-          // );
+          cy.findByText('wuzard.creation-success').should('exist');
         },
       },
       on: {
@@ -164,6 +162,12 @@ describe('Connector creation', () => {
       cy.intercept(Cypress.env('clustersApiPath'), {
         fixture: 'clusters.json',
       });
+      cy.intercept(Cypress.env('serviceAccountApiPath'), {
+        fixture: 'serviceAccount.json',
+      }).as('serviceAccount');
+      cy.intercept(Cypress.env('connectorCreationApiPath'), {
+        fixture: 'connectorCreation.json',
+      }).as('connectorCreation');
     });
     const testModel = createModel(testMachine).withEvents({
       CLICK_ON_DISABLED_NEXT: () => {
@@ -192,6 +196,31 @@ describe('Connector creation', () => {
         cy.findByRole('button', { name: 'Create connector' })
           .should('be.enabled')
           .click();
+        cy.wait('@serviceAccount')
+          .its('request.body.name')
+          .should('include', 'connector-telegram-source');
+        cy.wait('@connectorCreation')
+          .its('request.body')
+          .should('deep.equal', {
+            kind: 'Connector',
+            metadata: {
+              name: 'my-connector',
+              kafka_id: '1r9vAEfspruNoxIe4I9parl6dLo',
+            },
+            deployment_location: {
+              kind: 'addon',
+              cluster_id: '1r9uyAjkDfKKOr5pOnZbfdzj23D',
+            },
+            connector_type_id: 'telegram-source',
+            kafka: {
+              bootstrap_server: 'demo',
+              client_id: 'lorem',
+              client_secret: 'dolor',
+            },
+            connector_spec: {
+              authorizationToken: 'some-token',
+            },
+          });
       },
       ON_CLOSE: () => {
         cy.findByText('Cancel').click();
