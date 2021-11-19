@@ -39,7 +39,7 @@
     "@babel/preset-typescript": "7.16.0",
     "@changesets/changelog-github": "0.4.1",
     "@changesets/cli": "2.18.0",
-    "@pmmmwh/react-refresh-webpack-plugin": "0.5.1",
+    "@pmmmwh/react-refresh-webpack-plugin": "0.5.2",
     "@redhat-cloud-services/frontend-components-config": "4.5.3",
     "@storybook/addon-actions": "6.3.12",
     "@storybook/addon-essentials": "6.3.12",
