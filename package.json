@@ -12,7 +12,7 @@
     "@rhoas/app-services-ui-shared": "0.15.2",
     "@rhoas/connector-management-sdk": "0.16.1",
     "@rhoas/kafka-management-sdk": "0.16.1",
-    "@xstate/react": "1.6.2",
+    "@xstate/react": "1.6.3",
     "@xstate/test": "0.5.0",
     "ajv": "8.8.2",
     "axios": "0.24.0",
@@ -30,7 +30,7 @@
     "uniforms": "3.6.2",
     "uniforms-bridge-json-schema": "3.6.2",
     "uniforms-patternfly": "4.7.4",
-    "xstate": "4.26.0"
+    "xstate": "4.26.1"
   },
   "devDependencies": {
     "@babel/core": "7.16.0",
@@ -60,7 +60,7 @@
     "@types/testing-library__jest-dom": "5.14.1",
     "@typescript-eslint/eslint-plugin": "5.4.0",
     "@typescript-eslint/parser": "5.4.0",
-    "@xstate/inspect": "0.5.1",
+    "@xstate/inspect": "0.5.2",
     "autoprefixer": "10.4.0",
     "babel-eslint": "10.1.0",
     "babel-loader": "8.2.3",
