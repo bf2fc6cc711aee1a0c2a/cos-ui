@@ -86,7 +86,7 @@
     "file-loader": "6.2.0",
     "html-webpack-plugin": "5.5.0",
     "husky": "7.0.4",
-    "jest": "27.4.4",
+    "jest": "27.4.5",
     "jest-environment-jsdom": "27.4.4",
     "jest-mock-axios": "4.4.1",
     "keycloak-js": "9.0.0",
