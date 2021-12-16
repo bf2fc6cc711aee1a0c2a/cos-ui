@@ -16,7 +16,8 @@ import {
 import { connectorTypesMachine } from './StepConnectorTypes.machine';
 import { kafkasMachine } from './StepKafkas.machine';
 import { reviewMachine } from './StepReview.machine';
-
+import { basicMachine } from './StepBasic.machine';
+import { UserProvidedServiceAccount } from './api';
 type Context = {
   accessToken: () => Promise<string>;
   connectorsApiBasePath: string;
@@ -29,6 +30,8 @@ type Context = {
   activeConfigurationStep?: number;
   isConfigurationValid?: boolean;
   connectorConfiguration?: unknown;
+  name: string;
+  userServiceAccount: UserProvidedServiceAccount;
   onSave?: () => void;
 };
 
@@ -45,6 +48,7 @@ const model = createModel({} as Context, {
     jumpToConfigureConnector: ({ subStep }: { subStep?: number }) => ({
       subStep,
     }),
+    jumpToBasicConfiguration: () => ({}),
     jumpToReviewConfiguration: () => ({}),
   },
   actions: {
@@ -150,7 +154,7 @@ export const creationWizardMachine = model.createMachine(
             selectedCluster: context.selectedCluster,
           }),
           onDone: {
-            target: 'configureConnector',
+            target: 'basicConfiguration',
             actions: assign({
               selectedCluster: (_, event) => event.data.selectedCluster,
             }),
@@ -213,7 +217,7 @@ export const creationWizardMachine = model.createMachine(
                 isActiveStepValid: context.connectorConfiguration !== false,
               }),
               onDone: {
-                target: '#creationWizard.reviewConfiguration',
+                target: '#creationWizard.reviewConfiguration', // incase of Basic 
                 actions: assign((_, event) => ({
                   connectorConfiguration: event.data.configuration || true,
                 })),
@@ -243,7 +247,7 @@ export const creationWizardMachine = model.createMachine(
                   actions: send('prev', { to: 'configuratorRef' }),
                   cond: 'areThereSubsteps',
                 },
-                { target: '#creationWizard.selectCluster' },
+                { target: '#creationWizard.basicConfiguration' },
               ],
               changedStep: {
                 actions: assign({
@@ -252,6 +256,55 @@ export const creationWizardMachine = model.createMachine(
               },
             },
           },
+        },
+      },
+      basicConfiguration: {
+        id: 'configureBasic',
+        initial: 'submittable',
+        invoke: {
+          id: 'basicRef',
+          src: basicMachine,
+          data: (context) => ({
+            accessToken: context.accessToken,
+            connectorsApiBasePath: context.connectorsApiBasePath,
+            kafkaManagementApiBasePath: context.kafkaManagementApiBasePath,
+            kafka: context.selectedKafkaInstance,
+            cluster: context.selectedCluster,
+            connectorType: context.selectedConnector,
+            initialConfiguration: context.connectorConfiguration,            
+            name: context.name,
+            userServiceAccount: context.userServiceAccount,
+          }),
+          onDone: {
+            target: 'configureConnector',
+            actions: [
+              assign((_, event) => ({
+                name: event.data.name,
+                userServiceAccount: event.data.userServiceAccount,
+              }))
+            ],
+          },
+          onError: {
+            actions: (_context, event) => console.error(event.data.message),
+          },
+        },
+        states: {
+          submittable: {
+            on: {
+              isInvalid: 'invalid',
+              next: {
+                actions: send('confirm', { to: 'basicRef' }),
+              },
+            },
+          },
+          invalid: {
+            on: {
+              isValid: 'submittable',
+            },
+          },
+        },
+        on: {
+          prev: 'selectCluster',
         },
       },
       reviewConfiguration: {
@@ -268,7 +321,8 @@ export const creationWizardMachine = model.createMachine(
             cluster: context.selectedCluster,
             connectorType: context.selectedConnector,
             initialConfiguration: context.connectorConfiguration,
-            name: '',
+            name: context.name,
+            userServiceAccount: context.userServiceAccount,
           }),
           onDone: {
             target: '#creationWizard.saved',
@@ -318,10 +372,14 @@ export const creationWizardMachine = model.createMachine(
       jumpToSelectCluster: {
         target: 'selectCluster',
         cond: 'isKafkaInstanceSelected',
+      },    
+      jumpToBasicConfiguration: {
+        target: 'basicConfiguration',
+        cond: 'isClusterSelected',
       },
       jumpToConfigureConnector: {
         target: 'configureConnector',
-        cond: 'isClusterSelected',
+        cond: 'isBasicConfigured',
         actions: assign((_, event) => ({
           activeConfigurationStep: event.subStep || 0,
         })),
@@ -363,6 +421,14 @@ export const creationWizardMachine = model.createMachine(
             context.isConfigurationValid === true)
         );
       },
+      isBasicConfigured: (context) => (
+        context.userServiceAccount === undefined ? 
+        context.name !== undefined && context.name.length > 0 : 
+        context.name !== undefined && context.name.length > 0 && 
+          (context.userServiceAccount.clientId?.length > 0 && 
+            context.userServiceAccount.clientSecret?.length > 0
+          )
+        ),
       areThereSubsteps: (context) => context.activeConfigurationStep! > 0,
     },
     actions: {

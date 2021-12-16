@@ -2,7 +2,7 @@ import React, { FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSelector, useActor } from '@xstate/react';
-
+import { ConfiguratorActorRef } from './StepConfigurator.machine';
 import './CreateConnectorWizard.css';
 import { creationWizardMachine } from './CreateConnectorWizard.machine';
 import { useCreateConnectorWizardService } from './CreateConnectorWizardContext';
@@ -17,6 +17,7 @@ import {
   UncontrolledWizard,
   WizardStep,
 } from './UncontrolledWizard';
+import { Basic } from './StepBasic';
 
 function useKafkaInstanceStep() {
   const { t } = useTranslation();
@@ -47,56 +48,65 @@ function useKafkaInstanceStep() {
   };
 }
 
-function useConfigurationStep() {
+function useBasicStep() {
+
   const { t } = useTranslation();
   const service = useCreateConnectorWizardService();
-  const { isActive, activeStep, canJumpTo, canJumpToStep, enableNext, steps } =
-    useSelector(
-      service,
-      useCallback(
-        (state: typeof service.state) => ({
-          isActive: state.matches('configureConnector'),
-          canJumpTo:
-            creationWizardMachine.transition(state, 'jumpToConfigureConnector')
-              .changed || state.matches('configureConnector'),
-          enableNext: creationWizardMachine.transition(state, 'next').changed,
-          steps: state.context.configurationSteps,
-          activeStep: state.context.activeConfigurationStep,
-          canJumpToStep: (idx: number) =>
-            creationWizardMachine.transition(state, {
-              type: 'jumpToConfigureConnector',
-              subStep: idx,
-            }).changed,
-        }),
-        [service]
-      )
-    );
+  const { isActive, canJumpTo, enableNext } = useSelector(
+    service,
+    useCallback(
+      (state: typeof service.state) => ({
+        isActive: state.matches('basicConfiguration'),
+        canJumpTo:
+        creationWizardMachine.transition(state, 'jumpToConfigureConnector')
+          .changed || state.matches('basicConfiguration'),
+        enableNext: creationWizardMachine.transition(state, 'next').changed,
+        activeStep: state.context.activeConfigurationStep,
+      }),
+      [service]
+    )
+  );
   return {
-    name: t('Configurations'),
+    name: t('Basic'),
     isActive,
+    component: (
+      <StepErrorBoundary>
+        <Basic />
+      </StepErrorBoundary>
+    ),
     canJumpTo,
-    steps: steps
-      ? steps.map((step, idx) => ({
-          name: step,
-          isActive: isActive && activeStep === idx,
-          canJumpTo: canJumpToStep(idx),
-          enableNext,
-          component: (
-            <StepErrorBoundary>
-              <ConfiguratorStep />
-            </StepErrorBoundary>
-          ),
-        }))
-      : undefined,
     enableNext,
+  };
+}
+
+function useConnectorSpecificStep() {
+  const { t } = useTranslation();
+  const service = useCreateConnectorWizardService();
+  const { isActive, canJumpTo, enableNext } = useSelector(
+    service,
+    useCallback(
+      (state: typeof service.state) => ({
+        isActive: state.matches('configureConnector'),
+        canJumpTo:
+          creationWizardMachine.transition(state, 'jumpToConfigureConnector')
+            .changed || state.matches('configureConnector'),
+        enableNext: creationWizardMachine.transition(state, 'next').changed,
+      }),
+      [service]
+    )
+  );
+  return {
+    name: t('Connector Specific'),
+    isActive,
     component: (
       <StepErrorBoundary>
         <ConfiguratorStep />
       </StepErrorBoundary>
     ),
+    canJumpTo,
+    enableNext,
   };
 }
-
 export type CreateConnectorWizardProps = {
   onClose: () => void;
 };
@@ -108,10 +118,71 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
     const service = useCreateConnectorWizardService();
     const [state, send] = useActor(service);
 
-    const kafkaInstanceStep = useKafkaInstanceStep();
-    const configurationStep = useConfigurationStep();
+    let {
+      hasCustomConfigurator,
+      activeStep,
+      configureSteps
+    } = useSelector(
+      service,
+      useCallback(
+        (state: typeof service.state) => {
+          const isLoading = state.matches({
+            configureConnector: 'loadConfigurator',
+          });
+          const hasErrors = state.matches('failure');
+          const hasCustomConfigurator =
+            state.context.Configurator !== false &&
+            state.context.Configurator !== undefined
 
+          return {
+            isLoading,
+            hasErrors,
+            hasCustomConfigurator,
+            activeStep: state.context.activeConfigurationStep,
+            configuration: state.context.connectorConfiguration,
+            configureSteps: state.context.configurationSteps,
+            Configurator: state.context.Configurator,
+            configuratorRef: state.children
+              .configuratorRef as ConfiguratorActorRef,
+          };
+        },
+        [service]
+      )
+    );
+    const kafkaInstanceStep = useKafkaInstanceStep();
+    const basicStep = useBasicStep();
+    const connectorSpecificStep = useConnectorSpecificStep();
+    
     if (state.value === 'saved') return null;
+    const canJumpToStep = (idx: number) => {
+      return creationWizardMachine.transition(state, {
+        type: 'jumpToConfigureConnector',
+        subStep: idx,
+      }).changed
+    }
+    
+    const loadSubSteps = () => {
+      let finalSteps: any = [ basicStep ];
+      if(hasCustomConfigurator && configureSteps !== undefined) {
+        configureSteps? configureSteps.map((step, idx) => {
+          finalSteps.push({
+            name: step,
+            isActive: state.matches('configureConnector') && activeStep === idx,
+            component: (
+              <StepErrorBoundary>
+                <ConfiguratorStep />
+              </StepErrorBoundary>
+            ),
+            canJumpTo: canJumpToStep(idx + 1),
+            enableNext: creationWizardMachine.transition(state, 'next').changed,
+          })
+        }): undefined
+      }
+      if(!hasCustomConfigurator && configureSteps === undefined || configureSteps === false) {
+        finalSteps.push(connectorSpecificStep);
+      }
+      return finalSteps;
+    }
 
     const steps = [
       {
@@ -141,7 +212,15 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
             .changed || state.matches('selectCluster'),
         enableNext: creationWizardMachine.transition(state, 'next').changed,
       },
-      configurationStep,
+      {
+        name: t('Configurations'),
+        isActive: state.matches('basicConfiguration'),
+        canJumpTo:
+          creationWizardMachine.transition(state, 'jumpToSelectCluster')
+            .changed || state.matches('basicConfiguration'),
+
+        steps: loadSubSteps()
+      },
       {
         name: t('Review'),
         isActive: state.matches('reviewConfiguration'),
@@ -155,7 +234,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
             .changed || state.matches('reviewConfiguration'),
         enableNext: creationWizardMachine.transition(state, 'next').changed,
         nextButtonText: 'Create connector',
-      },
+      }
     ];
 
     const flattenedSteps = getFlattenedSteps(steps) as Array<
@@ -181,15 +260,18 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
         case 3:
           send('jumpToSelectCluster');
           break;
-        // case 4:
-        //   send('jumpToConfigureConnector');
-        //   break;
+        case 4:
+          send('jumpToBasicConfiguration');
+          break;
+        case 5:
+          send('jumpToConfigureConnector');
+          break;            
         case flattenedSteps.length:
           send('jumpToReviewConfiguration');
           break;
         default:
           if (stepIndex < flattenedSteps.length) {
-            send({ type: 'jumpToConfigureConnector', subStep: stepIndex - 4 });
+            send({ type: 'jumpToConfigureConnector', subStep: stepIndex - 5 });
           }
       }
     };

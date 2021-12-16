@@ -30,6 +30,7 @@ import {
 } from './StepConfiguratorLoader.machine';
 import { ConnectorTypesMachineActorRef } from './StepConnectorTypes.machine';
 import { KafkaMachineActorRef } from './StepKafkas.machine';
+import { BasicMachineActorRef } from './StepBasic.machine';
 import { ReviewMachineActorRef } from './StepReview.machine';
 import {
   ConnectorTypesQuery,
@@ -104,6 +105,7 @@ export const useCreateConnectorWizard = (): {
   connectorTypeRef: ConnectorTypesMachineActorRef;
   kafkaRef: KafkaMachineActorRef;
   clusterRef: ClustersMachineActorRef;
+  basicRef: BasicMachineActorRef;
   reviewRef: ReviewMachineActorRef;
 } => {
   const service = useCreateConnectorWizardService();
@@ -115,6 +117,7 @@ export const useCreateConnectorWizard = (): {
           .selectConnectorRef as ConnectorTypesMachineActorRef,
         kafkaRef: state.children.selectKafkaInstanceRef as KafkaMachineActorRef,
         clusterRef: state.children.selectClusterRef as ClustersMachineActorRef,
+        basicRef: state.children.basicRef as BasicMachineActorRef,
         reviewRef: state.children.reviewRef as ReviewMachineActorRef,
       }),
       []
@@ -276,59 +279,76 @@ export const useKafkasMachine = () => {
   };
 };
 
-export const useReviewMachine = () => {
-  const { reviewRef } = useCreateConnectorWizard();
+export const useBasicMachine = () => {
+  const { basicRef } = useCreateConnectorWizard();
   const {
     name,
     serviceAccount,
-    configString,
-    configStringError,
-    configStringWarnings,
-    isSaving,
-    savingError,
   } = useSelector(
-    reviewRef,
+    basicRef,
     useCallback(
-      (state: EmittedFrom<typeof reviewRef>) => ({
+      (state: EmittedFrom<typeof basicRef>) => ({
         name: state.context.name,
         serviceAccount: state.context.userServiceAccount,
-        configString: state.context.configString,
-        configStringError: state.context.configStringError,
-        configStringWarnings: state.context.configStringWarnings,
-        isSaving: state.hasTag('saving'),
-        savingError: state.context.savingError,
       }),
       []
     )
   );
   const onSetName = useCallback(
     (name: string) => {
-      reviewRef.send({ type: 'setName', name });
+      basicRef.send({ type: 'setName', name });
     },
-    [reviewRef]
+    [basicRef]
   );
+  
   const onSetServiceAccount = useCallback(
     (serviceAccount: UserProvidedServiceAccount | undefined) => {
-      reviewRef.send({ type: 'setServiceAccount', serviceAccount });
+      basicRef.send({ type: 'setServiceAccount', serviceAccount });
     },
-    [reviewRef]
-  );
-  const onUpdateConfiguration = useCallback(
-    (data?: string) => {
-      reviewRef.send({ type: 'updateConfiguration', data: data || '' });
-    },
-    [reviewRef]
+    [basicRef]
   );
   return {
-    name,
     serviceAccount,
-    configString,
-    configStringError,
-    configStringWarnings,
-    isSaving,
-    savingError,
+    name,
     onSetName,
     onSetServiceAccount,
-    onUpdateConfiguration,
+  };
+};
+
+export const useReviewMachine = () => {
+  const { reviewRef } = useCreateConnectorWizard();
+  const {
+    kafka,
+    cluster,
+    connectorType,
+    name,
+    userServiceAccount,
+    configString,
+    isSaving,
+    savingError,
+  } = useSelector(reviewRef, useCallback(
+      (state: EmittedFrom<typeof reviewRef>) => ({
+        kafka: state.context.kafka,
+        cluster: state.context.cluster,
+        connectorType: state.context.connectorType,
+        name: state.context.name,
+        userServiceAccount: state.context.userServiceAccount,
+        configString: state.context.configString,
+        isSaving: state.hasTag('saving'),
+        savingError: state.context.savingError,
+      }),
+      []
+    )
+  );
+
+  return {
+    kafka,
+    cluster,
+    connectorType,
+    name,
+    userServiceAccount,
+    configString,
+    isSaving,
+    savingError,
   };
 };
