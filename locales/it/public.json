@@ -22,6 +22,8 @@
   "Configurations": "Configurations",
   "Connector category": "Connector category",
   "OSD cluster": "OSD cluster",
+  "Basic": "Basic",
+  "Connector Specific": "Connector specific",
   "Review": "Review",
   "Delete connector": "Delete connector",
   "Delete": "Delete",
@@ -76,5 +78,6 @@
   "provisioning": "Creation in progress",
   "preparing": "Creation in progress",
   "deprovision": "Deletion in progress",
-  "deleted": "Deletion in progress"
+  "deleted": "Deletion in progress",
+  "ViewJSONFormat": "Visualizza il formato JSON"
 }
