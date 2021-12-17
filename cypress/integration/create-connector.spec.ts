@@ -75,7 +75,7 @@ const testMachine = Machine({
     },
     selectCluster: {
       on: {
-        CLICK_CLUSTER: 'configureConnector',
+        CLICK_CLUSTER: 'basicConfiguration',
       },
       meta: {
         test: () => cy.findByText('megalord').should('exist'),
@@ -85,6 +85,11 @@ const testMachine = Machine({
       meta: {
         noCoverage: true,
         test: () => cy.findByText('No OSD Cluster available').should('exist'),
+      },
+    },
+    basicConfiguration: {
+      on: {
+        CONFIGURE_BASIC: 'configureConnector',
       },
     },
     configureConnector: {
@@ -186,13 +191,16 @@ describe('Connector creation', () => {
         cy.findByText('megalord').click();
         cy.findByText('Next').click();
       },
+      CONFIGURE_BASIC: () => {
+        cy.findByLabelText('Name *').type('my-connector');
+        cy.findByText('Next').should('be.enabled').click();
+      },
       CONFIGURE: () => {
         cy.findByLabelText('Token *').type('some-token');
         cy.findByText('Verify configuration').click();
         cy.findByText('Next').should('be.enabled').click();
       },
       SAVE_CONNECTOR: () => {
-        cy.findByLabelText('Name *').type('my-connector');
         cy.findByRole('button', { name: 'Create connector' })
           .should('be.enabled')
           .click();
