@@ -79,5 +79,10 @@
   "preparing": "Creation in progress",
   "deprovision": "Deletion in progress",
   "deleted": "Deletion in progress",
-  "ViewJSONFormat": "View JSON format"
+  "ViewJSONFormat": "View JSON format",
+  "Access Key": "Access Key",
+  "Secret Key": "Secret Key",
+  "Client ID": "Client ID",
+  "Client Secret": "Client Secret",
+  "Topic ": "Topic"
 }
