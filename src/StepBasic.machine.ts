@@ -1,22 +1,9 @@
 import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
-import {
-  ConnectorCluster,
-  ConnectorType,
-} from '@rhoas/connector-management-sdk';
-import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 import { UserProvidedServiceAccount } from './api';
 
 type Context = {
-  accessToken: () => Promise<string>;
-  connectorsApiBasePath: string;
-  kafkaManagementApiBasePath: string;
-
-  kafka: KafkaRequest;
-  cluster: ConnectorCluster;
-  connectorType: ConnectorType;
-
   name: string;
   userServiceAccount?: UserProvidedServiceAccount;
 };
