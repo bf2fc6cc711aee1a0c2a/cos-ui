@@ -27,8 +27,8 @@
     "react-error-boundary": "3.1.4",
     "react-i18next": "11.14.3",
     "react-router-dom": "5.2.1",
-    "uniforms": "3.6.2",
-    "uniforms-bridge-json-schema": "3.6.2",
+    "uniforms": "3.7.0",
+    "uniforms-bridge-json-schema": "3.7.0",
     "uniforms-patternfly": "4.7.4",
     "xstate": "4.26.1"
   },
