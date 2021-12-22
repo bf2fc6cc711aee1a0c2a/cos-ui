@@ -23,6 +23,7 @@ import {
   PaginatedApiActorType,
   PaginatedApiRequest,
 } from './PaginatedResponse.machine';
+import { BasicMachineActorRef } from './StepBasic.machine';
 import { ClustersMachineActorRef } from './StepClusters.machine';
 import {
   ConnectorConfiguratorResponse,
@@ -30,7 +31,6 @@ import {
 } from './StepConfiguratorLoader.machine';
 import { ConnectorTypesMachineActorRef } from './StepConnectorTypes.machine';
 import { KafkaMachineActorRef } from './StepKafkas.machine';
-import { BasicMachineActorRef } from './StepBasic.machine';
 import { ReviewMachineActorRef } from './StepReview.machine';
 import {
   ConnectorTypesQuery,
@@ -281,10 +281,7 @@ export const useKafkasMachine = () => {
 
 export const useBasicMachine = () => {
   const { basicRef } = useCreateConnectorWizard();
-  const {
-    name,
-    serviceAccount,
-  } = useSelector(
+  const { name, serviceAccount } = useSelector(
     basicRef,
     useCallback(
       (state: EmittedFrom<typeof basicRef>) => ({
@@ -300,7 +297,7 @@ export const useBasicMachine = () => {
     },
     [basicRef]
   );
-  
+
   const onSetServiceAccount = useCallback(
     (serviceAccount: UserProvidedServiceAccount | undefined) => {
       basicRef.send({ type: 'setServiceAccount', serviceAccount });
@@ -326,7 +323,9 @@ export const useReviewMachine = () => {
     configString,
     isSaving,
     savingError,
-  } = useSelector(reviewRef, useCallback(
+  } = useSelector(
+    reviewRef,
+    useCallback(
       (state: EmittedFrom<typeof reviewRef>) => ({
         kafka: state.context.kafka,
         cluster: state.context.cluster,

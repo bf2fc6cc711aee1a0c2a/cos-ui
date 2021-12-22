@@ -69,9 +69,7 @@ export const reviewMachine = model.createMachine(
     entry: initialize,
     states: {
       verify: {
-        always: [
-          { target: 'valid', cond: 'isAllConfigured' },
-        ],
+        always: [{ target: 'valid', cond: 'isAllConfigured' }],
       },
 
       valid: {
@@ -112,8 +110,7 @@ export const reviewMachine = model.createMachine(
   },
   {
     guards: {
-      isAllConfigured: (context) =>
-        context.configString !== undefined
+      isAllConfigured: (context) => context.configString !== undefined,
     },
   }
 );

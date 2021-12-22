@@ -89,14 +89,13 @@ export const basicMachine = model.createMachine(
   },
   {
     guards: {
-      isBasicConfigured: (context) => (
-      context.userServiceAccount === undefined ? 
-      context.name !== undefined && context.name.length > 0 : 
-      context.name !== undefined && context.name.length > 0 && 
-        (context.userServiceAccount.clientId.length > 0 && 
-          context.userServiceAccount.clientSecret.length > 0
-        )
-      )
+      isBasicConfigured: (context) =>
+        context.userServiceAccount === undefined
+          ? context.name !== undefined && context.name.length > 0
+          : context.name !== undefined &&
+            context.name.length > 0 &&
+            context.userServiceAccount.clientId.length > 0 &&
+            context.userServiceAccount.clientSecret.length > 0,
     },
   }
 );
