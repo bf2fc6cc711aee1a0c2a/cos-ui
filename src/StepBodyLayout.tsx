@@ -11,10 +11,10 @@ export const StepBodyLayout: FunctionComponent<CreateConnectorWizardBodyLayoutPr
   ({ title, description, component, children }) => (
     <div className={'pf-l-stack'}>
       <Level className={'pf-u-p-md pf-l-stack__item'}>
-      <LevelItem>
-        <Title headingLevel="h2">{title}</Title>
-      </LevelItem>
-      <LevelItem>{component}</LevelItem>
+        <LevelItem>
+          <Title headingLevel="h2">{title}</Title>
+        </LevelItem>
+        <LevelItem>{component}</LevelItem>
         {(() => {
           switch (typeof description) {
             case 'string':

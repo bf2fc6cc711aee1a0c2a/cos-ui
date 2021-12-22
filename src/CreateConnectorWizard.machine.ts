@@ -7,6 +7,7 @@ import {
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
+import { basicMachine } from './StepBasic.machine';
 import { clustersMachine } from './StepClusters.machine';
 import { configuratorMachine } from './StepConfigurator.machine';
 import {
@@ -16,8 +17,8 @@ import {
 import { connectorTypesMachine } from './StepConnectorTypes.machine';
 import { kafkasMachine } from './StepKafkas.machine';
 import { reviewMachine } from './StepReview.machine';
-import { basicMachine } from './StepBasic.machine';
 import { UserProvidedServiceAccount } from './api';
+
 type Context = {
   accessToken: () => Promise<string>;
   connectorsApiBasePath: string;
@@ -217,7 +218,7 @@ export const creationWizardMachine = model.createMachine(
                 isActiveStepValid: context.connectorConfiguration !== false,
               }),
               onDone: {
-                target: '#creationWizard.reviewConfiguration', // incase of Basic 
+                target: '#creationWizard.reviewConfiguration', // incase of Basic
                 actions: assign((_, event) => ({
                   connectorConfiguration: event.data.configuration || true,
                 })),
@@ -271,7 +272,7 @@ export const creationWizardMachine = model.createMachine(
             kafka: context.selectedKafkaInstance,
             cluster: context.selectedCluster,
             connectorType: context.selectedConnector,
-            initialConfiguration: context.connectorConfiguration,            
+            initialConfiguration: context.connectorConfiguration,
             name: context.name,
             userServiceAccount: context.userServiceAccount,
           }),
@@ -281,7 +282,7 @@ export const creationWizardMachine = model.createMachine(
               assign((_, event) => ({
                 name: event.data.name,
                 userServiceAccount: event.data.userServiceAccount,
-              }))
+              })),
             ],
           },
           onError: {
@@ -372,7 +373,7 @@ export const creationWizardMachine = model.createMachine(
       jumpToSelectCluster: {
         target: 'selectCluster',
         cond: 'isKafkaInstanceSelected',
-      },    
+      },
       jumpToBasicConfiguration: {
         target: 'basicConfiguration',
         cond: 'isClusterSelected',
@@ -421,14 +422,13 @@ export const creationWizardMachine = model.createMachine(
             context.isConfigurationValid === true)
         );
       },
-      isBasicConfigured: (context) => (
-        context.userServiceAccount === undefined ? 
-        context.name !== undefined && context.name.length > 0 : 
-        context.name !== undefined && context.name.length > 0 && 
-          (context.userServiceAccount.clientId?.length > 0 && 
-            context.userServiceAccount.clientSecret?.length > 0
-          )
-        ),
+      isBasicConfigured: (context) =>
+        context.userServiceAccount === undefined
+          ? context.name !== undefined && context.name.length > 0
+          : context.name !== undefined &&
+            context.name.length > 0 &&
+            context.userServiceAccount.clientId?.length > 0 &&
+            context.userServiceAccount.clientSecret?.length > 0,
       areThereSubsteps: (context) => context.activeConfigurationStep! > 0,
     },
     actions: {

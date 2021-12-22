@@ -62,19 +62,19 @@ export const AppDemo: FunctionComponent = () => {
       configurators: {
         'debezium-mongodb-1.5.0.Final': {
           remoteEntry:
-          'https://de-debezium-ui-demo.rh-fuse-153f1de160110098c1928a6c05e19444-0000.eu-de.containers.appdomain.cloud/dbz-connector-configurator.remoteEntry.js',
+            'https://de-debezium-ui-demo.rh-fuse-153f1de160110098c1928a6c05e19444-0000.eu-de.containers.appdomain.cloud/dbz-connector-configurator.remoteEntry.js',
           scope: 'debezium_ui',
           module: './config',
         },
         'debezium-mysql-1.5.0.Final': {
           remoteEntry:
-          'https://de-debezium-ui-demo.rh-fuse-153f1de160110098c1928a6c05e19444-0000.eu-de.containers.appdomain.cloud/dbz-connector-configurator.remoteEntry.js',
+            'https://de-debezium-ui-demo.rh-fuse-153f1de160110098c1928a6c05e19444-0000.eu-de.containers.appdomain.cloud/dbz-connector-configurator.remoteEntry.js',
           scope: 'debezium_ui',
           module: './config',
         },
         'debezium-postgres-1.5.0.Final': {
           remoteEntry:
-          'https://de-debezium-ui-demo.rh-fuse-153f1de160110098c1928a6c05e19444-0000.eu-de.containers.appdomain.cloud/dbz-connector-configurator.remoteEntry.js',
+            'https://de-debezium-ui-demo.rh-fuse-153f1de160110098c1928a6c05e19444-0000.eu-de.containers.appdomain.cloud/dbz-connector-configurator.remoteEntry.js',
           scope: 'debezium_ui',
           module: './config',
         },

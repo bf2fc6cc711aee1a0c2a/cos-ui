@@ -2,12 +2,14 @@ import React, { FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSelector, useActor } from '@xstate/react';
-import { ConfiguratorActorRef } from './StepConfigurator.machine';
+
 import './CreateConnectorWizard.css';
 import { creationWizardMachine } from './CreateConnectorWizard.machine';
 import { useCreateConnectorWizardService } from './CreateConnectorWizardContext';
+import { Basic } from './StepBasic';
 import { SelectCluster } from './StepClusters';
 import { ConfiguratorStep } from './StepConfigurator';
+import { ConfiguratorActorRef } from './StepConfigurator.machine';
 import { SelectConnectorType } from './StepConnectorTypes';
 import { StepErrorBoundary } from './StepErrorBoundary';
 import { SelectKafkaInstance } from './StepKafkas';
@@ -17,7 +19,6 @@ import {
   UncontrolledWizard,
   WizardStep,
 } from './UncontrolledWizard';
-import { Basic } from './StepBasic';
 
 function useKafkaInstanceStep() {
   const { t } = useTranslation();
@@ -49,7 +50,6 @@ function useKafkaInstanceStep() {
 }
 
 function useBasicStep() {
-
   const { t } = useTranslation();
   const service = useCreateConnectorWizardService();
   const { isActive, canJumpTo, enableNext } = useSelector(
@@ -58,8 +58,8 @@ function useBasicStep() {
       (state: typeof service.state) => ({
         isActive: state.matches('basicConfiguration'),
         canJumpTo:
-        creationWizardMachine.transition(state, 'jumpToConfigureConnector')
-          .changed || state.matches('basicConfiguration'),
+          creationWizardMachine.transition(state, 'jumpToConfigureConnector')
+            .changed || state.matches('basicConfiguration'),
         enableNext: creationWizardMachine.transition(state, 'next').changed,
         activeStep: state.context.activeConfigurationStep,
       }),
@@ -118,11 +118,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
     const service = useCreateConnectorWizardService();
     const [state, send] = useActor(service);
 
-    let {
-      hasCustomConfigurator,
-      activeStep,
-      configureSteps
-    } = useSelector(
+    let { hasCustomConfigurator, activeStep, configureSteps } = useSelector(
       service,
       useCallback(
         (state: typeof service.state) => {
@@ -132,7 +128,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
           const hasErrors = state.matches('failure');
           const hasCustomConfigurator =
             state.context.Configurator !== false &&
-            state.context.Configurator !== undefined
+            state.context.Configurator !== undefined;
 
           return {
             isLoading,
@@ -152,37 +148,44 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
     const kafkaInstanceStep = useKafkaInstanceStep();
     const basicStep = useBasicStep();
     const connectorSpecificStep = useConnectorSpecificStep();
-    
+
     if (state.value === 'saved') return null;
     const canJumpToStep = (idx: number) => {
       return creationWizardMachine.transition(state, {
         type: 'jumpToConfigureConnector',
         subStep: idx,
-      }).changed
-    }
-    
+      }).changed;
+    };
+
     const loadSubSteps = () => {
-      let finalSteps: any = [ basicStep ];
-      if(hasCustomConfigurator && configureSteps !== undefined) {
-        configureSteps? configureSteps.map((step, idx) => {
-          finalSteps.push({
-            name: step,
-            isActive: state.matches('configureConnector') && activeStep === idx,
-            component: (
-              <StepErrorBoundary>
-                <ConfiguratorStep />
-              </StepErrorBoundary>
-            ),
-            canJumpTo: canJumpToStep(idx + 1),
-            enableNext: creationWizardMachine.transition(state, 'next').changed,
-          })
-        }): undefined
+      let finalSteps: any = [basicStep];
+      if (hasCustomConfigurator && configureSteps !== undefined) {
+        configureSteps
+          ? configureSteps.map((step, idx) => {
+              finalSteps.push({
+                name: step,
+                isActive:
+                  state.matches('configureConnector') && activeStep === idx,
+                component: (
+                  <StepErrorBoundary>
+                    <ConfiguratorStep />
+                  </StepErrorBoundary>
+                ),
+                canJumpTo: canJumpToStep(idx + 1),
+                enableNext: creationWizardMachine.transition(state, 'next')
+                  .changed,
+              });
+            })
+          : undefined;
       }
-      if(!hasCustomConfigurator && configureSteps === undefined || configureSteps === false) {
+      if (
+        (!hasCustomConfigurator && configureSteps === undefined) ||
+        configureSteps === false
+      ) {
         finalSteps.push(connectorSpecificStep);
       }
       return finalSteps;
-    }
+    };
 
     const steps = [
       {
@@ -219,7 +222,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
           creationWizardMachine.transition(state, 'jumpToSelectCluster')
             .changed || state.matches('basicConfiguration'),
 
-        steps: loadSubSteps()
+        steps: loadSubSteps(),
       },
       {
         name: t('Review'),
@@ -234,7 +237,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
             .changed || state.matches('reviewConfiguration'),
         enableNext: creationWizardMachine.transition(state, 'next').changed,
         nextButtonText: 'Create connector',
-      }
+      },
     ];
 
     const flattenedSteps = getFlattenedSteps(steps) as Array<
@@ -265,7 +268,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
           break;
         case 5:
           send('jumpToConfigureConnector');
-          break;            
+          break;
         case flattenedSteps.length:
           send('jumpToReviewConfiguration');
           break;
