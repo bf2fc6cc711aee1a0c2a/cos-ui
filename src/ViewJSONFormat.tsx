@@ -28,7 +28,7 @@ export const ViewJSONFormat: FunctionComponent = () => {
   const { configString } = useReviewMachine();
 
   function maskPropertyValues(inputObj: any) {
-    const dataToHide = ['secretKey'];
+    const dataToHide = ['secretKey','accessKey'];
     const json = JSON.stringify(
       inputObj,
       (key, value) => {

@@ -13,7 +13,10 @@ import {
   GridItem,
   Title,
   TitleSizes,
+  Flex,
+  FlexItem,
 } from '@patternfly/react-core';
+import { EyeIcon, EyeSlashIcon } from '@patternfly/react-icons';
 
 import { useReviewMachine } from './CreateConnectorWizardContext';
 import { StepBodyLayout } from './StepBodyLayout';
@@ -22,7 +25,36 @@ import { ViewJSONFormat } from './ViewJSONFormat';
 export function Review() {
   const { t } = useTranslation();
   const [toggleView, setToggleView] = useState(false);
+  const [toggleMaskView, setToggleMaskView] = useState<{
+    [key: string]: boolean;
+  }>({
+    clientId: true,
+    clientSecret: true,
+    accessKey: true,
+    secretKey: true,
+  });
 
+  const updateMaskView = (ele: any) => {
+    let updatedState = { ...toggleMaskView };
+    switch (ele.currentTarget.id) {
+      case 'clientId':
+        updatedState.clientId = !toggleMaskView.clientId;
+        setToggleMaskView(updatedState);
+        break;
+      case 'clientSecret':
+        updatedState.clientSecret = !toggleMaskView.clientSecret;
+        setToggleMaskView(updatedState);
+        break;
+      case 'accessKey':
+        updatedState.accessKey = !toggleMaskView.accessKey;
+        setToggleMaskView(updatedState);
+        break;
+      case 'secretKey':
+        updatedState.secretKey = !toggleMaskView.secretKey;
+        setToggleMaskView(updatedState);
+        break;
+    }
+  };
   const {
     kafka,
     cluster,
@@ -125,7 +157,21 @@ export function Review() {
                       <strong>{t('Client ID')}</strong>
                     </GridItem>
                     <GridItem span={8}>
-                      {maskValue(userServiceAccount?.clientId)}
+                      <Flex>
+                        <FlexItem>
+                          {toggleMaskView.clientId
+                            ? maskValue(userServiceAccount?.clientId)
+                            : userServiceAccount?.clientId}
+                          {}
+                        </FlexItem>
+                        <FlexItem onClick={updateMaskView} id="clientId">
+                          {toggleMaskView.clientId ? (
+                            <EyeIcon />
+                          ) : (
+                            <EyeSlashIcon />
+                          )}
+                        </FlexItem>
+                      </Flex>
                     </GridItem>
                   </Grid>
                 )}
@@ -135,7 +181,21 @@ export function Review() {
                       <strong>{t('Client Secret')}</strong>
                     </GridItem>
                     <GridItem span={8}>
-                      {maskValue(userServiceAccount?.clientSecret)}
+                      <Flex>
+                        <FlexItem>
+                          {toggleMaskView.clientSecret
+                            ? maskValue(userServiceAccount?.clientSecret)
+                            : userServiceAccount?.clientSecret}
+                          {}
+                        </FlexItem>
+                        <FlexItem onClick={updateMaskView} id="clientSecret">
+                          {toggleMaskView.clientSecret ? (
+                            <EyeIcon />
+                          ) : (
+                            <EyeSlashIcon />
+                          )}
+                        </FlexItem>
+                      </Flex>
                     </GridItem>
                   </Grid>
                 )}
@@ -151,9 +211,25 @@ export function Review() {
                         </GridItem>
                         <GridItem span={8}>
                           {_.startCase(el) === t('Access Key') ||
-                          _.startCase(el) === t('Secret Key')
-                            ? maskValue(connector[el])
-                            : connector[el]}
+                          _.startCase(el) === t('Secret Key') ? (
+                            <Flex>
+                              <FlexItem>
+                                {toggleMaskView[el]
+                                  ? maskValue(connector[el])
+                                  : connector[el]}
+                                {}
+                              </FlexItem>
+                              <FlexItem onClick={updateMaskView} id={el}>
+                                {toggleMaskView[el] ? (
+                                  <EyeIcon />
+                                ) : (
+                                  <EyeSlashIcon />
+                                )}
+                              </FlexItem>
+                            </Flex>
+                          ) : (
+                            connector[el]
+                          )}
                         </GridItem>
                       </Grid>
                     );
