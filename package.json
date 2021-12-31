@@ -33,10 +33,10 @@
     "xstate": "4.27.0"
   },
   "devDependencies": {
-    "@babel/core": "7.16.5",
+    "@babel/core": "7.16.7",
     "@babel/eslint-parser": "7.16.5",
-    "@babel/preset-react": "7.16.5",
-    "@babel/preset-typescript": "7.16.5",
+    "@babel/preset-react": "7.16.7",
+    "@babel/preset-typescript": "7.16.7",
     "@changesets/changelog-github": "0.4.1",
     "@changesets/cli": "2.18.0",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.2",
