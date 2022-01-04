@@ -4,7 +4,7 @@
 # Application Services Connectors UI
 
 
-UI is used as federated module in (app-services ui)[https://github.com/redhat-developer/app-services-ui] project
+UI is used as federated module in [app-services ui](https://github.com/redhat-developer/app-services-ui) project
 that aggretates various service components. 
 
 > NOTE: This repository is used as part of the console.redhat.com
