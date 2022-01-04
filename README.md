@@ -1,8 +1,6 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-
 # Application Services Connectors UI
-
 
 UI is used as federated module in [app-services ui](https://github.com/redhat-developer/app-services-ui) project
 that aggretates various service components. 
