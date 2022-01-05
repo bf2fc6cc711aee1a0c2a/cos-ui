@@ -86,7 +86,7 @@
     "eslint-plugin-xstate": "0.13.1",
     "file-loader": "6.2.0",
     "html-webpack-plugin": "5.5.0",
-    "husky": "7.0.4",
+    "husky": "^7.0.4",
     "jest": "27.4.6",
     "jest-environment-jsdom": "27.4.6",
     "jest-mock-axios": "4.4.1",
@@ -140,6 +140,11 @@
     "storybook": "start-storybook -s public -p 6006",
     "build-storybook": "build-storybook -s public",
     "chromatic": "npx chromatic"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint-staged"
+    }
   },
   "lint-staged": {
     "src/**/*.ts*": "npm run lint-staged"
