@@ -16,7 +16,7 @@ import {
   TextInput,
   Toolbar,
   ToolbarContent,
-  ToolbarGroup,
+  // ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
@@ -58,10 +58,8 @@ const ClustersGallery: FunctionComponent = () => {
 
   return (
     <StepBodyLayout
-      title={t('OSD cluster')}
-      description={
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
-      }
+      title={t('Select an OSD cluster')}
+      description={t('clusterStepDescription')}
     >
       {(() => {
         switch (true) {
@@ -137,6 +135,7 @@ const ClustersGallery: FunctionComponent = () => {
 };
 
 const ClustersToolbar: FunctionComponent = () => {
+  // const { t } = useTranslation();
   const { request, onQuery } = useClustersMachine();
 
   const searchInputRef = useRef<HTMLInputElement | null>(null);
@@ -232,11 +231,11 @@ const ClustersToolbar: FunctionComponent = () => {
       <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
         {toggleGroupItems}
       </ToolbarToggleGroup>
-      <ToolbarGroup variant="icon-button-group">
+      {/* <ToolbarGroup variant="icon-button-group">
         <ToolbarItem>
-          <Button variant="primary">Create Clusters Instance</Button>
+          <Button variant="primary">{t('createClustersInstance')}</Button>
         </ToolbarItem>
-      </ToolbarGroup>
+      </ToolbarGroup> */}
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
         <ClustersPagination isCompact />
       </ToolbarItem>

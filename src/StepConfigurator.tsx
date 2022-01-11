@@ -114,9 +114,7 @@ export const ConfiguratorStep: FunctionComponent = () => {
   return (
     <StepBodyLayout
       title={t('Configurations')}
-      description={
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
-      }
+      description={t('configurationStepDescription')}
     >
       {(() => {
         switch (true) {

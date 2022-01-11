@@ -85,9 +85,7 @@ export function Review() {
   return (
     <StepBodyLayout
       title={t('Review')}
-      description={
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
-      }
+      description={!toggleView ? t('reviewStepDescription') : t('reviewJSONStepDescription')}
       component={
         <Switch
           id="toggle-json-view"
