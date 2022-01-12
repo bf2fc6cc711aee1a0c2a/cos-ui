@@ -21,7 +21,7 @@ export const StepBodyLayout: FunctionComponent<CreateConnectorWizardBodyLayoutPr
       {(() => {
           switch (typeof description) {
             case 'string':
-              return <p id="root">{description}</p>;
+              return <p className="wizard-step__description">{description}</p>;
             default:
               return description;
           }

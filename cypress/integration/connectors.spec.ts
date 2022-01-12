@@ -40,7 +40,7 @@ describe('Connectors page', () => {
         element?.textContent === '1 - 2 of 2 '
     );
 
-    cy.findByText('Create Connector').click();
+    cy.findByText('Create connector instance').click();
   });
 
   it('opens the details for a connector', () => {
