@@ -21,10 +21,8 @@ export function Basic() {
 
   return (
     <StepBodyLayout
-      title={t('Review')}
-      description={
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
-      }
+      title={t('Common')}
+      description={t('basicStepDescription')}
     >
       <Card>
         <CardBody>
@@ -38,7 +36,7 @@ export function Basic() {
               <TextInput value={name} onChange={onSetName} id="name" />
             </FormGroup>
             <FormGroup
-              label="Service Account"
+              label="Service account"
               isRequired
               fieldId="service-account"
             >
@@ -46,7 +44,7 @@ export function Basic() {
                 isChecked={serviceAccount === undefined}
                 name="service-account"
                 onChange={() => onSetServiceAccount(undefined)}
-                label="Automatically create a Service Account for this connector"
+                label="Automatically create a service account for this connector."
                 id="service-account-automatic"
                 value="automatic"
               />
@@ -56,7 +54,7 @@ export function Basic() {
                 onChange={() =>
                   onSetServiceAccount({ clientId: '', clientSecret: '' })
                 }
-                label="Provide the credentials manually"
+                label="Provide the credentials manually."
                 id="service-account-user"
                 value="user"
               />

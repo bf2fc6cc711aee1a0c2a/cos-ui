@@ -37,7 +37,7 @@ function useKafkaInstanceStep() {
     )
   );
   return {
-    name: t('Kafka instance'),
+    name: t('Select a Kafka instance'),
     isActive,
     component: (
       <StepErrorBoundary>
@@ -67,7 +67,7 @@ function useBasicStep() {
     )
   );
   return {
-    name: t('Basic'),
+    name: t('Common'),
     isActive,
     component: (
       <StepErrorBoundary>
@@ -189,7 +189,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
 
     const steps = [
       {
-        name: t('Connector category'),
+        name: t('Connector'),
         isActive: state.matches('selectConnector'),
         component: (
           <StepErrorBoundary>
@@ -203,7 +203,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
       },
       kafkaInstanceStep,
       {
-        name: t('OSD cluster'),
+        name: t('Select an OSD cluster'),
         isActive: state.matches('selectCluster'),
         component: (
           <StepErrorBoundary>

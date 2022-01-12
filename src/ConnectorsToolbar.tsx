@@ -15,6 +15,7 @@ import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
 import { Pagination, PaginationProps } from './Pagination';
 import { useDebounce } from './useDebounce';
+import { useTranslation } from 'react-i18next';
 
 type ConnectorsToolbarProps = {} & PaginationProps;
 export const ConnectorsToolbar: FunctionComponent<ConnectorsToolbarProps> = ({
@@ -23,6 +24,7 @@ export const ConnectorsToolbar: FunctionComponent<ConnectorsToolbarProps> = ({
   perPage,
   onChange,
 }) => {
+  const { t } = useTranslation();
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnChange = useDebounce(onChange, 1000);
 
@@ -119,7 +121,7 @@ export const ConnectorsToolbar: FunctionComponent<ConnectorsToolbarProps> = ({
             className="pf-c-button pf-m-primary"
             to={'/create-connector'}
           >
-            Create Connector
+            {t('createConnectorInstance')}
           </NavLink>
         </ToolbarItem>
       </ToolbarGroup>

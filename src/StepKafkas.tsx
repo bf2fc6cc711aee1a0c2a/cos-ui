@@ -74,10 +74,8 @@ const KafkasGallery: FunctionComponent = () => {
 
   return (
     <StepBodyLayout
-      title={t('Kafka instance')}
-      description={
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit error adipisci, ducimus ipsum dicta quo beatae ratione aliquid nostrum animi eos, doloremque laborum quasi sed, vitae ipsa illo delectus! Quos'
-      }
+      title={t('Select a Kafka instance')}
+      description={t('kafkaStepDescription')}
     >
       {(() => {
         switch (true) {
@@ -485,7 +483,7 @@ const KafkaToolbar: FunctionComponent = () => {
       </ToolbarToggleGroup>
       <ToolbarGroup variant="icon-button-group">
         <ToolbarItem>
-          <Button variant="primary">Create Kafka Instance</Button>
+          <Button variant="primary">{t('Create Kafka instance')}</Button>
         </ToolbarItem>
       </ToolbarGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
