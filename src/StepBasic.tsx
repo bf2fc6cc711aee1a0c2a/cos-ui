@@ -20,10 +20,7 @@ export function Basic() {
     useBasicMachine();
 
   return (
-    <StepBodyLayout
-      title={t('Common')}
-      description={t('basicStepDescription')}
-    >
+    <StepBodyLayout title={t('Common')} description={t('basicStepDescription')}>
       <Card>
         <CardBody>
           <Form>

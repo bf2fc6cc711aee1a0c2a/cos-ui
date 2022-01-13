@@ -15,8 +15,7 @@ import {
   InputGroup,
   TextInput,
   Toolbar,
-  ToolbarContent,
-  // ToolbarGroup,
+  ToolbarContent, // ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
