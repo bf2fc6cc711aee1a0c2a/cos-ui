@@ -1,6 +1,8 @@
 import React, { FunctionComponent, ReactNode } from 'react';
-import './StepBodyLayout.css';
+
 import { Level, LevelItem, Title } from '@patternfly/react-core';
+
+import './StepBodyLayout.css';
 
 type CreateConnectorWizardBodyLayoutProps = {
   title: string;
@@ -11,14 +13,13 @@ export const StepBodyLayout: FunctionComponent<CreateConnectorWizardBodyLayoutPr
   ({ title, description, component, children }) => (
     <div className={'pf-l-stack'}>
       <div className={'pf-u-p-md pf-l-stack__item'}>
-      <Level >
-        <LevelItem>
-          <Title headingLevel="h2">{title}</Title>
-        </LevelItem>
-        <LevelItem>{component}</LevelItem>
-        
-      </Level>
-      {(() => {
+        <Level>
+          <LevelItem>
+            <Title headingLevel="h2">{title}</Title>
+          </LevelItem>
+          <LevelItem>{component}</LevelItem>
+        </Level>
+        {(() => {
           switch (typeof description) {
             case 'string':
               return <p className="wizard-step__description">{description}</p>;
@@ -27,7 +28,7 @@ export const StepBodyLayout: FunctionComponent<CreateConnectorWizardBodyLayoutPr
           }
         })()}
       </div>
-      
+
       <div className={'pf-l-stack__item pf-l-stack pf-m-fill'}>{children}</div>
     </div>
   );

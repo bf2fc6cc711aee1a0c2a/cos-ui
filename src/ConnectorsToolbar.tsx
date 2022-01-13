@@ -1,4 +1,5 @@
 import React, { FunctionComponent, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 
 import {
@@ -15,7 +16,6 @@ import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
 import { Pagination, PaginationProps } from './Pagination';
 import { useDebounce } from './useDebounce';
-import { useTranslation } from 'react-i18next';
 
 type ConnectorsToolbarProps = {} & PaginationProps;
 export const ConnectorsToolbar: FunctionComponent<ConnectorsToolbarProps> = ({
