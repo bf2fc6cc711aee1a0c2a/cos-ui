@@ -74,7 +74,7 @@ const KafkasGallery: FunctionComponent = () => {
 
   return (
     <StepBodyLayout
-      title={t('Select a Kafka instance')}
+      title={t('Kafka instance')}
       description={t('kafkaStepDescription')}
     >
       {(() => {
