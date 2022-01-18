@@ -3,8 +3,11 @@ import { createModel } from 'xstate/lib/model';
 
 import { ConnectorType } from '@rhoas/connector-management-sdk';
 
+type ConnectorTypePatched = Omit<ConnectorType, 'json_schema'> & {
+  schema: ConnectorType['json_schema'];
+};
 type Context = {
-  connector: ConnectorType;
+  connector: ConnectorTypePatched;
   steps: string[];
   activeStep: number;
   isActiveStepValid: boolean;
@@ -17,7 +20,7 @@ const model = createModel(
       id: 'something',
       name: 'something',
       version: '0.1',
-      json_schema: {},
+      schema: {},
     },
     steps: [],
     activeStep: 0,
@@ -75,7 +78,7 @@ export const configuratorMachine = model.createMachine(
         id: 'something',
         name: 'something',
         version: '0.1',
-        json_schema: {},
+        schema: {},
       },
       steps: ['one', 'two', 'three'],
       activeStep: 0,
