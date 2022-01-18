@@ -14,7 +14,7 @@
       "name":"aws-kinesis-source",
       "version":"v1alpha1",
       "description":"Receive data from AWS Kinesis.",
-      "json_schema":{
+      "schema":{
         "type":"object",
         "description":"Receive data from AWS Kinesis.",
         "properties":{
@@ -65,7 +65,7 @@
       "name":"aws-sqs-source",
       "version":"v1alpha1",
       "description":"Receive data from AWS SQS.",
-      "json_schema":{
+      "schema":{
         "type":"object",
         "description":"Receive data from AWS SQS.",
         "properties":{
@@ -125,7 +125,7 @@
       "name":"jira-source",
       "version":"v1alpha1",
       "description":"Receive notifications about new issues from Jira.",
-      "json_schema":{
+      "schema":{
         "type":"object",
         "description":"Receive notifications about new issues from Jira.",
         "properties":{
@@ -173,7 +173,7 @@
       "name":"salesforce-source-source",
       "version":"v1alpha1",
       "description":"Receive updates from Salesforce.",
-      "json_schema":{
+      "schema":{
         "type":"object",
         "description":"Receive updates from Salesforce.",
         "properties":{
@@ -243,7 +243,7 @@
       "name":"slack-source-source",
       "version":"v1alpha1",
       "description":"Receive messages from a Slack channel.",
-      "json_schema":{
+      "schema":{
         "type":"object",
         "description":"Receive messages from a Slack channel.",
         "properties":{
@@ -279,7 +279,7 @@
       "name":"telegram-source-source",
       "version":"v1alpha1",
       "description":"Receive all messages that people send to your telegram bot.",
-      "json_schema":{
+      "schema":{
         "type":"object",
         "description":"Receive all messages that people send to your telegram bot.",
         "properties":{
