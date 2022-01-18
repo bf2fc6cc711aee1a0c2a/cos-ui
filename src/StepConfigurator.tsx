@@ -64,7 +64,7 @@ const ConnectedJsonSchemaConfigurator: FunctionComponent<{
 
   return (
     <JsonSchemaConfigurator
-      schema={connector.json_schema!}
+      schema={connector.schema!}
       configuration={configuration || {}}
       onChange={(configuration, isValid) =>
         actor.send({ type: 'change', configuration, isValid })
