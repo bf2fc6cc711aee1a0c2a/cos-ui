@@ -57,7 +57,7 @@ const ClustersGallery: FunctionComponent = () => {
 
   return (
     <StepBodyLayout
-      title={t('Select an OSD cluster')}
+      title={t('OSD cluster')}
       description={t('clusterStepDescription')}
     >
       {(() => {

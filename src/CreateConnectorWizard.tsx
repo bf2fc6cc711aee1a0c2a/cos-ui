@@ -37,7 +37,7 @@ function useKafkaInstanceStep() {
     )
   );
   return {
-    name: t('Select a Kafka instance'),
+    name: t('Kafka instance'),
     isActive,
     component: (
       <StepErrorBoundary>
@@ -203,7 +203,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
       },
       kafkaInstanceStep,
       {
-        name: t('Select an OSD cluster'),
+        name: t('OSD cluster'),
         isActive: state.matches('selectCluster'),
         component: (
           <StepErrorBoundary>
