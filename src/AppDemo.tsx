@@ -1,3 +1,7 @@
+import { AlertsProvider } from '@app/components/Alerts/Alerts';
+import { AppLayout } from '@app/components/AppLayout/AppLayout';
+import { Loading } from '@app/components/Loading/Loading';
+import i18n from '@i18n/i18n';
 import Keycloak from 'keycloak-js';
 import React, {
   FunctionComponent,
@@ -18,16 +22,12 @@ import {
   useConfig,
 } from '@rhoas/app-services-ui-shared';
 
-import { AlertsProvider } from './Alerts';
-import { AppLayout } from './AppLayout';
 import { CosRoutes } from './CosRoutes';
 import {
   getKeycloakInstance,
   KeycloakAuthProvider,
   KeycloakContext,
 } from './Keycloak';
-import { Loading } from './Loading';
-import i18n from './i18n';
 
 let keycloak: Keycloak.KeycloakInstance | undefined;
 

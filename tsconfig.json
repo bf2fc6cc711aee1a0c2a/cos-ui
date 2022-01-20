@@ -5,5 +5,13 @@
     "allowJs": false,
     "baseUrl": ".",    
     "typeRoots": ["./node_modules/@types", "./types"],
+    "paths": {
+      "@app/*": ["src/app/*"],
+      "@i18n/*":["src/i18n/*"],
+      "@apis/*":["src/apis/*"],
+      "@constants/*":["src/constants/*"],
+      "@utils/*":["src/utils/*"],
+      "@context/*":["src/context/*"]
+    },
   }
 }
