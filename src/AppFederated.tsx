@@ -1,3 +1,5 @@
+import { Loading } from '@app/components/Loading/Loading';
+import i18n from '@i18n/i18n';
 import React, { FunctionComponent } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -5,8 +7,6 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { useAuth, useBasename, useConfig } from '@rhoas/app-services-ui-shared';
 
 import { CosRoutes } from './CosRoutes';
-import { Loading } from './Loading';
-import i18n from './i18n';
 
 /**
  * Initializes the COS UI without any chrome. This is meant to be used in

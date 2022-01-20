@@ -1,12 +1,12 @@
+import { ConnectedConnectorsPage } from '@app/pages/ConnectorsPage/ConnectorsPage';
+import { CreateConnectorPage } from '@app/pages/CreateConnectorPage/CreateConnectorPage';
 import React, { FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Route, Switch, useHistory } from 'react-router-dom';
 
 import { AlertVariant, useAlert } from '@rhoas/app-services-ui-shared';
 
-import { ConnectedConnectorsPage } from './ConnectorsPage';
-import { CosContextProvider } from './CosContext';
-import { CreateConnectorPage } from './CreateConnectorPage';
+import { CosContextProvider } from './context/CosContext';
 
 type CosRoutesProps = {
   getToken: () => Promise<string>;

@@ -1,3 +1,7 @@
+import { AlertsProvider } from '@app/components/Alerts/Alerts';
+import { AppLayout } from '@app/components/AppLayout/AppLayout';
+import { Loading } from '@app/components/Loading/Loading';
+import i18n from '@i18n/i18n';
 import React, { FunctionComponent, useCallback } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -12,11 +16,7 @@ import {
   useConfig,
 } from '@rhoas/app-services-ui-shared';
 
-import { AlertsProvider } from './Alerts';
-import { AppLayout } from './AppLayout';
 import { CosRoutes } from './CosRoutes';
-import { Loading } from './Loading';
-import i18n from './i18n';
 
 /**
  * Initializes the COS UI with an app that mimicks the console.redhat.com
