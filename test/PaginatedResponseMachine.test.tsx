@@ -5,7 +5,7 @@ import {
   ApiCallback,
   getPaginatedApiMachineEvents,
   makePaginatedApiMachine,
-} from '../src/PaginatedResponse.machine';
+} from '../src/app/machines/PaginatedResponse.machine';
 
 describe('@cos-ui/machines', () => {
   describe('makePaginatedApiMachine', () => {
