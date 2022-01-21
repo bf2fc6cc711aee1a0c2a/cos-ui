@@ -48,7 +48,7 @@
   "connectorTypeStepDescription": "Select a connector based on connector category.",
   "sink": "sink",
   "source": "source",
-  "kafkaStepDescription": "Select a Kafka instance to integrate with your system. Connectors that are sinks will read from the selected Kafka instance. Connectors that are sources will write to the selected Kafka instance.",
+  "kafkaStepDescription": "Select a Kafka instance for your connector to work with. A source connector will ingest data from another system into that Kafka instance. A sink connector will propagate data from that Kafka instance into another system.",
   "status": "Stato",
   "Filter by status": "Filter by status",
   "CloudProvider": "Cloud Provider",
