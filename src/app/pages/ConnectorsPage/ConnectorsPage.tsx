@@ -227,17 +227,17 @@ const ConnectedRow: FunctionComponent<ConnectedRowProps> = ({
   return (
     <>
       <DialogDeleteConnector
-        connectorName={connector.metadata?.name}
+        connectorName={connector.name}
         showDialog={showDeleteConnectorConfirm}
         onCancel={doCancelDeleteConnector}
         onConfirm={doDeleteConnector}
       />
       <ConnectorsTableRow
         connectorId={connector.id!}
-        name={connector.metadata!.name!}
+        name={connector.name!}
         type={connector.connector_type_id!}
         category={'TODO: MISSING'}
-        status={connector.status!}
+        status={connector.status?.state!}
         isSelected={selectedConnector?.id === connector.id}
         canStart={canStart}
         canStop={canStop}

@@ -18,6 +18,7 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
+import { ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
 
 const ConnectedCustomConfigurator: FunctionComponent<{
   Configurator: ConnectorConfiguratorComponent;
@@ -63,7 +64,7 @@ const ConnectedJsonSchemaConfigurator: FunctionComponent<{
 
   return (
     <JsonSchemaConfigurator
-      schema={connector.schema!}
+      schema={(connector as ConnectorTypeAllOf).schema!}
       configuration={configuration || {}}
       onChange={(configuration, isValid) =>
         actor.send({ type: 'change', configuration, isValid })

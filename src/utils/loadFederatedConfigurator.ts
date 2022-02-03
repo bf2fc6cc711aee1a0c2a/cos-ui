@@ -4,7 +4,7 @@
 import { ConnectorConfiguratorResponse } from '@app/machines/StepConfiguratorLoader.machine';
 import { ComponentType, LazyExoticComponent } from 'react';
 
-import { ConnectorType } from '@rhoas/connector-management-sdk';
+import { ConnectorType, ObjectReference } from '@rhoas/connector-management-sdk';
 
 type FederatedModuleConfigurationType = {
   remoteEntry: string;
@@ -61,9 +61,9 @@ const maybeGetFederatedConfiguratorForConnector = async (
   connector: ConnectorType
 ): Promise<FederatedModuleConfigurationType> => {
   console.log('Fetched federated configurator remotes configuration', config);
-  const maybeConfiguration = config[connector.id!];
+  const maybeConfiguration = config[(connector as ObjectReference).id!];
   console.log(
-    `Candidate configuration for "${connector.id}"`,
+    `Candidate configuration for "${(connector as ObjectReference).id}"`,
     maybeConfiguration
   );
   if (!maybeConfiguration) {

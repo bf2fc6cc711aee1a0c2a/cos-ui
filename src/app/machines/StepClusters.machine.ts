@@ -5,7 +5,6 @@ import { ActorRefFrom, send, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import { ConnectorCluster } from '@rhoas/connector-management-sdk';
-import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
 import {
   ApiSuccessResponse,
@@ -36,7 +35,7 @@ const model = createModel(
       }),
       deselectCluster: () => ({}),
       confirm: () => ({}),
-      ...getPaginatedApiMachineEvents<KafkaRequest, {}, KafkaRequest>(),
+      ...getPaginatedApiMachineEvents<ConnectorCluster, {}, ConnectorCluster>(),
     },
   }
 );

@@ -3,11 +3,9 @@ import { createModel } from 'xstate/lib/model';
 
 import { ConnectorType } from '@rhoas/connector-management-sdk';
 
-type ConnectorTypePatched = Omit<ConnectorType, 'json_schema'> & {
-  schema: ConnectorType['json_schema'];
-};
+
 type Context = {
-  connector: ConnectorTypePatched;
+  connector: ConnectorType;
   steps: string[];
   activeStep: number;
   isActiveStepValid: boolean;
