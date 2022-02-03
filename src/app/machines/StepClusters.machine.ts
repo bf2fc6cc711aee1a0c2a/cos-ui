@@ -78,7 +78,7 @@ export const clustersMachine = model.createMachine(
             invoke: {
               id: PAGINATED_MACHINE_ID,
               src: (context) =>
-                makePaginatedApiMachine<KafkaRequest, {}, KafkaRequest>(
+                makePaginatedApiMachine<ConnectorCluster, {}, ConnectorCluster>(
                   fetchClusters(context),
                   (i) => i
                 ),
