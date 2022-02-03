@@ -4,13 +4,17 @@ import axios, { CancelTokenSource } from 'axios';
 import { Sender } from 'xstate';
 
 import {
+  Channel,
   Configuration,
   Connector,
   ConnectorCluster,
   ConnectorClustersApi,
+  ConnectorDesiredState,
   ConnectorsApi,
   ConnectorType,
+  ConnectorTypeAllOf,
   ConnectorTypesApi,
+  ObjectReference,
 } from '@rhoas/connector-management-sdk';
 import {
   KafkaRequest,
@@ -261,20 +265,20 @@ export const fetchConnectorTypes = ({
     const { page, size, query } = request;
     const { name, categories = [] } = query || {};
     connectorsAPI
-      .listConnectorTypes('1', '1000', {
+      .getConnectorTypes('1', '1000',undefined, undefined, {
         cancelToken: source.token,
       })
       .then((response) => {
         const lcName = name ? name.toLowerCase() : undefined;
         const rawItems = response.data.items || [];
         let filteredItems = lcName
-          ? rawItems?.filter((c) => c.name?.toLowerCase().includes(lcName))
+          ? rawItems?.filter((c) => (c as ConnectorTypeAllOf).name?.toLowerCase().includes(lcName))
           : rawItems;
         filteredItems =
           categories.length > 0
             ? filteredItems?.filter(
                 (c) =>
-                  (c.labels?.filter((l) => categories.includes(l)) || [])
+                  ((c as ConnectorTypeAllOf).labels?.filter((l) => categories.includes(l)) || [])
                     .length > 0
               )
             : filteredItems;
@@ -430,7 +434,7 @@ export const saveConnector = ({
     // automatically on behalf of the user
     const response = await securityAPI.createServiceAccount(
       {
-        name: `connector-${connectorType.id?.replaceAll(
+        name: `connector-${(connectorType as ObjectReference).id?.replaceAll(
           /[_\.]/g,
           '-'
         )}-${Date.now()}`,
@@ -452,21 +456,23 @@ export const saveConnector = ({
     getOrCreateServiceAccount(source).then(({ clientId, clientSecret }) => {
       const connector: Connector = {
         kind: 'Connector',
-        metadata: {
-          name,
-          kafka_id: kafka.id,
-        },
+        name: name,
+        channel: Channel.Stable,
         deployment_location: {
           kind: 'addon',
           cluster_id: cluster.id,
         },
-        connector_type_id: connectorType.id,
+        desired_state: ConnectorDesiredState.Ready,
+        connector_type_id: (connectorType as ObjectReference).id!,
         kafka: {
-          bootstrap_server: kafka.bootstrap_server_host || 'demo',
+          id: kafka.id!,
+          url: kafka.bootstrap_server_host || 'demo',
+        },
+        service_account: {
           client_id: clientId,
           client_secret: clientSecret,
         },
-        connector_spec: configuration,
+        connector: configuration,
       };
       connectorsAPI
         .createConnector(async, connector, {

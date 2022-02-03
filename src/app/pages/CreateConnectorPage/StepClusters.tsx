@@ -102,20 +102,20 @@ const ClustersGallery: FunctionComponent = () => {
                         onClick={() => onSelect(i.id!)}
                       >
                         <CardHeader>
-                          <CardTitle>{i.metadata?.name}</CardTitle>
+                          <CardTitle>{i.name}</CardTitle>
                         </CardHeader>
                         <CardBody>
                           <DescriptionList>
                             <DescriptionListGroup>
                               <DescriptionListTerm>Owner</DescriptionListTerm>
                               <DescriptionListDescription>
-                                {i.metadata?.owner}
+                                {i.owner}
                               </DescriptionListDescription>
                             </DescriptionListGroup>
                             <DescriptionListGroup>
                               <DescriptionListTerm>Created</DescriptionListTerm>
                               <DescriptionListDescription>
-                                {i.metadata?.created_at}
+                                {i.created_at}
                               </DescriptionListDescription>
                             </DescriptionListGroup>
                           </DescriptionList>

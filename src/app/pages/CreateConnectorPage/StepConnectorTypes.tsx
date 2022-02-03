@@ -43,6 +43,7 @@ import {
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
+import { ConnectorTypeAllOf, ObjectReference } from '@rhoas/connector-management-sdk';
 
 export function SelectConnectorType() {
   const isReady = useConnectorTypesMachineIsReady();
@@ -102,31 +103,31 @@ export function ConnectorTypesGallery() {
                     {response?.items?.map((c) => (
                       <Card
                         isHoverable
-                        key={c.id}
+                        key={(c as ObjectReference).id}
                         isSelectable
-                        isSelected={selectedId === c.id}
-                        onClick={() => onSelect(c.id!)}
+                        isSelected={selectedId === (c as ObjectReference).id}
+                        onClick={() => onSelect((c as ObjectReference).id!)}
                       >
                         <CardHeader>
-                          <CardTitle>{c.name}</CardTitle>
+                          <CardTitle>{(c as ConnectorTypeAllOf).name}</CardTitle>
                         </CardHeader>
                         <CardBody>
                           <DescriptionList>
                             <DescriptionListGroup>
                               <DescriptionListDescription>
-                                {c.description}
+                                {(c as ConnectorTypeAllOf).description}
                               </DescriptionListDescription>
                             </DescriptionListGroup>
                             <DescriptionListGroup>
                               <DescriptionListTerm>Version</DescriptionListTerm>
                               <DescriptionListDescription>
-                                {c.version}
+                                {(c as ConnectorTypeAllOf).version}
                               </DescriptionListDescription>
                             </DescriptionListGroup>
                             <DescriptionListGroup>
                               <DescriptionListTerm>ID</DescriptionListTerm>
                               <DescriptionListDescription>
-                                {c.id}
+                                {(c as ObjectReference).id}
                               </DescriptionListDescription>
                             </DescriptionListGroup>
                           </DescriptionList>

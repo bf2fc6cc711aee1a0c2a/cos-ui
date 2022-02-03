@@ -31,7 +31,7 @@ import {
   TitleSizes,
 } from '@patternfly/react-core';
 
-import { AddonClusterTarget, Connector } from '@rhoas/connector-management-sdk';
+import { Connector } from '@rhoas/connector-management-sdk';
 
 import './ConnectorDrawer.css';
 
@@ -52,17 +52,14 @@ export const ConnectorDrawer: FunctionComponent<ConnectorDrawerProps> = ({
         panelContent={
           connector ? (
             <ConnectorDrawerPanelContent
-              name={connector.metadata!.name!}
-              bootstrapServer={connector.kafka!.bootstrap_server!}
-              kafkaId={connector.metadata!.kafka_id!}
-              owner={connector.metadata!.owner!}
-              cluster={
-                (connector.deployment_location as AddonClusterTarget)
-                  .cluster_id!
-              }
-              createdAt={new Date(connector.metadata!.created_at!)}
-              updatedAt={new Date(connector.metadata!.updated_at!)}
-              status={connector.status!}
+            name={connector.name}
+            bootstrapServer={connector.kafka!.url!}
+            kafkaId={connector.kafka.id}
+            owner={connector.owner!}
+            cluster={connector.deployment_location.cluster_id!}
+            createdAt={new Date(connector.created_at!)}
+            modifiedAt={new Date(connector.modified_at!)}
+            status={connector.status?.state!}
               onClose={onClose}
             />
           ) : undefined
@@ -81,7 +78,7 @@ export type ConnectorDrawerPanelContentProps = {
   owner: string;
   cluster: string;
   createdAt: Date;
-  updatedAt: Date;
+  modifiedAt: Date;
   status: string;
   onClose: () => void;
 };
@@ -94,7 +91,7 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
     owner,
     cluster,
     createdAt,
-    updatedAt,
+    modifiedAt,
     status,
     onClose,
   }) => {
@@ -176,10 +173,10 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
                     {textListItem(
                       'Time updated',
                       <time
-                        title={t('{{date}}', { date: updatedAt })}
-                        dateTime={updatedAt.toISOString()}
+                        title={t('{{date}}', { date: modifiedAt })}
+                        dateTime={modifiedAt.toISOString()}
                       >
-                        {t('{{ date, ago }}', { date: updatedAt })}
+                        {t('{{ date, ago }}', { date: modifiedAt })}
                       </time>
                     )}
                   </TextList>

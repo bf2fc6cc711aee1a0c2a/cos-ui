@@ -4,7 +4,7 @@ import { PAGINATED_MACHINE_ID } from '@constants/constants';
 import { ActorRefFrom, send, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
-import { ConnectorType } from '@rhoas/connector-management-sdk';
+import { ConnectorType, ObjectReference } from '@rhoas/connector-management-sdk';
 
 import {
   ApiSuccessResponse,
@@ -54,7 +54,7 @@ const selectConnector = model.assign(
   {
     selectedConnector: (context, event) => {
       return context.response?.items?.find(
-        (i) => i.id === event.selectedConnector
+        (i) => (i as ObjectReference).id === event.selectedConnector
       );
     },
   },

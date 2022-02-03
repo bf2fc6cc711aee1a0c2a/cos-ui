@@ -35,6 +35,7 @@ import { ActorRef } from 'xstate';
 import {
   ConnectorCluster,
   ConnectorType,
+  ObjectReference,
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
@@ -203,7 +204,7 @@ export const useConnectorTypesMachine = () => {
     connectorTypeRef,
     useCallback(
       (state: EmittedFrom<typeof connectorTypeRef>) => ({
-        selectedId: state.context.selectedConnector?.id,
+        selectedId: (state.context.selectedConnector as ObjectReference)?.id,
       }),
       []
     )

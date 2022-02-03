@@ -20,6 +20,7 @@ import {
   FlexItem,
 } from '@patternfly/react-core';
 import { EyeIcon, EyeSlashIcon } from '@patternfly/react-icons';
+import { ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
 
 export function Review() {
   const { t } = useTranslation();
@@ -120,7 +121,7 @@ export function Review() {
                   <GridItem span={4}>
                     <strong>{t('Connector category')}</strong>
                   </GridItem>
-                  <GridItem span={8}>{connectorType.description}</GridItem>
+                  <GridItem span={8}>{(connectorType as ConnectorTypeAllOf).description}</GridItem>
                 </Grid>
                 <Grid>
                   <GridItem span={4}>
@@ -132,7 +133,7 @@ export function Review() {
                   <GridItem span={4}>
                     <strong>{t('OSD Cluster')}</strong>
                   </GridItem>
-                  <GridItem span={8}>{cluster.metadata?.name}</GridItem>
+                  <GridItem span={8}>{cluster.name}</GridItem>
                 </Grid>
 
                 <Title headingLevel="h3" size={TitleSizes['2xl']}>
@@ -149,7 +150,7 @@ export function Review() {
                     <strong>{t('Type')}</strong>
                   </GridItem>
                   <GridItem span={8}>
-                    {connectorType.labels?.map((type) => type)}
+                    {(connectorType as ConnectorTypeAllOf).labels?.map((type) => type)}
                   </GridItem>
                 </Grid>
                 {userServiceAccount?.clientId && (
