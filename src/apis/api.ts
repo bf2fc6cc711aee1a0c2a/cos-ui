@@ -49,7 +49,7 @@ export const startConnector = ({
       .patchConnector(
         connector.id!,
         {
-          desired_state: 'ready',
+          desired_state: ConnectorDesiredState.Ready,
         },
         undefined,
         {
@@ -97,7 +97,7 @@ export const stopConnector = ({
       .patchConnector(
         connector.id!,
         {
-          desired_state: 'stopped',
+          desired_state: ConnectorDesiredState.Stopped,
         },
         undefined,
         {
