@@ -51,7 +51,6 @@ export const startConnector = ({
         {
           desired_state: ConnectorDesiredState.Ready,
         },
-        undefined,
         {
           cancelToken: source.token,
           headers: {
@@ -99,7 +98,6 @@ export const stopConnector = ({
         {
           desired_state: ConnectorDesiredState.Stopped,
         },
-        undefined,
         {
           cancelToken: source.token,
           headers: {
@@ -142,7 +140,7 @@ export const deleteConnector = ({
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     connectorsAPI
-      .deleteConnector(connector.id!, undefined, {
+      .deleteConnector(connector.id!, {
         cancelToken: source.token,
       })
       .then(() => {
@@ -185,7 +183,7 @@ export const fetchConnectors = ({
     const { page, size /*, name = '' */ } = request;
     // const query = name.length > 0 ? `name LIKE ${name}` : undefined;
     connectorsAPI
-      .listConnectors(`${page}`, `${size}`, undefined, {
+      .listConnectors(`${page}`, `${size}`, {
         cancelToken: source.token,
       })
       .then((response) => {
