@@ -211,21 +211,23 @@ describe('Connector creation', () => {
           .its('request.body')
           .should('deep.equal', {
             kind: 'Connector',
-            metadata: {
-              name: 'my-connector',
-              kafka_id: '1r9vAEfspruNoxIe4I9parl6dLo',
-            },
+            name: 'my-connector',
+            channel: 'stable',
             deployment_location: {
               kind: 'addon',
               cluster_id: '1r9uyAjkDfKKOr5pOnZbfdzj23D',
             },
+            desired_state: 'ready',
             connector_type_id: 'telegram-source',
             kafka: {
-              bootstrap_server: 'demo',
+              id: '1r9vAEfspruNoxIe4I9parl6dLo',
+              url: 'demo',
+            },
+            service_account: {
               client_id: 'lorem',
               client_secret: 'dolor',
             },
-            connector_spec: {
+            connector: {
               authorizationToken: 'some-token',
             },
           });
