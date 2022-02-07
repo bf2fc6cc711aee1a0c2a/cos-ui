@@ -10,6 +10,7 @@ import { Basic } from '@app/pages/CreateConnectorPage/StepBasic';
 import { SelectCluster } from '@app/pages/CreateConnectorPage/StepClusters';
 import { ConfiguratorStep } from '@app/pages/CreateConnectorPage/StepConfigurator';
 import { SelectConnectorType } from '@app/pages/CreateConnectorPage/StepConnectorTypes';
+import { StepErrorHandling } from '@app/pages/CreateConnectorPage/StepErrorHandling';
 import { SelectKafkaInstance } from '@app/pages/CreateConnectorPage/StepKafkas';
 import { Review } from '@app/pages/CreateConnectorPage/StepReview';
 import React, { FunctionComponent, useCallback } from 'react';
@@ -107,6 +108,37 @@ function useConnectorSpecificStep() {
     enableNext,
   };
 }
+
+function useErrorHandlingStep() {
+  const { t } = useTranslation();
+  const service = useCreateConnectorWizardService();
+  const { isActive, canJumpTo, enableNext } = useSelector(
+    service,
+    useCallback(
+      (state: typeof service.state) => ({
+        isActive: state.matches('errorConfiguration'),
+        canJumpTo:
+          creationWizardMachine.transition(state, 'jumpToErrorConfiguration')
+            .changed || state.matches('errorConfiguration'),
+        enableNext: creationWizardMachine.transition(state, 'next').changed,
+        activeStep: state.context.activeConfigurationStep,
+      }),
+      [service]
+    )
+  );
+  return {
+    name: t('Error handling'),
+    isActive,
+    component: (
+      <StepErrorBoundary>
+        <StepErrorHandling />
+      </StepErrorBoundary>
+    ),
+    canJumpTo,
+    enableNext,
+  };
+}
+
 export type CreateConnectorWizardProps = {
   onClose: () => void;
 };
@@ -148,6 +180,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
     const kafkaInstanceStep = useKafkaInstanceStep();
     const basicStep = useBasicStep();
     const connectorSpecificStep = useConnectorSpecificStep();
+    const errorHandlingStep = useErrorHandlingStep();
 
     if (state.value === 'saved') return null;
     const canJumpToStep = (idx: number) => {
@@ -183,6 +216,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
         configureSteps === false
       ) {
         finalSteps.push(connectorSpecificStep);
+        finalSteps.push(errorHandlingStep);
       }
       return finalSteps;
     };

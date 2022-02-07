@@ -7,6 +7,7 @@ import {
   ConnectorConfiguratorType,
 } from '@app/machines/StepConfiguratorLoader.machine';
 import { connectorTypesMachine } from '@app/machines/StepConnectorTypes.machine';
+import { errorHandlingMachine } from '@app/machines/StepErrorHandling.machine';
 import { kafkasMachine } from '@app/machines/StepKafkas.machine';
 import { reviewMachine } from '@app/machines/StepReview.machine';
 
@@ -32,7 +33,9 @@ type Context = {
   isConfigurationValid?: boolean;
   connectorConfiguration?: unknown;
   name: string;
+  topic: string;
   userServiceAccount: UserProvidedServiceAccount;
+  errorHandler: unknown;
   onSave?: () => void;
 };
 
@@ -50,6 +53,7 @@ const model = createModel({} as Context, {
       subStep,
     }),
     jumpToBasicConfiguration: () => ({}),
+    jumpToErrorConfiguration: () => ({}),
     jumpToReviewConfiguration: () => ({}),
   },
   actions: {
@@ -218,7 +222,7 @@ export const creationWizardMachine = model.createMachine(
                 isActiveStepValid: context.connectorConfiguration !== false,
               }),
               onDone: {
-                target: '#creationWizard.reviewConfiguration', // incase of Basic
+                target: '#creationWizard.errorConfiguration', // incase of Basic
                 actions: assign((_, event) => ({
                   connectorConfiguration: event.data.configuration || true,
                 })),
@@ -248,7 +252,7 @@ export const creationWizardMachine = model.createMachine(
                   actions: send('prev', { to: 'configuratorRef' }),
                   cond: 'areThereSubsteps',
                 },
-                { target: '#creationWizard.basicConfiguration' },
+                { target: '#creationWizard.errorConfiguration' },
               ],
               changedStep: {
                 actions: assign({
@@ -308,6 +312,55 @@ export const creationWizardMachine = model.createMachine(
           prev: 'selectCluster',
         },
       },
+      errorConfiguration: {
+        id: 'configureErrorHandler',
+        initial: 'submittable',
+        invoke: {
+          id: 'errorRef',
+          src: errorHandlingMachine,
+          data: (context) => ({
+            accessToken: context.accessToken,
+            connectorsApiBasePath: context.connectorsApiBasePath,
+            kafkaManagementApiBasePath: context.kafkaManagementApiBasePath,
+            kafka: context.selectedKafkaInstance,
+            cluster: context.selectedCluster,
+            connectorType: context.selectedConnector,
+            initialConfiguration: context.connectorConfiguration,
+            topic: context.topic,
+            errorHandler: context.errorHandler,
+          }),
+          onDone: {
+            target: 'reviewConfiguration',
+            actions: [
+              assign((_, event) => ({
+                topic: event.data.topic,
+                errorHandler: event.data.errorHandler,
+              })),
+            ],
+          },
+          onError: {
+            actions: (_context, event) => console.error(event.data.message),
+          },
+        },
+        states: {
+          submittable: {
+            on: {
+              isInvalid: 'invalid',
+              next: {
+                actions: send('confirm', { to: 'errorRef' }),
+              },
+            },
+          },
+          invalid: {
+            on: {
+              isValid: 'submittable',
+            },
+          },
+        },
+        on: {
+          prev: 'configureConnector',
+        },
+      },
       reviewConfiguration: {
         id: 'review',
         initial: 'reviewing',
@@ -354,7 +407,7 @@ export const creationWizardMachine = model.createMachine(
           },
         },
         on: {
-          prev: 'configureConnector',
+          prev: 'errorConfiguration',
         },
       },
       saved: {
@@ -384,6 +437,10 @@ export const creationWizardMachine = model.createMachine(
         actions: assign((_, event) => ({
           activeConfigurationStep: event.subStep || 0,
         })),
+      },
+      jumpToErrorConfiguration: {
+        target: 'errorConfiguration',
+        cond: 'isErrorHandlerConfigured',
       },
       jumpToReviewConfiguration: {
         target: 'reviewConfiguration',
