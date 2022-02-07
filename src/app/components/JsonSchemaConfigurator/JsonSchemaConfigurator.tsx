@@ -37,6 +37,8 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
     // suppress the experimental steps from the UI for the moment
     try {
       delete schema.properties.steps;
+      delete schema.properties.error_handler;
+      delete schema.properties.processors;
     } catch (e) {}
     const schemaValidator = createValidator(schema);
     const bridge = new JSONSchemaBridge(schema, schemaValidator);
@@ -46,11 +48,8 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
         model={configuration}
         onChangeModel={(model: any) => onChange(model, false)}
         onSubmit={(model: any) => onChange(model, true)}
-        // autosave
-        // autosaveDelay={0}
       >
         <AutoFields />
-
         <Card isPlain>
           <CardBody>
             {/*

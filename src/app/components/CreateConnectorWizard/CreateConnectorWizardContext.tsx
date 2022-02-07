@@ -19,6 +19,7 @@ import {
   configuratorLoaderMachine,
 } from '@app/machines/StepConfiguratorLoader.machine';
 import { ConnectorTypesMachineActorRef } from '@app/machines/StepConnectorTypes.machine';
+import { ErrorHandlingMachineActorRef } from '@app/machines/StepErrorHandling.machine';
 import { KafkaMachineActorRef } from '@app/machines/StepKafkas.machine';
 import { ReviewMachineActorRef } from '@app/machines/StepReview.machine';
 import { PAGINATED_MACHINE_ID } from '@constants/constants';
@@ -106,6 +107,7 @@ export const useCreateConnectorWizard = (): {
   kafkaRef: KafkaMachineActorRef;
   clusterRef: ClustersMachineActorRef;
   basicRef: BasicMachineActorRef;
+  errorRef: ErrorHandlingMachineActorRef;
   reviewRef: ReviewMachineActorRef;
 } => {
   const service = useCreateConnectorWizardService();
@@ -118,6 +120,7 @@ export const useCreateConnectorWizard = (): {
         kafkaRef: state.children.selectKafkaInstanceRef as KafkaMachineActorRef,
         clusterRef: state.children.selectClusterRef as ClustersMachineActorRef,
         basicRef: state.children.basicRef as BasicMachineActorRef,
+        errorRef: state.children.errorRef as ErrorHandlingMachineActorRef,
         reviewRef: state.children.reviewRef as ReviewMachineActorRef,
       }),
       []
@@ -349,5 +352,41 @@ export const useReviewMachine = () => {
     configString,
     isSaving,
     savingError,
+  };
+};
+
+export const useErrorHandlingMachine = () => {
+  const { errorRef } = useCreateConnectorWizard();
+
+  const { topic, errorHandler } = useSelector(
+    errorRef,
+    useCallback(
+      (state: EmittedFrom<typeof errorRef>) => ({
+        topic: state.context.topic,
+        errorHandler: state.context.userErrorHandler,
+      }),
+      []
+    )
+  );
+
+  const onSetTopic = useCallback(
+    (topic: string) => {
+      errorRef.send({ type: 'setTopic', topic });
+    },
+    [errorRef]
+  );
+
+  const onSetErrorHandler = useCallback(
+    (errorHandler: string) => {
+      errorRef.send({ type: 'setErrorHandler', errorHandler });
+    },
+    [errorRef]
+  );
+
+  return {
+    errorHandler,
+    topic,
+    onSetErrorHandler,
+    onSetTopic,
   };
 };
