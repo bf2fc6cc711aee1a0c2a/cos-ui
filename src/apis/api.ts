@@ -263,21 +263,26 @@ export const fetchConnectorTypes = ({
     const { page, size, query } = request;
     const { name, categories = [] } = query || {};
     connectorsAPI
-      .getConnectorTypes('1', '1000',undefined, undefined, {
+      .getConnectorTypes('1', '1000', undefined, undefined, {
         cancelToken: source.token,
       })
       .then((response) => {
         const lcName = name ? name.toLowerCase() : undefined;
         const rawItems = response.data.items || [];
         let filteredItems = lcName
-          ? rawItems?.filter((c) => (c as ConnectorTypeAllOf).name?.toLowerCase().includes(lcName))
+          ? rawItems?.filter((c) =>
+              (c as ConnectorTypeAllOf).name?.toLowerCase().includes(lcName)
+            )
           : rawItems;
         filteredItems =
           categories.length > 0
             ? filteredItems?.filter(
                 (c) =>
-                  ((c as ConnectorTypeAllOf).labels?.filter((l) => categories.includes(l)) || [])
-                    .length > 0
+                  (
+                    (c as ConnectorTypeAllOf).labels?.filter((l) =>
+                      categories.includes(l)
+                    ) || []
+                  ).length > 0
               )
             : filteredItems;
         const total = filteredItems.length;
@@ -398,6 +403,10 @@ export type SaveConnectorProps = {
 
   name: string;
   userServiceAccount?: UserProvidedServiceAccount;
+
+  topic?: string;
+  userErrorHandler?: string;
+
   kafkaManagementApiBasePath: string;
 } & CommonApiProps;
 
@@ -411,6 +420,8 @@ export const saveConnector = ({
   configuration,
   name,
   userServiceAccount,
+  userErrorHandler,
+  topic,
 }: SaveConnectorProps) => {
   const connectorsAPI = new ConnectorsApi(
     new Configuration({
@@ -452,6 +463,19 @@ export const saveConnector = ({
     const source = CancelToken.source();
     const async = true;
     getOrCreateServiceAccount(source).then(({ clientId, clientSecret }) => {
+      let connectorConfiguration = {};
+      if (userErrorHandler) {
+        connectorConfiguration = {
+          ...configuration,
+          ...{
+            error_handling: {
+              [userErrorHandler]: topic ? { topic: topic } : null,
+            },
+          },
+        };
+      } else {
+        connectorConfiguration = configuration;
+      }
       const connector: Connector = {
         kind: 'Connector',
         name: name,
@@ -470,7 +494,7 @@ export const saveConnector = ({
           client_id: clientId,
           client_secret: clientSecret,
         },
-        connector: configuration,
+        connector: connectorConfiguration,
       };
       connectorsAPI
         .createConnector(async, connector, {

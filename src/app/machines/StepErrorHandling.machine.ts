@@ -1,7 +1,10 @@
 import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
+import { ConnectorType } from '@rhoas/connector-management-sdk';
+
 type Context = {
+  connector: ConnectorType;
   topic: string;
   userErrorHandler?: any;
 };
@@ -9,6 +12,7 @@ type Context = {
 const model = createModel(
   {
     topic: '',
+    userErrorHandler: '',
   } as Context,
   {
     events: {
@@ -35,7 +39,7 @@ const setErrorHandler = model.assign(
 
 export const errorHandlingMachine = model.createMachine(
   {
-    id: 'configureBasic',
+    id: 'configureErrorHandler',
     initial: 'verify',
     states: {
       verify: {
@@ -88,12 +92,11 @@ export const errorHandlingMachine = model.createMachine(
   {
     guards: {
       isErrorHandlerConfigured: (context) =>
-        context.userErrorHandler === undefined
+        context.userErrorHandler !== undefined &&
+        context.userErrorHandler === 'dead_letter_queue'
           ? context.topic !== undefined && context.topic.length > 0
-          : context.topic !== undefined &&
-            context.topic.length > 0 &&
-            context.userErrorHandler.clientId.length > 0 &&
-            context.userErrorHandler.clientSecret.length > 0,
+          : (context.topic !== undefined && context.topic.length > 0) ||
+            context.userErrorHandler !== undefined,
     },
   }
 );

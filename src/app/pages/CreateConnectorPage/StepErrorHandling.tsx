@@ -1,7 +1,9 @@
 import { useErrorHandlingMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
-import React, { useCallback } from 'react';
+import { createValidator } from '@utils/createValidator';
+import React, { FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { JSONSchemaBridge } from 'uniforms-bridge-json-schema';
 
 import {
   Card,
@@ -14,11 +16,13 @@ import {
   SelectVariant,
 } from '@patternfly/react-core';
 
-export function StepErrorHandling() {
+import { ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
+
+export const StepErrorHandling: FunctionComponent = () => {
   const [isOpen, setOpen] = React.useState<boolean>(false);
-  const [selected, setSelected] = React.useState<string>('');
   const { t } = useTranslation();
-  const { topic, errorHandler, onSetTopic, onSetErrorHandler } =
+
+  const { connector, topic, errorHandler, onSetTopic, onSetErrorHandler } =
     useErrorHandlingMachine();
 
   const onToggle = useCallback(() => setOpen((isOpen) => !isOpen), []);
@@ -27,21 +31,29 @@ export function StepErrorHandling() {
       clearSelection();
     } else {
       setOpen(false);
-      setSelected(selection);
+      onSetTopic('');
       onSetErrorHandler(selection);
     }
   }, []);
 
   const clearSelection = useCallback(() => {
     setOpen(false);
-    setSelected('');
   }, []);
 
-  const dropdownItems = ['dead_letter_queue', 'log', 'stop'].map(
-    (item: string) => {
-      return <SelectOption key={item} value={item} />;
-    }
+  const schemaValidator = createValidator(
+    (connector as ConnectorTypeAllOf).schema!
   );
+  const bridge = new JSONSchemaBridge(
+    (connector as ConnectorTypeAllOf).schema!,
+    schemaValidator
+  );
+  const { error_handler } = bridge.schema?.properties;
+  const oneOf = error_handler['oneOf'];
+
+  const dropdownItems = oneOf.map((item: any) => {
+    const keys = Object.keys(item.properties);
+    return <SelectOption key={keys[0]} value={keys[0]} />;
+  });
 
   return (
     <StepBodyLayout
@@ -70,7 +82,7 @@ export function StepErrorHandling() {
                 {dropdownItems}
               </Select>
             </FormGroup>
-            {selected === 'dead_letter_queue' && (
+            {errorHandler === 'dead_letter_queue' && (
               <FormGroup
                 label="Dead Letter Topic Name"
                 isRequired
@@ -85,4 +97,4 @@ export function StepErrorHandling() {
       </Card>
     </StepBodyLayout>
   );
-}
+};

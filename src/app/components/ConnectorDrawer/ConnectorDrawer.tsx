@@ -52,14 +52,14 @@ export const ConnectorDrawer: FunctionComponent<ConnectorDrawerProps> = ({
         panelContent={
           connector ? (
             <ConnectorDrawerPanelContent
-            name={connector.name}
-            bootstrapServer={connector.kafka!.url!}
-            kafkaId={connector.kafka.id}
-            owner={connector.owner!}
-            cluster={connector.deployment_location.cluster_id!}
-            createdAt={new Date(connector.created_at!)}
-            modifiedAt={new Date(connector.modified_at!)}
-            status={connector.status?.state!}
+              name={connector.name}
+              bootstrapServer={connector.kafka!.url!}
+              kafkaId={connector.kafka.id}
+              owner={connector.owner!}
+              cluster={connector.deployment_location.cluster_id!}
+              createdAt={new Date(connector.created_at!)}
+              modifiedAt={new Date(connector.modified_at!)}
+              status={connector.status?.state!}
               onClose={onClose}
             />
           ) : undefined

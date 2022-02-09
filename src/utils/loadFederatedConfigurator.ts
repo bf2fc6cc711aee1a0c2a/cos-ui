@@ -4,7 +4,10 @@
 import { ConnectorConfiguratorResponse } from '@app/machines/StepConfiguratorLoader.machine';
 import { ComponentType, LazyExoticComponent } from 'react';
 
-import { ConnectorType, ObjectReference } from '@rhoas/connector-management-sdk';
+import {
+  ConnectorType,
+  ObjectReference,
+} from '@rhoas/connector-management-sdk';
 
 type FederatedModuleConfigurationType = {
   remoteEntry: string;

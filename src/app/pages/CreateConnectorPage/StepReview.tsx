@@ -20,6 +20,7 @@ import {
   FlexItem,
 } from '@patternfly/react-core';
 import { EyeIcon, EyeSlashIcon } from '@patternfly/react-icons';
+
 import { ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
 
 export function Review() {
@@ -60,6 +61,8 @@ export function Review() {
     cluster,
     connectorType,
     name,
+    topic,
+    userErrorHandler,
     userServiceAccount,
     configString,
     savingError,
@@ -121,7 +124,9 @@ export function Review() {
                   <GridItem span={4}>
                     <strong>{t('Connector category')}</strong>
                   </GridItem>
-                  <GridItem span={8}>{(connectorType as ConnectorTypeAllOf).description}</GridItem>
+                  <GridItem span={8}>
+                    {(connectorType as ConnectorTypeAllOf).description}
+                  </GridItem>
                 </Grid>
                 <Grid>
                   <GridItem span={4}>
@@ -150,7 +155,9 @@ export function Review() {
                     <strong>{t('Type')}</strong>
                   </GridItem>
                   <GridItem span={8}>
-                    {(connectorType as ConnectorTypeAllOf).labels?.map((type) => type)}
+                    {(connectorType as ConnectorTypeAllOf).labels?.map(
+                      (type) => type
+                    )}
                   </GridItem>
                 </Grid>
                 {userServiceAccount?.clientId && (
@@ -263,6 +270,27 @@ export function Review() {
                       </Grid>
                     );
                   })}
+                {userErrorHandler && (
+                  <>
+                    <Title headingLevel="h3" size={TitleSizes['2xl']}>
+                      {t('Error handling')}
+                    </Title>
+                    <Grid>
+                      <GridItem span={4}>
+                        <strong>{t('Error handling')}</strong>
+                      </GridItem>
+                      <GridItem span={8}>{userErrorHandler}</GridItem>
+                    </Grid>
+                    {topic && (
+                      <Grid>
+                        <GridItem span={4}>
+                          <strong>{_.startCase(topic)}</strong>
+                        </GridItem>
+                        <GridItem span={8}>{topic}</GridItem>
+                      </Grid>
+                    )}
+                  </>
+                )}
               </>
             )}
           </Form>

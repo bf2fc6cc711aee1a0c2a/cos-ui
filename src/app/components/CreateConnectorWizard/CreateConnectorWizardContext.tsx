@@ -321,6 +321,8 @@ export const useReviewMachine = () => {
     kafka,
     cluster,
     connectorType,
+    topic,
+    userErrorHandler,
     name,
     userServiceAccount,
     configString,
@@ -335,6 +337,8 @@ export const useReviewMachine = () => {
         connectorType: state.context.connectorType,
         name: state.context.name,
         userServiceAccount: state.context.userServiceAccount,
+        topic: state.context.topic,
+        userErrorHandler: state.context.userErrorHandler,
         configString: state.context.configString,
         isSaving: state.hasTag('saving'),
         savingError: state.context.savingError,
@@ -347,6 +351,8 @@ export const useReviewMachine = () => {
     kafka,
     cluster,
     connectorType,
+    topic,
+    userErrorHandler,
     name,
     userServiceAccount,
     configString,
@@ -358,12 +364,13 @@ export const useReviewMachine = () => {
 export const useErrorHandlingMachine = () => {
   const { errorRef } = useCreateConnectorWizard();
 
-  const { topic, errorHandler } = useSelector(
+  const { connector, topic, errorHandler } = useSelector(
     errorRef,
     useCallback(
       (state: EmittedFrom<typeof errorRef>) => ({
         topic: state.context.topic,
         errorHandler: state.context.userErrorHandler,
+        connector: state.context.connector,
       }),
       []
     )
@@ -388,5 +395,6 @@ export const useErrorHandlingMachine = () => {
     topic,
     onSetErrorHandler,
     onSetTopic,
+    connector,
   };
 };

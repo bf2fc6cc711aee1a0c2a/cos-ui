@@ -35,7 +35,7 @@ type Context = {
   name: string;
   topic: string;
   userServiceAccount: UserProvidedServiceAccount;
-  errorHandler: unknown;
+  userErrorHandler: string;
   onSave?: () => void;
 };
 
@@ -221,12 +221,27 @@ export const creationWizardMachine = model.createMachine(
                 activeStep: context.activeConfigurationStep || 0,
                 isActiveStepValid: context.connectorConfiguration !== false,
               }),
-              onDone: {
-                target: '#creationWizard.errorConfiguration', // incase of Basic
-                actions: assign((_, event) => ({
-                  connectorConfiguration: event.data.configuration || true,
-                })),
-              },
+              onDone: [
+                {
+                  target: '#creationWizard.reviewConfiguration',
+                  actions: assign((_, event) => ({
+                    connectorConfiguration: event.data.configuration || true,
+                  })),
+                  cond: (context) => {
+                    if (context.configurationSteps) {
+                      return true;
+                    } else {
+                      return false;
+                    }
+                  },
+                },
+                {
+                  target: '#creationWizard.errorConfiguration',
+                  actions: assign((_, event) => ({
+                    connectorConfiguration: event.data.configuration || true,
+                  })),
+                },
+              ],
               onError: {
                 actions: (_context, event) => console.error(event.data.message),
               },
@@ -252,7 +267,7 @@ export const creationWizardMachine = model.createMachine(
                   actions: send('prev', { to: 'configuratorRef' }),
                   cond: 'areThereSubsteps',
                 },
-                { target: '#creationWizard.errorConfiguration' },
+                { target: '#creationWizard.basicConfiguration' },
               ],
               changedStep: {
                 actions: assign({
@@ -279,6 +294,8 @@ export const creationWizardMachine = model.createMachine(
             initialConfiguration: context.connectorConfiguration,
             name: context.name,
             userServiceAccount: context.userServiceAccount,
+            topic: context.topic,
+            userErrorHandler: context.userErrorHandler,
           }),
           onDone: {
             target: 'configureConnector',
@@ -324,17 +341,17 @@ export const creationWizardMachine = model.createMachine(
             kafkaManagementApiBasePath: context.kafkaManagementApiBasePath,
             kafka: context.selectedKafkaInstance,
             cluster: context.selectedCluster,
-            connectorType: context.selectedConnector,
+            connector: context.selectedConnector,
             initialConfiguration: context.connectorConfiguration,
             topic: context.topic,
-            errorHandler: context.errorHandler,
+            userErrorHandler: context.userErrorHandler,
           }),
           onDone: {
             target: 'reviewConfiguration',
             actions: [
               assign((_, event) => ({
                 topic: event.data.topic,
-                errorHandler: event.data.errorHandler,
+                userErrorHandler: event.data.userErrorHandler,
               })),
             ],
           },
@@ -377,6 +394,8 @@ export const creationWizardMachine = model.createMachine(
             initialConfiguration: context.connectorConfiguration,
             name: context.name,
             userServiceAccount: context.userServiceAccount,
+            topic: context.topic,
+            userErrorHandler: context.userErrorHandler,
           }),
           onDone: {
             target: '#creationWizard.saved',
@@ -406,8 +425,21 @@ export const creationWizardMachine = model.createMachine(
             },
           },
         },
+
         on: {
-          prev: 'errorConfiguration',
+          prev: [
+            {
+              target: '#creationWizard.configureConnector',
+              cond: (context) => {
+                if (context.configurationSteps) {
+                  return true;
+                } else {
+                  return false;
+                }
+              },
+            },
+            { target: '#creationWizard.errorConfiguration' },
+          ],
         },
       },
       saved: {
@@ -440,7 +472,7 @@ export const creationWizardMachine = model.createMachine(
       },
       jumpToErrorConfiguration: {
         target: 'errorConfiguration',
-        cond: 'isErrorHandlerConfigured',
+        cond: 'isConnectorConfigured',
       },
       jumpToReviewConfiguration: {
         target: 'reviewConfiguration',
@@ -486,6 +518,14 @@ export const creationWizardMachine = model.createMachine(
             context.name.length > 0 &&
             context.userServiceAccount.clientId?.length > 0 &&
             context.userServiceAccount.clientSecret?.length > 0,
+
+      isErrorHandlerConfigured: (context) =>
+        context.userErrorHandler !== undefined &&
+        context.userErrorHandler === 'dead_letter_queue'
+          ? context.topic !== undefined && context.topic.length > 0
+          : (context.topic !== undefined && context.topic.length > 0) ||
+            context.userErrorHandler !== undefined,
+
       areThereSubsteps: (context) => context.activeConfigurationStep! > 0,
     },
     actions: {
