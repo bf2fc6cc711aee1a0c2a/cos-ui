@@ -4,7 +4,10 @@ import { PAGINATED_MACHINE_ID } from '@constants/constants';
 import { ActorRefFrom, send, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
-import { ConnectorType, ObjectReference } from '@rhoas/connector-management-sdk';
+import {
+  ConnectorType,
+  ObjectReference,
+} from '@rhoas/connector-management-sdk';
 
 import {
   ApiSuccessResponse,

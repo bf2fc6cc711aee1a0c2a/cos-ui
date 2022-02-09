@@ -59,7 +59,7 @@ function useBasicStep() {
       (state: typeof service.state) => ({
         isActive: state.matches('basicConfiguration'),
         canJumpTo:
-          creationWizardMachine.transition(state, 'jumpToConfigureConnector')
+          creationWizardMachine.transition(state, 'jumpToBasicConfiguration')
             .changed || state.matches('basicConfiguration'),
         enableNext: creationWizardMachine.transition(state, 'next').changed,
         activeStep: state.context.activeConfigurationStep,
@@ -253,7 +253,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
         name: t('Configurations'),
         isActive: state.matches('basicConfiguration'),
         canJumpTo:
-          creationWizardMachine.transition(state, 'jumpToSelectCluster')
+          creationWizardMachine.transition(state, 'jumpToBasicConfiguration')
             .changed || state.matches('basicConfiguration'),
 
         steps: loadSubSteps(),
@@ -303,12 +303,15 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
         case 5:
           send('jumpToConfigureConnector');
           break;
+        case 6:
+          send('jumpToErrorConfiguration');
+          break;
         case flattenedSteps.length:
           send('jumpToReviewConfiguration');
           break;
         default:
           if (stepIndex < flattenedSteps.length) {
-            send({ type: 'jumpToConfigureConnector', subStep: stepIndex - 5 });
+            send({ type: 'jumpToConfigureConnector', subStep: stepIndex - 6 });
           }
       }
     };

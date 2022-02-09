@@ -1,4 +1,5 @@
-import Ajv, { ValidateFunction } from 'ajv';
+import { createValidator } from '@utils/createValidator';
+import { ValidateFunction } from 'ajv';
 import React, { FunctionComponent } from 'react';
 import { AutoForm, ValidatedQuickForm } from 'uniforms';
 import { JSONSchemaBridge } from 'uniforms-bridge-json-schema';
@@ -6,21 +7,7 @@ import { AutoFields, SubmitField } from 'uniforms-patternfly';
 
 import { Card, CardBody } from '@patternfly/react-core';
 
-const ajv = new Ajv({
-  allErrors: true,
-  useDefaults: false,
-  strict: 'log',
-  strictSchema: false,
-});
-
-export function createValidator(schema: object) {
-  const validator = ajv.compile(schema);
-
-  return (model: object) => {
-    validator(model);
-    return validator.errors?.length ? { details: validator.errors } : null;
-  };
-}
+import './JsonSchemaConfigurator.css';
 
 export type CreateValidatorType = ReturnType<typeof createValidator>;
 export type ValidatorResultType = ValidateFunction<unknown>['errors'];
@@ -37,8 +24,6 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
     // suppress the experimental steps from the UI for the moment
     try {
       delete schema.properties.steps;
-      delete schema.properties.error_handler;
-      delete schema.properties.processors;
     } catch (e) {}
     const schemaValidator = createValidator(schema);
     const bridge = new JSONSchemaBridge(schema, schemaValidator);
@@ -48,8 +33,13 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
         model={configuration}
         onChangeModel={(model: any) => onChange(model, false)}
         onSubmit={(model: any) => onChange(model, true)}
+        className="configurator"
       >
-        <AutoFields />
+        <Card isPlain>
+          <CardBody>
+            <AutoFields omitFields={['processors', 'error_handler']} />
+          </CardBody>
+        </Card>
         <Card isPlain>
           <CardBody>
             {/*
@@ -82,11 +72,9 @@ function Auto(parent: any): any {
     static Auto = Auto;
     onChange(key: string, value: unknown) {
       if (value === '') return super.onChange(key, undefined);
-
       super.onChange(key, value);
     }
   }
-
   return _;
 }
 

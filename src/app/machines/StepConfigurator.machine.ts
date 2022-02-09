@@ -3,7 +3,6 @@ import { createModel } from 'xstate/lib/model';
 
 import { ConnectorType } from '@rhoas/connector-management-sdk';
 
-
 type Context = {
   connector: ConnectorType;
   steps: string[];

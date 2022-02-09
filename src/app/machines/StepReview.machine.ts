@@ -22,6 +22,10 @@ type Context = {
 
   name: string;
   userServiceAccount?: UserProvidedServiceAccount;
+
+  topic: string;
+  userErrorHandler: string;
+
   configString: string;
   configStringError?: string;
   configStringWarnings?: string[];
@@ -50,6 +54,9 @@ const initialize = model.assign((context) => ({
 
   name: context.name,
   userServiceAccount: context.userServiceAccount,
+
+  topic: context.topic,
+  userErrorHandler: context.userErrorHandler,
 
   configString: dataToPrettyString(context.initialConfiguration),
 }));
@@ -92,6 +99,8 @@ export const reviewMachine = model.createMachine(
               configuration: JSON.parse(context.configString),
               name: context.name,
               userServiceAccount: context.userServiceAccount,
+              topic: context.topic,
+              userErrorHandler: context.userErrorHandler,
             }),
         },
         on: {

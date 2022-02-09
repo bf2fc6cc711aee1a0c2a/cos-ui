@@ -18,6 +18,7 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
+
 import { ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
 
 const ConnectedCustomConfigurator: FunctionComponent<{

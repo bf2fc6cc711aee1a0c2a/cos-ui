@@ -43,7 +43,11 @@ import {
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
-import { ConnectorTypeAllOf, ObjectReference } from '@rhoas/connector-management-sdk';
+
+import {
+  ConnectorTypeAllOf,
+  ObjectReference,
+} from '@rhoas/connector-management-sdk';
 
 export function SelectConnectorType() {
   const isReady = useConnectorTypesMachineIsReady();
@@ -109,7 +113,9 @@ export function ConnectorTypesGallery() {
                         onClick={() => onSelect((c as ObjectReference).id!)}
                       >
                         <CardHeader>
-                          <CardTitle>{(c as ConnectorTypeAllOf).name}</CardTitle>
+                          <CardTitle>
+                            {(c as ConnectorTypeAllOf).name}
+                          </CardTitle>
                         </CardHeader>
                         <CardBody>
                           <DescriptionList>
