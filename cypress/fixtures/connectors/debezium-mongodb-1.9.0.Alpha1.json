@@ -1,0 +1,461 @@
+{
+    "connector_type": {
+        "id": "debezium-mongodb-1.9.0.Alpha1",
+        "kind": "ConnectorType",
+        "href": "/api/connector_mgmt/v1/kafka_connector_types/debezium-mongodb-1.9.0.Alpha1",
+        "name": "Debezium MongoDB Connector",
+        "version": "1.9.0.Alpha1",
+        "channels": [
+            "stable"
+        ],
+        "icon_href": "http://example.com/images/debezium-mongodb-1.9.0.Alpha1.png",
+        "labels": [
+            "source",
+            "debezium",
+            "mongodb",
+            "1.9.0.Alpha1"
+        ],
+        "schema": {
+            "$defs": {
+                "serializer": {
+                    "default": "JSON",
+                    "enum": [
+                        "JSON",
+                        "AVRO",
+                        "JSON_WITHOUT_SCHEMA"
+                    ],
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "data_shape": {
+                "additionalProperties": false,
+                "properties": {
+                    "key": {
+                        "$ref": "#/$defs/serializer"
+                    },
+                    "value": {
+                        "$ref": "#/$defs/serializer"
+                    }
+                },
+                "type": "object"
+            },
+            "properties": {
+                "capture.mode": {
+                    "default": "change_streams_update_full",
+                    "description": "The method used to capture changes from MongoDB server. Options include: 'oplog' to capture changes from the oplog; 'change_streams' to capture changes via MongoDB Change Streams, update events do not contain full documents; 'change_streams_update_full' (the default) to capture changes via MongoDB Change Streams, update events contain full documents",
+                    "enum": [
+                        "change_streams",
+                        "oplog",
+                        "change_streams_update_full"
+                    ],
+                    "title": "Capture mode",
+                    "type": "string",
+                    "x-category": "CONNECTOR_ADVANCED",
+                    "x-name": "capture.mode"
+                },
+                "collection.exclude.list": {
+                    "description": "A comma-separated list of regular expressions that match the collection names for which changes are to be excluded",
+                    "type": "string",
+                    "x-category": "FILTERS",
+                    "x-name": "collection.exclude.list"
+                },
+                "collection.include.list": {
+                    "description": "A comma-separated list of regular expressions that match the collection names for which changes are to be captured",
+                    "format": "list,regex",
+                    "title": "Include Collections",
+                    "type": "string",
+                    "x-category": "FILTERS",
+                    "x-name": "collection.include.list"
+                },
+                "connect.backoff.initial.delay.ms": {
+                    "default": 1000,
+                    "description": "The initial delay when trying to reconnect to a primary after a connection cannot be made or when no primary is available, given in milliseconds. Defaults to 1 second (1,000 ms).",
+                    "format": "int64",
+                    "title": "Initial delay before reconnection (ms)",
+                    "type": "integer",
+                    "x-category": "CONNECTION_ADVANCED",
+                    "x-name": "connect.backoff.initial.delay.ms"
+                },
+                "connect.backoff.max.delay.ms": {
+                    "default": 120000,
+                    "description": "The maximum delay when trying to reconnect to a primary after a connection cannot be made or when no primary is available, given in milliseconds. Defaults to 120 second (120,000 ms).",
+                    "format": "int64",
+                    "title": "Maximum delay before reconnection (ms)",
+                    "type": "integer",
+                    "x-category": "CONNECTION_ADVANCED",
+                    "x-name": "connect.backoff.max.delay.ms"
+                },
+                "connect.max.attempts": {
+                    "default": 16,
+                    "description": "Maximum number of failed connection attempts to a replica set primary before an exception occurs and task is aborted. Defaults to 16, which with the defaults for 'connect.backoff.initial.delay.ms' and 'connect.backoff.max.delay.ms' results in just over 20 minutes of attempts before failing.",
+                    "format": "int32",
+                    "title": "Connection attempt limit",
+                    "type": "integer",
+                    "x-category": "CONNECTION_ADVANCED",
+                    "x-name": "connect.max.attempts"
+                },
+                "converters": {
+                    "description": "Optional list of custom converters that would be used instead of default ones. The converters are defined using '\u003cconverter.prefix\u003e.type' config option and configured using options '\u003cconverter.prefix\u003e.\u003coption\u003e'",
+                    "title": "List of prefixes defining custom values converters.",
+                    "type": "string",
+                    "x-category": "CONNECTOR_ADVANCED",
+                    "x-name": "converters"
+                },
+                "cursor.max.await.time.ms": {
+                    "description": "The maximum processing time in milliseconds to wait for the oplog cursor to process a single poll request",
+                    "format": "int32",
+                    "title": "Server's oplog streaming cursor max await time",
+                    "type": "integer",
+                    "x-category": "ADVANCED",
+                    "x-name": "cursor.max.await.time.ms"
+                },
+                "database.exclude.list": {
+                    "description": "A comma-separated list of regular expressions that match the database names for which changes are to be excluded",
+                    "format": "list,regex",
+                    "title": "Exclude Databases",
+                    "type": "string",
+                    "x-category": "FILTERS",
+                    "x-name": "database.exclude.list"
+                },
+                "database.include.list": {
+                    "description": "A comma-separated list of regular expressions that match the database names for which changes are to be captured",
+                    "format": "list,regex",
+                    "title": "Include Databases",
+                    "type": "string",
+                    "x-category": "FILTERS",
+                    "x-name": "database.include.list"
+                },
+                "event.processing.failure.handling.mode": {
+                    "default": "fail",
+                    "description": "Specify how failures during processing of events (i.e. when encountering a corrupted event) should be handled, including:'fail' (the default) an exception indicating the problematic event and its position is raised, causing the connector to be stopped; 'warn' the problematic event and its position will be logged and the event will be skipped;'ignore' the problematic event will be skipped.",
+                    "enum": [
+                        "warn",
+                        "fail",
+                        "ignore",
+                        "skip"
+                    ],
+                    "title": "Event deserialization failure handling",
+                    "type": "string",
+                    "x-category": "ADVANCED",
+                    "x-name": "event.processing.failure.handling.mode"
+                },
+                "field.exclude.list": {
+                    "description": "A comma-separated list of the fully-qualified names of fields that should be excluded from change event message values",
+                    "title": "Exclude Fields",
+                    "type": "string",
+                    "x-category": "FILTERS",
+                    "x-name": "field.exclude.list"
+                },
+                "field.renames": {
+                    "description": "A comma-separated list of the fully-qualified replacements of fields that should be used to rename fields in change event message values. Fully-qualified replacements for fields are of the form databaseName.collectionName.fieldName.nestedFieldName:newNestedFieldName, where databaseName and collectionName may contain the wildcard (*) which matches any characters, the colon character (:) is used to determine rename mapping of field.",
+                    "title": "Rename Fields",
+                    "type": "string",
+                    "x-category": "CONNECTOR_ADVANCED",
+                    "x-name": "field.renames"
+                },
+                "heartbeat.interval.ms": {
+                    "default": 0,
+                    "description": "Length of an interval in milli-seconds in in which the connector periodically sends heartbeat messages to a heartbeat topic. Use 0 to disable heartbeat messages. Disabled by default.",
+                    "format": "int32",
+                    "title": "Connector heartbeat interval (milli-seconds)",
+                    "type": "integer",
+                    "x-category": "ADVANCED_HEARTBEAT",
+                    "x-name": "heartbeat.interval.ms"
+                },
+                "heartbeat.topics.prefix": {
+                    "default": "__debezium-heartbeat",
+                    "description": "The prefix that is used to name heartbeat topics.Defaults to __debezium-heartbeat.",
+                    "title": "A prefix used for naming of heartbeat topics",
+                    "type": "string",
+                    "x-category": "ADVANCED_HEARTBEAT",
+                    "x-name": "heartbeat.topics.prefix"
+                },
+                "max.batch.size": {
+                    "default": 2048,
+                    "description": "Maximum size of each batch of source records. Defaults to 2048.",
+                    "format": "int32",
+                    "title": "Change event batch size",
+                    "type": "integer",
+                    "x-category": "ADVANCED",
+                    "x-name": "max.batch.size"
+                },
+                "max.queue.size": {
+                    "default": 8192,
+                    "description": "Maximum size of the queue for change events read from the database log but not yet recorded or forwarded. Defaults to 8192, and should always be larger than the maximum batch size.",
+                    "format": "int32",
+                    "title": "Change event buffer size",
+                    "type": "integer",
+                    "x-category": "ADVANCED",
+                    "x-name": "max.queue.size"
+                },
+                "max.queue.size.in.bytes": {
+                    "default": 0,
+                    "description": "Maximum size of the queue in bytes for change events read from the database log but not yet recorded or forwarded. Defaults to 0. Mean the feature is not enabled",
+                    "format": "int64",
+                    "title": "Change event buffer size in bytes",
+                    "type": "integer",
+                    "x-category": "ADVANCED",
+                    "x-name": "max.queue.size.in.bytes"
+                },
+                "mongodb.authsource": {
+                    "default": "admin",
+                    "description": "Database containing user credentials.",
+                    "title": "Credentials Database",
+                    "type": "string",
+                    "x-category": "CONNECTION_ADVANCED",
+                    "x-name": "mongodb.authsource"
+                },
+                "mongodb.connect.timeout.ms": {
+                    "default": 10000,
+                    "description": "The connection timeout, given in milliseconds. Defaults to 10 seconds (10,000 ms).",
+                    "format": "int32",
+                    "title": "Connect Timeout MS",
+                    "type": "integer",
+                    "x-category": "CONNECTION_ADVANCED",
+                    "x-name": "mongodb.connect.timeout.ms"
+                },
+                "mongodb.hosts": {
+                    "description": "The hostname and port pairs (in the form 'host' or 'host:port') of the MongoDB server(s) in the replica set.",
+                    "format": "list,regex",
+                    "title": "Hosts",
+                    "type": "string",
+                    "x-category": "CONNECTION",
+                    "x-name": "mongodb.hosts"
+                },
+                "mongodb.members.auto.discover": {
+                    "default": true,
+                    "description": "Specifies whether the addresses in 'hosts' are seeds that should be used to discover all members of the cluster or replica set ('true'), or whether the address(es) in 'hosts' should be used as is ('false'). The default is 'true'.",
+                    "title": "Auto-discovery",
+                    "type": "boolean",
+                    "x-category": "CONNECTION",
+                    "x-name": "mongodb.members.auto.discover"
+                },
+                "mongodb.name": {
+                    "description": "Unique name that identifies the MongoDB replica set or cluster and all recorded offsets, and that is used as a prefix for all schemas and topics. Each distinct MongoDB installation should have a separate namespace and monitored by at most one Debezium connector.",
+                    "nullable": false,
+                    "title": "Namespace",
+                    "type": "string",
+                    "x-category": "CONNECTION",
+                    "x-name": "mongodb.name"
+                },
+                "mongodb.password": {
+                    "description": "Password to be used when connecting to MongoDB, if necessary.",
+                    "oneOf": [
+                        {
+                            "description": "Password of the database user to be used when connecting to the database.",
+                            "format": "password",
+                            "type": "string"
+                        },
+                        {
+                            "additionalProperties": true,
+                            "description": "An opaque reference to the password.",
+                            "properties": {},
+                            "type": "object"
+                        }
+                    ],
+                    "title": "Password",
+                    "x-category": "CONNECTION",
+                    "x-name": "mongodb.password"
+                },
+                "mongodb.poll.interval.ms": {
+                    "default": 30000,
+                    "description": "Interval for looking for new, removed, or changed replica sets, given in milliseconds.  Defaults to 30 seconds (30,000 ms).",
+                    "format": "int64",
+                    "title": "Replica membership poll interval (ms)",
+                    "type": "integer",
+                    "x-category": "CONNECTION",
+                    "x-name": "mongodb.poll.interval.ms"
+                },
+                "mongodb.server.selection.timeout.ms": {
+                    "default": 30000,
+                    "description": "The server selection timeout, given in milliseconds. Defaults to 10 seconds (10,000 ms).",
+                    "format": "int32",
+                    "title": "Server selection timeout MS",
+                    "type": "integer",
+                    "x-category": "CONNECTION_ADVANCED",
+                    "x-name": "mongodb.server.selection.timeout.ms"
+                },
+                "mongodb.socket.timeout.ms": {
+                    "default": 0,
+                    "description": "The socket timeout, given in milliseconds. Defaults to 0 ms.",
+                    "format": "int32",
+                    "title": "Socket timeout MS",
+                    "type": "integer",
+                    "x-category": "CONNECTION_ADVANCED",
+                    "x-name": "mongodb.socket.timeout.ms"
+                },
+                "mongodb.ssl.enabled": {
+                    "default": false,
+                    "description": "Should connector use SSL to connect to MongoDB instances",
+                    "title": "Enable SSL connection to MongoDB",
+                    "type": "boolean",
+                    "x-category": "CONNECTION_ADVANCED_SSL",
+                    "x-name": "mongodb.ssl.enabled"
+                },
+                "mongodb.ssl.invalid.hostname.allowed": {
+                    "default": false,
+                    "description": "Whether invalid host names are allowed when using SSL. If true the connection will not prevent man-in-the-middle attacks",
+                    "title": "Allow invalid hostnames for SSL connection",
+                    "type": "boolean",
+                    "x-category": "CONNECTION_ADVANCED_SSL",
+                    "x-name": "mongodb.ssl.invalid.hostname.allowed"
+                },
+                "mongodb.user": {
+                    "description": "Database user for connecting to MongoDB, if necessary.",
+                    "title": "User",
+                    "type": "string",
+                    "x-category": "CONNECTION",
+                    "x-name": "mongodb.user"
+                },
+                "poll.interval.ms": {
+                    "default": 500,
+                    "description": "Time to wait for new change events to appear after receiving no events, given in milliseconds. Defaults to 500 ms.",
+                    "format": "int64",
+                    "title": "Poll interval (ms)",
+                    "type": "integer",
+                    "x-category": "ADVANCED",
+                    "x-name": "poll.interval.ms"
+                },
+                "provide.transaction.metadata": {
+                    "default": false,
+                    "description": "Enables transaction metadata extraction together with event counting",
+                    "title": "Store transaction metadata information in a dedicated topic.",
+                    "type": "boolean",
+                    "x-category": "CONNECTOR_ADVANCED",
+                    "x-name": "provide.transaction.metadata"
+                },
+                "query.fetch.size": {
+                    "default": 0,
+                    "description": "The maximum number of records that should be loaded into memory while streaming.  A value of `0` uses the default JDBC fetch size.",
+                    "format": "int32",
+                    "title": "Query fetch size",
+                    "type": "integer",
+                    "x-category": "ADVANCED",
+                    "x-name": "query.fetch.size"
+                },
+                "retriable.restart.connector.wait.ms": {
+                    "default": 10000,
+                    "description": "Time to wait before restarting connector after retriable exception occurs. Defaults to 10000ms.",
+                    "format": "int64",
+                    "title": "Retriable restart wait (ms)",
+                    "type": "integer",
+                    "x-category": "ADVANCED",
+                    "x-name": "retriable.restart.connector.wait.ms"
+                },
+                "sanitize.field.names": {
+                    "default": false,
+                    "description": "Whether field names will be sanitized to Avro naming conventions",
+                    "title": "Sanitize field names to adhere to Avro naming conventions",
+                    "type": "boolean",
+                    "x-category": "CONNECTOR_ADVANCED",
+                    "x-name": "sanitize.field.names"
+                },
+                "signal.data.collection": {
+                    "description": "The name of the data collection that is used to send signals/commands to Debezium. Signaling is disabled when not set.",
+                    "title": "Signaling data collection",
+                    "type": "string",
+                    "x-category": "ADVANCED",
+                    "x-name": "signal.data.collection"
+                },
+                "skipped.operations": {
+                    "description": "The comma-separated list of operations to skip during streaming, defined as: 'c' for inserts/create; 'u' for updates; 'd' for deletes, 't' for truncates, and 'none' to indicate nothing skipped. By default, no operations will be skipped.",
+                    "format": "list,regex",
+                    "title": "skipped Operations",
+                    "type": "string",
+                    "x-category": "ADVANCED",
+                    "x-name": "skipped.operations"
+                },
+                "snapshot.collection.filter.overrides": {
+                    "description": "This property contains a comma-separated list of \u003cdbName\u003e.\u003ccollectionName\u003e, for which  the initial snapshot may be a subset of data present in the data source. The subset would be defined by mongodb filter query specified as value for property snapshot.collection.filter.override.\u003cdbname\u003e.\u003ccollectionName\u003e",
+                    "title": "Snapshot mode",
+                    "type": "string",
+                    "x-category": "CONNECTOR_SNAPSHOT",
+                    "x-name": "snapshot.collection.filter.overrides"
+                },
+                "snapshot.delay.ms": {
+                    "default": 0,
+                    "description": "A delay period before a snapshot will begin, given in milliseconds. Defaults to 0 ms.",
+                    "format": "int64",
+                    "title": "Snapshot Delay (milliseconds)",
+                    "type": "integer",
+                    "x-category": "CONNECTOR_SNAPSHOT",
+                    "x-name": "snapshot.delay.ms"
+                },
+                "snapshot.fetch.size": {
+                    "description": "The maximum number of records that should be loaded into memory while performing a snapshot",
+                    "format": "int32",
+                    "title": "Snapshot fetch size",
+                    "type": "integer",
+                    "x-category": "CONNECTOR_SNAPSHOT",
+                    "x-name": "snapshot.fetch.size"
+                },
+                "snapshot.include.collection.list": {
+                    "description": "this setting must be set to specify a list of tables/collections whose snapshot must be taken on creating or restarting the connector.",
+                    "format": "list,regex",
+                    "title": "Snapshot mode include data collection",
+                    "type": "string",
+                    "x-category": "CONNECTOR_SNAPSHOT",
+                    "x-name": "snapshot.include.collection.list"
+                },
+                "snapshot.max.threads": {
+                    "default": 1,
+                    "description": "The maximum number of threads used to perform the snapshot.  Defaults to 1.",
+                    "format": "int32",
+                    "title": "Snapshot maximum threads",
+                    "type": "integer",
+                    "x-category": "CONNECTOR_SNAPSHOT",
+                    "x-name": "snapshot.max.threads"
+                },
+                "snapshot.mode": {
+                    "default": "initial",
+                    "description": "The criteria for running a snapshot upon startup of the connector. Options include: 'initial' (the default) to specify the connector should always perform an initial sync when required; 'never' to specify the connector should never perform an initial sync ",
+                    "enum": [
+                        "never",
+                        "initial"
+                    ],
+                    "title": "Snapshot mode",
+                    "type": "string",
+                    "x-category": "CONNECTOR_SNAPSHOT",
+                    "x-name": "snapshot.mode"
+                },
+                "source.struct.version": {
+                    "default": "v2",
+                    "description": "A version of the format of the publicly visible source part in the message",
+                    "enum": [
+                        "v1",
+                        "v2"
+                    ],
+                    "title": "Source struct maker version",
+                    "type": "string",
+                    "x-category": "ADVANCED",
+                    "x-name": "source.struct.version"
+                },
+                "tombstones.on.delete": {
+                    "default": true,
+                    "description": "Whether delete operations should be represented by a delete event and a subsquenttombstone event (true) or only by a delete event (false). Emitting the tombstone event (the default behavior) allows Kafka to completely delete all events pertaining to the given key once the source record got deleted.",
+                    "title": "Change the behaviour of Debezium with regards to delete operations",
+                    "type": "boolean",
+                    "x-category": "CONNECTOR",
+                    "x-name": "tombstones.on.delete"
+                },
+                "transaction.topic": {
+                    "default": "${database.server.name}.transaction",
+                    "description": "The name of the transaction metadata topic. The placeholder ${database.server.name} can be used for referring to the connector's logical name; defaults to ${database.server.name}.transaction.",
+                    "title": "Transaction topic name",
+                    "type": "string",
+                    "x-category": "ADVANCED",
+                    "x-name": "transaction.topic"
+                }
+            },
+            "required": [
+                "mongodb.name"
+            ],
+            "title": "Debezium MongoDB Connector",
+            "type": "object",
+            "x-className": "io.debezium.connector.mongodb.MongoDbConnector",
+            "x-connector-id": "mongodb",
+            "x-version": "1.9.0.Alpha1"
+        }
+    }
+}

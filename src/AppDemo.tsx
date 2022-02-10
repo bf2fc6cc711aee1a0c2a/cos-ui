@@ -60,19 +60,19 @@ export const AppDemo: FunctionComponent = () => {
     cos: {
       apiBasePath: process.env.BASE_PATH as string,
       configurators: {
-        'debezium-mongodb-1.5.0.Final': {
+        'debezium-mongodb-1.9.0.Alpha1': {
           remoteEntry:
             'https://qaprodauth.cloud.redhat.com/apps/dbz-ui-build/dbz-connector-configurator.remoteEntry.js',
           scope: 'debezium_ui',
           module: './config',
         },
-        'debezium-mysql-1.5.0.Final': {
+        'debezium-mysql-1.9.0.Alpha1': {
           remoteEntry:
             'https://qaprodauth.cloud.redhat.com/apps/dbz-ui-build/dbz-connector-configurator.remoteEntry.js',
           scope: 'debezium_ui',
           module: './config',
         },
-        'debezium-postgres-1.5.0.Final': {
+        'debezium-postgres-1.9.0.Alpha1': {
           remoteEntry:
             'https://qaprodauth.cloud.redhat.com/apps/dbz-ui-build/dbz-connector-configurator.remoteEntry.js',
           scope: 'debezium_ui',
