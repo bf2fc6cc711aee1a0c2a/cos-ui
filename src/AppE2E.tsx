@@ -32,21 +32,21 @@ export const AppE2E: FunctionComponent = () => {
     cos: {
       apiBasePath: 'localhost',
       configurators: {
-        'debezium-mongodb-1.5.0.Final': {
+        'debezium-mongodb-1.9.0.Alpha1': {
           remoteEntry:
-            'https://dbz-ui.apps.kammellol.rhmw-integrations.net/dbz-connector-configurator.remoteEntry.js',
+            'https://qaprodauth.cloud.redhat.com/apps/dbz-ui-build/dbz-connector-configurator.remoteEntry.js',
           scope: 'debezium_ui',
           module: './config',
         },
-        'debezium-mysql-1.5.0.Final': {
+        'debezium-mysql-1.9.0.Alpha1': {
           remoteEntry:
-            'https://dbz-ui.apps.kammellol.rhmw-integrations.net/dbz-connector-configurator.remoteEntry.js',
+            'https://qaprodauth.cloud.redhat.com/apps/dbz-ui-build/dbz-connector-configurator.remoteEntry.js',
           scope: 'debezium_ui',
           module: './config',
         },
-        'debezium-postgres-1.5.0.Final': {
+        'debezium-postgres-1.9.0.Alpha1': {
           remoteEntry:
-            'https://dbz-ui.apps.kammellol.rhmw-integrations.net/dbz-connector-configurator.remoteEntry.js',
+            'https://qaprodauth.cloud.redhat.com/apps/dbz-ui-build/dbz-connector-configurator.remoteEntry.js',
           scope: 'debezium_ui',
           module: './config',
         },
