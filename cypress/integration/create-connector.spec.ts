@@ -92,12 +92,18 @@ const testMachine = Machine({
         CONFIGURE_BASIC: 'configureConnector',
       },
     },
+
     configureConnector: {
       on: {
-        CONFIGURE: 'review',
+        CONFIGURE: 'errorConfiguration',
       },
       meta: {
         test: () => cy.findByText('Token').should('exist'),
+      },
+    },
+    errorConfiguration: {
+      on: {
+        CONFIGURE_ERROR_HANDLER: 'configureConnector',
       },
     },
     review: {
@@ -194,6 +200,9 @@ describe('Connector creation', () => {
       CONFIGURE_BASIC: () => {
         cy.findByLabelText('Name *').type('my-connector');
         cy.findByText('Next').should('be.enabled').click();
+      },
+      CONFIGURE_ERROR_HANDLER: () => {
+        cy.findByText('Select Type').click();
       },
       CONFIGURE: () => {
         cy.findByLabelText('Token *').type('some-token');

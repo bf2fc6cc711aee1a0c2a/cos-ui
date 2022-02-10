@@ -19,7 +19,6 @@
       "kafka": {
         "url": "lb-cos--vgitqo-mk-imjg-eyqfbazqdiv.bf2.kafka.rhcloud.com:443",
         "id": "1vGITQO0mK0IMjG6eyqfBAzqdiV"
-        
       },
       "service_account": {
         "client_id": "srvc-acct-41a9b367-0878-4ea2-8c22-bdc37f501b7f",
@@ -29,13 +28,11 @@
         "id": "",
         "url": ""
       },
-      "connector_type_id": "debezium-postgres-1.5.0.Final",
+      "connector_type_id": "debezium-postgres-1.9.0.Alpha1",
       "connector": {
         "database.dbname": "postgres",
         "database.hostname": "debezium-pg",
-        "database.password": {
-          
-        },
+        "database.password": {},
         "database.server.name": "postgres-conn",
         "database.user": "postgres"
       },
