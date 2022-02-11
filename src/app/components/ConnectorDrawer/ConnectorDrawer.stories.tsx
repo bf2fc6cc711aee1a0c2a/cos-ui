@@ -24,7 +24,7 @@ export default {
     owner: 'John Doe',
     cluster: 'foo-bar-123',
     createdAt: subDays(new Date(), 120),
-    updatedAt: subMinutes(new Date(), 28),
+    modifiedAt: subMinutes(new Date(), 28),
     status: 'ready',
   },
   argTypes: {
