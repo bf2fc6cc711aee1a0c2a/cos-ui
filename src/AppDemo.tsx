@@ -60,7 +60,7 @@ export const AppDemo: FunctionComponent = () => {
     cos: {
       apiBasePath: process.env.BASE_PATH as string,
       configurators: {
-        'debezium': {
+        debezium: {
           remoteEntry:
             'https://qaprodauth.cloud.redhat.com/apps/dbz-ui-build/dbz-connector-configurator.remoteEntry.js',
           scope: 'debezium_ui',

@@ -64,7 +64,9 @@ const maybeGetFederatedConfiguratorForConnector = async (
   connector: ConnectorType
 ): Promise<FederatedModuleConfigurationType> => {
   console.log('Fetched federated configurator remotes configuration', config);
-  const maybeConfiguration = config[(connector as ObjectReference).id!] || config[(connector as ObjectReference).id!.split('-')[0]];
+  const maybeConfiguration =
+    config[(connector as ObjectReference).id!] ||
+    config[(connector as ObjectReference).id!.split('-')[0]];
   console.log(
     `Candidate configuration for "${(connector as ObjectReference).id}"`,
     maybeConfiguration
