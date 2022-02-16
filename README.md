@@ -7,6 +7,9 @@ that aggretates various service components.
 
 > NOTE: This repository is used as part of the console.redhat.com
 
+## Prerequisites
+* [Node.js](https://nodejs.org/en/download/) and [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+
 ## Run the UI as a standalone application
 
 ```sh
@@ -15,6 +18,9 @@ npm run start
 ```
 
 This will start the standalone app on `https://prod.foo.redhat.com:1337/`. 
+
+- make sure you have `127.0.0.1 prod.foo.redhat.com` in your hosts file for this to work.
+- you can also change the backend (fleet-manager) that the app will point to in the `.env` file.
 
 ## Run the UI as a federated module consumed by the application-services-ui app
 
