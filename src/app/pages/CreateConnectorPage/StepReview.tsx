@@ -214,7 +214,7 @@ export function Review() {
                 {connector &&
                   Object.keys(connector).map((el) => {
                     return (
-                      <Grid>
+                      <Grid key={el}>
                         <GridItem span={4}>
                           <strong>{_.startCase(el)}</strong>
                         </GridItem>
@@ -246,7 +246,7 @@ export function Review() {
                 {kafkaTopic &&
                   Object.keys(kafkaTopic).map((el) => {
                     return (
-                      <Grid>
+                      <Grid key={el}>
                         <GridItem span={4}>
                           <strong>{_.startCase(el)}</strong>
                         </GridItem>
@@ -257,15 +257,19 @@ export function Review() {
                 {connector === undefined &&
                   Object.keys(modifiedObject).map((el) => {
                     return (
-                      <Grid>
+                      <Grid key={el}>
                         <GridItem span={4}>
                           <strong>{_.startCase(el)}</strong>
                         </GridItem>
                         <GridItem span={8}>
                           {_.startCase(el) === t('Database Password') ||
-                          _.startCase(el) === t('Password')
-                            ? maskValue(modifiedObject[el])
-                            : modifiedObject[el]}
+                          _.startCase(el) === t('Password') ? (
+                            maskValue(modifiedObject[el])
+                          ) : typeof modifiedObject[el] === 'object' ? (
+                            JSON.stringify(modifiedObject[el])
+                          ) : (
+                            modifiedObject[el]
+                          )}
                         </GridItem>
                       </Grid>
                     );
