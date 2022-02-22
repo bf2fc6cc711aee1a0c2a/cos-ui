@@ -468,7 +468,7 @@ export const saveConnector = ({
         connectorConfiguration = {
           ...configuration,
           ...{
-            error_handling: {
+            error_handler: {
               [userErrorHandler]: topic ? { topic: topic } : null,
             },
           },
