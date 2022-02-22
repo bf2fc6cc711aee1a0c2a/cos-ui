@@ -263,13 +263,11 @@ export function Review() {
                         </GridItem>
                         <GridItem span={8}>
                           {_.startCase(el) === t('Database Password') ||
-                          _.startCase(el) === t('Password') ? (
-                            maskValue(modifiedObject[el])
-                          ) : typeof modifiedObject[el] === 'object' ? (
-                            JSON.stringify(modifiedObject[el])
-                          ) : (
-                            modifiedObject[el]
-                          )}
+                          _.startCase(el) === t('Password')
+                            ? maskValue(modifiedObject[el])
+                            : typeof modifiedObject[el] === 'object'
+                            ? JSON.stringify(modifiedObject[el])
+                            : modifiedObject[el]}
                         </GridItem>
                       </Grid>
                     );
