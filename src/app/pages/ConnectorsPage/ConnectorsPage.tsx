@@ -31,9 +31,10 @@ import {
 
 type ConnectedConnectorsPageProps = {
   onCreateConnector: () => void;
+  onEditConnector: (id: string, name: string, currentState: string) => void;
 };
 export const ConnectedConnectorsPage: FunctionComponent<ConnectedConnectorsPageProps> =
-  ({ onCreateConnector }) => {
+  ({ onCreateConnector, onEditConnector }) => {
     const { t } = useTranslation();
     const alert = useAlert();
     const { connectorsApiBasePath, getToken } = useCos();
@@ -55,21 +56,29 @@ export const ConnectedConnectorsPage: FunctionComponent<ConnectedConnectorsPageP
         connectorsApiBasePath={connectorsApiBasePath}
         onError={onError}
       >
-        <ConnectorsPage onCreateConnector={onCreateConnector} />
+        <ConnectorsPage
+          onCreateConnector={onCreateConnector}
+          onEditConnector={onEditConnector}
+        />
       </ConnectorsPageProvider>
     );
   };
 
 export type ConnectorsPageProps = {
   onCreateConnector: () => void;
+  onEditConnector: (id: string, name: string, currentState: string) => void;
 };
 
 export const ConnectorsPage: FunctionComponent<ConnectorsPageProps> = ({
   onCreateConnector,
+  onEditConnector,
 }: ConnectorsPageProps) => {
   const isReady = useConnectorsPageIsReady();
   return isReady ? (
-    <ConnectorsPageBody onCreateConnector={onCreateConnector} />
+    <ConnectorsPageBody
+      onCreateConnector={onCreateConnector}
+      onEditConnector={onEditConnector}
+    />
   ) : (
     <Loading />
   );
@@ -77,10 +86,12 @@ export const ConnectorsPage: FunctionComponent<ConnectorsPageProps> = ({
 
 export type ConnectorsPageBodyProps = {
   onCreateConnector: () => void;
+  onEditConnector: (id: string, name: string, currentState: string) => void;
 };
 
 export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
   onCreateConnector,
+  onEditConnector,
 }: ConnectorsPageBodyProps) => {
   const {
     loading,
@@ -143,8 +154,8 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
           <PageSection variant={'light'}>
             <ConnectorsPageTitle />
           </PageSection>
-          <PageSection isFilled padding={{ default: 'noPadding' }}>
-            <ConnectedTable />
+          <PageSection padding={{ default: 'noPadding' }} isFilled>
+            <ConnectedTable onEditConnector={onEditConnector} />
           </PageSection>
         </ConnectorDrawer>
       );
@@ -159,8 +170,13 @@ const ConnectorsPageTitle: FunctionComponent = () => {
     </TextContent>
   );
 };
+export type ConnectorsTableProps = {
+  onEditConnector: (id: string, name: string, currentState: string) => void;
+};
 
-export const ConnectedTable: FunctionComponent = () => {
+export const ConnectedTable: FunctionComponent<ConnectorsTableProps> = ({
+  onEditConnector,
+}) => {
   const { request, response, selectedConnector, query } =
     useConnectorsMachine();
   return (
@@ -178,6 +194,7 @@ export const ConnectedTable: FunctionComponent = () => {
               connectorRef={ref}
               key={ref.id}
               selectedConnector={selectedConnector}
+              onEditConnector={onEditConnector}
             />
           ))}
         </ConnectorsTable>
@@ -196,10 +213,12 @@ export const ConnectedTable: FunctionComponent = () => {
 type ConnectedRowProps = {
   connectorRef: ConnectorMachineActorRef;
   selectedConnector?: Connector;
+  onEditConnector: (id: string, name: string, currentState: string) => void;
 };
 const ConnectedRow: FunctionComponent<ConnectedRowProps> = ({
   connectorRef,
   selectedConnector,
+  onEditConnector,
 }) => {
   const {
     connector,
@@ -214,6 +233,11 @@ const ConnectedRow: FunctionComponent<ConnectedRowProps> = ({
 
   const [showDeleteConnectorConfirm, setShowDeleteConnectorConfirm] =
     useState(false);
+
+  const editConnector = () => {
+    console.log('Edit Connectors');
+    onEditConnector(connector.id!, connector.name, connector?.status?.state!);
+  };
 
   const doCancelDeleteConnector = () => {
     setShowDeleteConnectorConfirm(false);
@@ -245,6 +269,7 @@ const ConnectedRow: FunctionComponent<ConnectedRowProps> = ({
         onStart={onStart}
         onStop={onStop}
         onSelect={onSelect}
+        onEdit={editConnector}
         onDelete={() => setShowDeleteConnectorConfirm(true)}
       />
     </>

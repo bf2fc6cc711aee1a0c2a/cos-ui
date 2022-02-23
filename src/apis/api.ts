@@ -31,6 +31,14 @@ type ConnectorApiProps = {
   connector: Connector;
 } & CommonApiProps;
 
+type ConnectorDetailProps = {
+  connectorId: string;
+} & CommonApiProps;
+
+type ConnectorTypeProps = {
+  connectorTypeId: string;
+} & CommonApiProps;
+
 export const startConnector = ({
   accessToken,
   connectorsApiBasePath,
@@ -159,6 +167,85 @@ export const deleteConnector = ({
             type: 'connector.actionError',
             error: error.response.data.reason,
           });
+        }
+      });
+    return () => {
+      source.cancel('Operation canceled by the user.');
+    };
+  };
+};
+
+export const getConnector = ({
+  accessToken,
+  connectorsApiBasePath,
+  connectorId,
+}: ConnectorDetailProps) => {
+  const connectorsAPI = new ConnectorsApi(
+    new Configuration({
+      accessToken,
+      basePath: connectorsApiBasePath,
+    })
+  );
+  return (callback: any) => {
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    connectorsAPI
+      .getConnector(
+        connectorId!,
+        {
+          cancelToken: source.token,
+          headers: {
+            'Content-type': 'application/merge-patch+json',
+          },
+        }
+      )
+      .then((response) => {
+        // callback({
+        //   type: 'connector.actionSuccess',
+        //   connector: response.data,
+        // });
+        console.log('Connector details:',response.data)
+        callback(response.data); 
+      })
+      .catch((error) => {
+        if (!axios.isCancel(error)) {
+          // callback({
+          //   type: 'connector.actionError',
+          //   error: error.response.data.reason,
+          // });
+          console.log('Error:',error.response.data.reason)
+        }
+      });
+    return () => {
+      source.cancel('Operation canceled by the user.');
+    };
+  };
+};
+
+export const getConnectorTypeDetail = ({
+  accessToken,
+  connectorsApiBasePath,
+  connectorTypeId
+}: ConnectorTypeProps) => {
+  const connectorsAPI = new ConnectorTypesApi(
+    new Configuration({
+      accessToken,
+      basePath: connectorsApiBasePath,
+    })
+  );
+  return (callback: any) => {
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    connectorsAPI
+      .getConnectorTypeByID(connectorTypeId, {
+        cancelToken: source.token,
+      })
+      .then((response) => {
+        callback(response.data); 
+      })
+      .catch((error) => {
+        if (!axios.isCancel(error)) {
+          console.log('Error:',error.response.data.reason)
         }
       });
     return () => {

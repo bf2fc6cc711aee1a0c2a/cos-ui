@@ -48,6 +48,7 @@ type ConnectorsTableRowProps = {
   onStart: () => void;
   onStop: () => void;
   onDelete: () => void;
+  onEdit: () => void;
   onSelect: () => void;
 };
 export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
@@ -62,6 +63,7 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
   onStart,
   onStop,
   onDelete,
+  onEdit,
   onSelect,
 }) => {
   const { t } = useTranslation();
@@ -81,6 +83,11 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
       title: 'Delete',
       onClick: onDelete,
       isDisabled: !canDelete,
+    },
+    {
+      title: 'Edit',
+      onClick: onEdit,
+      isDisabled: false,
     },
     {
       isSeparator: true,
