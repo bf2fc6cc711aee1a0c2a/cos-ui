@@ -1,13 +1,16 @@
+// import { Resolver } from '@stoplight/json-ref-resolver';
 import { createValidator } from '@utils/createValidator';
 import { ValidateFunction } from 'ajv';
 import React, { FunctionComponent } from 'react';
 import { AutoForm, ValidatedQuickForm } from 'uniforms';
 import { JSONSchemaBridge } from 'uniforms-bridge-json-schema';
-import { AutoFields, SubmitField } from 'uniforms-patternfly';
+import { AutoFields } from 'uniforms-patternfly';
 
 import { Card, CardBody } from '@patternfly/react-core';
 
 import './JsonSchemaConfigurator.css';
+
+// var pointer = require('json-pointer');
 
 export type CreateValidatorType = ReturnType<typeof createValidator>;
 export type ValidatorResultType = ValidateFunction<unknown>['errors'];
@@ -21,18 +24,43 @@ type JsonSchemaConfiguratorProps = {
 export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorProps> =
   ({ schema, configuration, onChange }) => {
     schema.type = schema.type || 'object';
-    // suppress the experimental steps from the UI for the moment
+    // Suppress the experimental steps from the UI for the moment
     try {
       delete schema.properties.steps;
     } catch (e) {}
+
     const schemaValidator = createValidator(schema);
     const bridge = new JSONSchemaBridge(schema, schemaValidator);
+
+    const onChangeWizard = async (model: any, isValid: boolean) => {
+      const { required } = bridge.schema;
+
+      const requiredEntries = {};
+      for (const [key, value] of Object.entries(model)) {
+        for (const r in required) {
+          if (key === required[r] && value !== undefined) {
+            const obj = { [key]: value };
+            Object.assign(requiredEntries, obj);
+          }
+        }
+      }
+      const compareRequiredEntriesKeys = (a: any, b: any) => {
+        const aKeys = Object.keys(a).sort();
+        const bKeys = b.slice().sort();
+        return JSON.stringify(aKeys) === JSON.stringify(bKeys);
+      };
+      isValid =
+        model.data_shape === undefined
+          ? compareRequiredEntriesKeys(requiredEntries, required)
+          : compareRequiredEntriesKeys(requiredEntries, required) &&
+            Object.keys(model.data_shape.produces).length > 0;
+      onChange(model, isValid);
+    };
     return (
       <KameletForm
         schema={bridge}
         model={configuration}
-        onChangeModel={(model: any) => onChange(model, false)}
-        onSubmit={(model: any) => onChange(model, true)}
+        onChangeModel={(model: any) => onChangeWizard(model, false)}
         className="configurator"
       >
         <Card isPlain>
@@ -40,33 +68,9 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
             <AutoFields omitFields={['processors', 'error_handler']} />
           </CardBody>
         </Card>
-        <Card isPlain>
-          <CardBody>
-            {/*
-            // @ts-expect-error */}
-            <SubmitField value={'Verify configuration'} />
-          </CardBody>
-        </Card>
-        {/* <WizardNext onChange={onChange} /> */}
       </KameletForm>
     );
   };
-
-// const WizardNext: FunctionComponent<{
-//   onChange: (data: unknown, isValid: boolean) => void;
-// }> = ({ onChange }) => {
-//   const { changed, submitted, error, model } = useForm();
-//   const isValid = !error;
-//   const prevChangeModel = useRef<DeepPartial<unknown>>();
-//   useEffect(() => {
-//     if (prevChangeModel.current !== model && changed && submitted) {
-//       prevChangeModel.current = model;
-//       onChange(, isValid);
-//     }
-//   }, [prevChangeModel, changed, submitted, isValid, model, onChange]);
-//   return null;
-// };
-
 function Auto(parent: any): any {
   class _ extends AutoForm.Auto(parent) {
     static Auto = Auto;
