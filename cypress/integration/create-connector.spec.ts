@@ -206,7 +206,6 @@ describe('Connector creation', () => {
       },
       CONFIGURE: () => {
         cy.findByLabelText('Token *').type('some-token');
-        cy.findByText('Verify configuration').click();
         cy.findByText('Next').should('be.enabled').click();
       },
       SAVE_CONNECTOR: () => {
