@@ -1,6 +1,7 @@
-// import { Resolver } from '@stoplight/json-ref-resolver';
+import { Resolver } from '@stoplight/json-ref-resolver';
 import { createValidator } from '@utils/createValidator';
 import { ValidateFunction } from 'ajv';
+import _ from 'lodash';
 import React, { FunctionComponent } from 'react';
 import { AutoForm, ValidatedQuickForm } from 'uniforms';
 import { JSONSchemaBridge } from 'uniforms-bridge-json-schema';
@@ -10,8 +11,6 @@ import { Card, CardBody } from '@patternfly/react-core';
 
 import './JsonSchemaConfigurator.css';
 
-// var pointer = require('json-pointer');
-
 export type CreateValidatorType = ReturnType<typeof createValidator>;
 export type ValidatorResultType = ValidateFunction<unknown>['errors'];
 
@@ -20,6 +19,7 @@ type JsonSchemaConfiguratorProps = {
   configuration: unknown;
   onChange: (configuration: unknown, isValid: boolean) => void;
 };
+const resolver = new Resolver();
 
 export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorProps> =
   ({ schema, configuration, onChange }) => {
@@ -31,12 +31,40 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
 
     const schemaValidator = createValidator(schema);
     const bridge = new JSONSchemaBridge(schema, schemaValidator);
+    const { required } = bridge.schema;
+
+    async function getDataShape(): Promise<any> {
+      const copiedBridge = JSON.parse(JSON.stringify(bridge));
+      let obj: any = [];
+      for (const [key] of Object.entries(
+        copiedBridge.schema.properties.data_shape?.properties
+      )) {
+        const dataShapeReolved = await resolver.resolve(copiedBridge.schema, {
+          jsonPointer: `#/$defs/data_shape/${key}`,
+        });
+        const result = await dataShapeReolved.result;
+        obj = { ...obj, [key]: result };
+      }
+      return obj;
+    }
 
     const onChangeWizard = async (model: any, isValid: boolean) => {
-      const { required } = bridge.schema;
+      const copiedModel = JSON.parse(JSON.stringify(model));
+      let dataShapePointer: any = [];
+      if (copiedModel.data_shape !== undefined) {
+        dataShapePointer = await getDataShape();
+        const { data_shape } = copiedModel;
+        Object.keys(data_shape).map((key) => {
+          const defaultValue =
+            dataShapePointer[key].properties?.format?.default;
+          if (_.isEmpty(data_shape[key])) {
+            copiedModel.data_shape[key] = { format: defaultValue };
+          }
+        });
+      }
 
       const requiredEntries = {};
-      for (const [key, value] of Object.entries(model)) {
+      for (const [key, value] of Object.entries(copiedModel)) {
         for (const r in required) {
           if (key === required[r] && value !== undefined) {
             const obj = { [key]: value };
@@ -44,17 +72,22 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
           }
         }
       }
-      const compareRequiredEntriesKeys = (a: any, b: any) => {
-        const aKeys = Object.keys(a).sort();
-        const bKeys = b.slice().sort();
+      const compareRequiredEntriesKeys = (requiredEntries: any,required: any) => {
+        const aKeys = Object.keys(requiredEntries).sort();
+        const bKeys = required.slice().sort();
         return JSON.stringify(aKeys) === JSON.stringify(bKeys);
       };
       isValid =
-        model.data_shape === undefined
+      copiedModel.data_shape === undefined
           ? compareRequiredEntriesKeys(requiredEntries, required)
           : compareRequiredEntriesKeys(requiredEntries, required) &&
-            Object.keys(model.data_shape.produces).length > 0;
-      onChange(model, isValid);
+            Object.keys(copiedModel.data_shape.produces).length > 0;
+
+      if (isValid) {
+        onChange(copiedModel, isValid);
+      } else {
+        onChange(copiedModel, false);
+      }
     };
     return (
       <KameletForm
