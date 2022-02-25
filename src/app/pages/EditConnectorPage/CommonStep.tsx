@@ -4,15 +4,27 @@ import { useTranslation } from 'react-i18next';
 import {
   Form,
   FormGroup,
+  Popover,
+  Text,
   TextInput,
+  TextVariants,
   Title,
   TitleSizes,
 } from '@patternfly/react-core';
+import { HelpIcon } from '@patternfly/react-icons';
+
+import './CommonStep.css';
 
 export type CommonStepProp = {
+  editMode: boolean;
   connectorName: string;
+  clientID: string;
 };
-export const CommonStep: FC<CommonStepProp> = ({ connectorName }) => {
+export const CommonStep: FC<CommonStepProp> = ({
+  editMode,
+  connectorName,
+  clientID,
+}) => {
   const { t } = useTranslation();
   return (
     <>
@@ -25,25 +37,63 @@ export const CommonStep: FC<CommonStepProp> = ({ connectorName }) => {
       </Title>
       <Form>
         <FormGroup
-          label={t('Name')}
+          label={t('Connector name')}
           isRequired
           fieldId="name"
-          helperText="Please provide a unique name for the connector"
+          labelIcon={
+            <Popover bodyContent={<p>Unique name for the connector.</p>}>
+              <button
+                type="button"
+                aria-label="More info for name field"
+                onClick={(e) => e.preventDefault()}
+                aria-describedby="simple-form-name-01"
+                className="pf-c-form__group-label-help"
+              >
+                <HelpIcon noVerticalAlign />
+              </button>
+            </Popover>
+          }
         >
-          <TextInput value={connectorName} onChange={() => {}} id="name" />
-        </FormGroup>
-        {/* <FormGroup label="Service account" isRequired fieldId="service-account">
-          {true !== undefined && (
-            <> */}
-        <FormGroup label="Client ID" isRequired fieldId="clientId">
-          <TextInput value="" onChange={() => {}} id="clientId" />
-        </FormGroup>
-        <FormGroup label="Client Secret" isRequired fieldId="clientSecret">
-          <TextInput value="" onChange={() => {}} id="clientSecret" />
-        </FormGroup>
-        {/* </>
+          {editMode ? (
+            <TextInput value={connectorName} onChange={() => {}} id="name" />
+          ) : (
+            <Text component={TextVariants.p}>{connectorName}</Text>
           )}
-        </FormGroup> */}
+        </FormGroup>
+        <FormGroup label="Service account" fieldId="service-account">
+          {true !== undefined && (
+            <>
+              <FormGroup label="Client ID" isRequired fieldId="clientId">
+                {editMode ? (
+                  <TextInput
+                    value={clientID}
+                    onChange={() => {}}
+                    id="clientId"
+                    isDisabled
+                  />
+                ) : (
+                  <Text component={TextVariants.p}>{clientID}</Text>
+                )}
+              </FormGroup>
+              <FormGroup
+                label="Client Secret"
+                isRequired
+                fieldId="clientSecret"
+              >
+                {editMode ? (
+                  <TextInput
+                    value="***********************"
+                    onChange={() => {}}
+                    id="clientSecret"
+                    isDisabled
+                  />
+                ) : (
+                  <Text component={TextVariants.p}>***********************</Text>
+                )}
+              </FormGroup>
+            </>
+          )}
+        </FormGroup>
       </Form>
     </>
   );

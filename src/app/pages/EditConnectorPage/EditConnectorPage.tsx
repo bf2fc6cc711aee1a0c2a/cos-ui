@@ -27,6 +27,9 @@ import {
   DropdownPosition,
   Title,
   Button,
+  Modal,
+  PageSectionVariants,
+  StackItem,
 } from '@patternfly/react-core';
 
 import { useBasename } from '@rhoas/app-services-ui-shared';
@@ -36,11 +39,17 @@ import { ConfigurationPage } from './ConfigurationPage';
 import './EditConnectorPage.css';
 import { OverviewPage } from './OverviewPage';
 
-interface ParamTypes {
+export interface ParamTypes {
   id: string;
 }
-
-export const EditConnectorPage: FC = () => {
+export interface EditConnectorPageProps {
+  onSave: () => void;
+  onClose: () => void;
+}
+export const EditConnectorPage: FC<EditConnectorPageProps> = ({
+  onSave,
+  onClose,
+}) => {
   let { id } = useParams<ParamTypes>();
 
   const { t } = useTranslation();
@@ -52,6 +61,10 @@ export const EditConnectorPage: FC = () => {
   const [connectorData, setConnectorData] = useState<Connector>();
   const [connectorTypeDetails, setConnectorTypeDetails] =
     useState<ConnectorType>();
+
+  const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
+  const openLeaveConfirm = () => setAskForLeaveConfirm(true);
+  const closeLeaveConfirm = () => setAskForLeaveConfirm(false);
 
   const getConnectorData = useCallback((data) => {
     setConnectorData(data as Connector);
@@ -101,43 +114,87 @@ export const EditConnectorPage: FC = () => {
       {connectorData && (
         <>
           <EditConnectorHeader connectorData={connectorData} />
-          <PageSection
-            padding={{ default: 'noPadding' }}
-            style={{ zIndex: 0 }}
-            variant={'light'}
-          >
-            <div>
-              <Tabs activeKey={activeTabKey} onSelect={handleTabClick}>
-                <Tab
-                  eventKey={0}
-                  title={<TabTitleText>{t('Overview')}</TabTitleText>}
-                >
-                  <OverviewPage connectorData={connectorData} />
-                </Tab>
-                <Tab
-                  eventKey={1}
-                  title={<TabTitleText>{t('Configuration')}</TabTitleText>}
-                >
-                  {connectorTypeDetails ? (
-                    <ConfigurationPage
-                      connectorData={connectorData}
-                      connectorTypeDetails={connectorTypeDetails}
-                    />
-                  ) : (
-                    <Loading />
-                  )}
-                </Tab>
-              </Tabs>
-            </div>
-            <footer className="edit-connector-page_footer pf-u-p-md">
-              <Button variant="primary" className="pf-u-mr-md pf-u-mb-sm">
+          <StackItem>
+            <PageSection
+              padding={{ default: 'noPadding' }}
+              style={{ zIndex: 0 }}
+              variant={PageSectionVariants.light}
+            >
+              <div>
+                <Tabs activeKey={activeTabKey} onSelect={handleTabClick}>
+                  <Tab
+                    eventKey={0}
+                    title={<TabTitleText>{t('Overview')}</TabTitleText>}
+                  >
+                    <OverviewPage connectorData={connectorData} />
+                  </Tab>
+                  <Tab
+                    eventKey={1}
+                    title={<TabTitleText>{t('Configuration')}</TabTitleText>}
+                  >
+                    {connectorTypeDetails ? (
+                      <ConfigurationPage
+                        connectorData={connectorData}
+                        connectorTypeDetails={connectorTypeDetails}
+                      />
+                    ) : (
+                      <Loading />
+                    )}
+                  </Tab>
+                </Tabs>
+              </div>
+
+              {/* <footer className="edit-connector-page_footer pf-u-p-md">
+              <Button
+                variant="primary"
+                className="pf-u-mr-md pf-u-mb-sm"
+                onClick={onSave}
+              >
                 Save
               </Button>
-              <Button variant="secondary">Cancel</Button>
-            </footer>
-          </PageSection>
+              <Button variant="secondary" onClick={openLeaveConfirm}>
+                Cancel
+              </Button>
+            </footer> */}
+            </PageSection>
+          </StackItem>
+          <StackItem isFilled className="pf-u-background-color-100" />
+
+          <StackItem>
+            <PageSection
+              variant={PageSectionVariants.light}
+              className="pf-u-p-md"
+            >
+              <Button
+                variant="primary"
+                className="pf-u-mr-md pf-u-mb-sm"
+                onClick={onSave}
+              >
+                Save
+              </Button>
+              <Button variant="secondary" onClick={openLeaveConfirm}>
+                Cancel
+              </Button>
+            </PageSection>
+          </StackItem>
         </>
       )}
+      <Modal
+        title={t('Leave page?')}
+        variant={'small'}
+        isOpen={askForLeaveConfirm}
+        onClose={closeLeaveConfirm}
+        actions={[
+          <Button key="confirm" variant="primary" onClick={onClose}>
+            Confirm
+          </Button>,
+          <Button key="cancel" variant="link" onClick={closeLeaveConfirm}>
+            Cancel
+          </Button>,
+        ]}
+      >
+        {t('Changes you have made will be lost.')}
+      </Modal>
     </>
   );
 };

@@ -69,7 +69,10 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
           />
         </Route>
         <Route path={'/:id'}>
-          <EditConnectorPage />
+          <EditConnectorPage 
+          onSave={onConnectorSave}
+          onClose={goToConnectorsList}
+          />
         </Route>
       </Switch>
     </CosContextProvider>

@@ -1,6 +1,8 @@
+import { StepErrorBoundary } from '@app/components/StepErrorBoundary/StepErrorBoundary';
 import React, { FC, useState } from 'react';
 
 import {
+  Button,
   Grid,
   GridItem,
   PageSection,
@@ -18,16 +20,30 @@ import {
 
 import { CommonStep } from './CommonStep';
 import { ConfigurationStep } from './ConfigurationStep';
+import { ErrorHandler, ErrorHandlerStep } from './ErrorHandlerStep';
 
 export type ConfigurationPageProps = {
   connectorData: Connector;
   connectorTypeDetails: ConnectorType;
 };
+export type connector = {
+  data_shape: object;
+  error_handler: ErrorHandler;
+  processors: object;
+};
+
 export const ConfigurationPage: FC<ConfigurationPageProps> = ({
   connectorData,
   connectorTypeDetails,
 }) => {
   const [activeTabKey, setActiveTabKey] = useState<string | number>(0);
+
+  const [editMode, setEditMode] = useState<boolean>(false);
+
+  const updateEditMode = () => {
+    setEditMode(!editMode);
+  };
+
   // Toggle currently active tab
   const handleTabClick = (
     _event: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -56,17 +72,54 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
             </Tabs>
           </div>
         </GridItem>
-        <GridItem span={8}>
-          {activeTabKey === 0 && (
-            <CommonStep connectorName={connectorData?.name!} />
-          )}
+        <GridItem span={9}>
+          <Grid>
+            <GridItem span={10}>
+              {activeTabKey === 0 && (
+                <StepErrorBoundary>
+                  <CommonStep
+                    editMode={editMode}
+                    connectorName={connectorData?.name!}
+                    clientID={connectorData.service_account.client_id}
+                  />
+                </StepErrorBoundary>
+              )}
 
-          {activeTabKey === 1 && (
-            <ConfigurationStep
-              schema={(connectorTypeDetails as ConnectorTypeAllOf)?.schema!}
-              configuration={connectorData?.connector}
-            />
-          )}
+              {activeTabKey === 1 && (
+                <StepErrorBoundary>
+                  <ConfigurationStep
+                    editMode={editMode}
+                    schema={
+                      (connectorTypeDetails as ConnectorTypeAllOf)?.schema!
+                    }
+                    configuration={connectorData?.connector}
+                  />
+                </StepErrorBoundary>
+              )}
+              {activeTabKey === 2 && (
+                <StepErrorBoundary>
+                  <ErrorHandlerStep
+                    editMode={editMode}
+                    schema={
+                      (connectorTypeDetails as ConnectorTypeAllOf)?.schema!
+                    }
+                    errorHandlerValue={
+                      (connectorData?.connector as connector)?.error_handler
+                    }
+                  />
+                </StepErrorBoundary>
+              )}
+            </GridItem>
+            <GridItem span={2} className="pf-u-pl-md">
+              <Button
+                variant="primary"
+                onClick={updateEditMode}
+                isDisabled={editMode}
+              >
+                Edit Properties
+              </Button>
+            </GridItem>
+          </Grid>
         </GridItem>
       </Grid>
     </PageSection>
