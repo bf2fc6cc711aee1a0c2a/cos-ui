@@ -1,6 +1,6 @@
 import { ConnectedConnectorsPage } from '@app/pages/ConnectorsPage/ConnectorsPage';
 import { CreateConnectorPage } from '@app/pages/CreateConnectorPage/CreateConnectorPage';
-import { EditConnectorPage } from '@app/pages/EditConnectorPage/EditConnectorPage';
+import { ConnectorDetailsPage } from '@app/pages/EditConnectorPage/ConnectorDetailsPage';
 import React, { FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Route, Switch, useHistory } from 'react-router-dom';
@@ -69,10 +69,7 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
           />
         </Route>
         <Route path={'/:id'}>
-          <EditConnectorPage 
-          onSave={onConnectorSave}
-          onClose={goToConnectorsList}
-          />
+          <ConnectorDetailsPage />
         </Route>
       </Switch>
     </CosContextProvider>

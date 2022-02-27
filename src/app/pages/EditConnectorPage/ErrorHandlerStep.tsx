@@ -26,12 +26,12 @@ export type ErrorHandler = {
 export type ErrorHandlerStepProps = {
   editMode: boolean;
   schema: Record<string, any>;
-  errorHandlerValue: ErrorHandler;
+  configuration: ErrorHandler;
 };
 export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
   editMode,
   schema,
-  errorHandlerValue,
+  configuration,
 }) => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const [topic, setTopic] = useState<string>();
@@ -54,16 +54,16 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
   };
 
   useEffect(() => {
-    setErrorHandler(Object.keys(errorHandlerValue)[0]);
-    if (Object.keys(errorHandlerValue)[0] === 'dead_letter_queue') {
+    setErrorHandler(Object.keys(configuration)[0]);
+    if (Object.keys(configuration)[0] === 'dead_letter_queue') {
       setTopic(
-        errorHandlerValue.dead_letter_queue[
-          Object.keys(errorHandlerValue.dead_letter_queue)[0]
+        configuration.dead_letter_queue[
+          Object.keys(configuration.dead_letter_queue)[0]
         ]
       );
     }
     return () => {};
-  }, [errorHandlerValue]);
+  }, [configuration]);
 
   const schemaValidator = createValidator(schema);
   const bridge = new JSONSchemaBridge(schema, schemaValidator);

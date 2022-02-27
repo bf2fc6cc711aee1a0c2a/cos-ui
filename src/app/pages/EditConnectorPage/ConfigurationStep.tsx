@@ -51,39 +51,41 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
               }
               return true;
             })
-            .map(
-              ([key, value]: [string, any]) => (
-                <FormGroup
-                  key={key}
-                  label={value.title || key.replace('_', ' ')}
-                  fieldId={key}
-                  isRequired={schema.required.includes(key)}
-                  labelIcon={
-                    value.description && (
-                      <Popover bodyContent={<p>{value.description}</p>}>
-                        <button
-                          type="button"
-                          aria-label="More info for name field"
-                          onClick={(e) => e.preventDefault()}
-                          aria-describedby="simple-form-name-01"
-                          className="pf-c-form__group-label-help"
-                        >
-                          <HelpIcon noVerticalAlign />
-                        </button>
-                      </Popover>
-                    )
-                  }
-                >
-                  <Text component={TextVariants.p}>
-                    {_.isObject((configuration as ConfigurationType)[key])
-                      ? JSON.stringify(
-                          (configuration as ConfigurationType)[key]
-                        )
-                      : (configuration as ConfigurationType)[key]}
-                  </Text>
-                </FormGroup>
-              )
-            )}
+            .map(([key, value]: [string, any]) => (
+              <FormGroup
+                key={key}
+                label={value.title || _.capitalize(key.replace('_', ' '))}
+                fieldId={key}
+                isRequired={schema.required.includes(key)}
+                labelIcon={
+                  <Popover
+                    bodyContent={
+                      <p>
+                        {value.description
+                          ? value.description
+                          : _.capitalize(key.replace('_', ' '))}
+                      </p>
+                    }
+                  >
+                    <button
+                      type="button"
+                      aria-label="More info for name field"
+                      onClick={(e) => e.preventDefault()}
+                      aria-describedby="simple-form-name-01"
+                      className="pf-c-form__group-label-help"
+                    >
+                      <HelpIcon noVerticalAlign />
+                    </button>
+                  </Popover>
+                }
+              >
+                <Text component={TextVariants.p}>
+                  {_.isObject((configuration as ConfigurationType)[key])
+                    ? JSON.stringify((configuration as ConfigurationType)[key])
+                    : (configuration as ConfigurationType)[key]}
+                </Text>
+              </FormGroup>
+            ))}
         </Form>
       )}
     </>

@@ -12,18 +12,15 @@ import {
   TitleSizes,
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
-
-import './CommonStep.css';
+import { Connector } from '@rhoas/connector-management-sdk';
 
 export type CommonStepProp = {
   editMode: boolean;
-  connectorName: string;
-  clientID: string;
+  configuration: Connector;
 };
 export const CommonStep: FC<CommonStepProp> = ({
   editMode,
-  connectorName,
-  clientID,
+  configuration,
 }) => {
   const { t } = useTranslation();
   return (
@@ -33,7 +30,7 @@ export const CommonStep: FC<CommonStepProp> = ({
         size={TitleSizes['2xl']}
         className={'pf-u-pr-md pf-u-pb-md'}
       >
-        Common
+        {t('Common')}
       </Title>
       <Form>
         <FormGroup
@@ -41,7 +38,7 @@ export const CommonStep: FC<CommonStepProp> = ({
           isRequired
           fieldId="name"
           labelIcon={
-            <Popover bodyContent={<p>Unique name for the connector.</p>}>
+            <Popover bodyContent={<p>{t('Unique name for the connector.')}</p>}>
               <button
                 type="button"
                 aria-label="More info for name field"
@@ -55,28 +52,28 @@ export const CommonStep: FC<CommonStepProp> = ({
           }
         >
           {editMode ? (
-            <TextInput value={connectorName} onChange={() => {}} id="name" />
+            <TextInput value={configuration.name} onChange={() => {}} id="name" />
           ) : (
-            <Text component={TextVariants.p}>{connectorName}</Text>
+            <Text component={TextVariants.p}>{configuration.name}</Text>
           )}
         </FormGroup>
-        <FormGroup label="Service account" fieldId="service-account">
+        <FormGroup label={t('Service account')} fieldId="service-account">
           {true !== undefined && (
             <>
-              <FormGroup label="Client ID" isRequired fieldId="clientId">
+              <FormGroup label={t('Client ID')} isRequired fieldId="clientId">
                 {editMode ? (
                   <TextInput
-                    value={clientID}
+                    value={configuration.service_account.client_id}
                     onChange={() => {}}
                     id="clientId"
                     isDisabled
                   />
                 ) : (
-                  <Text component={TextVariants.p}>{clientID}</Text>
+                  <Text component={TextVariants.p}>{configuration.service_account.client_id}</Text>
                 )}
               </FormGroup>
               <FormGroup
-                label="Client Secret"
+                label={t('Client Secret')}
                 isRequired
                 fieldId="clientSecret"
               >
@@ -88,7 +85,9 @@ export const CommonStep: FC<CommonStepProp> = ({
                     isDisabled
                   />
                 ) : (
-                  <Text component={TextVariants.p}>***********************</Text>
+                  <Text component={TextVariants.p}>
+                    ***********************
+                  </Text>
                 )}
               </FormGroup>
             </>

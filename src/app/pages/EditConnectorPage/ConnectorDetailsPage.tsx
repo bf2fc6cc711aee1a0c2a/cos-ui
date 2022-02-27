@@ -26,30 +26,20 @@ import {
   DropdownItem,
   DropdownPosition,
   Title,
-  Button,
-  Modal,
   PageSectionVariants,
-  StackItem,
 } from '@patternfly/react-core';
 
 import { useBasename } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorType } from '@rhoas/connector-management-sdk';
 
 import { ConfigurationPage } from './ConfigurationPage';
-import './EditConnectorPage.css';
 import { OverviewPage } from './OverviewPage';
 
 export interface ParamTypes {
   id: string;
 }
-export interface EditConnectorPageProps {
-  onSave: () => void;
-  onClose: () => void;
-}
-export const EditConnectorPage: FC<EditConnectorPageProps> = ({
-  onSave,
-  onClose,
-}) => {
+
+export const ConnectorDetailsPage: FC = () => {
   let { id } = useParams<ParamTypes>();
 
   const { t } = useTranslation();
@@ -61,10 +51,6 @@ export const EditConnectorPage: FC<EditConnectorPageProps> = ({
   const [connectorData, setConnectorData] = useState<Connector>();
   const [connectorTypeDetails, setConnectorTypeDetails] =
     useState<ConnectorType>();
-
-  const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
-  const openLeaveConfirm = () => setAskForLeaveConfirm(true);
-  const closeLeaveConfirm = () => setAskForLeaveConfirm(false);
 
   const getConnectorData = useCallback((data) => {
     setConnectorData(data as Connector);
@@ -113,97 +99,49 @@ export const EditConnectorPage: FC<EditConnectorPageProps> = ({
       {!connectorData && <Loading />}
       {connectorData && (
         <>
-          <EditConnectorHeader connectorData={connectorData} />
-          <StackItem>
-            <PageSection
-              padding={{ default: 'noPadding' }}
-              style={{ zIndex: 0 }}
-              variant={PageSectionVariants.light}
+          <ConnectorDetailsHeader connectorData={connectorData} />
+          <PageSection
+            padding={{ default: 'noPadding' }}
+            style={{ zIndex: 0 }}
+            variant={PageSectionVariants.light}
+          >
+            <Tabs
+              activeKey={activeTabKey}
+              onSelect={handleTabClick}
+              className="connector_detail-tabs"
             >
-              <div>
-                <Tabs activeKey={activeTabKey} onSelect={handleTabClick}>
-                  <Tab
-                    eventKey={0}
-                    title={<TabTitleText>{t('Overview')}</TabTitleText>}
-                  >
-                    <OverviewPage connectorData={connectorData} />
-                  </Tab>
-                  <Tab
-                    eventKey={1}
-                    title={<TabTitleText>{t('Configuration')}</TabTitleText>}
-                  >
-                    {connectorTypeDetails ? (
-                      <ConfigurationPage
-                        connectorData={connectorData}
-                        connectorTypeDetails={connectorTypeDetails}
-                      />
-                    ) : (
-                      <Loading />
-                    )}
-                  </Tab>
-                </Tabs>
-              </div>
-
-              {/* <footer className="edit-connector-page_footer pf-u-p-md">
-              <Button
-                variant="primary"
-                className="pf-u-mr-md pf-u-mb-sm"
-                onClick={onSave}
+              <Tab
+                eventKey={0}
+                title={<TabTitleText>{t('Overview')}</TabTitleText>}
               >
-                Save
-              </Button>
-              <Button variant="secondary" onClick={openLeaveConfirm}>
-                Cancel
-              </Button>
-            </footer> */}
-            </PageSection>
-          </StackItem>
-          <StackItem isFilled className="pf-u-background-color-100" />
-
-          <StackItem>
-            <PageSection
-              variant={PageSectionVariants.light}
-              className="pf-u-p-md"
-            >
-              <Button
-                variant="primary"
-                className="pf-u-mr-md pf-u-mb-sm"
-                onClick={onSave}
+                <OverviewPage connectorData={connectorData} />
+              </Tab>
+              <Tab
+                eventKey={1}
+                title={<TabTitleText>{t('Configuration')}</TabTitleText>}
               >
-                Save
-              </Button>
-              <Button variant="secondary" onClick={openLeaveConfirm}>
-                Cancel
-              </Button>
-            </PageSection>
-          </StackItem>
+                {connectorTypeDetails ? (
+                  <ConfigurationPage
+                    connectorData={connectorData}
+                    connectorTypeDetails={connectorTypeDetails}
+                  />
+                ) : (
+                  <Loading />
+                )}
+              </Tab>
+            </Tabs>
+          </PageSection>
         </>
       )}
-      <Modal
-        title={t('Leave page?')}
-        variant={'small'}
-        isOpen={askForLeaveConfirm}
-        onClose={closeLeaveConfirm}
-        actions={[
-          <Button key="confirm" variant="primary" onClick={onClose}>
-            Confirm
-          </Button>,
-          <Button key="cancel" variant="link" onClick={closeLeaveConfirm}>
-            Cancel
-          </Button>,
-        ]}
-      >
-        {t('Changes you have made will be lost.')}
-      </Modal>
     </>
   );
 };
 
-export type EditConnectorHeaderProps = {
+export type ConnectorDetailsHeaderProps = {
   connectorData: Connector;
 };
 
-export const EditConnectorHeader: FC<EditConnectorHeaderProps> = ({
+export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
   connectorData,
 }) => {
   const { t } = useTranslation();
