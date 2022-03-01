@@ -1,4 +1,5 @@
 export const PAGINATED_MACHINE_ID = 'paginatedApi';
+export const FETCH_MACHINE_ID = 'fetchApi';
 
 export const defaultPerPageOptions = [
   {
