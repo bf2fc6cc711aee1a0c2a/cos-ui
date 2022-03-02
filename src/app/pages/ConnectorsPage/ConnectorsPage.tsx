@@ -143,7 +143,7 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
           <PageSection variant={'light'}>
             <ConnectorsPageTitle />
           </PageSection>
-          <PageSection isFilled>
+          <PageSection isFilled padding={{ default: 'noPadding' }}>
             <ConnectedTable />
           </PageSection>
         </ConnectorDrawer>
