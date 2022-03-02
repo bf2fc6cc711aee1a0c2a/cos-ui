@@ -7,7 +7,7 @@ import { AutoForm, ValidatedQuickForm } from 'uniforms';
 import { JSONSchemaBridge } from 'uniforms-bridge-json-schema';
 import { AutoFields } from 'uniforms-patternfly';
 
-import { Card, CardBody } from '@patternfly/react-core';
+import { Grid } from '@patternfly/react-core';
 
 import './JsonSchemaConfigurator.css';
 
@@ -72,16 +72,18 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
           }
         }
       }
-      const compareRequiredEntriesKeys = (requiredEntries: any,required: any) => {
+      const compareRequiredEntriesKeys = (
+        requiredEntries: any,
+        required: any
+      ) => {
         const aKeys = Object.keys(requiredEntries).sort();
         const bKeys = required.slice().sort();
         return JSON.stringify(aKeys) === JSON.stringify(bKeys);
       };
       isValid =
-      copiedModel.data_shape === undefined
+        copiedModel.data_shape === undefined
           ? compareRequiredEntriesKeys(requiredEntries, required)
-          : compareRequiredEntriesKeys(requiredEntries, required) &&
-            Object.keys(copiedModel.data_shape.produces).length > 0;
+          : compareRequiredEntriesKeys(requiredEntries, required);
 
       if (isValid) {
         onChange(copiedModel, isValid);
@@ -90,18 +92,16 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
       }
     };
     return (
-      <KameletForm
-        schema={bridge}
-        model={configuration}
-        onChangeModel={(model: any) => onChangeWizard(model, false)}
-        className="configurator"
-      >
-        <Card isPlain>
-          <CardBody>
-            <AutoFields omitFields={['processors', 'error_handler']} />
-          </CardBody>
-        </Card>
-      </KameletForm>
+      <Grid hasGutter>
+        <KameletForm
+          schema={bridge}
+          model={configuration}
+          onChangeModel={(model: any) => onChangeWizard(model, false)}
+          className="connector-specific pf-c-form pf-m-9-col-on-lg"
+        >
+          <AutoFields omitFields={['processors', 'error_handler']} />
+        </KameletForm>
+      </Grid>
     );
   };
 function Auto(parent: any): any {
