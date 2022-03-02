@@ -10,7 +10,8 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router';
+// import { useParams } from 'react-router';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 
 import {
   PageSection,
@@ -38,15 +39,24 @@ import { OverviewPage } from './OverviewPage';
 export interface ParamTypes {
   id: string;
 }
-
+const getTab = (hash: string): string => {
+  return hash.includes('&')
+    ? hash.substr(1, hash.indexOf('&') - 1)
+    : hash.substr(1);
+};
 export const ConnectorDetailsPage: FC = () => {
   let { id } = useParams<ParamTypes>();
 
+  let { hash } = useLocation();
+  const history = useHistory();
   const { t } = useTranslation();
 
   const { connectorsApiBasePath, getToken } = useCos();
 
-  const [activeTabKey, setActiveTabKey] = useState<string | number>(1);
+  const [activeTabKey, setActiveTabKey] = useState<string | number>(
+    getTab(hash)
+  );
+  const [editMode, setEditMode] = useState<boolean>();
 
   const [connectorData, setConnectorData] = useState<Connector>();
   const [connectorTypeDetails, setConnectorTypeDetails] =
@@ -58,6 +68,20 @@ export const ConnectorDetailsPage: FC = () => {
 
   const getConnectorTypeInfo = useCallback((data) => {
     setConnectorTypeDetails(data as ConnectorType);
+  }, []);
+
+  const updateEditMode = useCallback(
+    (editEnable: boolean) => {
+      setEditMode(editEnable);
+    },
+    [setEditMode]
+  );
+
+  useEffect(() => {
+    if (hash.includes('configuration')) {
+      setEditMode(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -72,6 +96,13 @@ export const ConnectorDetailsPage: FC = () => {
   }, [id]);
 
   useEffect(() => {
+    setActiveTabKey(getTab(hash));
+    return () => {
+      // second
+    };
+  }, [hash]);
+
+  useEffect(() => {
     if (connectorData?.connector_type_id) {
       getConnectorTypeDetail({
         accessToken: getToken,
@@ -79,7 +110,6 @@ export const ConnectorDetailsPage: FC = () => {
         connectorTypeId: connectorData?.connector_type_id,
       })(getConnectorTypeInfo);
     }
-
     return () => {
       // second
     };
@@ -92,6 +122,7 @@ export const ConnectorDetailsPage: FC = () => {
     tabIndex: string | number
   ) => {
     setActiveTabKey(tabIndex);
+    history.push(`#${tabIndex}`);
   };
 
   return (
@@ -111,17 +142,19 @@ export const ConnectorDetailsPage: FC = () => {
               className="connector_detail-tabs"
             >
               <Tab
-                eventKey={0}
+                eventKey={'overview'}
                 title={<TabTitleText>{t('Overview')}</TabTitleText>}
               >
                 <OverviewPage connectorData={connectorData} />
               </Tab>
               <Tab
-                eventKey={1}
+                eventKey={'configuration'}
                 title={<TabTitleText>{t('Configuration')}</TabTitleText>}
               >
                 {connectorTypeDetails ? (
                   <ConfigurationPage
+                    editMode={editMode || false}
+                    updateEditMode={updateEditMode}
                     connectorData={connectorData}
                     connectorTypeDetails={connectorTypeDetails}
                   />

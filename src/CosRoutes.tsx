@@ -29,14 +29,11 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
     [history]
   );
 
-  const goToEditConnector = useCallback(
-    (id: string, name: string, currentState: string) =>
+  const goToConnectorDetails = useCallback(
+    (id: string, targetTab: string) =>
       history.push({
         pathname: `/${id}`,
-        state: {
-          name: name,
-          currentState: currentState,
-        },
+        hash: `#${targetTab}`
       }),
     [history]
   );
@@ -59,7 +56,7 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
         <Route path={'/'} exact>
           <ConnectedConnectorsPage
             onCreateConnector={goToCreateConnector}
-            onEditConnector={goToEditConnector}
+            onConnectorDetail={goToConnectorDetails}
           />
         </Route>
         <Route path={'/create-connector'}>
@@ -68,7 +65,7 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
             onClose={goToConnectorsList}
           />
         </Route>
-        <Route path={'/:id'}>
+        <Route path={'/:id/'}>
           <ConnectorDetailsPage />
         </Route>
       </Switch>

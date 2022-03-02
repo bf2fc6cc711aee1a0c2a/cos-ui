@@ -2,6 +2,7 @@ import { JsonSchemaConfigurator } from '@app/components/JsonSchemaConfigurator/J
 import _ from 'lodash';
 import React from 'react';
 import { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Form,
@@ -9,6 +10,8 @@ import {
   Popover,
   Text,
   TextVariants,
+  Title,
+  TitleSizes,
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 
@@ -26,6 +29,7 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
   schema,
   configuration,
 }) => {
+  const { t } = useTranslation();
   console.log('Schema:', schema, 'Configuration:', configuration);
 
   const onChange = (config: unknown, isValid: boolean) => {
@@ -33,6 +37,13 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
   };
   return (
     <>
+      <Title
+        headingLevel="h3"
+        size={TitleSizes['2xl']}
+        className={'pf-u-pr-md pf-u-pb-md'}
+      >
+        {t('Connector specific')}
+      </Title>
       {editMode ? (
         <JsonSchemaConfigurator
           schema={schema}

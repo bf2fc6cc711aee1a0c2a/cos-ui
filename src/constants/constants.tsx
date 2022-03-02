@@ -1,6 +1,8 @@
 export const PAGINATED_MACHINE_ID = 'paginatedApi';
 export const FETCH_MACHINE_ID = 'fetchApi';
 
+// export enum CONNECTOR_DETAILS_TABS = 
+
 export const defaultPerPageOptions = [
   {
     title: '1',

@@ -28,6 +28,8 @@ import { ConfigurationStep } from './ConfigurationStep';
 import { ErrorHandler, ErrorHandlerStep } from './ErrorHandlerStep';
 
 export type ConfigurationPageProps = {
+  editMode: boolean;
+  updateEditMode: (editEnable: boolean) => void;
   connectorData: Connector;
   connectorTypeDetails: ConnectorType;
 };
@@ -38,6 +40,8 @@ export type connector = {
 };
 
 export const ConfigurationPage: FC<ConfigurationPageProps> = ({
+  editMode,
+  updateEditMode,
   connectorData,
   connectorTypeDetails,
 }) => {
@@ -49,10 +53,10 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
   const closeLeaveConfirm = () => setAskForLeaveConfirm(false);
 
   const [activeTabKey, setActiveTabKey] = useState<string | number>(0);
-  const [editMode, setEditMode] = useState<boolean>(false);
+  // const [editMode, setEditMode] = useState<boolean>(false);
 
-  const updateEditMode = () => {
-    setEditMode(!editMode);
+  const changeEditMode = () => {
+    updateEditMode(!editMode);
   };
 
   const onConnectorEdit = useCallback(() => {
@@ -62,13 +66,13 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
       title: t('wizard.edit-success'),
     });
     // handle edit here
-    setEditMode(false);
+    updateEditMode(false);
     // goToConnectorsList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [alert, t]);
 
   const onCancelEdit = () => {
-    setEditMode(false);
+    updateEditMode(false);
     closeLeaveConfirm();
   };
 
@@ -92,15 +96,15 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
               >
                 <Tab
                   eventKey={0}
-                  title={<TabTitleText>Common</TabTitleText>}
+                  title={<TabTitleText>{t('Common')}</TabTitleText>}
                 ></Tab>
                 <Tab
                   eventKey={1}
-                  title={<TabTitleText>Connector specific</TabTitleText>}
+                  title={<TabTitleText>{t('Connector specific')}</TabTitleText>}
                 ></Tab>
                 <Tab
                   eventKey={2}
-                  title={<TabTitleText>Error handling</TabTitleText>}
+                  title={<TabTitleText>{t('Error handling')}</TabTitleText>}
                 ></Tab>
               </Tabs>
             </div>
@@ -143,13 +147,11 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
                 )}
               </GridItem>
               <GridItem span={2} className="pf-u-pl-md">
-                <Button
-                  variant="primary"
-                  onClick={updateEditMode}
-                  isDisabled={editMode}
-                >
-                  Edit Properties
-                </Button>
+                {!editMode && (
+                  <Button variant="primary" onClick={changeEditMode}>
+                    {t('Edit Properties')}
+                  </Button>
+                )}
               </GridItem>
             </Grid>
           </GridItem>
@@ -165,10 +167,10 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
             className="pf-u-mr-md pf-u-mb-sm"
             onClick={onConnectorEdit}
           >
-            Save
+            {t('Save')}
           </Button>
           <Button variant="secondary" onClick={openLeaveConfirm}>
-            Cancel
+            {t('Cancel')}
           </Button>
         </PageSection>
       )}

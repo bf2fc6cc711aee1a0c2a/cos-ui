@@ -2,6 +2,7 @@ import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus
 import React, { FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Text, TextVariants } from '@patternfly/react-core';
 import { css } from '@patternfly/react-styles';
 import {
   IActions,
@@ -48,7 +49,7 @@ type ConnectorsTableRowProps = {
   onStart: () => void;
   onStop: () => void;
   onDelete: () => void;
-  onEdit: () => void;
+  openDetail: (target: string) => void;
   onSelect: () => void;
 };
 export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
@@ -63,7 +64,7 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
   onStart,
   onStop,
   onDelete,
-  onEdit,
+  openDetail,
   onSelect,
 }) => {
   const { t } = useTranslation();
@@ -86,7 +87,7 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
     },
     {
       title: 'Edit',
-      onClick: onEdit,
+      onClick: () => openDetail('configuration'),
       isDisabled: false,
     },
     {
@@ -112,7 +113,11 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
         isSelected && 'pf-m-selected'
       )}
     >
-      <Td dataLabel={t('Name')}>{name}</Td>
+      <Td dataLabel={t('Name')}>
+        <Text component={TextVariants.a} isVisitedLink onClick={() => openDetail('overview')}>
+          {name}
+        </Text>
+      </Td>
       <Td dataLabel={t('Type')}>{type}</Td>
       {/* <Td dataLabel={t('Category')}>{category}</Td> */}
       <Td dataLabel={t('Status')}>
