@@ -50,7 +50,7 @@ describe('Connectors page', () => {
     cy.visit(Cypress.env('homepage'));
     cy.wait('@connectors');
     // should open the drawer with the details of the connector
-    cy.findByText('dbz-postgres-conn').click();
+    cy.findByText('debezium-postgres-1.9.0.Alpha1').click();
     cy.findByText('Connector name').should('exist');
     cy.findByText('Details').should('exist');
     cy.findByText(

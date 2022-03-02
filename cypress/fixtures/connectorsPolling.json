@@ -76,7 +76,7 @@
         "id": "",
         "url": ""
       },
-      "connector_type_id": "debezium-postgres-1.9.0.Alpha1",
+      "connector_type_id": "debezium-postgres-1.9.0.Alpha2",
       "connector": {
         "database.dbname": "postgres",
         "database.hostname": "debezium-pg",
