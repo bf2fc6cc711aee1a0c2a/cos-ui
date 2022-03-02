@@ -44,26 +44,6 @@ export const OverviewPage: FC<OverviewPageProps> = ({ connectorData }) => {
           {textListItem('Time created', connectorData?.created_at)}
           {textListItem('Time updated', connectorData?.modified_at)}
         </TextList>
-        {/* <TextListItem component={TextListItemVariants.dt}>Kafka:</TextListItem>
-        <TextList component={TextListVariants.dl} className="pf-u-pl-lg">
-          {textListItem('Id', (connectorData as ConnectorTypePatch)?.kafka?.id)}
-          {textListItem(
-            'URL',
-            (connectorData as ConnectorTypePatch)?.kafka?.url
-          )}
-        </TextList> */}
-        {/* <TextListItem component={TextListItemVariants.dt}>OSD Cluster:</TextListItem>
-        <TextList component={TextListVariants.dl} className="pf-u-pl-lg">
-          {textListItem(
-            'Id',
-            (connectorData as ConnectorTypePatch)?.deployment_location
-              ?.cluster_id
-          )}
-          {textListItem(
-            'Kind',
-            (connectorData as ConnectorTypePatch)?.deployment_location?.kind
-          )}
-        </TextList> */}
       </TextContent>
     </PageSection>
   );

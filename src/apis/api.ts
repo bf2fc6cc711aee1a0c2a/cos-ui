@@ -39,6 +39,11 @@ type ConnectorTypeProps = {
   connectorTypeId: string;
 } & CommonApiProps;
 
+export type FetchCallbacks<RawDataType> = (
+  onSuccess: (payload: RawDataType) => void,
+  onError: (errorMsg: string) => void
+) => () => void;
+
 export const startConnector = ({
   accessToken,
   connectorsApiBasePath,
@@ -179,14 +184,14 @@ export const getConnector = ({
   accessToken,
   connectorsApiBasePath,
   connectorId,
-}: ConnectorDetailProps) => {
+}: ConnectorDetailProps):FetchCallbacks<Connector>  => {
   const connectorsAPI = new ConnectorsApi(
     new Configuration({
       accessToken,
       basePath: connectorsApiBasePath,
     })
   );
-  return (callback: any) => {
+  return (onSuccess, onError) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     connectorsAPI
@@ -200,20 +205,11 @@ export const getConnector = ({
         }
       )
       .then((response) => {
-        // callback({
-        //   type: 'connector.actionSuccess',
-        //   connector: response.data,
-        // });
-        console.log('Connector details:',response.data)
-        callback(response.data); 
+        onSuccess(response.data); 
       })
       .catch((error) => {
         if (!axios.isCancel(error)) {
-          // callback({
-          //   type: 'connector.actionError',
-          //   error: error.response.data.reason,
-          // });
-          console.log('Error:',error.response.data.reason)
+          onError(error.response.data.reason)
         }
       });
     return () => {

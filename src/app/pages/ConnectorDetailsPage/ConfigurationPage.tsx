@@ -53,7 +53,6 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
   const closeLeaveConfirm = () => setAskForLeaveConfirm(false);
 
   const [activeTabKey, setActiveTabKey] = useState<string | number>(0);
-  // const [editMode, setEditMode] = useState<boolean>(false);
 
   const changeEditMode = () => {
     updateEditMode(!editMode);
@@ -63,11 +62,9 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
     alert?.addAlert({
       id: 'connector-created',
       variant: AlertVariant.success,
-      title: t('wizard.edit-success'),
+      title: t('edit.edit-success'),
     });
-    // handle edit here
     updateEditMode(false);
-    // goToConnectorsList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [alert, t]);
 
@@ -182,10 +179,10 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
         onClose={closeLeaveConfirm}
         actions={[
           <Button key="confirm" variant="primary" onClick={onCancelEdit}>
-            Confirm
+            {t('Confirm')}
           </Button>,
           <Button key="cancel" variant="link" onClick={closeLeaveConfirm}>
-            Cancel
+            {t('Cancel')}
           </Button>,
         ]}
       >

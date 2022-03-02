@@ -1,6 +1,7 @@
 import { getConnector, getConnectorTypeDetail } from '@apis/api';
 import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus';
 import { Loading } from '@app/components/Loading/Loading';
+import { CONNECTOR_DETAILS_TABS } from '@constants/constants';
 import { useCos } from '@context/CosContext';
 import React, {
   FC,
@@ -10,7 +11,6 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-// import { useParams } from 'react-router';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 
 import {
@@ -28,9 +28,10 @@ import {
   DropdownPosition,
   Title,
   PageSectionVariants,
+  AlertVariant,
 } from '@patternfly/react-core';
 
-import { useBasename } from '@rhoas/app-services-ui-shared';
+import { useAlert, useBasename } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorType } from '@rhoas/connector-management-sdk';
 
 import { ConfigurationPage } from './ConfigurationPage';
@@ -44,11 +45,13 @@ const getTab = (hash: string): string => {
     ? hash.substr(1, hash.indexOf('&') - 1)
     : hash.substr(1);
 };
+
 export const ConnectorDetailsPage: FC = () => {
   let { id } = useParams<ParamTypes>();
-
   let { hash } = useLocation();
   const history = useHistory();
+
+  const alert = useAlert();
   const { t } = useTranslation();
 
   const { connectorsApiBasePath, getToken } = useCos();
@@ -77,8 +80,20 @@ export const ConnectorDetailsPage: FC = () => {
     [setEditMode]
   );
 
+  const onError = useCallback(
+    (description: string) => {
+      alert?.addAlert({
+        id: 'connectors-table-error',
+        variant: AlertVariant.danger,
+        title: t('something_went_wrong'),
+        description,
+      });
+    },
+    [alert, t]
+  );
+
   useEffect(() => {
-    if (hash.includes('configuration')) {
+    if (hash.includes(CONNECTOR_DETAILS_TABS.Configuration)) {
       setEditMode(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,17 +104,12 @@ export const ConnectorDetailsPage: FC = () => {
       accessToken: getToken,
       connectorsApiBasePath: connectorsApiBasePath,
       connectorId: id,
-    })(getConnectorData);
-
-    return () => {};
+    })(getConnectorData, onError);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   useEffect(() => {
     setActiveTabKey(getTab(hash));
-    return () => {
-      // second
-    };
   }, [hash]);
 
   useEffect(() => {
@@ -110,9 +120,6 @@ export const ConnectorDetailsPage: FC = () => {
         connectorTypeId: connectorData?.connector_type_id,
       })(getConnectorTypeInfo);
     }
-    return () => {
-      // second
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connectorData]);
 
@@ -142,13 +149,13 @@ export const ConnectorDetailsPage: FC = () => {
               className="connector_detail-tabs"
             >
               <Tab
-                eventKey={'overview'}
+                eventKey={CONNECTOR_DETAILS_TABS.Overview}
                 title={<TabTitleText>{t('Overview')}</TabTitleText>}
               >
                 <OverviewPage connectorData={connectorData} />
               </Tab>
               <Tab
-                eventKey={'configuration'}
+                eventKey={CONNECTOR_DETAILS_TABS.Configuration}
                 title={<TabTitleText>{t('Configuration')}</TabTitleText>}
               >
                 {connectorTypeDetails ? (
@@ -198,10 +205,10 @@ export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
 
   const dropdownItems = [
     <DropdownItem key="start action" component="button" onClick={() => {}}>
-      Start
+      {t('Start')}
     </DropdownItem>,
     <DropdownItem key="stop action" component="button" onClick={() => {}}>
-      Stop
+      {t('Stop')}
     </DropdownItem>,
     <DropdownItem
       key="delete action"
@@ -209,7 +216,7 @@ export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
       isDisabled
       onClick={() => {}}
     >
-      Delete
+      {t('Delete')}
     </DropdownItem>,
   ];
 
