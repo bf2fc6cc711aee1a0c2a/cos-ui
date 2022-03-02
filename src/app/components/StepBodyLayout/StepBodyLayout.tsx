@@ -12,7 +12,7 @@ type CreateConnectorWizardBodyLayoutProps = {
 export const StepBodyLayout: FunctionComponent<CreateConnectorWizardBodyLayoutProps> =
   ({ title, description, component, children }) => (
     <div className={'pf-l-stack'}>
-      <div className={'pf-u-p-md pf-l-stack__item'}>
+      <div className={'pf-l-stack__item pf-u-p-md'}>
         <Level>
           <LevelItem>
             <Title headingLevel="h2">{title}</Title>
@@ -28,7 +28,8 @@ export const StepBodyLayout: FunctionComponent<CreateConnectorWizardBodyLayoutPr
           }
         })()}
       </div>
-
-      <div className={'pf-l-stack__item pf-l-stack pf-m-fill'}>{children}</div>
+      <div className="pf-l-stack__item pf-l-stack pf-m-fill pf-u-pl-md pf-u-pr-md  pf-u-pb-md">
+        {children}
+      </div>
     </div>
   );

@@ -102,7 +102,7 @@ export function ConnectorTypesGallery() {
             return (
               <>
                 <ConnectorTypesToolbar />
-                <div className={'pf-l-stack__item pf-m-fill pf-u-p-md'}>
+                <div className={'pf-l-stack__item pf-m-fill'}>
                   <Gallery hasGutter>
                     {response?.items?.map((c) => (
                       <Card
@@ -280,7 +280,9 @@ const ConnectorTypesToolbar: FunctionComponent = () => {
       collapseListedFiltersBreakpoint="xl"
       clearAllFilters={clearAllFilters}
     >
-      <ToolbarContent>{toolbarItems}</ToolbarContent>
+      <ToolbarContent className={'pf-m-no-padding'}>
+        {toolbarItems}
+      </ToolbarContent>
     </Toolbar>
   );
 };

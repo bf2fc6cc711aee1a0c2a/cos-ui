@@ -7,8 +7,6 @@ import { useTranslation } from 'react-i18next';
 
 import {
   Alert,
-  Card,
-  CardBody,
   Form,
   FormAlert,
   Switch,
@@ -103,201 +101,193 @@ export function Review() {
         />
       }
     >
-      <Card>
-        <CardBody>
-          <Form>
-            {savingError && (
-              <FormAlert>
-                <Alert
-                  variant="danger"
-                  title={savingError}
-                  aria-live="polite"
-                  isInline
-                />
-              </FormAlert>
-            )}
-            {toggleView ? (
-              <ViewJSONFormat />
-            ) : (
-              <>
-                <Grid>
-                  <GridItem span={4}>
-                    <strong>{t('Connector category')}</strong>
-                  </GridItem>
-                  <GridItem span={8}>
-                    {(connectorType as ConnectorTypeAllOf).description}
-                  </GridItem>
-                </Grid>
-                <Grid>
-                  <GridItem span={4}>
-                    <strong>{t('Kafka instance')}</strong>
-                  </GridItem>
-                  <GridItem span={8}>{kafka.name}</GridItem>
-                </Grid>
-                <Grid>
-                  <GridItem span={4}>
-                    <strong>{t('OSD Cluster')}</strong>
-                  </GridItem>
-                  <GridItem span={8}>{cluster.name}</GridItem>
-                </Grid>
+      <Form>
+        {savingError && (
+          <FormAlert>
+            <Alert
+              variant="danger"
+              title={savingError}
+              aria-live="polite"
+              isInline
+            />
+          </FormAlert>
+        )}
+        {toggleView ? (
+          <ViewJSONFormat />
+        ) : (
+          <>
+            <Grid>
+              <GridItem span={4}>
+                <strong>{t('Connector category')}</strong>
+              </GridItem>
+              <GridItem span={8}>
+                {(connectorType as ConnectorTypeAllOf).description}
+              </GridItem>
+            </Grid>
+            <Grid>
+              <GridItem span={4}>
+                <strong>{t('Kafka instance')}</strong>
+              </GridItem>
+              <GridItem span={8}>{kafka.name}</GridItem>
+            </Grid>
+            <Grid>
+              <GridItem span={4}>
+                <strong>{t('OSD Cluster')}</strong>
+              </GridItem>
+              <GridItem span={8}>{cluster.name}</GridItem>
+            </Grid>
 
+            <Title headingLevel="h3" size={TitleSizes['2xl']}>
+              {t('Basic')}
+            </Title>
+            <Grid>
+              <GridItem span={4}>
+                <strong>{t('Connector name')}</strong>
+              </GridItem>
+              <GridItem span={8}>{name}</GridItem>
+            </Grid>
+            <Grid>
+              <GridItem span={4}>
+                <strong>{t('Type')}</strong>
+              </GridItem>
+              <GridItem span={8}>
+                {(connectorType as ConnectorTypeAllOf).labels?.map(
+                  (type) => type
+                )}
+              </GridItem>
+            </Grid>
+            {userServiceAccount?.clientId && (
+              <Grid>
+                <GridItem span={4}>
+                  <strong>{t('Client ID')}</strong>
+                </GridItem>
+                <GridItem span={8}>
+                  <Flex>
+                    <FlexItem>
+                      {toggleMaskView.clientId
+                        ? maskValue(userServiceAccount?.clientId)
+                        : userServiceAccount?.clientId}
+                      {}
+                    </FlexItem>
+                    <FlexItem onClick={updateMaskView} id="clientId">
+                      {toggleMaskView.clientId ? <EyeIcon /> : <EyeSlashIcon />}
+                    </FlexItem>
+                  </Flex>
+                </GridItem>
+              </Grid>
+            )}
+            {userServiceAccount?.clientSecret && (
+              <Grid>
+                <GridItem span={4}>
+                  <strong>{t('Client Secret')}</strong>
+                </GridItem>
+                <GridItem span={8}>
+                  <Flex>
+                    <FlexItem>
+                      {toggleMaskView.clientSecret
+                        ? maskValue(userServiceAccount?.clientSecret)
+                        : userServiceAccount?.clientSecret}
+                      {}
+                    </FlexItem>
+                    <FlexItem onClick={updateMaskView} id="clientSecret">
+                      {toggleMaskView.clientSecret ? (
+                        <EyeIcon />
+                      ) : (
+                        <EyeSlashIcon />
+                      )}
+                    </FlexItem>
+                  </Flex>
+                </GridItem>
+              </Grid>
+            )}
+            <Title headingLevel="h3" size={TitleSizes['2xl']}>
+              {t('Connector specific')}
+            </Title>
+            {connector &&
+              Object.keys(connector).map((el) => {
+                return (
+                  <Grid key={el}>
+                    <GridItem span={4}>
+                      <strong>{_.startCase(el)}</strong>
+                    </GridItem>
+                    <GridItem span={8}>
+                      {_.startCase(el) === t('Access Key') ||
+                      _.startCase(el) === t('Secret Key') ? (
+                        <Flex>
+                          <FlexItem>
+                            {toggleMaskView[el]
+                              ? maskValue(connector[el])
+                              : connector[el]}
+                            {}
+                          </FlexItem>
+                          <FlexItem onClick={updateMaskView} id={el}>
+                            {toggleMaskView[el] ? (
+                              <EyeIcon />
+                            ) : (
+                              <EyeSlashIcon />
+                            )}
+                          </FlexItem>
+                        </Flex>
+                      ) : (
+                        connector[el]
+                      )}
+                    </GridItem>
+                  </Grid>
+                );
+              })}
+            {kafkaTopic &&
+              Object.keys(kafkaTopic).map((el) => {
+                return (
+                  <Grid key={el}>
+                    <GridItem span={4}>
+                      <strong>{_.startCase(el)}</strong>
+                    </GridItem>
+                    <GridItem span={8}>{kafkaTopic[el]}</GridItem>
+                  </Grid>
+                );
+              })}
+            {connector === undefined &&
+              Object.keys(modifiedObject).map((el) => {
+                return (
+                  <Grid key={el}>
+                    <GridItem span={4}>
+                      <strong>{_.startCase(el)}</strong>
+                    </GridItem>
+                    <GridItem span={8}>
+                      {_.startCase(el) === t('Database Password') ||
+                      _.startCase(el) === t('Password')
+                        ? maskValue(modifiedObject[el])
+                        : typeof modifiedObject[el] === 'object'
+                        ? JSON.stringify(modifiedObject[el])
+                        : modifiedObject[el]}
+                    </GridItem>
+                  </Grid>
+                );
+              })}
+            {userErrorHandler && (
+              <>
                 <Title headingLevel="h3" size={TitleSizes['2xl']}>
-                  {t('Basic')}
+                  {t('Error handling')}
                 </Title>
                 <Grid>
                   <GridItem span={4}>
-                    <strong>{t('Connector name')}</strong>
+                    <strong>{t('Error handling')}</strong>
                   </GridItem>
-                  <GridItem span={8}>{name}</GridItem>
+                  <GridItem span={8}>{userErrorHandler}</GridItem>
                 </Grid>
-                <Grid>
-                  <GridItem span={4}>
-                    <strong>{t('Type')}</strong>
-                  </GridItem>
-                  <GridItem span={8}>
-                    {(connectorType as ConnectorTypeAllOf).labels?.map(
-                      (type) => type
-                    )}
-                  </GridItem>
-                </Grid>
-                {userServiceAccount?.clientId && (
+                {topic && (
                   <Grid>
                     <GridItem span={4}>
-                      <strong>{t('Client ID')}</strong>
+                      <strong>{_.startCase(topic)}</strong>
                     </GridItem>
-                    <GridItem span={8}>
-                      <Flex>
-                        <FlexItem>
-                          {toggleMaskView.clientId
-                            ? maskValue(userServiceAccount?.clientId)
-                            : userServiceAccount?.clientId}
-                          {}
-                        </FlexItem>
-                        <FlexItem onClick={updateMaskView} id="clientId">
-                          {toggleMaskView.clientId ? (
-                            <EyeIcon />
-                          ) : (
-                            <EyeSlashIcon />
-                          )}
-                        </FlexItem>
-                      </Flex>
-                    </GridItem>
+                    <GridItem span={8}>{topic}</GridItem>
                   </Grid>
-                )}
-                {userServiceAccount?.clientSecret && (
-                  <Grid>
-                    <GridItem span={4}>
-                      <strong>{t('Client Secret')}</strong>
-                    </GridItem>
-                    <GridItem span={8}>
-                      <Flex>
-                        <FlexItem>
-                          {toggleMaskView.clientSecret
-                            ? maskValue(userServiceAccount?.clientSecret)
-                            : userServiceAccount?.clientSecret}
-                          {}
-                        </FlexItem>
-                        <FlexItem onClick={updateMaskView} id="clientSecret">
-                          {toggleMaskView.clientSecret ? (
-                            <EyeIcon />
-                          ) : (
-                            <EyeSlashIcon />
-                          )}
-                        </FlexItem>
-                      </Flex>
-                    </GridItem>
-                  </Grid>
-                )}
-                <Title headingLevel="h3" size={TitleSizes['2xl']}>
-                  {t('Connector specific')}
-                </Title>
-                {connector &&
-                  Object.keys(connector).map((el) => {
-                    return (
-                      <Grid key={el}>
-                        <GridItem span={4}>
-                          <strong>{_.startCase(el)}</strong>
-                        </GridItem>
-                        <GridItem span={8}>
-                          {_.startCase(el) === t('Access Key') ||
-                          _.startCase(el) === t('Secret Key') ? (
-                            <Flex>
-                              <FlexItem>
-                                {toggleMaskView[el]
-                                  ? maskValue(connector[el])
-                                  : connector[el]}
-                                {}
-                              </FlexItem>
-                              <FlexItem onClick={updateMaskView} id={el}>
-                                {toggleMaskView[el] ? (
-                                  <EyeIcon />
-                                ) : (
-                                  <EyeSlashIcon />
-                                )}
-                              </FlexItem>
-                            </Flex>
-                          ) : (
-                            connector[el]
-                          )}
-                        </GridItem>
-                      </Grid>
-                    );
-                  })}
-                {kafkaTopic &&
-                  Object.keys(kafkaTopic).map((el) => {
-                    return (
-                      <Grid key={el}>
-                        <GridItem span={4}>
-                          <strong>{_.startCase(el)}</strong>
-                        </GridItem>
-                        <GridItem span={8}>{kafkaTopic[el]}</GridItem>
-                      </Grid>
-                    );
-                  })}
-                {connector === undefined &&
-                  Object.keys(modifiedObject).map((el) => {
-                    return (
-                      <Grid key={el}>
-                        <GridItem span={4}>
-                          <strong>{_.startCase(el)}</strong>
-                        </GridItem>
-                        <GridItem span={8}>
-                          {_.startCase(el) === t('Database Password') ||
-                          _.startCase(el) === t('Password')
-                            ? maskValue(modifiedObject[el])
-                            : typeof modifiedObject[el] === 'object'
-                            ? JSON.stringify(modifiedObject[el])
-                            : modifiedObject[el]}
-                        </GridItem>
-                      </Grid>
-                    );
-                  })}
-                {userErrorHandler && (
-                  <>
-                    <Title headingLevel="h3" size={TitleSizes['2xl']}>
-                      {t('Error handling')}
-                    </Title>
-                    <Grid>
-                      <GridItem span={4}>
-                        <strong>{t('Error handling')}</strong>
-                      </GridItem>
-                      <GridItem span={8}>{userErrorHandler}</GridItem>
-                    </Grid>
-                    {topic && (
-                      <Grid>
-                        <GridItem span={4}>
-                          <strong>{_.startCase(topic)}</strong>
-                        </GridItem>
-                        <GridItem span={8}>{topic}</GridItem>
-                      </Grid>
-                    )}
-                  </>
                 )}
               </>
             )}
-          </Form>
-        </CardBody>
-      </Card>
+          </>
+        )}
+      </Form>
     </StepBodyLayout>
   );
 }

@@ -91,7 +91,7 @@ const ClustersGallery: FunctionComponent = () => {
             return (
               <>
                 <ClustersToolbar />
-                <div className={'pf-l-stack__item pf-m-fill pf-u-p-md'}>
+                <div className={'pf-l-stack__item pf-m-fill'}>
                   <Gallery hasGutter>
                     {response?.items?.map((i) => (
                       <Card

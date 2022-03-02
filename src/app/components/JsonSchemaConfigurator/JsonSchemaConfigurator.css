@@ -1,3 +1,25 @@
-.configurator .pf-c-card__body .pf-c-form__group {
-  margin-bottom: 10px;
+.pf-c-form:not(.pf-c-card__body) {
+  margin-top: var(--pf-global--spacer--lg);
+}
+.pf-c-form *:focus {
+  outline: none;
+}
+.pf-c-form .pf-c-form__group {
+  margin-bottom: var(--pf-global--spacer--sm);
+}
+.pf-c-form .pf-c-form__group-label {
+  padding-bottom: 0;
+}
+.pf-c-form__label-text {
+  font-weight: var(--pf-c-form__label-text--FontWeight);
+}
+.pf-c-form-control:focus {
+  --pf-c-form-control--BorderBottomColor: var(
+    --pf-c-form-control--focus--BorderBottomColor
+  );
+  padding-bottom: var(--pf-c-form-control--focus--PaddingBottom);
+  border-bottom-width: var(--pf-c-form-control--focus--BorderBottomWidth);
+}
+.connector-specific .pf-c-form__group-control {
+  padding-bottom: var(--pf-global--spacer--sm);
 }
