@@ -140,7 +140,11 @@ export const ConnectorsToolbar: FunctionComponent<ConnectorsToolbarProps> = ({
   );
 
   return (
-    <Toolbar id="toolbar-group-types" collapseListedFiltersBreakpoint="xl">
+    <Toolbar
+      id="toolbar-group-types"
+      collapseListedFiltersBreakpoint="xl"
+      className={'pf-u-p-md'}
+    >
       <ToolbarContent>{toolbarItems}</ToolbarContent>
     </Toolbar>
   );
