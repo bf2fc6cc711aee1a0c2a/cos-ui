@@ -12,16 +12,14 @@ import {
   TitleSizes,
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
+
 import { Connector } from '@rhoas/connector-management-sdk';
 
 export type CommonStepProp = {
   editMode: boolean;
   configuration: Connector;
 };
-export const CommonStep: FC<CommonStepProp> = ({
-  editMode,
-  configuration,
-}) => {
+export const CommonStep: FC<CommonStepProp> = ({ editMode, configuration }) => {
   const { t } = useTranslation();
   return (
     <>
@@ -52,7 +50,11 @@ export const CommonStep: FC<CommonStepProp> = ({
           }
         >
           {editMode ? (
-            <TextInput value={configuration.name} onChange={() => {}} id="name" />
+            <TextInput
+              value={configuration.name}
+              onChange={() => {}}
+              id="name"
+            />
           ) : (
             <Text component={TextVariants.p}>{configuration.name}</Text>
           )}
@@ -69,7 +71,9 @@ export const CommonStep: FC<CommonStepProp> = ({
                     isDisabled
                   />
                 ) : (
-                  <Text component={TextVariants.p}>{configuration.service_account.client_id}</Text>
+                  <Text component={TextVariants.p}>
+                    {configuration.service_account.client_id}
+                  </Text>
                 )}
               </FormGroup>
               <FormGroup
