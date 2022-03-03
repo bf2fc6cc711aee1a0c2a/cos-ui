@@ -1,5 +1,6 @@
 import { ConnectedConnectorsPage } from '@app/pages/ConnectorsPage/ConnectorsPage';
 import { CreateConnectorPage } from '@app/pages/CreateConnectorPage/CreateConnectorPage';
+import { ConnectorDetailsPage } from '@app/pages/ConnectorDetailsPage/ConnectorDetailsPage';
 import React, { FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Route, Switch, useHistory } from 'react-router-dom';
@@ -27,6 +28,16 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
     () => history.push('/create-connector'),
     [history]
   );
+
+  const goToConnectorDetails = useCallback(
+    (id: string, targetTab: string) =>
+      history.push({
+        pathname: `/${id}`,
+        hash: `#${targetTab}`
+      }),
+    [history]
+  );
+
   const onConnectorSave = useCallback(() => {
     alert?.addAlert({
       id: 'connector-created',
@@ -43,13 +54,19 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
     >
       <Switch>
         <Route path={'/'} exact>
-          <ConnectedConnectorsPage onCreateConnector={goToCreateConnector} />
+          <ConnectedConnectorsPage
+            onCreateConnector={goToCreateConnector}
+            onConnectorDetail={goToConnectorDetails}
+          />
         </Route>
         <Route path={'/create-connector'}>
           <CreateConnectorPage
             onSave={onConnectorSave}
             onClose={goToConnectorsList}
           />
+        </Route>
+        <Route path={'/:id/'}>
+          <ConnectorDetailsPage />
         </Route>
       </Switch>
     </CosContextProvider>
