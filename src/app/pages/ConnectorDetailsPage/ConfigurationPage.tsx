@@ -112,7 +112,9 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
                 {activeTabKey === 0 && (
                   <StepErrorBoundary>
                     <CommonStep
-                      editMode={editMode}
+                      // TODO: disabling the edit flow for time being
+                      // editMode={editMode}
+                      editMode={false}
                       configuration={connectorData}
                     />
                   </StepErrorBoundary>
@@ -121,7 +123,9 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
                 {activeTabKey === 1 && (
                   <StepErrorBoundary>
                     <ConfigurationStep
-                      editMode={editMode}
+                      // TODO: disabling the edit flow for time being
+                      // editMode={editMode}
+                      editMode={false}
                       schema={
                         (connectorTypeDetails as ConnectorTypeAllOf)?.schema!
                       }
@@ -132,7 +136,9 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
                 {activeTabKey === 2 && (
                   <StepErrorBoundary>
                     <ErrorHandlerStep
-                      editMode={editMode}
+                      // TODO: disabling the edit flow for time being
+                      // editMode={editMode}
+                      editMode={false}
                       schema={
                         (connectorTypeDetails as ConnectorTypeAllOf)?.schema!
                       }
@@ -144,33 +150,41 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
                 )}
               </GridItem>
               <GridItem span={2} className="pf-u-pl-md">
-                {!editMode && (
-                  <Button variant="primary" onClick={changeEditMode}>
-                    {t('Edit Properties')}
-                  </Button>
-                )}
+                {
+                  // TODO: disabling the edit flow for time being
+                  // !editMode
+                  false && (
+                    <Button variant="primary" onClick={changeEditMode}>
+                      {t('Edit Properties')}
+                    </Button>
+                  )
+                }
               </GridItem>
             </Grid>
           </GridItem>
         </Grid>
       </PageSection>
-      {editMode && (
-        <PageSection
-          variant={PageSectionVariants.light}
-          className="pf-u-p-md pf-u-box-shadow-md-top configuration-page_footer"
-        >
-          <Button
-            variant="primary"
-            className="pf-u-mr-md pf-u-mb-sm"
-            onClick={onConnectorEdit}
+      {
+        // TODO: disabling the edit flow for time being
+        // editMode
+        false && (
+          <PageSection
+            variant={PageSectionVariants.light}
+            className="pf-u-p-md pf-u-box-shadow-md-top configuration-page_footer"
           >
-            {t('Save')}
-          </Button>
-          <Button variant="secondary" onClick={openLeaveConfirm}>
-            {t('Cancel')}
-          </Button>
-        </PageSection>
-      )}
+            <Button
+              variant="primary"
+              className="pf-u-mr-md pf-u-mb-sm"
+              onClick={onConnectorEdit}
+            >
+              {t('Save')}
+            </Button>
+            <Button variant="secondary" onClick={openLeaveConfirm}>
+              {t('Cancel')}
+            </Button>
+          </PageSection>
+        )
+      }
 
       <Modal
         title={t('Leave page?')}
