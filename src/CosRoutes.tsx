@@ -1,6 +1,6 @@
+import { ConnectorDetailsPage } from '@app/pages/ConnectorDetailsPage/ConnectorDetailsPage';
 import { ConnectedConnectorsPage } from '@app/pages/ConnectorsPage/ConnectorsPage';
 import { CreateConnectorPage } from '@app/pages/CreateConnectorPage/CreateConnectorPage';
-import { ConnectorDetailsPage } from '@app/pages/ConnectorDetailsPage/ConnectorDetailsPage';
 import React, { FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Route, Switch, useHistory } from 'react-router-dom';
@@ -33,7 +33,7 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
     (id: string, targetTab: string) =>
       history.push({
         pathname: `/${id}`,
-        hash: `#${targetTab}`
+        hash: `#${targetTab}`,
       }),
     [history]
   );

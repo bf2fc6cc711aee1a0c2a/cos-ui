@@ -114,7 +114,11 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
       )}
     >
       <Td dataLabel={t('Name')}>
-        <Text component={TextVariants.a} isVisitedLink onClick={() => openDetail('overview')}>
+        <Text
+          component={TextVariants.a}
+          isVisitedLink
+          onClick={() => openDetail('overview')}
+        >
           {name}
         </Text>
       </Td>

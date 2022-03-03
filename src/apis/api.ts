@@ -184,7 +184,7 @@ export const getConnector = ({
   accessToken,
   connectorsApiBasePath,
   connectorId,
-}: ConnectorDetailProps):FetchCallbacks<Connector>  => {
+}: ConnectorDetailProps): FetchCallbacks<Connector> => {
   const connectorsAPI = new ConnectorsApi(
     new Configuration({
       accessToken,
@@ -195,21 +195,18 @@ export const getConnector = ({
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     connectorsAPI
-      .getConnector(
-        connectorId!,
-        {
-          cancelToken: source.token,
-          headers: {
-            'Content-type': 'application/merge-patch+json',
-          },
-        }
-      )
+      .getConnector(connectorId!, {
+        cancelToken: source.token,
+        headers: {
+          'Content-type': 'application/merge-patch+json',
+        },
+      })
       .then((response) => {
-        onSuccess(response.data); 
+        onSuccess(response.data);
       })
       .catch((error) => {
         if (!axios.isCancel(error)) {
-          onError(error.response.data.reason)
+          onError(error.response.data.reason);
         }
       });
     return () => {
@@ -221,7 +218,7 @@ export const getConnector = ({
 export const getConnectorTypeDetail = ({
   accessToken,
   connectorsApiBasePath,
-  connectorTypeId
+  connectorTypeId,
 }: ConnectorTypeProps) => {
   const connectorsAPI = new ConnectorTypesApi(
     new Configuration({
@@ -237,11 +234,11 @@ export const getConnectorTypeDetail = ({
         cancelToken: source.token,
       })
       .then((response) => {
-        callback(response.data); 
+        callback(response.data);
       })
       .catch((error) => {
         if (!axios.isCancel(error)) {
-          console.log('Error:',error.response.data.reason)
+          console.log('Error:', error.response.data.reason);
         }
       });
     return () => {
