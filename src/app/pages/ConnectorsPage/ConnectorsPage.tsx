@@ -235,7 +235,6 @@ const ConnectedRow: FunctionComponent<ConnectedRowProps> = ({
     useState(false);
 
   const editConnector = (targetTab: string) => {
-    console.log('Edit Connectors');
     onConnectorDetail(connector.id!, targetTab);
   };
 

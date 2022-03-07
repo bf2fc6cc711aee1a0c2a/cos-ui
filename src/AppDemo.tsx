@@ -62,7 +62,7 @@ export const AppDemo: FunctionComponent = () => {
       configurators: {
         debezium: {
           remoteEntry:
-            'https://qaprodauth.cloud.redhat.com/apps/dbz-ui-build/dbz-connector-configurator.remoteEntry.js',
+            'http://localhost:8888/dbz-connector-configurator.remoteEntry.js',
           scope: 'debezium_ui',
           module: './config',
         },

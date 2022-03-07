@@ -27,11 +27,15 @@ export type ErrorHandlerStepProps = {
   editMode: boolean;
   schema: Record<string, any>;
   configuration: ErrorHandler;
+  changeIsValid: (isValid: boolean) => void;
+  onUpdateConfiguration: (type: string, update: any) => void;
 };
 export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
   editMode,
   schema,
   configuration,
+  changeIsValid,
+  onUpdateConfiguration,
 }) => {
   const [isOpen, setOpen] = useState<boolean>(false);
   const [topic, setTopic] = useState<string>();
@@ -39,6 +43,17 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
   const { t } = useTranslation();
 
   const onToggle = () => setOpen((isOpen) => !isOpen);
+
+  const checkValidity = (value: string) =>{
+    if(value !== 'dead_letter_queue'){
+      changeIsValid(true);
+    } else if(topic){
+      changeIsValid(true);
+    }else{
+      changeIsValid(false);
+    }
+  }
+
   const onSelect = (_: any, selection: any, isPlaceholder: any) => {
     if (isPlaceholder) {
       clearSelection();
@@ -46,6 +61,8 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
       setOpen(false);
       setTopic('');
       setErrorHandler(selection);
+      checkValidity(selection);
+      onUpdateConfiguration('error', { [selection]: null });
     }
   };
 
@@ -60,10 +77,17 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
         configuration.dead_letter_queue[
           Object.keys(configuration.dead_letter_queue)[0]
         ]
-      );
+      )
     }
     return () => {};
-  }, [configuration]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const updateTopic = (val: string) => {
+    setTopic(val);
+    val ? changeIsValid(true) : changeIsValid(false);
+    onUpdateConfiguration('error', { dead_letter_queue: { topic: val } });
+  };
 
   const schemaValidator = createValidator(schema);
   const bridge = new JSONSchemaBridge(schema, schemaValidator);
@@ -129,7 +153,7 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
             }
           >
             {editMode ? (
-              <TextInput value={topic} onChange={setTopic} id="topic" />
+              <TextInput value={topic} onChange={updateTopic} id="topic" />
             ) : (
               <Text component={TextVariants.p}>{topic}</Text>
             )}
