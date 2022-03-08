@@ -1,5 +1,6 @@
 import { ApiCallback } from '@app/machines/PaginatedResponse.machine';
 import axios, { CancelTokenSource } from 'axios';
+import _ from 'lodash';
 
 import { Sender } from 'xstate';
 
@@ -21,7 +22,6 @@ import {
   DefaultApi,
   SecurityApi,
 } from '@rhoas/kafka-management-sdk';
-import _ from 'lodash';
 
 type CommonApiProps = {
   accessToken: () => Promise<string>;
@@ -628,10 +628,12 @@ export const updateConnector = ({
       .patchConnector(
         connectorId,
         {
-          ...(updatedName && {name: updatedName}),
-          ...(!_.isEmpty(connectorUpdate) && {connector: {
-            ...connectorUpdate
-          }})
+          ...(updatedName && { name: updatedName }),
+          ...(!_.isEmpty(connectorUpdate) && {
+            connector: {
+              ...connectorUpdate,
+            },
+          }),
         },
         {
           cancelToken: source.token,

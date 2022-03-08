@@ -29,10 +29,10 @@ export const CommonStep: FC<CommonStepProp> = ({
 }) => {
   const { t } = useTranslation();
 
-  const onNameChange = (val: any ) =>{
+  const onNameChange = (val: any) => {
     onUpdateConfiguration('common', { ...configuration, name: val });
     val === '' ? changeIsValid(false) : changeIsValid(true);
-  }
+  };
 
   return (
     <>
@@ -65,9 +65,7 @@ export const CommonStep: FC<CommonStepProp> = ({
           {editMode ? (
             <TextInput
               value={configuration.name}
-              onChange={(val) =>
-                onNameChange(val)
-              }
+              onChange={(val) => onNameChange(val)}
               id="connector-name"
             />
           ) : (
@@ -78,9 +76,10 @@ export const CommonStep: FC<CommonStepProp> = ({
           {true !== undefined && (
             <>
               <FormGroup label={t('Client ID')} isRequired fieldId="clientId">
-                <ClipboardCopy isReadOnly hoverTip="Copy" clickTip="Copied">{configuration?.service_account?.client_id}</ClipboardCopy>
+                <ClipboardCopy isReadOnly hoverTip="Copy" clickTip="Copied">
+                  {configuration?.service_account?.client_id}
+                </ClipboardCopy>
               </FormGroup>
-
             </>
           )}
         </FormGroup>

@@ -1,4 +1,5 @@
 import { createValidator } from '@utils/createValidator';
+import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +19,6 @@ import {
   TitleSizes,
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
-import _ from 'lodash';
 
 export type ErrorHandler = {
   [key: string]: any;
@@ -45,15 +45,15 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
 
   const onToggle = () => setOpen((isOpen) => !isOpen);
 
-  const checkValidity = (value: string) =>{
-    if(value !== 'dead_letter_queue'){
+  const checkValidity = (value: string) => {
+    if (value !== 'dead_letter_queue') {
       changeIsValid(true);
-    } else if(topic){
+    } else if (topic) {
       changeIsValid(true);
-    }else{
+    } else {
       changeIsValid(false);
     }
-  }
+  };
 
   const onSelect = (_: any, selection: any, isPlaceholder: any) => {
     if (isPlaceholder) {
@@ -73,15 +73,18 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
 
   useEffect(() => {
     setErrorHandler(Object.keys(configuration)[0]);
-    if (Object.keys(configuration)[0] === 'dead_letter_queue' && !_.isEmpty(configuration.dead_letter_queue)) {
+    if (
+      Object.keys(configuration)[0] === 'dead_letter_queue' &&
+      !_.isEmpty(configuration.dead_letter_queue)
+    ) {
       setTopic(
         configuration.dead_letter_queue[
           Object.keys(configuration.dead_letter_queue)[0]
         ]
-      )
+      );
     }
     return () => {};
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [configuration]);
 
   const updateTopic = (val: string) => {

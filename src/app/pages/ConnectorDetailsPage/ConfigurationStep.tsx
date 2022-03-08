@@ -104,7 +104,9 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
               >
                 <Text component={TextVariants.p}>
                   {_.isObject((formConfiguration as ConfigurationType)[key])
-                    ? JSON.stringify((formConfiguration as ConfigurationType)[key])
+                    ? JSON.stringify(
+                        (formConfiguration as ConfigurationType)[key]
+                      )
                     : (formConfiguration as ConfigurationType)[key]}
                 </Text>
               </FormGroup>

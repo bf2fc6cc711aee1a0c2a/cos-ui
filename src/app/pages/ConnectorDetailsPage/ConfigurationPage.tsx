@@ -73,9 +73,15 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
   const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
   const [userTouched, setUserTouched] = useState(false);
 
-  const [commonConfiguration, setCommonConfiguration] = useState<{ [key: string]: any }>({});
-  const [connectorConfiguration, setConnectorConfiguration] = useState<{ [key: string]: any }>({});
-  const [errHandlerConfiguration, setErrHandlerConfiguration] = useState<{ [key: string]: any }>({});
+  const [commonConfiguration, setCommonConfiguration] = useState<{
+    [key: string]: any;
+  }>({});
+  const [connectorConfiguration, setConnectorConfiguration] = useState<{
+    [key: string]: any;
+  }>({});
+  const [errHandlerConfiguration, setErrHandlerConfiguration] = useState<{
+    [key: string]: any;
+  }>({});
 
   const [isEditValid, setIsEditValid] = useState<boolean>(true);
 
@@ -131,7 +137,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
   }, [alert, t, updateEditMode]);
 
   const onConnectorEditSave = () => {
-     updateConnector({
+    updateConnector({
       accessToken: getToken,
       connectorsApiBasePath: connectorsApiBasePath,
       connectorUpdate: {
@@ -144,20 +150,20 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
         ),
       },
       connectorId: connectorData.id!,
-      ...(commonConfiguration.name !== connectorData.name && {updatedName: commonConfiguration.name})
+      ...(commonConfiguration.name !== connectorData.name && {
+        updatedName: commonConfiguration.name,
+      }),
     })(onSuccess, onError);
   };
 
-  
-
-  const initialize = () =>{
+  const initialize = () => {
     const { name, service_account } = connectorData;
     setCommonConfiguration({ name: name, service_account: service_account });
     setConnectorConfiguration(connectorData?.connector);
     setErrHandlerConfiguration(
       (connectorData?.connector as connector)?.error_handler
     );
-  }
+  };
 
   const onCancelEdit = () => {
     initialize();
@@ -167,7 +173,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
 
   useEffect(() => {
     initialize();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Toggle currently active tab
@@ -180,7 +186,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
   return (
     <>
       <PageSection variant={PageSectionVariants.light}>
-        <Grid style={{paddingBottom: '50px'}}>
+        <Grid style={{ paddingBottom: '50px' }}>
           <GridItem span={3}>
             <div>
               <Tabs
