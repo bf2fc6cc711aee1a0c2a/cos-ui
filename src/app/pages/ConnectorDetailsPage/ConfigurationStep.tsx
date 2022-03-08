@@ -30,21 +30,22 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
   schema,
   configuration,
   changeIsValid,
-  onUpdateConfiguration
+  onUpdateConfiguration,
 }) => {
   const { t } = useTranslation();
 
   const formConfiguration = JSON.parse(JSON.stringify(configuration));
-  Object.keys(formConfiguration as object).map(key =>{
-    if(_.isEmpty((formConfiguration as { [key: string]: any })[key])){
-      (formConfiguration as { [key: string]: any })[key] = "";
+  Object.keys(formConfiguration as object).map((key) => {
+    if (_.isEmpty((formConfiguration as { [key: string]: any })[key])) {
+      (formConfiguration as { [key: string]: any })[key] = '';
     }
-  })
+  });
 
   const onChange = (config: unknown, isValid: boolean) => {
-    onUpdateConfiguration('connector', config)
+    onUpdateConfiguration('connector', config);
     changeIsValid(isValid);
   };
+
   return (
     <>
       <Title
@@ -102,9 +103,9 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
                 }
               >
                 <Text component={TextVariants.p}>
-                  {_.isObject((configuration as ConfigurationType)[key])
-                    ? JSON.stringify((configuration as ConfigurationType)[key])
-                    : (configuration as ConfigurationType)[key]}
+                  {_.isObject((formConfiguration as ConfigurationType)[key])
+                    ? JSON.stringify((formConfiguration as ConfigurationType)[key])
+                    : (formConfiguration as ConfigurationType)[key]}
                 </Text>
               </FormGroup>
             ))}

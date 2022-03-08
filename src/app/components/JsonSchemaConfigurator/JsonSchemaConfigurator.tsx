@@ -92,6 +92,7 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
         onChange(copiedModel, false);
       }
     };
+
     return (
       <Grid hasGutter>
         <KameletForm
@@ -106,7 +107,12 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
                 <AutoField
                   key={key}
                   name={key}
-                  disabled={editCase && bridge.schema.properties[key].oneOf}
+                  disabled={
+                    editCase &&
+                    _.find(bridge.schema.properties[key].oneOf, {
+                      format: 'password',
+                    })
+                  }
                 />
               );
             }

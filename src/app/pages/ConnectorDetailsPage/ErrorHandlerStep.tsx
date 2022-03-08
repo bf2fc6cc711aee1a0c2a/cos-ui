@@ -63,7 +63,7 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
       setTopic('');
       setErrorHandler(selection);
       checkValidity(selection);
-      onUpdateConfiguration('error', { [selection]: null });
+      onUpdateConfiguration('error', { [selection]: {} });
     }
   };
 

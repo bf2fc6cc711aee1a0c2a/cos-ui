@@ -180,7 +180,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
   return (
     <>
       <PageSection variant={PageSectionVariants.light}>
-        <Grid>
+        <Grid style={{paddingBottom: '50px'}}>
           <GridItem span={3}>
             <div>
               <Tabs
