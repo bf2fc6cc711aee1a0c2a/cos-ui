@@ -5,7 +5,7 @@ import _ from 'lodash';
 import React, { FunctionComponent } from 'react';
 import { AutoForm, ValidatedQuickForm } from 'uniforms';
 import { JSONSchemaBridge } from 'uniforms-bridge-json-schema';
-import { AutoFields } from 'uniforms-patternfly';
+import { AutoField } from 'uniforms-patternfly';
 
 import { Grid } from '@patternfly/react-core';
 
@@ -18,11 +18,12 @@ type JsonSchemaConfiguratorProps = {
   schema: Record<string, any>;
   configuration: unknown;
   onChange: (configuration: unknown, isValid: boolean) => void;
+  editCase?: boolean;
 };
 const resolver = new Resolver();
 
 export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorProps> =
-  ({ schema, configuration, onChange }) => {
+  ({ schema, configuration, onChange, editCase }) => {
     schema.type = schema.type || 'object';
     // Suppress the experimental steps from the UI for the moment
     try {
@@ -91,6 +92,7 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
         onChange(copiedModel, false);
       }
     };
+
     return (
       <Grid hasGutter>
         <KameletForm
@@ -99,7 +101,23 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
           onChangeModel={(model: any) => onChangeWizard(model, false)}
           className="connector-specific pf-c-form pf-m-9-col-on-lg"
         >
-          <AutoFields omitFields={['processors', 'error_handler']} />
+          {Object.keys(bridge.schema.properties).map((key) => {
+            if (!['processors', 'error_handler'].includes(key)) {
+              return (
+                <AutoField
+                  key={key}
+                  name={key}
+                  disabled={
+                    editCase &&
+                    _.find(bridge.schema.properties[key].oneOf, {
+                      format: 'password',
+                    })
+                  }
+                />
+              );
+            }
+            return false;
+          })}
         </KameletForm>
       </Grid>
     );

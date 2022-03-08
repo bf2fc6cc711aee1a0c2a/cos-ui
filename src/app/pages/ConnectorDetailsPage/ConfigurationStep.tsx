@@ -22,19 +22,30 @@ export type ConfigurationStepProps = {
   editMode: boolean;
   schema: Record<string, any>;
   configuration: unknown;
-  // onChange: (configuration: unknown, isValid: boolean) => void
+  changeIsValid: (isValid: boolean) => void;
+  onUpdateConfiguration: (type: string, update: any) => void;
 };
 export const ConfigurationStep: FC<ConfigurationStepProps> = ({
   editMode,
   schema,
   configuration,
+  changeIsValid,
+  onUpdateConfiguration,
 }) => {
   const { t } = useTranslation();
-  console.log('Schema:', schema, 'Configuration:', configuration);
+
+  const formConfiguration = JSON.parse(JSON.stringify(configuration));
+  Object.keys(formConfiguration as object).map((key) => {
+    if (_.isEmpty((formConfiguration as { [key: string]: any })[key])) {
+      (formConfiguration as { [key: string]: any })[key] = '';
+    }
+  });
 
   const onChange = (config: unknown, isValid: boolean) => {
-    console.log('Data', config, isValid);
+    onUpdateConfiguration('connector', config);
+    changeIsValid(isValid);
   };
+
   return (
     <>
       <Title
@@ -47,8 +58,9 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
       {editMode ? (
         <JsonSchemaConfigurator
           schema={schema}
-          configuration={configuration || {}}
+          configuration={formConfiguration || {}}
           onChange={onChange}
+          editCase={true}
         />
       ) : (
         <Form>
@@ -91,9 +103,11 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
                 }
               >
                 <Text component={TextVariants.p}>
-                  {_.isObject((configuration as ConfigurationType)[key])
-                    ? JSON.stringify((configuration as ConfigurationType)[key])
-                    : (configuration as ConfigurationType)[key]}
+                  {_.isObject((formConfiguration as ConfigurationType)[key])
+                    ? JSON.stringify(
+                        (formConfiguration as ConfigurationType)[key]
+                      )
+                    : (formConfiguration as ConfigurationType)[key]}
                 </Text>
               </FormGroup>
             ))}

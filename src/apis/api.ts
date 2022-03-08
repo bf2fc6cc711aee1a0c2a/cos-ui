@@ -1,5 +1,6 @@
 import { ApiCallback } from '@app/machines/PaginatedResponse.machine';
 import axios, { CancelTokenSource } from 'axios';
+import _ from 'lodash';
 
 import { Sender } from 'xstate';
 
@@ -31,6 +32,12 @@ type ConnectorApiProps = {
   connector: Connector;
 } & CommonApiProps;
 
+type ConnectorEditProps = {
+  connectorUpdate: { [key: string]: any };
+  connectorId: string;
+  updatedName?: string;
+} & CommonApiProps;
+
 type ConnectorDetailProps = {
   connectorId: string;
 } & CommonApiProps;
@@ -40,7 +47,7 @@ type ConnectorTypeProps = {
 } & CommonApiProps;
 
 export type FetchCallbacks<RawDataType> = (
-  onSuccess: (payload: RawDataType) => void,
+  onSuccess: (payload?: RawDataType) => void,
   onError: (errorMsg: string) => void
 ) => () => void;
 
@@ -197,9 +204,6 @@ export const getConnector = ({
     connectorsAPI
       .getConnector(connectorId!, {
         cancelToken: source.token,
-        headers: {
-          'Content-type': 'application/merge-patch+json',
-        },
       })
       .then((response) => {
         onSuccess(response.data);
@@ -550,7 +554,7 @@ export const saveConnector = ({
             ...configuration,
             ...{
               error_handler: {
-                [userErrorHandler]: topic ? { topic: topic } : null,
+                [userErrorHandler]: topic ? { topic: topic } : {},
               },
             },
           };
@@ -596,6 +600,54 @@ export const saveConnector = ({
       .catch((error) => {
         if (!axios.isCancel(error)) {
           callback({ type: 'failure', message: error.response.data.reason });
+        }
+      });
+    return () => {
+      source.cancel('Operation canceled by the user.');
+    };
+  };
+};
+
+export const updateConnector = ({
+  accessToken,
+  connectorsApiBasePath,
+  connectorUpdate,
+  connectorId,
+  updatedName,
+}: ConnectorEditProps): FetchCallbacks<undefined> => {
+  const connectorsAPI = new ConnectorsApi(
+    new Configuration({
+      accessToken,
+      basePath: connectorsApiBasePath,
+    })
+  );
+  return (onSuccess, onError) => {
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    connectorsAPI
+      .patchConnector(
+        connectorId,
+        {
+          ...(updatedName && { name: updatedName }),
+          ...(!_.isEmpty(connectorUpdate) && {
+            connector: {
+              ...connectorUpdate,
+            },
+          }),
+        },
+        {
+          cancelToken: source.token,
+          headers: {
+            'Content-type': 'application/merge-patch+json',
+          },
+        }
+      )
+      .then(() => {
+        onSuccess();
+      })
+      .catch((error) => {
+        if (!axios.isCancel(error)) {
+          onError(error.response.data.reason);
         }
       });
     return () => {

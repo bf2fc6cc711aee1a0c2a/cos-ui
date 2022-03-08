@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
+  ClipboardCopy,
   Form,
   FormGroup,
   Popover,
@@ -13,14 +14,26 @@ import {
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 
-import { Connector } from '@rhoas/connector-management-sdk';
-
 export type CommonStepProp = {
   editMode: boolean;
-  configuration: Connector;
+  configuration: any;
+  changeIsValid: (isValid: boolean) => void;
+  onUpdateConfiguration: (type: string, update: any) => void;
 };
-export const CommonStep: FC<CommonStepProp> = ({ editMode, configuration }) => {
+
+export const CommonStep: FC<CommonStepProp> = ({
+  editMode,
+  configuration,
+  changeIsValid,
+  onUpdateConfiguration,
+}) => {
   const { t } = useTranslation();
+
+  const onNameChange = (val: any) => {
+    onUpdateConfiguration('common', { ...configuration, name: val });
+    val === '' ? changeIsValid(false) : changeIsValid(true);
+  };
+
   return (
     <>
       <Title
@@ -34,12 +47,12 @@ export const CommonStep: FC<CommonStepProp> = ({ editMode, configuration }) => {
         <FormGroup
           label={t('Connector name')}
           isRequired
-          fieldId="name"
+          fieldId="connector-name"
           labelIcon={
             <Popover bodyContent={<p>{t('Unique name for the connector.')}</p>}>
               <button
                 type="button"
-                aria-label="More info for name field"
+                aria-label="More info for name field."
                 onClick={(e) => e.preventDefault()}
                 aria-describedby="simple-form-name-01"
                 className="pf-c-form__group-label-help"
@@ -52,8 +65,8 @@ export const CommonStep: FC<CommonStepProp> = ({ editMode, configuration }) => {
           {editMode ? (
             <TextInput
               value={configuration.name}
-              onChange={() => {}}
-              id="name"
+              onChange={(val) => onNameChange(val)}
+              id="connector-name"
             />
           ) : (
             <Text component={TextVariants.p}>{configuration.name}</Text>
@@ -63,36 +76,9 @@ export const CommonStep: FC<CommonStepProp> = ({ editMode, configuration }) => {
           {true !== undefined && (
             <>
               <FormGroup label={t('Client ID')} isRequired fieldId="clientId">
-                {editMode ? (
-                  <TextInput
-                    value={configuration.service_account.client_id}
-                    onChange={() => {}}
-                    id="clientId"
-                    isDisabled
-                  />
-                ) : (
-                  <Text component={TextVariants.p}>
-                    {configuration.service_account.client_id}
-                  </Text>
-                )}
-              </FormGroup>
-              <FormGroup
-                label={t('Client Secret')}
-                isRequired
-                fieldId="clientSecret"
-              >
-                {editMode ? (
-                  <TextInput
-                    value="***********************"
-                    onChange={() => {}}
-                    id="clientSecret"
-                    isDisabled
-                  />
-                ) : (
-                  <Text component={TextVariants.p}>
-                    ***********************
-                  </Text>
-                )}
+                <ClipboardCopy isReadOnly hoverTip="Copy" clickTip="Copied">
+                  {configuration?.service_account?.client_id}
+                </ClipboardCopy>
               </FormGroup>
             </>
           )}
