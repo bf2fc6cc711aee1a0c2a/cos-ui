@@ -131,7 +131,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
   }, [alert, t, updateEditMode]);
 
   const onConnectorEditSave = () => {
-    updateConnector({
+     updateConnector({
       accessToken: getToken,
       connectorsApiBasePath: connectorsApiBasePath,
       connectorUpdate: {
@@ -148,19 +148,27 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
     })(onSuccess, onError);
   };
 
-  const onCancelEdit = () => {
-    updateEditMode(false);
-    closeLeaveConfirm();
-  };
+  
 
-  useEffect(() => {
+  const initialize = () =>{
     const { name, service_account } = connectorData;
     setCommonConfiguration({ name: name, service_account: service_account });
     setConnectorConfiguration(connectorData?.connector);
     setErrHandlerConfiguration(
       (connectorData?.connector as connector)?.error_handler
     );
-  }, [connectorData]);
+  }
+
+  const onCancelEdit = () => {
+    initialize();
+    updateEditMode(false);
+    closeLeaveConfirm();
+  };
+
+  useEffect(() => {
+    initialize();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Toggle currently active tab
   const handleTabClick = (

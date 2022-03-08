@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
+  ClipboardCopy,
   Form,
   FormGroup,
   Popover,
@@ -77,37 +78,9 @@ export const CommonStep: FC<CommonStepProp> = ({
           {true !== undefined && (
             <>
               <FormGroup label={t('Client ID')} isRequired fieldId="clientId">
-                {editMode ? (
-                  <TextInput
-                    value={configuration?.service_account?.client_id}
-                    // onChange={()=>{}}
-                    id="clientId"
-                    isDisabled
-                  />
-                ) : (
-                  <Text component={TextVariants.p}>
-                    {configuration?.service_account?.client_id}
-                  </Text>
-                )}
+                <ClipboardCopy isReadOnly hoverTip="Copy" clickTip="Copied">{configuration?.service_account?.client_id}</ClipboardCopy>
               </FormGroup>
-              <FormGroup
-                label={t('Client Secret')}
-                isRequired
-                fieldId="clientSecret"
-              >
-                {editMode ? (
-                  <TextInput
-                    value="***********************"
-                    // onChange={() => {}}
-                    id="clientSecret"
-                    isDisabled
-                  />
-                ) : (
-                  <Text component={TextVariants.p}>
-                    ***********************
-                  </Text>
-                )}
-              </FormGroup>
+
             </>
           )}
         </FormGroup>
