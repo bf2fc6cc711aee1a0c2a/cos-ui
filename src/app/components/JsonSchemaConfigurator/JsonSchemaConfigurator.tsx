@@ -22,12 +22,8 @@ type JsonSchemaConfiguratorProps = {
 };
 const resolver = new Resolver();
 
-// const isFieldDisabled = () => {
-
-// }
-
 export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorProps> =
-  ({ schema, configuration, onChange }) => {
+  ({ schema, configuration, onChange, editCase }) => {
     schema.type = schema.type || 'object';
     // Suppress the experimental steps from the UI for the moment
     try {
@@ -110,7 +106,7 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
                 <AutoField
                   key={key}
                   name={key}
-                  disabled={bridge.schema.properties[key].oneOf}
+                  disabled={editCase && bridge.schema.properties[key].oneOf}
                 />
               );
             }

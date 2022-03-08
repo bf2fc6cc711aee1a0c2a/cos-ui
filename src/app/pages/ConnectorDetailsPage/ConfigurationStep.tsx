@@ -14,7 +14,6 @@ import {
   TitleSizes,
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
-// import { stringify } from 'ajv';
 
 export type ConfigurationType = {
   [key: string]: any;
