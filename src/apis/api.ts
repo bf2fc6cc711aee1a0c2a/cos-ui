@@ -21,6 +21,7 @@ import {
   DefaultApi,
   SecurityApi,
 } from '@rhoas/kafka-management-sdk';
+import _ from 'lodash';
 
 type CommonApiProps = {
   accessToken: () => Promise<string>;
@@ -628,9 +629,9 @@ export const updateConnector = ({
         connectorId,
         {
           ...(updatedName && {name: updatedName}),
-          connector: {
+          ...(!_.isEmpty(connectorUpdate) && {connector: {
             ...connectorUpdate
-          }
+          }})
         },
         {
           cancelToken: source.token,
