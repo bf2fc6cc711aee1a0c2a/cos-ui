@@ -53,6 +53,7 @@ export const ConnectorDrawer: FunctionComponent<ConnectorDrawerProps> = ({
           connector ? (
             <ConnectorDrawerPanelContent
               name={connector.name}
+              id={connector.id!}
               bootstrapServer={connector.kafka!.url!}
               kafkaId={connector.kafka.id}
               owner={connector.owner!}
@@ -73,6 +74,7 @@ export const ConnectorDrawer: FunctionComponent<ConnectorDrawerProps> = ({
 
 export type ConnectorDrawerPanelContentProps = {
   name: string;
+  id: string;
   bootstrapServer: string;
   kafkaId: string;
   owner: string;
@@ -86,6 +88,7 @@ export type ConnectorDrawerPanelContentProps = {
 export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanelContentProps> =
   ({
     name,
+    id,
     bootstrapServer,
     kafkaId,
     owner,
@@ -156,8 +159,9 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
               <div className="connector-drawer__tab-content">
                 <TextContent>
                   <TextList component={TextListVariants.dl}>
-                    {textListItem('Bootstrap server', bootstrapServer)}
                     {textListItem('Connector', name)}
+                    {textListItem('Connector Id', id)}
+                    {textListItem('Bootstrap server', bootstrapServer)}
                     {textListItem('Kafka_instance', kafkaId)}
                     {textListItem('Targeted OSD Cluster', cluster)}
                     {textListItem('Owner', owner)}
