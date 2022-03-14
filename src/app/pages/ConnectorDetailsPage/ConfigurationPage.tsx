@@ -280,6 +280,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
                             Configurator={
                               responce?.Configurator as ConnectorConfiguratorComponent
                             }
+                            isEditMode={editMode}
                             configuration={connectorConfiguration}
                             connector={connectorTypeDetails}
                             step={activeTabKey as number}
@@ -375,8 +376,9 @@ const ConnectedCustomConfigurator: FC<{
   Configurator: ConnectorConfiguratorComponent;
   configuration: unknown;
   connector: ConnectorType;
+  isEditMode: boolean;
   step: number;
-}> = ({ Configurator, connector, configuration, step }) => {
+}> = ({ Configurator, connector, configuration, isEditMode, step }) => {
   const onChange = (configuration: Map<string, unknown>, isValid: boolean) => {
     console.log('config:', configuration, 'valid:', isValid);
   };
@@ -400,7 +402,7 @@ const ConnectedCustomConfigurator: FC<{
     <Configurator
       activeStep={step - 1}
       connector={connector}
-      // internalState: unknown; // ???
+      isViewMode={!isEditMode}
       configuration={new Map(Object.entries(formConfiguration))}
       onChange={onChange}
     />
