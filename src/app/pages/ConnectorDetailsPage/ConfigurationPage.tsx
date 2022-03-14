@@ -1,6 +1,9 @@
 import { updateConnector } from '@apis/api';
+import { Loading } from '@app/components/Loading/Loading';
 import { StepErrorBoundary } from '@app/components/StepErrorBoundary/StepErrorBoundary';
+import { ConnectorConfiguratorComponent } from '@app/machines/StepConfiguratorLoader.machine';
 import { useCos } from '@context/CosContext';
+import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
 import _ from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,9 +19,11 @@ import {
   Tab,
   Tabs,
   TabTitleText,
+  Title,
+  TitleSizes,
 } from '@patternfly/react-core';
 
-import { useAlert } from '@rhoas/app-services-ui-shared';
+import { useAlert, useConfig } from '@rhoas/app-services-ui-shared';
 import {
   Connector,
   ConnectorType,
@@ -29,6 +34,8 @@ import { CommonStep } from './CommonStep';
 import './ConfigurationPage.css';
 import { ConfigurationStep } from './ConfigurationStep';
 import { ErrorHandler, ErrorHandlerStep } from './ErrorHandlerStep';
+
+// import { ConnectorConfiguratorComponent } from '@app/machines/StepConfiguratorLoader.machine';
 
 export type ConfigurationPageProps = {
   editMode: boolean;
@@ -67,11 +74,14 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
 }) => {
   const { t } = useTranslation();
   const alert = useAlert();
+  const config = useConfig();
 
   const { connectorsApiBasePath, getToken } = useCos();
 
   const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
   const [userTouched, setUserTouched] = useState(false);
+
+  const [activeTabKey, setActiveTabKey] = useState<string | number>(0);
 
   const [commonConfiguration, setCommonConfiguration] = useState<{
     [key: string]: any;
@@ -83,12 +93,11 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
     [key: string]: any;
   }>({});
 
+  const [responce, setResponce] = useState<any>();
   const [isEditValid, setIsEditValid] = useState<boolean>(true);
 
   const openLeaveConfirm = () => setAskForLeaveConfirm(true);
   const closeLeaveConfirm = () => setAskForLeaveConfirm(false);
-
-  const [activeTabKey, setActiveTabKey] = useState<string | number>(0);
 
   const changeEditMode = () => {
     updateEditMode(!editMode);
@@ -171,8 +180,20 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
     closeLeaveConfirm();
   };
 
+  let response: any;
+  const getFedMod = async () => {
+    response = await fetchConfigurator(
+      connectorTypeDetails,
+      config?.cos.configurators || {}
+    );
+    setResponce(response);
+    console.log('Fed Module:', response);
+  };
+
   useEffect(() => {
     initialize();
+
+    getFedMod();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -185,6 +206,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
   };
   return (
     <>
+      {console.log(' :: :: re-rendered :: ::', responce)}
       <PageSection variant={PageSectionVariants.light}>
         <Grid style={{ paddingBottom: '50px' }}>
           <GridItem span={3}>
@@ -198,14 +220,32 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
                   eventKey={0}
                   title={<TabTitleText>{t('Common')}</TabTitleText>}
                 ></Tab>
-                <Tab
-                  eventKey={1}
-                  title={<TabTitleText>{t('Connector specific')}</TabTitleText>}
-                ></Tab>
-                <Tab
-                  eventKey={2}
-                  title={<TabTitleText>{t('Error handling')}</TabTitleText>}
-                ></Tab>
+                {connectorData.connector_type_id.includes('debezium') &&
+                  responce &&
+                  responce.steps &&
+                  responce.steps.map((step: string, index: number) => {
+                    return (
+                      <Tab
+                        key={step}
+                        eventKey={index + 1}
+                        title={<TabTitleText>{step}</TabTitleText>}
+                      ></Tab>
+                    );
+                  })}
+                {!connectorData.connector_type_id.includes('debezium') && (
+                  <>
+                    <Tab
+                      eventKey={1}
+                      title={
+                        <TabTitleText>{t('Connector specific')}</TabTitleText>
+                      }
+                    ></Tab>
+                    <Tab
+                      eventKey={2}
+                      title={<TabTitleText>{t('Error handling')}</TabTitleText>}
+                    ></Tab>
+                  </>
+                )}
               </Tabs>
             </div>
           </GridItem>
@@ -224,33 +264,58 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
                     )}
                   </StepErrorBoundary>
                 )}
-
-                {activeTabKey === 1 && (
-                  <StepErrorBoundary>
-                    <ConfigurationStep
-                      editMode={editMode}
-                      schema={
-                        (connectorTypeDetails as ConnectorTypeAllOf)?.schema!
-                      }
-                      configuration={connectorConfiguration}
-                      changeIsValid={setIsEditValid}
-                      onUpdateConfiguration={onUpdateConfiguration}
-                    />
-                  </StepErrorBoundary>
-                )}
-                {activeTabKey === 2 && (
-                  <StepErrorBoundary>
-                    <ErrorHandlerStep
-                      editMode={editMode}
-                      schema={
-                        (connectorTypeDetails as ConnectorTypeAllOf)?.schema!
-                      }
-                      configuration={errHandlerConfiguration}
-                      changeIsValid={setIsEditValid}
-                      onUpdateConfiguration={onUpdateConfiguration}
-                    />
-                  </StepErrorBoundary>
-                )}
+                {connectorData.connector_type_id.includes('debezium') &&
+                  responce?.Configurator && (
+                    <StepErrorBoundary>
+                      <>
+                        <Title
+                          headingLevel="h3"
+                          size={TitleSizes['2xl']}
+                          className={'pf-u-pr-md pf-u-pb-md'}
+                        >
+                          {responce?.steps[(activeTabKey as number) - 1]}
+                        </Title>
+                        <React.Suspense fallback={Loading}>
+                          <ConnectedCustomConfigurator
+                            Configurator={
+                              responce?.Configurator as ConnectorConfiguratorComponent
+                            }
+                            configuration={connectorConfiguration}
+                            connector={connectorTypeDetails}
+                            step={activeTabKey as number}
+                          />
+                        </React.Suspense>
+                      </>
+                    </StepErrorBoundary>
+                  )}
+                {!connectorData.connector_type_id.includes('debezium') &&
+                  activeTabKey === 1 && (
+                    <StepErrorBoundary>
+                      <ConfigurationStep
+                        editMode={editMode}
+                        schema={
+                          (connectorTypeDetails as ConnectorTypeAllOf)?.schema!
+                        }
+                        configuration={connectorConfiguration}
+                        changeIsValid={setIsEditValid}
+                        onUpdateConfiguration={onUpdateConfiguration}
+                      />
+                    </StepErrorBoundary>
+                  )}
+                {!connectorData.connector_type_id.includes('debezium') &&
+                  activeTabKey === 2 && (
+                    <StepErrorBoundary>
+                      <ErrorHandlerStep
+                        editMode={editMode}
+                        schema={
+                          (connectorTypeDetails as ConnectorTypeAllOf)?.schema!
+                        }
+                        configuration={errHandlerConfiguration}
+                        changeIsValid={setIsEditValid}
+                        onUpdateConfiguration={onUpdateConfiguration}
+                      />
+                    </StepErrorBoundary>
+                  )}
               </GridItem>
               <GridItem span={2} className="pf-u-pl-md">
                 {!editMode && (
@@ -303,5 +368,41 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
         {t('Changes you made to the connector properties will not be saved.')}
       </Modal>
     </>
+  );
+};
+
+const ConnectedCustomConfigurator: FC<{
+  Configurator: ConnectorConfiguratorComponent;
+  configuration: unknown;
+  connector: ConnectorType;
+  step: number;
+}> = ({ Configurator, connector, configuration, step }) => {
+  const onChange = (configuration: Map<string, unknown>, isValid: boolean) => {
+    console.log('config:', configuration, 'valid:', isValid);
+  };
+  const formConfiguration = JSON.parse(JSON.stringify(configuration));
+  Object.keys(formConfiguration as object).map((key) => {
+    if (_.isEmpty((formConfiguration as { [key: string]: any })[key])) {
+      (formConfiguration as { [key: string]: any })[key] = '';
+    }
+  });
+
+  // const result = Object.keys(formConfiguration as object).map((key) => {
+  //   if (_.isEmpty((formConfiguration as { [key: string]: any })[key])) {
+  //     (formConfiguration as { [key: string]: any })[key] = '';
+  //   }
+  // });
+
+  // console.log("Configuration ::",new Map(Object.entries(formConfiguration)))
+  console.log("Configuration ::",(formConfiguration))
+
+  return (
+    <Configurator
+      activeStep={step - 1}
+      connector={connector}
+      // internalState: unknown; // ???
+      configuration={new Map(Object.entries(formConfiguration))}
+      onChange={onChange}
+    />
   );
 };

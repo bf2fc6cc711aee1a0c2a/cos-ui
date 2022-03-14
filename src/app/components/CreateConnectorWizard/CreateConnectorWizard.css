@@ -1,9 +1,6 @@
 .pf-c-toolbar__content {
   padding: 0;
 }
-.properties-step-page {
-  margin: 0 -20px;
-}
 .pf-c-radio {
   margin-bottom: var(--pf-global--spacer--sm);
 }
