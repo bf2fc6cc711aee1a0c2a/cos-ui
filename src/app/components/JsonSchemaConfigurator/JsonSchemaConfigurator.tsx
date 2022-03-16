@@ -1,10 +1,10 @@
+import { CustomJsonSchemaBridge } from './CustomJsonSchemaBridge';
 import { Resolver } from '@stoplight/json-ref-resolver';
 import { createValidator } from '@utils/createValidator';
 import { ValidateFunction } from 'ajv';
 import _ from 'lodash';
 import React, { FunctionComponent } from 'react';
 import { AutoForm, ValidatedQuickForm } from 'uniforms';
-import { JSONSchemaBridge } from 'uniforms-bridge-json-schema';
 import { AutoField } from 'uniforms-patternfly';
 
 import { Grid } from '@patternfly/react-core';
@@ -31,7 +31,7 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
     } catch (e) {}
 
     const schemaValidator = createValidator(schema);
-    const bridge = new JSONSchemaBridge(schema, schemaValidator);
+    const bridge = new CustomJsonSchemaBridge(schema, schemaValidator);
     const { required } = bridge.schema;
 
     async function getDataShape(): Promise<any> {

@@ -119,5 +119,6 @@
   "preparing": "Creation in progress",
   "deprovision": "Deletion in progress",
   "deleted": "Deletion in progress",
-  "Topic ": "Topic"
+  "Topic ": "Topic",
+  "More info for {{name}}": "Maggiori informazioni per {{name}}"
 }
