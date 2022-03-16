@@ -3,12 +3,7 @@ import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus
 import { Loading } from '@app/components/Loading/Loading';
 import { CONNECTOR_DETAILS_TABS } from '@constants/constants';
 import { useCos } from '@context/CosContext';
-import React, {
-  FC,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 
@@ -43,9 +38,11 @@ const getTab = (hash: string): string => {
 
 type ConnectorDetailsPageProps = {
   onSave: () => void;
-}
+};
 
-export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({onSave}) => {
+export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({
+  onSave,
+}) => {
   let { id } = useParams<ParamTypes>();
   let { hash } = useLocation();
   const history = useHistory();
