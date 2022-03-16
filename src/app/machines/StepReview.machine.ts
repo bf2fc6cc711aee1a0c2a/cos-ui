@@ -1,4 +1,5 @@
 import { saveConnector, UserProvidedServiceAccount } from '@apis/api';
+import { mapToObject } from '@utils/shared';
 
 import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
@@ -8,7 +9,6 @@ import {
   ConnectorType,
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
-import { mapToObject } from '@utils/shared';
 
 type Context = {
   accessToken: () => Promise<string>;

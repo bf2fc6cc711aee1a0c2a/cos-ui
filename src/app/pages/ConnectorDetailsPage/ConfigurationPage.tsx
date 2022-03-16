@@ -143,7 +143,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
       variant: AlertVariant.success,
       title: t('edit.edit-success'),
     });
-    onSave()
+    onSave();
   }, [alert, t, updateEditMode, onSave]);
 
   const onConnectorEditSave = () => {

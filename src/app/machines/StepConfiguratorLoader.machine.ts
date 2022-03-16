@@ -9,7 +9,7 @@ import { ConnectorType } from '@rhoas/connector-management-sdk';
 export type ConnectorConfiguratorProps = {
   activeStep?: number;
   connector: ConnectorType;
-  isViewMode?:boolean;
+  isViewMode?: boolean;
   configuration?: unknown;
   onChange: (configuration: Map<string, unknown>, isValid: boolean) => void;
 };
