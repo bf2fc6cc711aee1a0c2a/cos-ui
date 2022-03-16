@@ -5,7 +5,6 @@ import { CONNECTOR_DETAILS_TABS } from '@constants/constants';
 import { useCos } from '@context/CosContext';
 import React, {
   FC,
-  SyntheticEvent,
   useCallback,
   useEffect,
   useState,
@@ -22,10 +21,6 @@ import {
   Tabs,
   TabTitleText,
   LevelItem,
-  Dropdown,
-  KebabToggle,
-  DropdownItem,
-  DropdownPosition,
   Title,
   PageSectionVariants,
   AlertVariant,
@@ -46,7 +41,11 @@ const getTab = (hash: string): string => {
     : hash.substr(1);
 };
 
-export const ConnectorDetailsPage: FC = () => {
+type ConnectorDetailsPageProps = {
+  onSave: () => void;
+}
+
+export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({onSave}) => {
   let { id } = useParams<ParamTypes>();
   let { hash } = useLocation();
   const history = useHistory();
@@ -160,6 +159,7 @@ export const ConnectorDetailsPage: FC = () => {
               >
                 {connectorTypeDetails ? (
                   <ConfigurationPage
+                    onSave={onSave}
                     editMode={editMode || false}
                     updateEditMode={updateEditMode}
                     connectorData={connectorData}
@@ -187,38 +187,38 @@ export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
   const { t } = useTranslation();
   const basename = useBasename();
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  // const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const onToggle = (isOpen: boolean) => {
-    setIsOpen(isOpen);
-  };
-  const onSelect = (
-    _event?: SyntheticEvent<HTMLDivElement, Event> | undefined
-  ) => {
-    setIsOpen(!isOpen);
-    onFocus();
-  };
-  const onFocus = () => {
-    const element = document.getElementById('connector-action');
-    element?.focus();
-  };
+  // const onToggle = (isOpen: boolean) => {
+  //   setIsOpen(isOpen);
+  // };
+  // const onSelect = (
+  //   _event?: SyntheticEvent<HTMLDivElement, Event> | undefined
+  // ) => {
+  //   setIsOpen(!isOpen);
+  //   onFocus();
+  // };
+  // const onFocus = () => {
+  //   const element = document.getElementById('connector-action');
+  //   element?.focus();
+  // };
 
-  const dropdownItems = [
-    <DropdownItem key="start action" component="button" onClick={() => {}}>
-      {t('Start')}
-    </DropdownItem>,
-    <DropdownItem key="stop action" component="button" onClick={() => {}}>
-      {t('Stop')}
-    </DropdownItem>,
-    <DropdownItem
-      key="delete action"
-      component="button"
-      isDisabled
-      onClick={() => {}}
-    >
-      {t('Delete')}
-    </DropdownItem>,
-  ];
+  // const dropdownItems = [
+  //   <DropdownItem key="start action" component="button" onClick={() => {}}>
+  //     {t('Start')}
+  //   </DropdownItem>,
+  //   <DropdownItem key="stop action" component="button" onClick={() => {}}>
+  //     {t('Stop')}
+  //   </DropdownItem>,
+  //   <DropdownItem
+  //     key="delete action"
+  //     component="button"
+  //     isDisabled
+  //     onClick={() => {}}
+  //   >
+  //     {t('Delete')}
+  //   </DropdownItem>,
+  // ];
 
   return (
     <PageSection variant={'light'} hasShadowBottom>
@@ -241,6 +241,8 @@ export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
           </Level>
         </LevelItem>
         <LevelItem>
+          {/* 
+          @TODO: This will be brought back 
           <Dropdown
             onSelect={onSelect}
             toggle={<KebabToggle onToggle={onToggle} id="connector-action" />}
@@ -248,7 +250,7 @@ export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
             isPlain
             dropdownItems={dropdownItems}
             position={DropdownPosition.right}
-          />
+          /> */}
         </LevelItem>
       </Level>
     </PageSection>
