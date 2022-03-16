@@ -37,6 +37,7 @@ import { ConfigurationStep } from './ConfigurationStep';
 import { ErrorHandler, ErrorHandlerStep } from './ErrorHandlerStep';
 
 export type ConfigurationPageProps = {
+  onSave: () => void;
   editMode: boolean;
   updateEditMode: (editEnable: boolean) => void;
   connectorData: Connector;
@@ -66,6 +67,7 @@ const getEditPayload = (newConfiguration: any, oldConfiguration: any) => {
 };
 
 export const ConfigurationPage: FC<ConfigurationPageProps> = ({
+  onSave,
   editMode,
   updateEditMode,
   connectorData,
@@ -141,7 +143,8 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
       variant: AlertVariant.success,
       title: t('edit.edit-success'),
     });
-  }, [alert, t, updateEditMode]);
+    onSave()
+  }, [alert, t, updateEditMode, onSave]);
 
   const onConnectorEditSave = () => {
     updateConnector({
