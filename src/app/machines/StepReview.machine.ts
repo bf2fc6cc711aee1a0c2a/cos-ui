@@ -8,6 +8,7 @@ import {
   ConnectorType,
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
+import { mapToObject } from '@utils/shared';
 
 type Context = {
   accessToken: () => Promise<string>;
@@ -131,14 +132,6 @@ function dataToPrettyString(data: unknown) {
   } catch (e) {
     return '';
   }
-}
-
-function mapToObject(inputMap: Map<string, unknown>) {
-  const obj = {} as { [key: string]: unknown };
-  inputMap.forEach((value, key) => {
-    obj[key] = value;
-  });
-  return obj;
 }
 
 export type ReviewMachineActorRef = ActorRefFrom<typeof reviewMachine>;

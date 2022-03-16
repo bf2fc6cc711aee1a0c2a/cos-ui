@@ -4,6 +4,7 @@ import { StepErrorBoundary } from '@app/components/StepErrorBoundary/StepErrorBo
 import { ConnectorConfiguratorComponent } from '@app/machines/StepConfiguratorLoader.machine';
 import { useCos } from '@context/CosContext';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
+import { mapToObject } from '@utils/shared';
 import _ from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,8 +35,6 @@ import { CommonStep } from './CommonStep';
 import './ConfigurationPage.css';
 import { ConfigurationStep } from './ConfigurationStep';
 import { ErrorHandler, ErrorHandlerStep } from './ErrorHandlerStep';
-
-// import { ConnectorConfiguratorComponent } from '@app/machines/StepConfiguratorLoader.machine';
 
 export type ConfigurationPageProps = {
   editMode: boolean;
@@ -86,14 +85,13 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
   const [commonConfiguration, setCommonConfiguration] = useState<{
     [key: string]: any;
   }>({});
-  const [connectorConfiguration, setConnectorConfiguration] = useState<{
-    [key: string]: any;
-  }>({});
+  const [connectorConfiguration, setConnectorConfiguration] =
+    useState<unknown>();
   const [errHandlerConfiguration, setErrHandlerConfiguration] = useState<{
     [key: string]: any;
   }>({});
 
-  const [responce, setResponce] = useState<any>();
+  const [configurator, setConfigurator] = useState<any>();
   const [isEditValid, setIsEditValid] = useState<boolean>(true);
 
   const openLeaveConfirm = () => setAskForLeaveConfirm(true);
@@ -152,7 +150,9 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
       connectorUpdate: {
         ...getEditPayload(
           {
-            ...connectorConfiguration,
+            ...(connectorConfiguration instanceof Map
+              ? mapToObject(connectorConfiguration)
+              : (connectorConfiguration as object)),
             error_handler: errHandlerConfiguration,
           },
           connectorData.connector
@@ -180,20 +180,30 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
     closeLeaveConfirm();
   };
 
+  const updateFedConfiguration = useCallback(
+    (config, isValid) => {
+      setConnectorConfiguration(config);
+      setIsEditValid(isValid);
+    },
+    [setConnectorConfiguration, setIsEditValid]
+  );
+
   let response: any;
-  const getFedMod = async () => {
-    response = await fetchConfigurator(
-      connectorTypeDetails,
-      config?.cos.configurators || {}
-    );
-    setResponce(response);
-    console.log('Fed Module:', response);
+  const getConfigurator = async () => {
+    try {
+      response = await fetchConfigurator(
+        connectorTypeDetails,
+        config?.cos.configurators || {}
+      );
+      setConfigurator(response);
+    } catch (err) {
+      console.log('No configurator provided.', err);
+    }
   };
 
   useEffect(() => {
     initialize();
-
-    getFedMod();
+    getConfigurator();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -206,7 +216,6 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
   };
   return (
     <>
-      {console.log(' :: :: re-rendered :: ::', responce)}
       <PageSection variant={PageSectionVariants.light}>
         <Grid style={{ paddingBottom: '50px' }}>
           <GridItem span={3}>
@@ -221,9 +230,9 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
                   title={<TabTitleText>{t('Common')}</TabTitleText>}
                 ></Tab>
                 {connectorData.connector_type_id.includes('debezium') &&
-                  responce &&
-                  responce.steps &&
-                  responce.steps.map((step: string, index: number) => {
+                  configurator &&
+                  configurator.steps &&
+                  configurator.steps.map((step: string, index: number) => {
                     return (
                       <Tab
                         key={step}
@@ -265,7 +274,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
                   </StepErrorBoundary>
                 )}
                 {connectorData.connector_type_id.includes('debezium') &&
-                  responce?.Configurator && (
+                  configurator?.Configurator && (
                     <StepErrorBoundary>
                       <>
                         <Title
@@ -273,15 +282,16 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
                           size={TitleSizes['2xl']}
                           className={'pf-u-pr-md pf-u-pb-md'}
                         >
-                          {responce?.steps[(activeTabKey as number) - 1]}
+                          {configurator?.steps[(activeTabKey as number) - 1]}
                         </Title>
                         <React.Suspense fallback={Loading}>
                           <ConnectedCustomConfigurator
                             Configurator={
-                              responce?.Configurator as ConnectorConfiguratorComponent
+                              configurator?.Configurator as ConnectorConfiguratorComponent
                             }
                             isEditMode={editMode}
                             configuration={connectorConfiguration}
+                            updateFedConfiguration={updateFedConfiguration}
                             connector={connectorTypeDetails}
                             step={activeTabKey as number}
                           />
@@ -376,35 +386,44 @@ const ConnectedCustomConfigurator: FC<{
   Configurator: ConnectorConfiguratorComponent;
   configuration: unknown;
   connector: ConnectorType;
+  updateFedConfiguration: (
+    configuration: Map<string, unknown>,
+    isValid: boolean
+  ) => void;
   isEditMode: boolean;
   step: number;
-}> = ({ Configurator, connector, configuration, isEditMode, step }) => {
-  const onChange = (configuration: Map<string, unknown>, isValid: boolean) => {
-    console.log('config:', configuration, 'valid:', isValid);
-  };
-  const formConfiguration = JSON.parse(JSON.stringify(configuration));
-  Object.keys(formConfiguration as object).map((key) => {
-    if (_.isEmpty((formConfiguration as { [key: string]: any })[key])) {
-      (formConfiguration as { [key: string]: any })[key] = '';
-    }
-  });
+}> = ({
+  Configurator,
+  connector,
+  configuration,
+  updateFedConfiguration,
+  isEditMode,
+  step,
+}) => {
+  let formConfiguration: unknown;
 
-  // const result = Object.keys(formConfiguration as object).map((key) => {
-  //   if (_.isEmpty((formConfiguration as { [key: string]: any })[key])) {
-  //     (formConfiguration as { [key: string]: any })[key] = '';
-  //   }
-  // });
-
-  // console.log("Configuration ::",new Map(Object.entries(formConfiguration)))
-  console.log("Configuration ::",(formConfiguration))
+  if (configuration instanceof Map) {
+    formConfiguration = new Map(configuration);
+  } else {
+    formConfiguration = JSON.parse(JSON.stringify(configuration));
+    Object.keys(formConfiguration as object).map((key) => {
+      if (_.isEmpty((formConfiguration as { [key: string]: any })[key])) {
+        (formConfiguration as { [key: string]: any })[key] = '';
+      }
+    });
+  }
 
   return (
     <Configurator
       activeStep={step - 1}
       connector={connector}
       isViewMode={!isEditMode}
-      configuration={new Map(Object.entries(formConfiguration))}
-      onChange={onChange}
+      configuration={
+        formConfiguration instanceof Map
+          ? formConfiguration
+          : new Map(Object.entries(formConfiguration as object))
+      }
+      onChange={updateFedConfiguration}
     />
   );
 };
