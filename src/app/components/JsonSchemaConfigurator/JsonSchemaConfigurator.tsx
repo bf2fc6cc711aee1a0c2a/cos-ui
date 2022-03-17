@@ -1,4 +1,3 @@
-import { CustomJsonSchemaBridge } from './CustomJsonSchemaBridge';
 import { Resolver } from '@stoplight/json-ref-resolver';
 import { createValidator } from '@utils/createValidator';
 import { ValidateFunction } from 'ajv';
@@ -9,6 +8,7 @@ import { AutoField } from 'uniforms-patternfly';
 
 import { Grid } from '@patternfly/react-core';
 
+import { CustomJsonSchemaBridge } from './CustomJsonSchemaBridge';
 import './JsonSchemaConfigurator.css';
 
 export type CreateValidatorType = ReturnType<typeof createValidator>;
