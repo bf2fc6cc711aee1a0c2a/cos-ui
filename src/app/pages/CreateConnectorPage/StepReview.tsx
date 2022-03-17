@@ -2,7 +2,7 @@ import { useReviewMachine } from '@app/components/CreateConnectorWizard/CreateCo
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { ViewJSONFormat } from '@app/components/ViewJSONFormat/ViewJSONFormat';
 import _ from 'lodash';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -16,6 +16,11 @@ import {
   TitleSizes,
   Flex,
   FlexItem,
+  TextContent,
+  TextList,
+  TextListItem,
+  TextListItemVariants,
+  TextListVariants,
 } from '@patternfly/react-core';
 import { EyeIcon, EyeSlashIcon } from '@patternfly/react-icons';
 
@@ -255,11 +260,17 @@ export function Review() {
                     </GridItem>
                     <GridItem span={8}>
                       {_.startCase(el) === t('Database Password') ||
-                      _.startCase(el) === t('Password')
-                        ? maskValue(modifiedObject[el])
-                        : typeof modifiedObject[el] === 'object'
-                        ? JSON.stringify(modifiedObject[el])
-                        : modifiedObject[el]}
+                      _.startCase(el) === t('Password') ? (
+                        maskValue(modifiedObject[el])
+                      ) : typeof modifiedObject[el] === 'object' ? (
+                        el === 'data_shape' ? (
+                          <DataShape data={modifiedObject[el]} />
+                        ) : (
+                          JSON.stringify(modifiedObject[el])
+                        )
+                      ) : (
+                        modifiedObject[el]
+                      )}
                     </GridItem>
                   </Grid>
                 );
@@ -291,3 +302,27 @@ export function Review() {
     </StepBodyLayout>
   );
 }
+
+type DataShape = {
+  data: any;
+};
+export const DataShape: FC<DataShape> = ({ data }) => {
+  return (
+    <>
+      {Object.keys(data).map((key) => {
+        return (
+          <TextContent>
+            <TextList component={TextListVariants.dl}>
+              <TextListItem component={TextListItemVariants.dt}>
+                {_.upperFirst(key)}:
+              </TextListItem>
+              <TextListItem component={TextListItemVariants.dd}>
+                {data[key].format}
+              </TextListItem>
+            </TextList>
+          </TextContent>
+        );
+      })}
+    </>
+  );
+};

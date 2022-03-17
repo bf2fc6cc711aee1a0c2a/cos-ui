@@ -102,17 +102,39 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
                   </Popover>
                 }
               >
-                <Text component={TextVariants.p}>
-                  {_.isObject((formConfiguration as ConfigurationType)[key])
-                    ? JSON.stringify(
-                        (formConfiguration as ConfigurationType)[key]
-                      )
-                    : (formConfiguration as ConfigurationType)[key]}
-                </Text>
+                {key === 'data_shape' ? (
+                  <DataShape
+                    data={(formConfiguration as ConfigurationType)[key]}
+                  />
+                ) : (
+                  <Text component={TextVariants.p}>
+                    {_.isObject((formConfiguration as ConfigurationType)[key])
+                      ? JSON.stringify(
+                          (formConfiguration as ConfigurationType)[key]
+                        )
+                      : (formConfiguration as ConfigurationType)[key]}
+                  </Text>
+                )}
               </FormGroup>
             ))}
         </Form>
       )}
+    </>
+  );
+};
+type DataShape = {
+  data: any;
+};
+export const DataShape: FC<DataShape> = ({ data }) => {
+  return (
+    <>
+      {Object.keys(data).map((key) => {
+        return (
+          <FormGroup key={key} label={_.upperFirst(key)} fieldId={key}>
+            <Text component={TextVariants.p}>{data[key].format}</Text>
+          </FormGroup>
+        );
+      })}
     </>
   );
 };
