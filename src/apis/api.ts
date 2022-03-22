@@ -478,6 +478,42 @@ export type UserProvidedServiceAccount = {
   clientSecret: string;
 };
 
+export type createNewServiceAccountProps = {
+  accessToken: () => Promise<string>;
+  sortDesc: string;
+  kafkaManagementApiBasePath: string;
+}
+
+export const createNewServiceAccount = async ({
+  accessToken,
+  kafkaManagementApiBasePath,
+  sortDesc,
+}: createNewServiceAccountProps) =>{
+
+  const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    
+  const securityAPI = new SecurityApi(
+    new Configuration({
+      accessToken,
+      basePath: kafkaManagementApiBasePath,
+    })
+  );
+  
+  const response = await securityAPI.createServiceAccount(
+    {
+      name: `connector-${sortDesc}`,
+    },
+    {
+      cancelToken: source.token,
+    }
+  );
+  return {
+    clientId: response.data.client_id!,
+    clientSecret: response.data.client_secret!,
+  };
+}
+
 export type SaveConnectorProps = {
   kafka: KafkaRequest;
   cluster: ConnectorCluster;

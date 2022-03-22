@@ -284,11 +284,12 @@ export const useKafkasMachine = () => {
 
 export const useBasicMachine = () => {
   const { basicRef } = useCreateConnectorWizard();
-  const { name, serviceAccount } = useSelector(
+  const { name, approach, serviceAccount } = useSelector(
     basicRef,
     useCallback(
       (state: EmittedFrom<typeof basicRef>) => ({
         name: state.context.name,
+        approach: state.context.approach,
         serviceAccount: state.context.userServiceAccount,
       }),
       []
@@ -301,8 +302,15 @@ export const useBasicMachine = () => {
     [basicRef]
   );
 
+  const onSetApproach = useCallback(
+    (approach: string) => {
+      basicRef.send({ type: 'setApproach', approach });
+    },
+    [basicRef]
+  );
+
   const onSetServiceAccount = useCallback(
-    (serviceAccount: UserProvidedServiceAccount | undefined) => {
+    (serviceAccount: UserProvidedServiceAccount) => {
       basicRef.send({ type: 'setServiceAccount', serviceAccount });
     },
     [basicRef]
@@ -311,6 +319,8 @@ export const useBasicMachine = () => {
     serviceAccount,
     name,
     onSetName,
+    approach,
+    onSetApproach,
     onSetServiceAccount,
   };
 };

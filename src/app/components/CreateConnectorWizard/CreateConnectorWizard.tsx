@@ -6,7 +6,7 @@ import {
 } from '@app/components/UncontrolledWizard/UncontrolledWizard';
 import { creationWizardMachine } from '@app/machines/CreateConnectorWizard.machine';
 import { ConfiguratorActorRef } from '@app/machines/StepConfigurator.machine';
-import { Basic } from '@app/pages/CreateConnectorPage/StepBasic';
+import { StepCommon } from '@app/pages/CreateConnectorPage/StepCommon';
 import { SelectCluster } from '@app/pages/CreateConnectorPage/StepClusters';
 import { ConfiguratorStep } from '@app/pages/CreateConnectorPage/StepConfigurator';
 import { SelectConnectorType } from '@app/pages/CreateConnectorPage/StepConnectorTypes';
@@ -72,7 +72,7 @@ function useBasicStep() {
     isActive,
     component: (
       <StepErrorBoundary>
-        <Basic />
+        <StepCommon />
       </StepErrorBoundary>
     ),
     canJumpTo,

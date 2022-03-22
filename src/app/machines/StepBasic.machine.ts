@@ -3,20 +3,29 @@ import { UserProvidedServiceAccount } from '@apis/api';
 import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
+export enum Approach {
+  AUTOMATIC = 'automatic',
+  MANUAL = 'manual',
+}
+
 type Context = {
   name: string;
-  userServiceAccount?: UserProvidedServiceAccount;
+  approach: string;
+  userServiceAccount: UserProvidedServiceAccount;
 };
 
 const model = createModel(
   {
     name: '',
+    approach: '',
+    userServiceAccount: { clientId: '', clientSecret: '' },
   } as Context,
   {
     events: {
       setName: (payload: { name: string }) => payload,
+      setApproach: (payload: { approach: string }) => payload,
       setServiceAccount: (payload: {
-        serviceAccount: UserProvidedServiceAccount | undefined;
+        serviceAccount: UserProvidedServiceAccount;
       }) => payload,
       confirm: () => ({}),
     },
@@ -27,6 +36,12 @@ const setName = model.assign(
     name: (_, event) => event.name,
   },
   'setName'
+);
+const setApproach = model.assign(
+  {
+    approach: (_, event) => event.approach,
+  },
+  'setApproach'
 );
 const setServiceAccount = model.assign(
   (_, event) => ({
@@ -53,6 +68,10 @@ export const basicMachine = model.createMachine(
             target: 'verify',
             actions: setName,
           },
+          setApproach: {
+            target: 'verify',
+            actions: setApproach,
+          },
           setServiceAccount: {
             target: 'verify',
             actions: setServiceAccount,
@@ -66,6 +85,10 @@ export const basicMachine = model.createMachine(
           setName: {
             target: 'verify',
             actions: setName,
+          },
+          setApproach: {
+            target: 'verify',
+            actions: setApproach,
           },
           setServiceAccount: {
             target: 'verify',
@@ -82,6 +105,7 @@ export const basicMachine = model.createMachine(
         type: 'final',
         data: {
           name: (context: Context) => context.name,
+          approach: (context: Context) => context.approach,
           userServiceAccount: (context: Context) => context.userServiceAccount,
         },
       },
@@ -89,13 +113,15 @@ export const basicMachine = model.createMachine(
   },
   {
     guards: {
-      isBasicConfigured: (context) =>
-        context.userServiceAccount === undefined
-          ? context.name !== undefined && context.name.length > 0
-          : context.name !== undefined &&
-            context.name.length > 0 &&
-            context.userServiceAccount.clientId.length > 0 &&
-            context.userServiceAccount.clientSecret.length > 0,
+      isBasicConfigured: (context) => {
+        return (
+          context.name !== undefined &&
+          context.name.length > 0 &&
+          context.userServiceAccount !== undefined &&
+          context.userServiceAccount.clientId.length > 0 &&
+          context.userServiceAccount.clientSecret.length > 0
+        );
+      },
     },
   }
 );

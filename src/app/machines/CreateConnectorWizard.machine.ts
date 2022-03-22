@@ -2,23 +2,22 @@ import { UserProvidedServiceAccount } from '@apis/api';
 import { basicMachine } from '@app/machines/StepBasic.machine';
 import { clustersMachine } from '@app/machines/StepClusters.machine';
 import { configuratorMachine } from '@app/machines/StepConfigurator.machine';
-import {
-  configuratorLoaderMachine,
-  ConnectorConfiguratorType,
-} from '@app/machines/StepConfiguratorLoader.machine';
+import { configuratorLoaderMachine, ConnectorConfiguratorType } from '@app/machines/StepConfiguratorLoader.machine';
 import { connectorTypesMachine } from '@app/machines/StepConnectorTypes.machine';
 import { errorHandlingMachine } from '@app/machines/StepErrorHandling.machine';
 import { kafkasMachine } from '@app/machines/StepKafkas.machine';
 import { reviewMachine } from '@app/machines/StepReview.machine';
 
+
+
 import { assign, InterpreterFrom, send } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
-import {
-  ConnectorCluster,
-  ConnectorType,
-} from '@rhoas/connector-management-sdk';
+
+
+import { ConnectorCluster, ConnectorType } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
+
 
 type Context = {
   accessToken: () => Promise<string>;
@@ -33,6 +32,7 @@ type Context = {
   isConfigurationValid?: boolean;
   connectorConfiguration?: unknown;
   name: string;
+  approach: string;
   topic: string;
   userServiceAccount: UserProvidedServiceAccount;
   userErrorHandler: string;
@@ -293,6 +293,7 @@ export const creationWizardMachine = model.createMachine(
             connectorType: context.selectedConnector,
             initialConfiguration: context.connectorConfiguration,
             name: context.name,
+            approach: context.approach,
             userServiceAccount: context.userServiceAccount,
             topic: context.topic,
             userErrorHandler: context.userErrorHandler,
@@ -302,6 +303,7 @@ export const creationWizardMachine = model.createMachine(
             actions: [
               assign((_, event) => ({
                 name: event.data.name,
+                approach: event.data.approach,
                 userServiceAccount: event.data.userServiceAccount,
               })),
             ],
@@ -512,12 +514,11 @@ export const creationWizardMachine = model.createMachine(
         );
       },
       isBasicConfigured: (context) =>
-        context.userServiceAccount === undefined
-          ? context.name !== undefined && context.name.length > 0
-          : context.name !== undefined &&
-            context.name.length > 0 &&
-            context.userServiceAccount.clientId?.length > 0 &&
-            context.userServiceAccount.clientSecret?.length > 0,
+        context.name !== undefined &&
+        context.name.length > 0 &&
+        context.userServiceAccount !== undefined &&
+        context.userServiceAccount.clientId.length > 0 &&
+        context.userServiceAccount.clientSecret.length > 0,
 
       isErrorHandlerConfigured: (context) =>
         context.userErrorHandler !== undefined &&
