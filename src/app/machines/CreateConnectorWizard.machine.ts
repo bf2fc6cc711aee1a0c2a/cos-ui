@@ -2,22 +2,23 @@ import { UserProvidedServiceAccount } from '@apis/api';
 import { basicMachine } from '@app/machines/StepBasic.machine';
 import { clustersMachine } from '@app/machines/StepClusters.machine';
 import { configuratorMachine } from '@app/machines/StepConfigurator.machine';
-import { configuratorLoaderMachine, ConnectorConfiguratorType } from '@app/machines/StepConfiguratorLoader.machine';
+import {
+  configuratorLoaderMachine,
+  ConnectorConfiguratorType,
+} from '@app/machines/StepConfiguratorLoader.machine';
 import { connectorTypesMachine } from '@app/machines/StepConnectorTypes.machine';
 import { errorHandlingMachine } from '@app/machines/StepErrorHandling.machine';
 import { kafkasMachine } from '@app/machines/StepKafkas.machine';
 import { reviewMachine } from '@app/machines/StepReview.machine';
 
-
-
 import { assign, InterpreterFrom, send } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
-
-
-import { ConnectorCluster, ConnectorType } from '@rhoas/connector-management-sdk';
+import {
+  ConnectorCluster,
+  ConnectorType,
+} from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
-
 
 type Context = {
   accessToken: () => Promise<string>;

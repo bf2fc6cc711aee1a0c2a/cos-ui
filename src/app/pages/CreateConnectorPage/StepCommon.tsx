@@ -76,7 +76,7 @@ export const StepCommon: FC = () => {
                 isChecked={approach === Approach.AUTOMATIC}
                 name="service-account"
                 onChange={onCreateSelection}
-                label="Automatically create a service account for this connector."
+                label="Create a service account for this connector."
                 id="service-account-automatic"
                 value={Approach.AUTOMATIC}
               />
