@@ -1,5 +1,5 @@
 import { ApiCallback } from '@app/machines/PaginatedResponse.machine';
-import axios, { CancelTokenSource } from 'axios';
+import axios from 'axios';
 import _ from 'lodash';
 
 import { Sender } from 'xstate';
@@ -521,18 +521,15 @@ export type SaveConnectorProps = {
   configuration: object;
 
   name: string;
-  userServiceAccount?: UserProvidedServiceAccount;
+  userServiceAccount: UserProvidedServiceAccount;
 
   topic?: string;
   userErrorHandler?: string;
-
-  kafkaManagementApiBasePath: string;
 } & CommonApiProps;
 
 export const saveConnector = ({
   accessToken,
   connectorsApiBasePath,
-  kafkaManagementApiBasePath,
   kafka,
   cluster,
   connectorType,
@@ -548,95 +545,61 @@ export const saveConnector = ({
       basePath: connectorsApiBasePath,
     })
   );
-  const securityAPI = new SecurityApi(
-    new Configuration({
-      accessToken,
-      basePath: kafkaManagementApiBasePath,
-    })
-  );
-
-  const getOrCreateServiceAccount = async (source: CancelTokenSource) => {
-    if (userServiceAccount) return Promise.resolve(userServiceAccount);
-
-    // the passed service account info is undefined, we have to create a new SA
-    // automatically on behalf of the user
-    const response = await securityAPI.createServiceAccount(
-      {
-        name: `connector-${(connectorType as ObjectReference).id?.replaceAll(
-          /[_\.]/g,
-          '-'
-        )}-${Date.now()}`,
-      },
-      {
-        cancelToken: source.token,
-      }
-    );
-    return {
-      clientId: response.data.client_id!,
-      clientSecret: response.data.client_secret!,
-    };
-  };
 
   return (callback: Sender<any>) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     const async = true;
-    getOrCreateServiceAccount(source)
-      .then(({ clientId, clientSecret }) => {
-        let connectorConfiguration = {};
-        if (userErrorHandler) {
-          connectorConfiguration = {
-            ...configuration,
-            ...{
-              error_handler: {
-                [userErrorHandler]: topic ? { topic: topic } : {},
-              },
-            },
-          };
-        } else {
-          connectorConfiguration = configuration;
-        }
-        const connector: Connector = {
-          kind: 'Connector',
-          name: name,
-          channel: Channel.Stable,
-          deployment_location: {
-            kind: 'addon',
-            cluster_id: cluster.id,
+
+    let connectorConfiguration = {};
+    if (userErrorHandler) {
+      connectorConfiguration = {
+        ...configuration,
+        ...{
+          error_handler: {
+            [userErrorHandler]: topic ? { topic: topic } : {},
           },
-          desired_state: ConnectorDesiredState.Ready,
-          connector_type_id: (connectorType as ObjectReference).id!,
-          kafka: {
-            id: kafka.id!,
-            url: kafka.bootstrap_server_host || 'demo',
-          },
-          service_account: {
-            client_id: clientId,
-            client_secret: clientSecret,
-          },
-          connector: connectorConfiguration,
-        };
-        connectorsAPI
-          .createConnector(async, connector, {
-            cancelToken: source.token,
-          })
-          .then(() => {
-            callback({ type: 'success' });
-          })
-          .catch((error) => {
-            if (!axios.isCancel(error)) {
-              callback({
-                type: 'failure',
-                message: error.response.data.reason,
-              });
-            }
-          });
+        },
+      };
+    } else {
+      connectorConfiguration = configuration;
+    }
+    const connector: Connector = {
+      kind: 'Connector',
+      name: name,
+      channel: Channel.Stable,
+      deployment_location: {
+        kind: 'addon',
+        cluster_id: cluster.id,
+      },
+      desired_state: ConnectorDesiredState.Ready,
+      connector_type_id: (connectorType as ObjectReference).id!,
+      kafka: {
+        id: kafka.id!,
+        url: kafka.bootstrap_server_host || 'demo',
+      },
+      service_account: {
+        client_id: userServiceAccount.clientId,
+        client_secret: userServiceAccount.clientSecret,
+      },
+      connector: connectorConfiguration,
+    };
+    connectorsAPI
+      .createConnector(async, connector, {
+        cancelToken: source.token,
+      })
+      .then(() => {
+        callback({ type: 'success' });
       })
       .catch((error) => {
         if (!axios.isCancel(error)) {
-          callback({ type: 'failure', message: error.response.data.reason });
+          callback({
+            type: 'failure',
+            message: error.response.data.reason,
+          });
         }
       });
+
     return () => {
       source.cancel('Operation canceled by the user.');
     };

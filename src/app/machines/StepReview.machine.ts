@@ -13,7 +13,6 @@ import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 type Context = {
   accessToken: () => Promise<string>;
   connectorsApiBasePath: string;
-  kafkaManagementApiBasePath: string;
 
   kafka: KafkaRequest;
   cluster: ConnectorCluster;
@@ -22,7 +21,7 @@ type Context = {
   initialConfiguration: unknown;
 
   name: string;
-  userServiceAccount?: UserProvidedServiceAccount;
+  userServiceAccount: UserProvidedServiceAccount;
 
   topic: string;
   userErrorHandler: string;
@@ -93,7 +92,6 @@ export const reviewMachine = model.createMachine(
             saveConnector({
               accessToken: context.accessToken,
               connectorsApiBasePath: context.connectorsApiBasePath,
-              kafkaManagementApiBasePath: context.kafkaManagementApiBasePath,
               kafka: context.kafka,
               cluster: context.cluster,
               connectorType: context.connectorType,

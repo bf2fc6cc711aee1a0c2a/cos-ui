@@ -1,6 +1,6 @@
 import { UserProvidedServiceAccount } from '@apis/api';
-import { basicMachine } from '@app/machines/StepBasic.machine';
 import { clustersMachine } from '@app/machines/StepClusters.machine';
+import { basicMachine } from '@app/machines/StepCommon.machine';
 import { configuratorMachine } from '@app/machines/StepConfigurator.machine';
 import {
   configuratorLoaderMachine,
@@ -33,7 +33,7 @@ type Context = {
   isConfigurationValid?: boolean;
   connectorConfiguration?: unknown;
   name: string;
-  approach: string;
+  sACreated: boolean;
   topic: string;
   userServiceAccount: UserProvidedServiceAccount;
   userErrorHandler: string;
@@ -294,7 +294,7 @@ export const creationWizardMachine = model.createMachine(
             connectorType: context.selectedConnector,
             initialConfiguration: context.connectorConfiguration,
             name: context.name,
-            approach: context.approach,
+            sACreated: context.sACreated,
             userServiceAccount: context.userServiceAccount,
             topic: context.topic,
             userErrorHandler: context.userErrorHandler,
@@ -304,7 +304,7 @@ export const creationWizardMachine = model.createMachine(
             actions: [
               assign((_, event) => ({
                 name: event.data.name,
-                approach: event.data.approach,
+                sACreated: event.data.sACreated,
                 userServiceAccount: event.data.userServiceAccount,
               })),
             ],

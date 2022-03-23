@@ -3,27 +3,22 @@ import { UserProvidedServiceAccount } from '@apis/api';
 import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
-export enum Approach {
-  AUTOMATIC = 'automatic',
-  MANUAL = 'manual',
-}
-
 type Context = {
   name: string;
-  approach: string;
+  sACreated: boolean;
   userServiceAccount: UserProvidedServiceAccount;
 };
 
 const model = createModel(
   {
     name: '',
-    approach: '',
+    sACreated: false,
     userServiceAccount: { clientId: '', clientSecret: '' },
   } as Context,
   {
     events: {
       setName: (payload: { name: string }) => payload,
-      setApproach: (payload: { approach: string }) => payload,
+      setSaCreated: (payload: { sACreated: boolean }) => payload,
       setServiceAccount: (payload: {
         serviceAccount: UserProvidedServiceAccount;
       }) => payload,
@@ -37,12 +32,14 @@ const setName = model.assign(
   },
   'setName'
 );
-const setApproach = model.assign(
+
+const setSaCreated = model.assign(
   {
-    approach: (_, event) => event.approach,
+    sACreated: (_, event) => event.sACreated,
   },
-  'setApproach'
+  'setSaCreated'
 );
+
 const setServiceAccount = model.assign(
   (_, event) => ({
     userServiceAccount: event.serviceAccount,
@@ -68,9 +65,9 @@ export const basicMachine = model.createMachine(
             target: 'verify',
             actions: setName,
           },
-          setApproach: {
+          setSaCreated: {
             target: 'verify',
-            actions: setApproach,
+            actions: setSaCreated,
           },
           setServiceAccount: {
             target: 'verify',
@@ -86,9 +83,9 @@ export const basicMachine = model.createMachine(
             target: 'verify',
             actions: setName,
           },
-          setApproach: {
+          setSaCreated: {
             target: 'verify',
-            actions: setApproach,
+            actions: setSaCreated,
           },
           setServiceAccount: {
             target: 'verify',
@@ -105,7 +102,7 @@ export const basicMachine = model.createMachine(
         type: 'final',
         data: {
           name: (context: Context) => context.name,
-          approach: (context: Context) => context.approach,
+          sACreated: (context: Context) => context.sACreated,
           userServiceAccount: (context: Context) => context.userServiceAccount,
         },
       },

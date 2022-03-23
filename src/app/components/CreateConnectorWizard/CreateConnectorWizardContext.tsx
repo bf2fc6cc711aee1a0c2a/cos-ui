@@ -12,8 +12,8 @@ import {
   PaginatedApiActorType,
   PaginatedApiRequest,
 } from '@app/machines/PaginatedResponse.machine';
-import { BasicMachineActorRef } from '@app/machines/StepBasic.machine';
 import { ClustersMachineActorRef } from '@app/machines/StepClusters.machine';
+import { BasicMachineActorRef } from '@app/machines/StepCommon.machine';
 import {
   ConnectorConfiguratorResponse,
   configuratorLoaderMachine,
@@ -284,12 +284,12 @@ export const useKafkasMachine = () => {
 
 export const useBasicMachine = () => {
   const { basicRef } = useCreateConnectorWizard();
-  const { name, approach, serviceAccount } = useSelector(
+  const { name, sACreated, serviceAccount } = useSelector(
     basicRef,
     useCallback(
       (state: EmittedFrom<typeof basicRef>) => ({
         name: state.context.name,
-        approach: state.context.approach,
+        sACreated: state.context.sACreated,
         serviceAccount: state.context.userServiceAccount,
       }),
       []
@@ -302,9 +302,9 @@ export const useBasicMachine = () => {
     [basicRef]
   );
 
-  const onSetApproach = useCallback(
-    (approach: string) => {
-      basicRef.send({ type: 'setApproach', approach });
+  const onSetSaCreated = useCallback(
+    (sACreated: boolean) => {
+      basicRef.send({ type: 'setSaCreated', sACreated });
     },
     [basicRef]
   );
@@ -318,9 +318,9 @@ export const useBasicMachine = () => {
   return {
     serviceAccount,
     name,
+    sACreated,
+    onSetSaCreated,
     onSetName,
-    approach,
-    onSetApproach,
     onSetServiceAccount,
   };
 };

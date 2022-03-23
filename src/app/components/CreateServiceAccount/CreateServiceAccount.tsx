@@ -32,17 +32,21 @@ import { useAlert } from '@rhoas/app-services-ui-shared';
 
 type CreateServiceAccountProps = {
   isOpen: boolean;
+  sACreated: boolean;
   handleModalToggle: () => void;
   serviceAccount: UserProvidedServiceAccount;
   onSetServiceAccount: (data: UserProvidedServiceAccount) => void;
+  onSetSaCreated: (val: boolean) => void;
 };
 type Validate = 'error' | 'success' | 'default' | 'warning' | undefined;
 
 export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
   isOpen,
+  sACreated,
   handleModalToggle,
   serviceAccount,
   onSetServiceAccount,
+  onSetSaCreated,
 }) => {
   const [copied, setCopied] = useState<boolean>(false);
   const [sortDesc, setSortDesc] = useState<string>('');
@@ -65,7 +69,6 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
     if (validated === 'default' && sortDesc.length === 0) {
       setValidated('error');
     } else {
-      //   onSetServiceAccount({ clientId: 'test', clientSecret: 'test' });
       setLoading(true);
       let response;
       try {
@@ -74,7 +77,7 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
           kafkaManagementApiBasePath: kafkaManagementApiBasePath,
           sortDesc: sortDesc,
         });
-
+        onSetSaCreated(true);
         onSetServiceAccount(response);
         setLoading(false);
       } catch (e) {
@@ -92,19 +95,11 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
   return (
     <Modal
       variant={ModalVariant.medium}
-      title={
-        serviceAccount &&
-        serviceAccount.clientId.length > 0 &&
-        serviceAccount.clientSecret.length > 0
-          ? ''
-          : t('Create a service account')
-      }
+      title={sACreated ? '' : t('Create a service account')}
       isOpen={isOpen}
       onClose={handleModalToggle}
       actions={
-        serviceAccount &&
-        serviceAccount.clientId.length > 0 &&
-        serviceAccount.clientSecret.length > 0
+        sACreated
           ? []
           : [
               <Button
@@ -123,9 +118,7 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
             ]
       }
     >
-      {serviceAccount &&
-      serviceAccount.clientId.length > 0 &&
-      serviceAccount.clientSecret.length > 0 ? (
+      {sACreated ? (
         <EmptyState variant={EmptyStateVariant.large}>
           <EmptyStateIcon icon={KeyIcon} />
           <Title headingLevel="h4" size="lg">
@@ -193,7 +186,7 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
             isDisabled={!copied}
             onClick={handleModalToggle}
           >
-            Close
+            {t('Close')}
           </Button>
         </EmptyState>
       ) : (
