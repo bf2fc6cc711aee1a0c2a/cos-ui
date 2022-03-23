@@ -199,6 +199,8 @@ describe('Connector creation', () => {
       },
       CONFIGURE_BASIC: () => {
         cy.findByLabelText('Name *').type('my-connector');
+        cy.findByLabelText('Client ID *').type('client-id');
+        cy.findByLabelText('Client Secret *').type('client-secret');
         cy.findByText('Next').should('be.enabled').click();
       },
       CONFIGURE_ERROR_HANDLER: () => {
