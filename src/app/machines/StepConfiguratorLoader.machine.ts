@@ -12,6 +12,7 @@ export type ConnectorConfiguratorProps = {
   isViewMode?: boolean;
   configuration?: unknown;
   onChange: (configuration: Map<string, unknown>, isValid: boolean) => void;
+  duplicateMode?: boolean | undefined;
 };
 
 export type ConnectorConfiguratorComponent =
@@ -28,6 +29,7 @@ type Context = {
   Configurator?: ConnectorConfiguratorType;
   steps?: string[] | false;
   error?: string;
+  duplicateMode?: boolean | undefined;
 };
 
 const configuratorLoaderMachineSchema = {
@@ -39,6 +41,7 @@ const configuratorLoaderMachineModel = createModel({
   Configurator: undefined,
   steps: undefined,
   error: undefined,
+  duplicateMode: undefined,
 } as Context);
 
 export const configuratorLoaderMachine =

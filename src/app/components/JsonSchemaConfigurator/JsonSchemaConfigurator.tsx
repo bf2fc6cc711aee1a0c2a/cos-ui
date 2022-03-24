@@ -8,6 +8,7 @@ import { AutoField } from 'uniforms-patternfly';
 
 import { Grid } from '@patternfly/react-core';
 
+// import { Connector } from '@rhoas/connector-management-sdk';
 import { CustomJsonSchemaBridge } from './CustomJsonSchemaBridge';
 import './JsonSchemaConfigurator.css';
 
@@ -19,11 +20,12 @@ type JsonSchemaConfiguratorProps = {
   configuration: unknown;
   onChange: (configuration: unknown, isValid: boolean) => void;
   editCase?: boolean;
+  duplicateMode?: boolean;
 };
 const resolver = new Resolver();
 
 export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorProps> =
-  ({ schema, configuration, onChange, editCase }) => {
+  ({ schema, configuration, onChange, editCase, duplicateMode }) => {
     schema.type = schema.type || 'object';
     // Suppress the experimental steps from the UI for the moment
     try {
@@ -92,6 +94,16 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
         onChange(copiedModel, false);
       }
     };
+    React.useEffect(() => {
+      if (duplicateMode) {
+        Object.keys(configuration as object).map((key) => {
+          if (_.isEmpty((configuration as { [key: string]: any })[key])) {
+            (configuration as { [key: string]: any })[key] = '';
+          }
+        });
+        onChange(configuration, true);
+      }
+    }, [configuration]);
 
     return (
       <Grid hasGutter>
@@ -108,10 +120,11 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
                   key={key}
                   name={key}
                   disabled={
-                    editCase &&
-                    _.find(bridge.schema.properties[key].oneOf, {
-                      format: 'password',
-                    })
+                    editCase ||
+                    (duplicateMode &&
+                      _.find(bridge.schema.properties[key].oneOf, {
+                        format: 'password',
+                      }))
                   }
                 />
               );

@@ -15,10 +15,21 @@ import { assign, InterpreterFrom, send } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import {
+  Connector,
   ConnectorCluster,
   ConnectorType,
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
+
+type ErrorHandler = {
+  [key: string]: any;
+};
+
+type connector = {
+  data_shape: object;
+  error_handler: ErrorHandler;
+  processors: object;
+};
 
 type Context = {
   accessToken: () => Promise<string>;
@@ -38,6 +49,10 @@ type Context = {
   userServiceAccount: UserProvidedServiceAccount;
   userErrorHandler: string;
   onSave?: () => void;
+  connectorData?: Connector;
+  connectorTypeDetails?: ConnectorType;
+  connectorId?: string;
+  duplicateMode?: boolean;
 };
 
 const model = createModel({} as Context, {
@@ -73,15 +88,27 @@ export const creationWizardMachine = model.createMachine(
         invoke: {
           id: 'selectConnectorRef',
           src: connectorTypesMachine,
-          data: (context) => ({
-            accessToken: context.accessToken,
-            connectorsApiBasePath: context.connectorsApiBasePath,
-            selectedConnector: context.selectedConnector,
-          }),
+          data: (context) => {
+            return {
+              accessToken: context.accessToken,
+              connectorsApiBasePath: context.connectorsApiBasePath,
+              selectedConnector: context.duplicateMode
+                ? context.connectorTypeDetails
+                : context.selectedConnector,
+              connectorData: context.connectorData,
+              connectorTypeDetails: context.connectorTypeDetails,
+              duplicateMode: context.duplicateMode,
+            };
+          },
           onDone: {
             target: 'selectKafka',
-            actions: assign((_context, event) => ({
-              selectedConnector: event.data.selectedConnector,
+            actions: assign((context, event) => ({
+              selectedConnector: context.duplicateMode
+                ? context.connectorTypeDetails
+                : event.data.selectedConnector,
+              connectorData: context.connectorData,
+              connectorTypeDetails: context.connectorTypeDetails,
+              duplicateMode: context.duplicateMode,
               connectorConfiguration: false,
               activeConfigurationStep: 0,
               isConfigurationValid: false,
@@ -112,15 +139,21 @@ export const creationWizardMachine = model.createMachine(
         invoke: {
           id: 'selectKafkaInstanceRef',
           src: kafkasMachine,
-          data: (context) => ({
-            accessToken: context.accessToken,
-            connectorsApiBasePath: context.connectorsApiBasePath,
-            selectedInstance: context.selectedKafkaInstance,
-            request: {
-              page: 1,
-              size: 10,
-            },
-          }),
+          data: (context) => {
+            return {
+              accessToken: context.accessToken,
+              connectorsApiBasePath: context.connectorsApiBasePath,
+              selectedInstance: context.duplicateMode
+                ? context.connectorData?.kafka
+                : context.selectedKafkaInstance,
+              connectorData: context.connectorData,
+              connectorTypeDetails: context.connectorTypeDetails,
+              request: {
+                page: 1,
+                size: 10,
+              },
+            };
+          },
           onDone: {
             target: 'selectCluster',
             actions: assign({
@@ -154,15 +187,25 @@ export const creationWizardMachine = model.createMachine(
         invoke: {
           id: 'selectClusterRef',
           src: clustersMachine,
-          data: (context) => ({
-            accessToken: context.accessToken,
-            connectorsApiBasePath: context.connectorsApiBasePath,
-            selectedCluster: context.selectedCluster,
-          }),
+          data: (context) => {
+            return {
+              accessToken: context.accessToken,
+              connectorsApiBasePath: context.connectorsApiBasePath,
+              selectedCluster: context.duplicateMode
+                ? {
+                    id: context.connectorData?.deployment_location.cluster_id,
+                  }
+                : context.selectedCluster,
+              connectorData: context.connectorData,
+              connectorTypeDetails: context.connectorTypeDetails,
+              duplicateMode: context.duplicateMode,
+            };
+          },
           onDone: {
             target: 'basicConfiguration',
             actions: assign({
               selectedCluster: (_, event) => event.data.selectedCluster,
+              duplicateMode: (context, _) => context.duplicateMode,
             }),
           },
           onError: '.error',
@@ -187,6 +230,70 @@ export const creationWizardMachine = model.createMachine(
           prev: 'selectKafka',
         },
       },
+      basicConfiguration: {
+        id: 'configureBasic',
+        initial: 'submittable',
+        invoke: {
+          id: 'basicRef',
+          src: basicMachine,
+          data: (context) => {
+            return {
+              accessToken: context.accessToken,
+              connectorsApiBasePath: context.connectorsApiBasePath,
+              kafkaManagementApiBasePath: context.kafkaManagementApiBasePath,
+              kafka: context.selectedKafkaInstance,
+              cluster: context.selectedCluster,
+              connectorType: context.selectedConnector,
+              initialConfiguration: context.connectorConfiguration,
+              name: context.duplicateMode
+                ? context.connectorData?.name
+                : context.name,
+              userServiceAccount: context.duplicateMode
+                ? {
+                    clientId: context.connectorData?.service_account.client_id,
+                    clientSecret: ' ',
+                  }
+                : context.userServiceAccount,
+              topic: context.topic,
+              userErrorHandler: context.userErrorHandler,
+              duplicateMode: context.duplicateMode,
+              sACreated: context.sACreated,
+            };
+          },
+          onDone: {
+            target: 'configureConnector',
+            actions: [
+              assign((context, event) => ({
+                name: event.data.name,
+                sACreated: event.data.sACreated,
+                userServiceAccount: event.data.userServiceAccount,
+                duplicateMode: context.duplicateMode,
+              })),
+            ],
+          },
+          onError: {
+            actions: (_context, event) => console.error(event.data.message),
+          },
+        },
+        states: {
+          submittable: {
+            on: {
+              isInvalid: 'invalid',
+              next: {
+                actions: send('confirm', { to: 'basicRef' }),
+              },
+            },
+          },
+          invalid: {
+            on: {
+              isValid: 'submittable',
+            },
+          },
+        },
+        on: {
+          prev: 'selectCluster',
+        },
+      },
       configureConnector: {
         initial: 'loadConfigurator',
         states: {
@@ -194,14 +301,20 @@ export const creationWizardMachine = model.createMachine(
             invoke: {
               id: 'configuratorLoader',
               src: 'makeConfiguratorLoaderMachine',
-              data: (context) => ({
-                connector: context.selectedConnector,
-              }),
+              data: (context) => {
+                return {
+                  connector: context.duplicateMode
+                    ? context.connectorTypeDetails
+                    : context.selectedConnector,
+                  duplicateMode: context.duplicateMode,
+                };
+              },
               onDone: {
                 target: 'configure',
-                actions: assign((_context, event) => ({
+                actions: assign((context, event) => ({
                   Configurator: event.data.Configurator,
                   configurationSteps: event.data.steps,
+                  duplicateMode: context.duplicateMode,
                 })),
               },
               onError: {
@@ -215,18 +328,29 @@ export const creationWizardMachine = model.createMachine(
             invoke: {
               id: 'configuratorRef',
               src: configuratorMachine,
-              data: (context) => ({
-                connector: context.selectedConnector,
-                configuration: context.connectorConfiguration,
-                steps: context.configurationSteps || ['single step'],
-                activeStep: context.activeConfigurationStep || 0,
-                isActiveStepValid: context.connectorConfiguration !== false,
-              }),
+              data: (context) => {
+                return {
+                  connector: context.duplicateMode
+                    ? context.connectorTypeDetails
+                    : context.selectedConnector,
+                  configuration: context.duplicateMode
+                    ? context.connectorData?.connector
+                    : context.connectorConfiguration,
+                  name: context.name,
+                  steps: context.configurationSteps || ['single step'],
+                  activeStep: context.activeConfigurationStep || 0,
+                  isActiveStepValid: context.connectorConfiguration !== false,
+                  duplicateMode: context.duplicateMode,
+                  connectorData: context.connectorData,
+                };
+              },
               onDone: [
                 {
                   target: '#creationWizard.reviewConfiguration',
-                  actions: assign((_, event) => ({
+                  actions: assign((context, event) => ({
                     connectorConfiguration: event.data.configuration || true,
+                    duplicateMode: context.duplicateMode,
+                    connectorData: context.connectorData,
                   })),
                   cond: (context) => {
                     if (context.configurationSteps) {
@@ -279,82 +403,38 @@ export const creationWizardMachine = model.createMachine(
           },
         },
       },
-      basicConfiguration: {
-        id: 'configureBasic',
-        initial: 'submittable',
-        invoke: {
-          id: 'basicRef',
-          src: basicMachine,
-          data: (context) => ({
-            accessToken: context.accessToken,
-            connectorsApiBasePath: context.connectorsApiBasePath,
-            kafkaManagementApiBasePath: context.kafkaManagementApiBasePath,
-            kafka: context.selectedKafkaInstance,
-            cluster: context.selectedCluster,
-            connectorType: context.selectedConnector,
-            initialConfiguration: context.connectorConfiguration,
-            name: context.name,
-            sACreated: context.sACreated,
-            userServiceAccount: context.userServiceAccount,
-            topic: context.topic,
-            userErrorHandler: context.userErrorHandler,
-          }),
-          onDone: {
-            target: 'configureConnector',
-            actions: [
-              assign((_, event) => ({
-                name: event.data.name,
-                sACreated: event.data.sACreated,
-                userServiceAccount: event.data.userServiceAccount,
-              })),
-            ],
-          },
-          onError: {
-            actions: (_context, event) => console.error(event.data.message),
-          },
-        },
-        states: {
-          submittable: {
-            on: {
-              isInvalid: 'invalid',
-              next: {
-                actions: send('confirm', { to: 'basicRef' }),
-              },
-            },
-          },
-          invalid: {
-            on: {
-              isValid: 'submittable',
-            },
-          },
-        },
-        on: {
-          prev: 'selectCluster',
-        },
-      },
       errorConfiguration: {
         id: 'configureErrorHandler',
         initial: 'submittable',
         invoke: {
           id: 'errorRef',
           src: errorHandlingMachine,
-          data: (context) => ({
-            accessToken: context.accessToken,
-            connectorsApiBasePath: context.connectorsApiBasePath,
-            kafkaManagementApiBasePath: context.kafkaManagementApiBasePath,
-            kafka: context.selectedKafkaInstance,
-            cluster: context.selectedCluster,
-            connector: context.selectedConnector,
-            initialConfiguration: context.connectorConfiguration,
-            topic: context.topic,
-            userErrorHandler: context.userErrorHandler,
-          }),
+          data: (context) => {
+            return {
+              accessToken: context.accessToken,
+              connectorsApiBasePath: context.connectorsApiBasePath,
+              kafkaManagementApiBasePath: context.kafkaManagementApiBasePath,
+              kafka: context.selectedKafkaInstance,
+              cluster: context.selectedCluster,
+              connector: context.selectedConnector,
+              configuration: context.connectorConfiguration,
+              initialConfiguration: context.connectorConfiguration,
+              topic: context.topic,
+              name: context.name,
+              duplicateMode: context.duplicateMode,
+              userErrorHandler: context.duplicateMode
+                ? (context.connectorData?.connector as connector)?.error_handler
+                : context.userErrorHandler,
+            };
+          },
           onDone: {
             target: 'reviewConfiguration',
             actions: [
-              assign((_, event) => ({
+              assign((context, event) => ({
                 topic: event.data.topic,
                 userErrorHandler: event.data.userErrorHandler,
+                duplicateMode: context.duplicateMode,
+                name: context.name,
               })),
             ],
           },
@@ -387,24 +467,29 @@ export const creationWizardMachine = model.createMachine(
         invoke: {
           id: 'reviewRef',
           src: reviewMachine,
-          data: (context) => ({
-            accessToken: context.accessToken,
-            connectorsApiBasePath: context.connectorsApiBasePath,
-            kafkaManagementApiBasePath: context.kafkaManagementApiBasePath,
-            kafka: context.selectedKafkaInstance,
-            cluster: context.selectedCluster,
-            connectorType: context.selectedConnector,
-            initialConfiguration: context.connectorConfiguration,
-            name: context.name,
-            userServiceAccount: context.userServiceAccount,
-            topic: context.topic,
-            userErrorHandler: context.userErrorHandler,
-          }),
+          data: (context) => {
+            return {
+              accessToken: context.accessToken,
+              connectorsApiBasePath: context.connectorsApiBasePath,
+              kafkaManagementApiBasePath: context.kafkaManagementApiBasePath,
+              kafka: context.selectedKafkaInstance,
+              cluster: context.selectedCluster,
+              connectorType: context.selectedConnector,
+              configuration: context.connectorConfiguration,
+              initialConfiguration: context.connectorConfiguration,
+              name: context.name,
+              userServiceAccount: context.userServiceAccount,
+              topic: context.topic,
+              userErrorHandler: context.userErrorHandler,
+              duplicateMode: context.duplicateMode,
+            };
+          },
           onDone: {
             target: '#creationWizard.saved',
             actions: [
-              assign((_, event) => ({
+              assign((context, event) => ({
                 connectorConfiguration: event.data,
+                duplicateMode: context.duplicateMode,
               })),
               'notifySave',
             ],
@@ -514,13 +599,19 @@ export const creationWizardMachine = model.createMachine(
             context.isConfigurationValid === true)
         );
       },
-      isBasicConfigured: (context) =>
-        context.name !== undefined &&
-        context.name.length > 0 &&
-        context.userServiceAccount !== undefined &&
-        context.userServiceAccount.clientId.length > 0 &&
-        context.userServiceAccount.clientSecret.length > 0,
-
+      isBasicConfigured: (context) => {
+        if (context.duplicateMode) {
+          return true;
+        } else {
+          return (
+            context.name !== undefined &&
+            context.name.length > 0 &&
+            context.userServiceAccount !== undefined &&
+            context.userServiceAccount.clientId.length > 0 &&
+            context.userServiceAccount.clientSecret.length > 0
+          );
+        }
+      },
       isErrorHandlerConfigured: (context) =>
         context.userErrorHandler !== undefined &&
         context.userErrorHandler === 'dead_letter_queue'

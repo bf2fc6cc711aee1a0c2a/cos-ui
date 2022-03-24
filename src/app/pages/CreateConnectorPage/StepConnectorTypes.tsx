@@ -57,7 +57,7 @@ export function SelectConnectorType() {
 
 export function ConnectorTypesGallery() {
   const { t } = useTranslation();
-  const {
+  let {
     response,
     loading,
     error,
@@ -65,6 +65,8 @@ export function ConnectorTypesGallery() {
     // results,
     queryEmpty,
     // queryResults,
+    duplicateMode,
+    connectorTypeDetails,
     firstRequest,
     selectedId,
     onSelect,
@@ -83,7 +85,7 @@ export function ConnectorTypesGallery() {
           case queryEmpty:
             return (
               <>
-                <ConnectorTypesToolbar />
+                <ConnectorTypesToolbar duplicateMode={duplicateMode} />
                 <EmptyStateNoMatchesFound
                   onClear={() => onQuery({ page: 1, size: 10 })}
                 />
@@ -94,53 +96,105 @@ export function ConnectorTypesGallery() {
           case loading:
             return (
               <>
-                <ConnectorTypesToolbar />
+                <ConnectorTypesToolbar duplicateMode={duplicateMode} />
                 <Loading />
               </>
             );
           default:
             return (
               <>
-                <ConnectorTypesToolbar />
+                <ConnectorTypesToolbar duplicateMode={duplicateMode} />
                 <div className={'pf-l-stack__item pf-m-fill'}>
-                  <Gallery hasGutter>
-                    {response?.items?.map((c) => (
+                  {duplicateMode ? (
+                    <Gallery hasGutter>
                       <Card
-                        isHoverable
-                        key={(c as ObjectReference).id}
+                        key={(connectorTypeDetails as ObjectReference).id}
                         isSelectable
-                        isSelected={selectedId === (c as ObjectReference).id}
-                        onClick={() => onSelect((c as ObjectReference).id!)}
+                        isSelected={
+                          selectedId ===
+                          (connectorTypeDetails as ObjectReference).id
+                        }
                       >
                         <CardHeader>
                           <CardTitle>
-                            {(c as ConnectorTypeAllOf).name}
+                            {(connectorTypeDetails as ConnectorTypeAllOf).name}
                           </CardTitle>
                         </CardHeader>
                         <CardBody>
                           <DescriptionList>
                             <DescriptionListGroup>
                               <DescriptionListDescription>
-                                {(c as ConnectorTypeAllOf).description}
+                                {
+                                  (connectorTypeDetails as ConnectorTypeAllOf)
+                                    .description
+                                }
                               </DescriptionListDescription>
                             </DescriptionListGroup>
                             <DescriptionListGroup>
                               <DescriptionListTerm>Version</DescriptionListTerm>
                               <DescriptionListDescription>
-                                {(c as ConnectorTypeAllOf).version}
+                                {
+                                  (connectorTypeDetails as ConnectorTypeAllOf)
+                                    .version
+                                }
                               </DescriptionListDescription>
                             </DescriptionListGroup>
                             <DescriptionListGroup>
                               <DescriptionListTerm>ID</DescriptionListTerm>
                               <DescriptionListDescription>
-                                {(c as ObjectReference).id}
+                                {(connectorTypeDetails as ObjectReference).id}
                               </DescriptionListDescription>
                             </DescriptionListGroup>
                           </DescriptionList>
                         </CardBody>
                       </Card>
-                    ))}
-                  </Gallery>
+                    </Gallery>
+                  ) : (
+                    <Gallery hasGutter>
+                      {response?.items?.map((c) => {
+                        return (
+                          <Card
+                            isHoverable
+                            key={(c as ObjectReference).id}
+                            isSelectable
+                            isSelected={
+                              selectedId === (c as ObjectReference).id
+                            }
+                            onClick={() => onSelect((c as ObjectReference).id!)}
+                          >
+                            <CardHeader>
+                              <CardTitle>
+                                {(c as ConnectorTypeAllOf).name}
+                              </CardTitle>
+                            </CardHeader>
+                            <CardBody>
+                              <DescriptionList>
+                                <DescriptionListGroup>
+                                  <DescriptionListDescription>
+                                    {(c as ConnectorTypeAllOf).description}
+                                  </DescriptionListDescription>
+                                </DescriptionListGroup>
+                                <DescriptionListGroup>
+                                  <DescriptionListTerm>
+                                    Version
+                                  </DescriptionListTerm>
+                                  <DescriptionListDescription>
+                                    {(c as ConnectorTypeAllOf).version}
+                                  </DescriptionListDescription>
+                                </DescriptionListGroup>
+                                <DescriptionListGroup>
+                                  <DescriptionListTerm>ID</DescriptionListTerm>
+                                  <DescriptionListDescription>
+                                    {(c as ObjectReference).id}
+                                  </DescriptionListDescription>
+                                </DescriptionListGroup>
+                              </DescriptionList>
+                            </CardBody>
+                          </Card>
+                        );
+                      })}
+                    </Gallery>
+                  )}
                 </div>
               </>
             );
@@ -149,8 +203,12 @@ export function ConnectorTypesGallery() {
     </StepBodyLayout>
   );
 }
-
-const ConnectorTypesToolbar: FunctionComponent = () => {
+type ConnectorTypesToolbarProps = {
+  duplicateMode?: boolean | undefined;
+};
+const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
+  duplicateMode,
+}) => {
   const { t } = useTranslation();
   const { request, onQuery } = useConnectorTypesMachine();
   const [categoriesToggled, setCategoriesToggled] = useState(false);
@@ -216,6 +274,7 @@ const ConnectorTypesToolbar: FunctionComponent = () => {
       <ToolbarItem>
         <InputGroup>
           <TextInput
+            isDisabled={duplicateMode}
             name="name"
             id="name"
             type="search"
@@ -235,14 +294,16 @@ const ConnectorTypesToolbar: FunctionComponent = () => {
           <Button
             variant={'control'}
             aria-label="search button for search input"
+            isDisabled={duplicateMode}
           >
             <SearchIcon />
           </Button>
         </InputGroup>
       </ToolbarItem>
+
       <ToolbarGroup variant="filter-group">
         <ToolbarFilter
-          chips={categories.map((v) => stringToChip(v, t))}
+          chips={duplicateMode ? [] : categories.map((v) => stringToChip(v, t))}
           deleteChip={onSelectCategory}
           deleteChipGroup={() => onDeleteQueryGroup('categories')}
           categoryName="Connector type"
@@ -254,9 +315,10 @@ const ConnectorTypesToolbar: FunctionComponent = () => {
             onSelect={(_, v) =>
               onSelectCategory('', stringToChip(v as string, t))
             }
-            selections={categories}
+            selections={duplicateMode ? '' : categories}
             isOpen={categoriesToggled}
             placeholderText="Connector type"
+            isDisabled={duplicateMode}
           >
             {typeMenuItems}
           </Select>
@@ -269,9 +331,11 @@ const ConnectorTypesToolbar: FunctionComponent = () => {
       <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
         {toggleGroupItems}
       </ToolbarToggleGroup>
-      <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
-        <ConnectorTypesPagination isCompact />
-      </ToolbarItem>
+      {!duplicateMode && (
+        <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
+          <ConnectorTypesPagination isCompact />
+        </ToolbarItem>
+      )}
     </>
   );
   return (

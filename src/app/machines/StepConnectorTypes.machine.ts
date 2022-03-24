@@ -21,6 +21,8 @@ type Context = {
   response?: ApiSuccessResponse<ConnectorType>;
   selectedConnector?: ConnectorType;
   error?: Object;
+  connectorTypeDetails: ConnectorType;
+  duplicateMode?: boolean | undefined;
 };
 
 const model = createModel(
@@ -167,6 +169,9 @@ export const connectorTypesMachine = model.createMachine(
         type: 'final',
         data: {
           selectedConnector: (context: Context) => context.selectedConnector,
+          duplicateMode: (context: Context) => context.duplicateMode,
+          connectorTypeDetails: (context: Context) =>
+            context.connectorTypeDetails,
         },
       },
     },

@@ -5,6 +5,7 @@ import { ActorRefFrom, send } from 'xstate';
 import { sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
+import { Connector } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
 import {
@@ -19,6 +20,7 @@ type Context = {
   response?: PaginatedApiResponse<KafkaRequest>;
   selectedInstance?: KafkaRequest;
   error?: Object;
+  connectorData?: Connector;
 };
 
 const model = createModel(

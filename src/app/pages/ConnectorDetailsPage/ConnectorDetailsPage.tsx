@@ -127,6 +127,7 @@ export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({
     setActiveTabKey(tabIndex);
     history.push(`#${tabIndex}`);
   };
+  console.log(connectorData);
 
   return (
     <>

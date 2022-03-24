@@ -32,9 +32,10 @@ import {
 type ConnectedConnectorsPageProps = {
   onCreateConnector: () => void;
   onConnectorDetail: (id: string, goToConnectorDetails: string) => void;
+  onDuplicateConnector: (id: string) => void;
 };
 export const ConnectedConnectorsPage: FunctionComponent<ConnectedConnectorsPageProps> =
-  ({ onCreateConnector, onConnectorDetail }) => {
+  ({ onCreateConnector, onConnectorDetail, onDuplicateConnector }) => {
     const { t } = useTranslation();
     const alert = useAlert();
     const { connectorsApiBasePath, getToken } = useCos();
@@ -59,6 +60,7 @@ export const ConnectedConnectorsPage: FunctionComponent<ConnectedConnectorsPageP
         <ConnectorsPage
           onCreateConnector={onCreateConnector}
           onConnectorDetail={onConnectorDetail}
+          onDuplicateConnector={onDuplicateConnector}
         />
       </ConnectorsPageProvider>
     );
@@ -67,17 +69,20 @@ export const ConnectedConnectorsPage: FunctionComponent<ConnectedConnectorsPageP
 export type ConnectorsPageProps = {
   onCreateConnector: () => void;
   onConnectorDetail: (id: string, goToConnectorDetails: string) => void;
+  onDuplicateConnector: (id: string) => void;
 };
 
 export const ConnectorsPage: FunctionComponent<ConnectorsPageProps> = ({
   onCreateConnector,
   onConnectorDetail,
+  onDuplicateConnector,
 }: ConnectorsPageProps) => {
   const isReady = useConnectorsPageIsReady();
   return isReady ? (
     <ConnectorsPageBody
       onCreateConnector={onCreateConnector}
       onConnectorDetail={onConnectorDetail}
+      onDuplicateConnector={onDuplicateConnector}
     />
   ) : (
     <Loading />
@@ -87,11 +92,13 @@ export const ConnectorsPage: FunctionComponent<ConnectorsPageProps> = ({
 export type ConnectorsPageBodyProps = {
   onCreateConnector: () => void;
   onConnectorDetail: (id: string, goToConnectorDetails: string) => void;
+  onDuplicateConnector: (id: string) => void;
 };
 
 export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
   onCreateConnector,
   onConnectorDetail,
+  onDuplicateConnector,
 }: ConnectorsPageBodyProps) => {
   const {
     loading,
@@ -155,7 +162,10 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
             <ConnectorsPageTitle />
           </PageSection>
           <PageSection padding={{ default: 'noPadding' }} isFilled>
-            <ConnectedTable onConnectorDetail={onConnectorDetail} />
+            <ConnectedTable
+              onConnectorDetail={onConnectorDetail}
+              onDuplicateConnector={onDuplicateConnector}
+            />
           </PageSection>
         </ConnectorDrawer>
       );
@@ -172,10 +182,12 @@ const ConnectorsPageTitle: FunctionComponent = () => {
 };
 export type ConnectorsTableProps = {
   onConnectorDetail: (id: string, goToConnectorDetails: string) => void;
+  onDuplicateConnector: (id: string) => void;
 };
 
 export const ConnectedTable: FunctionComponent<ConnectorsTableProps> = ({
   onConnectorDetail,
+  onDuplicateConnector,
 }) => {
   const { request, response, selectedConnector, query } =
     useConnectorsMachine();
@@ -195,6 +207,7 @@ export const ConnectedTable: FunctionComponent<ConnectorsTableProps> = ({
               key={ref.id}
               selectedConnector={selectedConnector}
               onConnectorDetail={onConnectorDetail}
+              onDuplicateConnector={onDuplicateConnector}
             />
           ))}
         </ConnectorsTable>
@@ -214,11 +227,13 @@ type ConnectedRowProps = {
   connectorRef: ConnectorMachineActorRef;
   selectedConnector?: Connector;
   onConnectorDetail: (id: string, goToConnectorDetails: string) => void;
+  onDuplicateConnector: (id: string) => void;
 };
 const ConnectedRow: FunctionComponent<ConnectedRowProps> = ({
   connectorRef,
   selectedConnector,
   onConnectorDetail,
+  onDuplicateConnector,
 }) => {
   const {
     connector,
@@ -269,6 +284,7 @@ const ConnectedRow: FunctionComponent<ConnectedRowProps> = ({
         onStop={onStop}
         onSelect={onSelect}
         openDetail={editConnector}
+        onDuplicateConnector={onDuplicateConnector}
         onDelete={() => setShowDeleteConnectorConfirm(true)}
       />
     </>

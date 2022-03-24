@@ -48,6 +48,7 @@ type ConnectorsTableRowProps = {
   canDelete: boolean;
   onStart: () => void;
   onStop: () => void;
+  onDuplicateConnector: (id: string) => void;
   onDelete: () => void;
   openDetail: (target: string) => void;
   onSelect: () => void;
@@ -66,6 +67,7 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
   onDelete,
   openDetail,
   onSelect,
+  onDuplicateConnector,
 }) => {
   const { t } = useTranslation();
 
@@ -88,6 +90,11 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
     {
       title: 'Edit',
       onClick: () => openDetail('configuration'),
+      isDisabled: false,
+    },
+    {
+      title: 'Duplicate connector',
+      onClick: () => onDuplicateConnector(connectorId),
       isDisabled: false,
     },
     {

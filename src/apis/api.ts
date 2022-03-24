@@ -198,6 +198,8 @@ export const getConnector = ({
       basePath: connectorsApiBasePath,
     })
   );
+  console.log(connectorId);
+
   return (onSuccess, onError) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
