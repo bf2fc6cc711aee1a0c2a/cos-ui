@@ -114,17 +114,13 @@ export const basicMachine = model.createMachine(
   {
     guards: {
       isBasicConfigured: (context) => {
-        if (context.duplicateMode && context.name !== undefined) {
-          return true;
-        } else {
-          return (
-            context.name !== undefined &&
-            context.name.length > 0 &&
-            context.userServiceAccount !== undefined &&
-            context.userServiceAccount.clientId.length > 0 &&
-            context.userServiceAccount.clientSecret.length > 0
-          );
-        }
+        return (
+          context.name !== undefined &&
+          context.name.length > 0 &&
+          context.userServiceAccount !== undefined &&
+          context.userServiceAccount.clientId.length > 0 &&
+          context.userServiceAccount.clientSecret.length > 0
+        );
       },
     },
   }

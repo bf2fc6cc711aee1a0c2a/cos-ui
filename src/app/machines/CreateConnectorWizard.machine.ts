@@ -251,7 +251,7 @@ export const creationWizardMachine = model.createMachine(
               userServiceAccount: context.duplicateMode
                 ? {
                     clientId: context.connectorData?.service_account.client_id,
-                    clientSecret: ' ',
+                    clientSecret: '',
                   }
                 : context.userServiceAccount,
               topic: context.topic,
@@ -600,17 +600,13 @@ export const creationWizardMachine = model.createMachine(
         );
       },
       isBasicConfigured: (context) => {
-        if (context.duplicateMode) {
-          return true;
-        } else {
-          return (
-            context.name !== undefined &&
-            context.name.length > 0 &&
-            context.userServiceAccount !== undefined &&
-            context.userServiceAccount.clientId.length > 0 &&
-            context.userServiceAccount.clientSecret.length > 0
-          );
-        }
+        return (
+          context.name !== undefined &&
+          context.name.length > 0 &&
+          context.userServiceAccount !== undefined &&
+          context.userServiceAccount.clientId.length > 0 &&
+          context.userServiceAccount.clientSecret.length > 0
+        );
       },
       isErrorHandlerConfigured: (context) =>
         context.userErrorHandler !== undefined &&
