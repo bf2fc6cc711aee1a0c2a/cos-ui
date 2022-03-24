@@ -57,7 +57,7 @@ export function SelectConnectorType() {
 
 export function ConnectorTypesGallery() {
   const { t } = useTranslation();
-  let {
+  const {
     response,
     loading,
     error,

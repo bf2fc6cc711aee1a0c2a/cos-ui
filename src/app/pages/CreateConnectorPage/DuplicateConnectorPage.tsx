@@ -117,10 +117,7 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
               duplicateMode={duplicateMode}
               onSave={onSave}
             >
-              <CreateConnectorWizard
-                onClose={openLeaveConfirm}
-                // duplicateMode={duplicateMode}
-              />
+              <CreateConnectorWizard onClose={openLeaveConfirm} />
               <Modal
                 title={t('Leave page?')}
                 variant={'small'}

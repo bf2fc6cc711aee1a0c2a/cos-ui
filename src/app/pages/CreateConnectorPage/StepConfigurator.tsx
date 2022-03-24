@@ -38,14 +38,12 @@ const ConnectedCustomConfigurator: FunctionComponent<{
   let { activeStep, configuration, connector, connectorData } = useSelector(
     actor,
     useCallback(
-      (state: typeof actor.state) => {
-        return {
-          connector: state.context.connector,
-          activeStep: state.context.activeStep,
-          configuration: state.context.configuration,
-          connectorData: state.context.connectorData,
-        };
-      },
+      (state: typeof actor.state) => ({
+        connector: state.context.connector,
+        activeStep: state.context.activeStep,
+        configuration: state.context.configuration,
+        connectorData: state.context.connectorData,
+      }),
       [actor]
     )
   );
