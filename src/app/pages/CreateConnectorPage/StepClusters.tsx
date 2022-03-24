@@ -48,7 +48,6 @@ const ClustersGallery: FunctionComponent = () => {
     noResults,
     // results,
     queryEmpty,
-    // queryResults,
     firstRequest,
     onSelect,
     onQuery,

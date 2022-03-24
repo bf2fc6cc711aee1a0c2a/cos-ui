@@ -30,6 +30,7 @@ type Context = {
   configStringError?: string;
   configStringWarnings?: string[];
   savingError?: string;
+  duplicateMode: boolean | undefined;
 };
 
 const model = createModel(

@@ -6,8 +6,8 @@ import { EmptyStateNoKafkaInstances } from '@app/components/EmptyStateNoKafkaIns
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
 import { Loading } from '@app/components/Loading/Loading';
 import { Pagination } from '@app/components/Pagination/Pagination';
-// import { useBasename } from '@rhoas/app-services-ui-shared';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
+import _ from 'lodash';
 import React, {
   FunctionComponent,
   SyntheticEvent,
@@ -56,7 +56,6 @@ export const SelectKafkaInstance: FunctionComponent = () => {
 };
 const KafkasGallery: FunctionComponent = () => {
   const { t } = useTranslation();
-  // const basename = useBasename();
   const {
     response,
     loading,

@@ -5,8 +5,10 @@ import { createModel } from 'xstate/lib/model';
 
 type Context = {
   name: string;
+
   sACreated: boolean;
-  userServiceAccount: UserProvidedServiceAccount;
+  userServiceAccount?: UserProvidedServiceAccount;
+  duplicateMode?: boolean | undefined;
 };
 
 const model = createModel(
@@ -104,6 +106,7 @@ export const basicMachine = model.createMachine(
           name: (context: Context) => context.name,
           sACreated: (context: Context) => context.sACreated,
           userServiceAccount: (context: Context) => context.userServiceAccount,
+          duplicateMode: (context: Context) => context.duplicateMode,
         },
       },
     },
@@ -111,13 +114,17 @@ export const basicMachine = model.createMachine(
   {
     guards: {
       isBasicConfigured: (context) => {
-        return (
-          context.name !== undefined &&
-          context.name.length > 0 &&
-          context.userServiceAccount !== undefined &&
-          context.userServiceAccount.clientId.length > 0 &&
-          context.userServiceAccount.clientSecret.length > 0
-        );
+        if (context.duplicateMode && context.name !== undefined) {
+          return true;
+        } else {
+          return (
+            context.name !== undefined &&
+            context.name.length > 0 &&
+            context.userServiceAccount !== undefined &&
+            context.userServiceAccount.clientId.length > 0 &&
+            context.userServiceAccount.clientSecret.length > 0
+          );
+        }
       },
     },
   }

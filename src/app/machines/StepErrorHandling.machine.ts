@@ -7,6 +7,7 @@ type Context = {
   connector: ConnectorType;
   topic: string;
   userErrorHandler?: any;
+  duplicateMode?: boolean;
 };
 
 const model = createModel(
@@ -85,6 +86,7 @@ export const errorHandlingMachine = model.createMachine(
         data: {
           topic: (context: Context) => context.topic,
           userErrorHandler: (context: Context) => context.userErrorHandler,
+          duplicateMode: (context: Context) => context.duplicateMode,
         },
       },
     },

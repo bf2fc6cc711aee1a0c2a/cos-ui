@@ -69,13 +69,13 @@ export function Review() {
     userServiceAccount,
     configString,
     savingError,
+    duplicateMode,
   } = useReviewMachine();
 
   const onToggleJSONView = useCallback(
     () => setToggleView((prev) => !prev),
     []
   );
-
   const config = JSON.parse(configString);
   const connector = JSON.parse(configString).connector;
   const kafkaTopic = JSON.parse(configString).kafka;
@@ -83,11 +83,9 @@ export function Review() {
   const modifiedObject = _.mapKeys(config, (_, key) => {
     return (key = key.replace(/\./g, '_'));
   });
-
   const maskValue = (value: any) => {
     return '*'.repeat(value.length);
   };
-
   return (
     <StepBodyLayout
       title={t('Review')}
@@ -181,7 +179,7 @@ export function Review() {
                 </GridItem>
               </Grid>
             )}
-            {userServiceAccount?.clientSecret && (
+            {userServiceAccount?.clientSecret && !duplicateMode && (
               <Grid>
                 <GridItem span={4}>
                   <strong>{t('client-secret')}</strong>
@@ -289,7 +287,7 @@ export function Review() {
                 {topic && (
                   <Grid>
                     <GridItem span={4}>
-                      <strong>{_.startCase(topic)}</strong>
+                      <strong>{_.startCase('topic')}</strong>
                     </GridItem>
                     <GridItem span={8}>{topic}</GridItem>
                   </Grid>

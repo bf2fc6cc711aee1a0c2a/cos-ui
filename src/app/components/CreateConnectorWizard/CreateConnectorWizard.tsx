@@ -146,7 +146,6 @@ export type CreateConnectorWizardProps = {
 export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps> =
   ({ onClose }) => {
     const { t } = useTranslation();
-
     const service = useCreateConnectorWizardService();
     const [state, send] = useActor(service);
 

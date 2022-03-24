@@ -18,6 +18,7 @@ type Context = {
   response?: ApiSuccessResponse<ConnectorCluster>;
   selectedCluster?: ConnectorCluster;
   error?: Object;
+  duplicateMode?: boolean;
 };
 
 const model = createModel(
@@ -153,6 +154,7 @@ export const clustersMachine = model.createMachine(
         type: 'final',
         data: {
           selectedCluster: (context: Context) => context.selectedCluster,
+          duplicateMode: (context: Context) => context.duplicateMode,
         },
       },
     },
