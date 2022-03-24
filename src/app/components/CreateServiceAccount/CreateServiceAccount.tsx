@@ -78,9 +78,10 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
           sortDesc: sortDesc,
         });
         onSetSaCreated(true);
-        onSetServiceAccount(response);
+        onSetServiceAccount(response ?? { clientId: '', clientSecret: '' });
         setLoading(false);
       } catch (e) {
+        console.log('Error:', e);
         setLoading(false);
         alert?.addAlert({
           id: 'connectors-table-error',
@@ -95,7 +96,7 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
   return (
     <Modal
       variant={ModalVariant.medium}
-      title={sACreated ? '' : t('Create a service account')}
+      title={sACreated ? '' : t('create_service_account')}
       isOpen={isOpen}
       onClose={handleModalToggle}
       actions={
@@ -122,14 +123,12 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
         <EmptyState variant={EmptyStateVariant.large}>
           <EmptyStateIcon icon={KeyIcon} />
           <Title headingLevel="h4" size="lg">
-            {t('Credentials successfully generated')}
+            {t('credentials-generated')}
           </Title>
 
           <TextContent className={'pf-u-mt-lg'}>
             <Text component={TextVariants.small}>
-              {t(
-                'Connect to the Kafka instance using this client ID and secret'
-              )}
+              {t('connect-kafka-with-sa')}
             </Text>
           </TextContent>
           <InputGroup className={'pf-u-mt-lg'}>
@@ -137,13 +136,13 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
               style={{ whiteSpace: 'nowrap' }}
               id="Client-id-value"
             >
-              {t('Client ID')}
+              {t('client-id')}
             </InputGroupText>
             <ClipboardCopy
               isReadOnly
               className="pf-u-w-100"
-              hoverTip={t('Copy')}
-              clickTip={t('Copied')}
+              hoverTip={t('copy')}
+              clickTip={t('copied')}
             >
               {serviceAccount.clientId}
             </ClipboardCopy>
@@ -153,29 +152,27 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
               style={{ whiteSpace: 'nowrap' }}
               id="Client-secret-value"
             >
-              {t('Client secret')}
+              {t('client-secret')}
             </InputGroupText>
             <ClipboardCopy
               className="pf-u-w-100"
               isReadOnly
-              hoverTip={t('Copy')}
-              clickTip={t('Copied')}
+              hoverTip={t('copy')}
+              clickTip={t('copied')}
             >
               {serviceAccount.clientSecret}
             </ClipboardCopy>
           </InputGroup>
           <TextContent className={'pf-u-mt-lg'}>
             <Text component={TextVariants.small}>
-              {t(
-                "Make a copy of the client ID and secret to store in a safe place. The client secret won't appear again after closing this screen."
-              )}
+              {t('service-account-alert-msg')}
             </Text>
           </TextContent>
           <Bullseye className="pf-u-mt-lg">
             <Checkbox
               id="copied"
-              label={t('I have copied the client ID and secret')}
-              aria-label={t('I have copied the client ID and secret')}
+              label={t('copied-clientid-secret')}
+              aria-label={t('copied-clientid-secret')}
               onChange={() => setCopied(!copied)}
               isChecked={copied}
             />
@@ -186,27 +183,21 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
             isDisabled={!copied}
             onClick={handleModalToggle}
           >
-            {t('Close')}
+            {t('close')}
           </Button>
         </EmptyState>
       ) : (
         <Form>
           <FormGroup
-            label={t('Short description')}
+            label={t('short-description')}
             labelIcon={
               <Popover
-                headerContent={<div>{t('Short description')}</div>}
-                bodyContent={
-                  <div>
-                    {t(
-                      'The short description is the same as the client name in the underlying OAuth system.'
-                    )}
-                  </div>
-                }
+                headerContent={<div>{t('short-description')}</div>}
+                bodyContent={<div>{t('short-description-help-text')}</div>}
               >
                 <button
                   type="button"
-                  aria-label={t('More info for short description')}
+                  aria-label={t('short-description-tooltip')}
                   onClick={(e) => e.preventDefault()}
                   aria-describedby="short-description"
                   className="pf-c-form__group-label-help"
@@ -217,15 +208,11 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
             }
             isRequired
             fieldId="short-description-01"
-            helperText={t(
-              'Must start with a letter and end with a letter or number. Valid characters include lowercase letters from a to z, numbers from 0 to 9, and hyphens ( - ).'
-            )}
+            helperText={t('short-description-example-text')}
             helperTextInvalid={
               sortDesc.length > 0
-                ? t(
-                    'Must start with a letter and end with a letter or number. Valid characters include lowercase letters from a to z, numbers from 0 to 9, and hyphens ( - ).'
-                  )
-                : t('Required')
+                ? t('short-description-example-text')
+                : t('required')
             }
             validated={validated}
           >

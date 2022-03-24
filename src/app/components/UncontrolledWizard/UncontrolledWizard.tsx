@@ -298,7 +298,7 @@ export class UncontrolledWizard extends Component<WizardProps, WizardState> {
       backButtonText = 'Back',
       cancelButtonText = 'Cancel',
       hideClose,
-      closeButtonAriaLabel = 'Close',
+      closeButtonAriaLabel = 'close',
       navAriaLabel,
       navAriaLabelledBy,
       mainAriaLabel,

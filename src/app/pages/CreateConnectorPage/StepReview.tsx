@@ -164,7 +164,7 @@ export function Review() {
             {userServiceAccount?.clientId && (
               <Grid>
                 <GridItem span={4}>
-                  <strong>{t('Client ID')}</strong>
+                  <strong>{t('client-id')}</strong>
                 </GridItem>
                 <GridItem span={8}>
                   <Flex>
@@ -184,7 +184,7 @@ export function Review() {
             {userServiceAccount?.clientSecret && (
               <Grid>
                 <GridItem span={4}>
-                  <strong>{t('Client Secret')}</strong>
+                  <strong>{t('client-secret')}</strong>
                 </GridItem>
                 <GridItem span={8}>
                   <Flex>

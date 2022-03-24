@@ -8,9 +8,7 @@ import {
   Grid,
   Form,
   FormGroup,
-  Text,
   TextInput,
-  TextVariants,
   TextContent,
   Button,
 } from '@patternfly/react-core';
@@ -63,53 +61,52 @@ export const StepCommon: FC = () => {
               className="pf-u-mb-0"
             >
               <TextContent>
-                <Text component={TextVariants.small}>
-                  {t(
-                    'A service account enables the Connector instance to authenticate with the Kafka instance. Provide credentials of an existing service account that has access to the Kafka instance or create a new service account.'
-                  )}
-                </Text>
+                <span className="step-common_service_account-desc">
+                  {t('service-account-desc-text')}
+                </span>
               </TextContent>
               <Button
-                variant="link"
+                variant="secondary"
                 onClick={handleModalToggle}
-                className="step-common_create_sa_button"
+                className="pf-u-mt-md"
                 isDisabled={sACreated}
               >
-                {t('Create service account')}
+                {t('create-service-account')}
               </Button>
-              {serviceAccount && (
-                <>
-                  <FormGroup
-                    label="Client ID"
-                    isRequired
-                    fieldId="clientId"
-                    className="pf-u-mb-0"
-                  >
-                    <TextInput
-                      value={serviceAccount.clientId}
-                      onChange={(clientId) =>
-                        onSetServiceAccount({ ...serviceAccount, clientId })
-                      }
-                      id="clientId"
-                    />
-                  </FormGroup>
-                  <FormGroup
-                    label="Client Secret"
-                    isRequired
-                    fieldId="clientSecret"
-                    className="pf-u-mb-0"
-                  >
-                    <TextInput
-                      value={serviceAccount.clientSecret}
-                      onChange={(clientSecret) =>
-                        onSetServiceAccount({ ...serviceAccount, clientSecret })
-                      }
-                      id="clientSecret"
-                    />
-                  </FormGroup>
-                </>
-              )}
             </FormGroup>
+
+            {serviceAccount && (
+              <>
+                <FormGroup
+                  label={t('client-id')}
+                  isRequired
+                  fieldId="clientId"
+                  className="pf-u-mb-0"
+                >
+                  <TextInput
+                    value={serviceAccount.clientId}
+                    onChange={(clientId) =>
+                      onSetServiceAccount({ ...serviceAccount, clientId })
+                    }
+                    id="clientId"
+                  />
+                </FormGroup>
+                <FormGroup
+                  label={t('client-secret')}
+                  isRequired
+                  fieldId="clientSecret"
+                  className="pf-u-mb-0"
+                >
+                  <TextInput
+                    value={serviceAccount.clientSecret}
+                    onChange={(clientSecret) =>
+                      onSetServiceAccount({ ...serviceAccount, clientSecret })
+                    }
+                    id="clientSecret"
+                  />
+                </FormGroup>
+              </>
+            )}
           </Form>
         </Grid>
       </StepBodyLayout>
