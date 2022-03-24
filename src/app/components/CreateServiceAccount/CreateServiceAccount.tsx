@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 import { createNewServiceAccount, UserProvidedServiceAccount } from '@apis/api';
 import { useCos } from '@context/CosContext';
 import { t } from 'i18next';
 import React, { FormEvent, useState } from 'react';
+=======
+import { createServiceAccount, UserProvidedServiceAccount } from '@apis/api';
+import { useCos } from '@context/CosContext';
+import { t } from 'i18next';
+import React, { FormEvent, useCallback, useState } from 'react';
+>>>>>>> MGDCTRS-574
 import { FC } from 'react';
 
 import {
@@ -28,7 +35,11 @@ import {
 } from '@patternfly/react-core';
 import { KeyIcon, HelpIcon } from '@patternfly/react-icons';
 
+<<<<<<< HEAD
 import { useAlert } from '@rhoas/app-services-ui-shared';
+=======
+import { ServiceAccount, useAlert } from '@rhoas/app-services-ui-shared';
+>>>>>>> MGDCTRS-574
 
 type CreateServiceAccountProps = {
   isOpen: boolean;
@@ -65,6 +76,7 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
     setSortDesc(value);
   };
 
+<<<<<<< HEAD
   const createServiceAccount = async () => {
     if (validated === 'default' && sortDesc.length === 0) {
       setValidated('error');
@@ -90,6 +102,42 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
           description: 'error',
         });
       }
+=======
+  const onSuccess = useCallback(
+    (data?: ServiceAccount) => {
+      onSetSaCreated(true);
+      setLoading(false);
+      const SA = data
+        ? { clientId: data.client_id!, clientSecret: data.client_secret! }
+        : { clientId: '', clientSecret: '' };
+      onSetServiceAccount(SA);
+    },
+    [onSetSaCreated, setLoading, onSetServiceAccount]
+  );
+
+  const onError = useCallback(
+    (description: string) => {
+      alert?.addAlert({
+        id: 'connectors-table-error',
+        variant: AlertVariant.danger,
+        title: t('something_went_wrong'),
+        description,
+      });
+      setLoading(false);
+    },
+    [alert]
+  );
+
+  const createSA = async () => {
+    if (validated === 'default' && sortDesc.length === 0) {
+      setValidated('error');
+    } else {
+      createServiceAccount({
+        accessToken: getToken,
+        kafkaManagementApiBasePath: kafkaManagementApiBasePath,
+        sortDesc: sortDesc,
+      })(onSuccess, onError);
+>>>>>>> MGDCTRS-574
     }
   };
 
@@ -109,7 +157,11 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
                 spinnerAriaValueText={loading ? t('Loading') : undefined}
                 isLoading={loading}
                 isDisabled={validated === 'error' || loading}
+<<<<<<< HEAD
                 onClick={createServiceAccount}
+=======
+                onClick={createSA}
+>>>>>>> MGDCTRS-574
               >
                 {t('Create')}
               </Button>,

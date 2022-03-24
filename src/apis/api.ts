@@ -16,6 +16,7 @@ import {
   ConnectorTypeAllOf,
   ConnectorTypesApi,
   ObjectReference,
+  ServiceAccount,
 } from '@rhoas/connector-management-sdk';
 import {
   KafkaRequest,
@@ -484,6 +485,7 @@ export type createNewServiceAccountProps = {
   kafkaManagementApiBasePath: string;
 };
 
+<<<<<<< HEAD
 export const createNewServiceAccount = async ({
   accessToken,
   kafkaManagementApiBasePath,
@@ -492,12 +494,20 @@ export const createNewServiceAccount = async ({
   const CancelToken = axios.CancelToken;
   const source = CancelToken.source();
 
+=======
+export const createServiceAccount = ({
+  accessToken,
+  kafkaManagementApiBasePath,
+  sortDesc,
+}: createNewServiceAccountProps): FetchCallbacks<ServiceAccount> => {
+>>>>>>> MGDCTRS-574
   const securityAPI = new SecurityApi(
     new Configuration({
       accessToken,
       basePath: kafkaManagementApiBasePath,
     })
   );
+<<<<<<< HEAD
 
   const response = await securityAPI.createServiceAccount(
     {
@@ -510,6 +520,31 @@ export const createNewServiceAccount = async ({
   return {
     clientId: response.data.client_id!,
     clientSecret: response.data.client_secret!,
+=======
+  return (onSuccess, onError) => {
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    securityAPI
+      .createServiceAccount(
+        {
+          name: `connector-${sortDesc}`,
+        },
+        {
+          cancelToken: source.token,
+        }
+      )
+      .then((response) => {
+        onSuccess(response.data as ServiceAccount);
+      })
+      .catch((error) => {
+        if (!axios.isCancel(error)) {
+          onError(error.response.data.reason);
+        }
+      });
+    return () => {
+      source.cancel('Operation canceled by the user.');
+    };
+>>>>>>> MGDCTRS-574
   };
 };
 
