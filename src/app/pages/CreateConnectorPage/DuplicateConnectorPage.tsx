@@ -63,8 +63,7 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
       if (connectorId !== undefined) {
         setDuplicateMode(true);
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [connectorId]);
 
     useEffect(() => {
       getConnector({

@@ -8,7 +8,6 @@ import { AutoField } from 'uniforms-patternfly';
 
 import { Grid } from '@patternfly/react-core';
 
-// import { Connector } from '@rhoas/connector-management-sdk';
 import { CustomJsonSchemaBridge } from './CustomJsonSchemaBridge';
 import './JsonSchemaConfigurator.css';
 
