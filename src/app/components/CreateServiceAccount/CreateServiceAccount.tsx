@@ -1,7 +1,7 @@
-import { createNewServiceAccount, UserProvidedServiceAccount } from '@apis/api';
+import { createServiceAccount, UserProvidedServiceAccount } from '@apis/api';
 import { useCos } from '@context/CosContext';
 import { t } from 'i18next';
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useCallback, useState } from 'react';
 import { FC } from 'react';
 
 import {
@@ -28,7 +28,7 @@ import {
 } from '@patternfly/react-core';
 import { KeyIcon, HelpIcon } from '@patternfly/react-icons';
 
-import { useAlert } from '@rhoas/app-services-ui-shared';
+import { ServiceAccount, useAlert } from '@rhoas/app-services-ui-shared';
 
 type CreateServiceAccountProps = {
   isOpen: boolean;
@@ -65,31 +65,40 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
     setSortDesc(value);
   };
 
-  const createServiceAccount = async () => {
+  const onSuccess = useCallback(
+    (data?: ServiceAccount) => {
+      onSetSaCreated(true);
+      setLoading(false);
+      const SA = data
+        ? { clientId: data.client_id!, clientSecret: data.client_secret! }
+        : { clientId: '', clientSecret: '' };
+      onSetServiceAccount(SA);
+    },
+    [onSetSaCreated, setLoading, onSetServiceAccount]
+  );
+
+  const onError = useCallback(
+    (description: string) => {
+      alert?.addAlert({
+        id: 'connectors-table-error',
+        variant: AlertVariant.danger,
+        title: t('something_went_wrong'),
+        description,
+      });
+      setLoading(false);
+    },
+    [alert]
+  );
+
+  const createSA = async () => {
     if (validated === 'default' && sortDesc.length === 0) {
       setValidated('error');
     } else {
-      setLoading(true);
-      let response;
-      try {
-        response = await createNewServiceAccount({
-          accessToken: getToken,
-          kafkaManagementApiBasePath: kafkaManagementApiBasePath,
-          sortDesc: sortDesc,
-        });
-        onSetSaCreated(true);
-        onSetServiceAccount(response ?? { clientId: '', clientSecret: '' });
-        setLoading(false);
-      } catch (e) {
-        console.log('Error:', e);
-        setLoading(false);
-        alert?.addAlert({
-          id: 'connectors-table-error',
-          variant: AlertVariant.danger,
-          title: t('something_went_wrong'),
-          description: 'error',
-        });
-      }
+      createServiceAccount({
+        accessToken: getToken,
+        kafkaManagementApiBasePath: kafkaManagementApiBasePath,
+        sortDesc: sortDesc,
+      })(onSuccess, onError);
     }
   };
 
@@ -109,7 +118,7 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
                 spinnerAriaValueText={loading ? t('Loading') : undefined}
                 isLoading={loading}
                 isDisabled={validated === 'error' || loading}
-                onClick={createServiceAccount}
+                onClick={createSA}
               >
                 {t('Create')}
               </Button>,
