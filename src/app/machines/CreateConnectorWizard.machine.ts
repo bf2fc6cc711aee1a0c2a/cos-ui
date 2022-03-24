@@ -1,6 +1,6 @@
 import { UserProvidedServiceAccount } from '@apis/api';
-import { basicMachine } from '@app/machines/StepBasic.machine';
 import { clustersMachine } from '@app/machines/StepClusters.machine';
+import { basicMachine } from '@app/machines/StepCommon.machine';
 import { configuratorMachine } from '@app/machines/StepConfigurator.machine';
 import {
   configuratorLoaderMachine,
@@ -33,6 +33,7 @@ type Context = {
   isConfigurationValid?: boolean;
   connectorConfiguration?: unknown;
   name: string;
+  sACreated: boolean;
   topic: string;
   userServiceAccount: UserProvidedServiceAccount;
   userErrorHandler: string;
@@ -293,6 +294,7 @@ export const creationWizardMachine = model.createMachine(
             connectorType: context.selectedConnector,
             initialConfiguration: context.connectorConfiguration,
             name: context.name,
+            sACreated: context.sACreated,
             userServiceAccount: context.userServiceAccount,
             topic: context.topic,
             userErrorHandler: context.userErrorHandler,
@@ -302,6 +304,7 @@ export const creationWizardMachine = model.createMachine(
             actions: [
               assign((_, event) => ({
                 name: event.data.name,
+                sACreated: event.data.sACreated,
                 userServiceAccount: event.data.userServiceAccount,
               })),
             ],
@@ -512,12 +515,11 @@ export const creationWizardMachine = model.createMachine(
         );
       },
       isBasicConfigured: (context) =>
-        context.userServiceAccount === undefined
-          ? context.name !== undefined && context.name.length > 0
-          : context.name !== undefined &&
-            context.name.length > 0 &&
-            context.userServiceAccount.clientId?.length > 0 &&
-            context.userServiceAccount.clientSecret?.length > 0,
+        context.name !== undefined &&
+        context.name.length > 0 &&
+        context.userServiceAccount !== undefined &&
+        context.userServiceAccount.clientId.length > 0 &&
+        context.userServiceAccount.clientSecret.length > 0,
 
       isErrorHandlerConfigured: (context) =>
         context.userErrorHandler !== undefined &&

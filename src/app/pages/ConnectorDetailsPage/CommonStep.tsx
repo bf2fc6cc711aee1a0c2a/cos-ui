@@ -75,8 +75,8 @@ export const CommonStep: FC<CommonStepProp> = ({
         <FormGroup label={t('Service account')} fieldId="service-account">
           {true !== undefined && (
             <>
-              <FormGroup label={t('Client ID')} isRequired fieldId="clientId">
-                <ClipboardCopy isReadOnly hoverTip="Copy" clickTip="Copied">
+              <FormGroup label={t('client-id')} isRequired fieldId="clientId">
+                <ClipboardCopy isReadOnly hoverTip="copy" clickTip="Copied">
                   {configuration?.service_account?.client_id}
                 </ClipboardCopy>
               </FormGroup>

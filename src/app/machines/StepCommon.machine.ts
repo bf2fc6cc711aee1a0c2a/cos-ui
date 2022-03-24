@@ -5,18 +5,22 @@ import { createModel } from 'xstate/lib/model';
 
 type Context = {
   name: string;
-  userServiceAccount?: UserProvidedServiceAccount;
+  sACreated: boolean;
+  userServiceAccount: UserProvidedServiceAccount;
 };
 
 const model = createModel(
   {
     name: '',
+    sACreated: false,
+    userServiceAccount: { clientId: '', clientSecret: '' },
   } as Context,
   {
     events: {
       setName: (payload: { name: string }) => payload,
+      setSaCreated: (payload: { sACreated: boolean }) => payload,
       setServiceAccount: (payload: {
-        serviceAccount: UserProvidedServiceAccount | undefined;
+        serviceAccount: UserProvidedServiceAccount;
       }) => payload,
       confirm: () => ({}),
     },
@@ -28,6 +32,14 @@ const setName = model.assign(
   },
   'setName'
 );
+
+const setSaCreated = model.assign(
+  {
+    sACreated: (_, event) => event.sACreated,
+  },
+  'setSaCreated'
+);
+
 const setServiceAccount = model.assign(
   (_, event) => ({
     userServiceAccount: event.serviceAccount,
@@ -53,6 +65,10 @@ export const basicMachine = model.createMachine(
             target: 'verify',
             actions: setName,
           },
+          setSaCreated: {
+            target: 'verify',
+            actions: setSaCreated,
+          },
           setServiceAccount: {
             target: 'verify',
             actions: setServiceAccount,
@@ -66,6 +82,10 @@ export const basicMachine = model.createMachine(
           setName: {
             target: 'verify',
             actions: setName,
+          },
+          setSaCreated: {
+            target: 'verify',
+            actions: setSaCreated,
           },
           setServiceAccount: {
             target: 'verify',
@@ -82,6 +102,7 @@ export const basicMachine = model.createMachine(
         type: 'final',
         data: {
           name: (context: Context) => context.name,
+          sACreated: (context: Context) => context.sACreated,
           userServiceAccount: (context: Context) => context.userServiceAccount,
         },
       },
@@ -89,13 +110,15 @@ export const basicMachine = model.createMachine(
   },
   {
     guards: {
-      isBasicConfigured: (context) =>
-        context.userServiceAccount === undefined
-          ? context.name !== undefined && context.name.length > 0
-          : context.name !== undefined &&
-            context.name.length > 0 &&
-            context.userServiceAccount.clientId.length > 0 &&
-            context.userServiceAccount.clientSecret.length > 0,
+      isBasicConfigured: (context) => {
+        return (
+          context.name !== undefined &&
+          context.name.length > 0 &&
+          context.userServiceAccount !== undefined &&
+          context.userServiceAccount.clientId.length > 0 &&
+          context.userServiceAccount.clientSecret.length > 0
+        );
+      },
     },
   }
 );
