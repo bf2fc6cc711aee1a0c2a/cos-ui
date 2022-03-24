@@ -34,6 +34,7 @@ import { useInterpret, useSelector } from '@xstate/react';
 import { ActorRef } from 'xstate';
 
 import {
+  Connector,
   ConnectorCluster,
   ConnectorType,
   ObjectReference,
@@ -53,8 +54,8 @@ type CreateConnectorWizardProviderProps = {
   fetchConfigurator: (
     connector: ConnectorType
   ) => Promise<ConnectorConfiguratorResponse>;
-  connectorData?: any;
-  connectorTypeDetails?: any;
+  connectorData?: Connector;
+  connectorTypeDetails?: ConnectorType;
   connectorId?: string;
   duplicateMode?: boolean;
   onSave: () => void;
@@ -108,7 +109,7 @@ export const useCreateConnectorWizardService = () => {
   const service = useContext(CreateConnectorWizardMachineService);
   if (!service) {
     throw new Error(
-      `useCreateConnectorWizardService() must be used in a child of <CreationWizardMachineProvider>`
+      `useCreationWizardMachineService() must be used in a child of <CreationWizardMachineProvider>`
     );
   }
   return service;
@@ -163,13 +164,14 @@ export const useClustersMachine = () => {
   );
   const { selectedId } = useSelector(
     clusterRef,
-    useCallback((state: EmittedFrom<typeof clusterRef>) => {
-      return {
+    useCallback(
+      (state: EmittedFrom<typeof clusterRef>) => ({
         selectedId: state.context.duplicateMode
           ? state.context.selectedCluster?.id
           : state.context.selectedCluster?.id,
-      };
-    }, [])
+      }),
+      []
+    )
   );
   const onSelect = useCallback(
     (selectedCluster: string) => {
@@ -218,14 +220,16 @@ export const useConnectorTypesMachine = () => {
   );
   const { selectedId, connectorTypeDetails, duplicateMode } = useSelector(
     connectorTypeRef,
-    useCallback((state: EmittedFrom<typeof connectorTypeRef>) => {
-      return {
+    useCallback(
+      (state: EmittedFrom<typeof connectorTypeRef>) => ({
         selectedId: (state.context.selectedConnector as ObjectReference)?.id,
         duplicateMode: state.context.duplicateMode,
         connectorTypeDetails: state.context.connectorTypeDetails,
-      };
-    }, [])
+      }),
+      []
+    )
   );
+
   const onSelect = useCallback(
     (selectedConnector: string) => {
       connectorTypeRef.send({ type: 'selectConnector', selectedConnector });

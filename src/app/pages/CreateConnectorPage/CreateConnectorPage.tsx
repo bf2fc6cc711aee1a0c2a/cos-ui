@@ -30,8 +30,6 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
     const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
     const openLeaveConfirm = () => setAskForLeaveConfirm(true);
     const closeLeaveConfirm = () => setAskForLeaveConfirm(false);
-    console.log('config::', config);
-
     return (
       <>
         <PageSection variant={'light'} hasShadowBottom>
