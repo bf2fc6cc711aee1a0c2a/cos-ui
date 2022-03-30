@@ -73,7 +73,6 @@ export function ConnectorTypesGallery() {
     onSelect,
     onQuery,
   } = useConnectorTypesMachine();
-  console.log('duplicateMode', duplicateMode);
   return (
     <StepBodyLayout
       title={t('Connector')}

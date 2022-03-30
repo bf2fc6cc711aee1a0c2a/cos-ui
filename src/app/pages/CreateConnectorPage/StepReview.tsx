@@ -78,10 +78,10 @@ export function Review() {
   const modifiedObject = _.mapKeys(config, (_, key) => {
     return (key = key.replace(/\./g, '_'));
   });
-  delete modifiedObject['error_handler'];
-  console.log('Config:', config);
-  console.log('Connector:', connector);
-  console.log('modifiedObject:', modifiedObject);
+  try {
+    delete modifiedObject['error_handler'];
+  } catch (e) {}
+  
   const maskValue = (value: any) => {
     return '*'.repeat(value.length);
   };

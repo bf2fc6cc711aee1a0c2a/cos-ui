@@ -63,7 +63,6 @@ const ClustersGallery: FunctionComponent = () => {
         onDeselectCluster();
       }
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duplicateMode, response, onDeselectCluster]);
 
