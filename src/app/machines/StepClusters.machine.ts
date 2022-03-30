@@ -57,7 +57,7 @@ const selectCluster = model.assign(
   },
   'selectCluster'
 );
-const reset = model.assign(
+const deselectCluster = model.assign(
   {
     selectedCluster: undefined,
   },
@@ -137,7 +137,7 @@ export const clustersMachine = model.createMachine(
                   },
                   deselectCluster: {
                     target: 'verify',
-                    actions: reset,
+                    actions: deselectCluster,
                   },
                   confirm: {
                     target: '#done',

@@ -4,7 +4,7 @@ import { StepErrorBoundary } from '@app/components/StepErrorBoundary/StepErrorBo
 import { ConnectorConfiguratorComponent } from '@app/machines/StepConfiguratorLoader.machine';
 import { useCos } from '@context/CosContext';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
-import { mapToObject } from '@utils/shared';
+import { clearSecretEmptyValue, mapToObject } from '@utils/shared';
 import _ from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -409,11 +409,7 @@ const ConnectedCustomConfigurator: FC<{
     formConfiguration = new Map(configuration);
   } else {
     formConfiguration = JSON.parse(JSON.stringify(configuration));
-    Object.keys(formConfiguration as object).map((key) => {
-      if (_.isEmpty((formConfiguration as { [key: string]: any })[key])) {
-        (formConfiguration as { [key: string]: any })[key] = '';
-      }
-    });
+    clearSecretEmptyValue(formConfiguration);
   }
 
   return (

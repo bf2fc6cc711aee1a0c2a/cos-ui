@@ -162,13 +162,12 @@ export const useClustersMachine = () => {
       PAGINATED_MACHINE_ID
     ] as PaginatedApiActorType<ConnectorCluster, {}, ConnectorCluster>
   );
-  const { selectedId } = useSelector(
+  const { selectedId, duplicateMode } = useSelector(
     clusterRef,
     useCallback(
       (state: EmittedFrom<typeof clusterRef>) => ({
-        selectedId: state.context.duplicateMode
-          ? state.context.selectedCluster?.id
-          : state.context.selectedCluster?.id,
+        selectedId: state.context.selectedCluster?.id,
+        duplicateMode: state.context.duplicateMode,
       }),
       []
     )
@@ -179,6 +178,10 @@ export const useClustersMachine = () => {
     },
     [clusterRef]
   );
+  const onDeselectCluster = useCallback(() => {
+    clusterRef.send({ type: 'deselectCluster' });
+  }, [clusterRef]);
+
   const onQuery = useCallback(
     (request: PaginatedApiRequest<{}>) => {
       clusterRef.send({ type: 'api.query', ...request });
@@ -188,7 +191,9 @@ export const useClustersMachine = () => {
   return {
     ...api,
     selectedId,
+    duplicateMode,
     onSelect,
+    onDeselectCluster,
     onQuery,
   };
 };
@@ -273,11 +278,12 @@ export const useKafkasMachine = () => {
       PAGINATED_MACHINE_ID
     ] as PaginatedApiActorType<KafkaRequest, KafkasQuery, KafkaRequest>
   );
-  const { selectedId } = useSelector(
+  const { selectedId, duplicateMode } = useSelector(
     kafkaRef,
     useCallback(
       (state: EmittedFrom<typeof kafkaRef>) => ({
         selectedId: state.context.selectedInstance?.id,
+        duplicateMode: state.context.duplicateMode,
       }),
       []
     )
@@ -288,6 +294,11 @@ export const useKafkasMachine = () => {
     },
     [kafkaRef]
   );
+
+  const onDeselect = useCallback(() => {
+    kafkaRef.send({ type: 'deselectInstance' });
+  }, [kafkaRef]);
+
   const onQuery = useCallback(
     (request: PaginatedApiRequest<KafkasQuery>) => {
       kafkaRef.send({ type: 'api.query', ...request });
@@ -297,7 +308,9 @@ export const useKafkasMachine = () => {
   return {
     ...api,
     selectedId,
+    duplicateMode,
     onSelect,
+    onDeselect,
     onQuery,
   };
 };

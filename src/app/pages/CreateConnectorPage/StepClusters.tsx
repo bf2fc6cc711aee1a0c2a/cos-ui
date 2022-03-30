@@ -8,7 +8,7 @@ import { Loading } from '@app/components/Loading/Loading';
 import { Pagination } from '@app/components/Pagination/Pagination';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { useDebounce } from '@utils/useDebounce';
-import React, { FunctionComponent, useRef } from 'react';
+import React, { FunctionComponent, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -43,15 +43,29 @@ const ClustersGallery: FunctionComponent = () => {
   const {
     response,
     selectedId,
+    duplicateMode,
     loading,
     error,
     noResults,
+    onDeselectCluster,
     // results,
     queryEmpty,
     firstRequest,
     onSelect,
     onQuery,
   } = useClustersMachine();
+
+  useEffect(() => {
+    if (duplicateMode && response) {
+      if (response?.items?.find((i) => i.id === selectedId)) {
+        onSelect(selectedId!);
+      } else {
+        onDeselectCluster();
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [duplicateMode, response, onDeselectCluster]);
 
   return (
     <StepBodyLayout

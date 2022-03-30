@@ -99,6 +99,7 @@ export const StepCommon: FC = () => {
                 >
                   <TextInput
                     value={serviceAccount.clientSecret}
+                    type={'password'}
                     onChange={(clientSecret) =>
                       onSetServiceAccount({ ...serviceAccount, clientSecret })
                     }

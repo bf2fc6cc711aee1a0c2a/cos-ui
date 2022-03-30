@@ -6,7 +6,7 @@ import {
   ConnectorConfiguratorComponent,
   ConnectorConfiguratorProps,
 } from '@app/machines/StepConfiguratorLoader.machine';
-import { mapToObject } from '@utils/shared';
+import { clearSecretEmptyValue, mapToObject } from '@utils/shared';
 import _ from 'lodash';
 import React, { ComponentType, FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,13 +23,6 @@ import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
 import { ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
 
-const clearEmptyObject = (obj: any) => {
-  return Object.keys(obj).map((key) => {
-    if (_.isEmpty((obj as { [key: string]: any })[key])) {
-      (obj as { [key: string]: any })[key] = '';
-    }
-  });
-};
 const ConnectedCustomConfigurator: FunctionComponent<{
   Configurator: ConnectorConfiguratorComponent;
   actor: ConfiguratorActorRef;
@@ -48,7 +41,7 @@ const ConnectedCustomConfigurator: FunctionComponent<{
     )
   );
   if (duplicateMode) {
-    clearEmptyObject(configuration);
+    clearSecretEmptyValue(configuration);
     const defaultEntries = JSON.parse(JSON.stringify(connectorData?.connector));
     let combineConfiguration = {};
     if (configuration instanceof Map) {
@@ -67,7 +60,7 @@ const ConnectedCustomConfigurator: FunctionComponent<{
       activeStep={activeStep}
       configuration={configuration}
       connector={connector}
-      duplicateMode={duplicateMode}
+      isViewMode={false}
       onChange={(configuration, isValid) => {
         actor.send({ type: 'change', configuration, isValid });
       }}
@@ -89,7 +82,7 @@ const ConnectedJsonSchemaConfigurator: FunctionComponent<{
       [actor]
     )
   );
-  if (duplicateMode) clearEmptyObject(configuration);
+  if (duplicateMode) clearSecretEmptyValue(configuration);
 
   return (
     <JsonSchemaConfigurator

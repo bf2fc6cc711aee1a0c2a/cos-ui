@@ -16,11 +16,6 @@ import {
   TitleSizes,
   Flex,
   FlexItem,
-  TextContent,
-  TextList,
-  TextListItem,
-  TextListItemVariants,
-  TextListVariants,
 } from '@patternfly/react-core';
 import { EyeIcon, EyeSlashIcon } from '@patternfly/react-icons';
 
@@ -69,7 +64,7 @@ export function Review() {
     userServiceAccount,
     configString,
     savingError,
-    duplicateMode,
+    // duplicateMode,
   } = useReviewMachine();
 
   const onToggleJSONView = useCallback(
@@ -83,6 +78,10 @@ export function Review() {
   const modifiedObject = _.mapKeys(config, (_, key) => {
     return (key = key.replace(/\./g, '_'));
   });
+  delete modifiedObject['error_handler'];
+  console.log('Config:', config);
+  console.log('Connector:', connector);
+  console.log('modifiedObject:', modifiedObject);
   const maskValue = (value: any) => {
     return '*'.repeat(value.length);
   };
@@ -179,7 +178,7 @@ export function Review() {
                 </GridItem>
               </Grid>
             )}
-            {userServiceAccount?.clientSecret && !duplicateMode && (
+            {userServiceAccount?.clientSecret && (
               <Grid>
                 <GridItem span={4}>
                   <strong>{t('client-secret')}</strong>
@@ -309,16 +308,14 @@ export const DataShape: FC<DataShape> = ({ data }) => {
     <>
       {Object.keys(data).map((key) => {
         return (
-          <TextContent>
-            <TextList component={TextListVariants.dl}>
-              <TextListItem component={TextListItemVariants.dt}>
-                {_.upperFirst(key)}:
-              </TextListItem>
-              <TextListItem component={TextListItemVariants.dd}>
-                {data[key].format}
-              </TextListItem>
-            </TextList>
-          </TextContent>
+          <Grid key={key}>
+            <GridItem span={2}>
+              <strong>{_.startCase(key)}:</strong>
+            </GridItem>
+            <GridItem span={10}>
+              {typeof data[key] === 'string' ? data[key] : data[key].format}
+            </GridItem>
+          </Grid>
         );
       })}
     </>

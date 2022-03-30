@@ -148,6 +148,7 @@ export const creationWizardMachine = model.createMachine(
                 : context.selectedKafkaInstance,
               connectorData: context.connectorData,
               connectorTypeDetails: context.connectorTypeDetails,
+              duplicateMode: context.duplicateMode,
               request: {
                 page: 1,
                 size: 10,

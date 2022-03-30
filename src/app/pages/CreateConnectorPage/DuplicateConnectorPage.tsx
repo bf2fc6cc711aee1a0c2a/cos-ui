@@ -23,7 +23,12 @@ import {
   Title,
 } from '@patternfly/react-core';
 
-import { useBasename, useConfig } from '@rhoas/app-services-ui-shared';
+import {
+  AlertVariant,
+  useAlert,
+  useBasename,
+  useConfig,
+} from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorType } from '@rhoas/connector-management-sdk';
 
 type DuplicateConnectorPageProps = {
@@ -33,6 +38,7 @@ type DuplicateConnectorPageProps = {
 export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPageProps> =
   ({ onSave, onClose }) => {
     const { t } = useTranslation();
+    const alert = useAlert();
     const config = useConfig();
     const basename = useBasename();
     const { connectorsApiBasePath, getToken } = useCos();
@@ -51,9 +57,17 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
     const [connectorTypeDetails, setConnectorTypeDetails] =
       useState<ConnectorType>();
 
-    const onError = useCallback((error) => {
-      console.log(error);
-    }, []);
+    const onError = useCallback(
+      (description: string) => {
+        alert?.addAlert({
+          id: 'connectors-table-error',
+          variant: AlertVariant.danger,
+          title: t('something_went_wrong'),
+          description,
+        });
+      },
+      [alert, t]
+    );
 
     const getConnectorTypeInfo = useCallback((data) => {
       setConnectorTypeDetails(data as ConnectorType);
@@ -92,10 +106,10 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
             <BreadcrumbItem to={basename?.getBasename()}>
               {t('Connectors')}
             </BreadcrumbItem>
-            <BreadcrumbItem isActive>{t('Create connector')}</BreadcrumbItem>
+            <BreadcrumbItem isActive>{t('Duplicate connector')}</BreadcrumbItem>
           </Breadcrumb>
           <Level className={'pf-u-pt-md pf-u-pb-md'}>
-            <Title headingLevel="h1">{t('Create connector')}</Title>
+            <Title headingLevel="h1">{t('Duplicate connector')}</Title>
           </Level>
         </PageSection>
         <PageSection

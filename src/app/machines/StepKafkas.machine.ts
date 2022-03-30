@@ -21,6 +21,7 @@ type Context = {
   selectedInstance?: KafkaRequest;
   error?: Object;
   connectorData?: Connector;
+  duplicateMode?: boolean | undefined;
 };
 
 const model = createModel(
@@ -63,7 +64,7 @@ const selectInstance = model.assign(
   },
   'selectInstance'
 );
-const reset = model.assign(
+const deselectInstance = model.assign(
   {
     selectedInstance: undefined,
   },
@@ -144,7 +145,7 @@ export const kafkasMachine = model.createMachine(
                   },
                   deselectInstance: {
                     target: 'verify',
-                    actions: reset,
+                    actions: deselectInstance,
                   },
                   confirm: {
                     target: '#done',
@@ -161,6 +162,7 @@ export const kafkasMachine = model.createMachine(
         type: 'final',
         data: {
           selectedInstance: (context: Context) => context.selectedInstance,
+          duplicateMode: (context: Context) => context.duplicateMode,
         },
       },
     },

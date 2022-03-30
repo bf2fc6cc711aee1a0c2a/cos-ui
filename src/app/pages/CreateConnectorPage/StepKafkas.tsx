@@ -61,6 +61,8 @@ const KafkasGallery: FunctionComponent = () => {
     loading,
     error,
     selectedId,
+    onDeselect,
+    duplicateMode,
     noResults,
     // results,
     queryEmpty,
@@ -69,6 +71,18 @@ const KafkasGallery: FunctionComponent = () => {
     onSelect,
     onQuery,
   } = useKafkasMachine();
+
+  useEffect(() => {
+    if (duplicateMode && response) {
+      if (response?.items?.find((i) => i.id === selectedId)) {
+        onSelect(selectedId!);
+      } else {
+        onDeselect();
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [duplicateMode, response, onDeselect]);
 
   return (
     <StepBodyLayout

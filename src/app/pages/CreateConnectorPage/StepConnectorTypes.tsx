@@ -19,6 +19,7 @@ import { stringToChip } from 'src/utils/stringToChip';
 import { useDebounce } from 'src/utils/useDebounce';
 
 import {
+  Alert,
   Button,
   Card,
   CardBody,
@@ -72,7 +73,7 @@ export function ConnectorTypesGallery() {
     onSelect,
     onQuery,
   } = useConnectorTypesMachine();
-
+  console.log('duplicateMode', duplicateMode);
   return (
     <StepBodyLayout
       title={t('Connector')}
@@ -106,49 +107,62 @@ export function ConnectorTypesGallery() {
                 <ConnectorTypesToolbar duplicateMode={duplicateMode} />
                 <div className={'pf-l-stack__item pf-m-fill'}>
                   {duplicateMode ? (
-                    <Gallery hasGutter>
-                      <Card
-                        key={(connectorTypeDetails as ObjectReference).id}
-                        isSelectable
-                        isSelected={
-                          selectedId ===
-                          (connectorTypeDetails as ObjectReference).id
-                        }
-                      >
-                        <CardHeader>
-                          <CardTitle>
-                            {(connectorTypeDetails as ConnectorTypeAllOf).name}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardBody>
-                          <DescriptionList>
-                            <DescriptionListGroup>
-                              <DescriptionListDescription>
-                                {
-                                  (connectorTypeDetails as ConnectorTypeAllOf)
-                                    .description
-                                }
-                              </DescriptionListDescription>
-                            </DescriptionListGroup>
-                            <DescriptionListGroup>
-                              <DescriptionListTerm>Version</DescriptionListTerm>
-                              <DescriptionListDescription>
-                                {
-                                  (connectorTypeDetails as ConnectorTypeAllOf)
-                                    .version
-                                }
-                              </DescriptionListDescription>
-                            </DescriptionListGroup>
-                            <DescriptionListGroup>
-                              <DescriptionListTerm>ID</DescriptionListTerm>
-                              <DescriptionListDescription>
-                                {(connectorTypeDetails as ObjectReference).id}
-                              </DescriptionListDescription>
-                            </DescriptionListGroup>
-                          </DescriptionList>
-                        </CardBody>
-                      </Card>
-                    </Gallery>
+                    <>
+                      <Alert
+                        variant="info"
+                        className="pf-u-mb-md"
+                        isInline
+                        title="Kafka instances and namespaces both expire after 48 hours. When duplicating a Connectors instance, select a new Kafka instance and namespace. "
+                      />
+                      <Gallery hasGutter>
+                        <Card
+                          key={(connectorTypeDetails as ObjectReference).id}
+                          isSelectable
+                          isSelected={
+                            selectedId ===
+                            (connectorTypeDetails as ObjectReference).id
+                          }
+                        >
+                          <CardHeader>
+                            <CardTitle>
+                              {
+                                (connectorTypeDetails as ConnectorTypeAllOf)
+                                  .name
+                              }
+                            </CardTitle>
+                          </CardHeader>
+                          <CardBody>
+                            <DescriptionList>
+                              <DescriptionListGroup>
+                                <DescriptionListDescription>
+                                  {
+                                    (connectorTypeDetails as ConnectorTypeAllOf)
+                                      .description
+                                  }
+                                </DescriptionListDescription>
+                              </DescriptionListGroup>
+                              <DescriptionListGroup>
+                                <DescriptionListTerm>
+                                  Version
+                                </DescriptionListTerm>
+                                <DescriptionListDescription>
+                                  {
+                                    (connectorTypeDetails as ConnectorTypeAllOf)
+                                      .version
+                                  }
+                                </DescriptionListDescription>
+                              </DescriptionListGroup>
+                              <DescriptionListGroup>
+                                <DescriptionListTerm>ID</DescriptionListTerm>
+                                <DescriptionListDescription>
+                                  {(connectorTypeDetails as ObjectReference).id}
+                                </DescriptionListDescription>
+                              </DescriptionListGroup>
+                            </DescriptionList>
+                          </CardBody>
+                        </Card>
+                      </Gallery>
+                    </>
                   ) : (
                     <Gallery hasGutter>
                       {response?.items?.map((c) => {

@@ -1,4 +1,5 @@
 import { JsonSchemaConfigurator } from '@app/components/JsonSchemaConfigurator/JsonSchemaConfigurator';
+import { clearSecretEmptyValue } from '@utils/shared';
 import _ from 'lodash';
 import React from 'react';
 import { FC } from 'react';
@@ -35,11 +36,7 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
   const { t } = useTranslation();
 
   const formConfiguration = JSON.parse(JSON.stringify(configuration));
-  Object.keys(formConfiguration as object).map((key) => {
-    if (_.isEmpty((formConfiguration as { [key: string]: any })[key])) {
-      (formConfiguration as { [key: string]: any })[key] = '';
-    }
-  });
+  clearSecretEmptyValue(formConfiguration);
 
   const onChange = (config: unknown, isValid: boolean) => {
     onUpdateConfiguration('connector', config);

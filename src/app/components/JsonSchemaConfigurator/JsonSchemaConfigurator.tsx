@@ -1,5 +1,6 @@
 import { Resolver } from '@stoplight/json-ref-resolver';
 import { createValidator } from '@utils/createValidator';
+import { clearSecretEmptyValue } from '@utils/shared';
 import { ValidateFunction } from 'ajv';
 import _ from 'lodash';
 import React, { FunctionComponent } from 'react';
@@ -95,11 +96,7 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
     };
     React.useEffect(() => {
       if (duplicateMode) {
-        Object.keys(configuration as object).map((key) => {
-          if (_.isEmpty((configuration as { [key: string]: any })[key])) {
-            (configuration as { [key: string]: any })[key] = '';
-          }
-        });
+        clearSecretEmptyValue(configuration);
         onChange(configuration, true);
       }
     }, [configuration]);
@@ -119,11 +116,10 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
                   key={key}
                   name={key}
                   disabled={
-                    editCase ||
-                    (duplicateMode &&
-                      _.find(bridge.schema.properties[key].oneOf, {
-                        format: 'password',
-                      }))
+                    (editCase || duplicateMode) &&
+                    _.find(bridge.schema.properties[key].oneOf, {
+                      format: 'password',
+                    })
                   }
                 />
               );
