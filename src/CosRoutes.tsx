@@ -1,6 +1,7 @@
 import { ConnectorDetailsPage } from '@app/pages/ConnectorDetailsPage/ConnectorDetailsPage';
 import { ConnectedConnectorsPage } from '@app/pages/ConnectorsPage/ConnectorsPage';
 import { CreateConnectorPage } from '@app/pages/CreateConnectorPage/CreateConnectorPage';
+import { DuplicateConnectorPage } from '@app/pages/CreateConnectorPage/DuplicateConnectorPage';
 import React, { FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Route, Switch, useHistory } from 'react-router-dom';
@@ -28,12 +29,19 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
     () => history.push('/create-connector'),
     [history]
   );
-
   const goToConnectorDetails = useCallback(
     (id: string, targetTab: string) =>
       history.push({
         pathname: `/${id}`,
         hash: `#${targetTab}`,
+      }),
+    [history]
+  );
+  const goToDuplicateConnector = useCallback(
+    (id: string) =>
+      history.push({
+        pathname: `/duplicate-connector`,
+        hash: `#${id}`,
       }),
     [history]
   );
@@ -57,10 +65,17 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
           <ConnectedConnectorsPage
             onCreateConnector={goToCreateConnector}
             onConnectorDetail={goToConnectorDetails}
+            onDuplicateConnector={goToDuplicateConnector}
           />
         </Route>
         <Route path={'/create-connector'}>
           <CreateConnectorPage
+            onSave={onConnectorSave}
+            onClose={goToConnectorsList}
+          />
+        </Route>
+        <Route path={'/duplicate-connector'}>
+          <DuplicateConnectorPage
             onSave={onConnectorSave}
             onClose={goToConnectorsList}
           />

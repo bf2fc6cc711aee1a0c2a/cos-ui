@@ -1,5 +1,6 @@
 import { Resolver } from '@stoplight/json-ref-resolver';
 import { createValidator } from '@utils/createValidator';
+import { clearSecretEmptyValue } from '@utils/shared';
 import { ValidateFunction } from 'ajv';
 import _ from 'lodash';
 import React, { FunctionComponent } from 'react';
@@ -19,11 +20,12 @@ type JsonSchemaConfiguratorProps = {
   configuration: unknown;
   onChange: (configuration: unknown, isValid: boolean) => void;
   editCase?: boolean;
+  duplicateMode?: boolean;
 };
 const resolver = new Resolver();
 
 export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorProps> =
-  ({ schema, configuration, onChange, editCase }) => {
+  ({ schema, configuration, onChange, editCase, duplicateMode }) => {
     schema.type = schema.type || 'object';
     // Suppress the experimental steps from the UI for the moment
     try {
@@ -92,6 +94,12 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
         onChange(copiedModel, false);
       }
     };
+    React.useEffect(() => {
+      if (duplicateMode) {
+        clearSecretEmptyValue(configuration);
+        onChange(configuration, true);
+      }
+    }, [configuration]);
 
     return (
       <Grid hasGutter>
@@ -108,7 +116,7 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
                   key={key}
                   name={key}
                   disabled={
-                    editCase &&
+                    (editCase || duplicateMode) &&
                     _.find(bridge.schema.properties[key].oneOf, {
                       format: 'password',
                     })

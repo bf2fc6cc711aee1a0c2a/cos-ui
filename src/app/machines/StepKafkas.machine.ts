@@ -5,6 +5,7 @@ import { ActorRefFrom, send } from 'xstate';
 import { sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
+import { Connector } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
 import {
@@ -19,6 +20,8 @@ type Context = {
   response?: PaginatedApiResponse<KafkaRequest>;
   selectedInstance?: KafkaRequest;
   error?: Object;
+  connectorData?: Connector;
+  duplicateMode?: boolean | undefined;
 };
 
 const model = createModel(
@@ -61,7 +64,7 @@ const selectInstance = model.assign(
   },
   'selectInstance'
 );
-const reset = model.assign(
+const deselectInstance = model.assign(
   {
     selectedInstance: undefined,
   },
@@ -142,7 +145,7 @@ export const kafkasMachine = model.createMachine(
                   },
                   deselectInstance: {
                     target: 'verify',
-                    actions: reset,
+                    actions: deselectInstance,
                   },
                   confirm: {
                     target: '#done',
@@ -159,6 +162,7 @@ export const kafkasMachine = model.createMachine(
         type: 'final',
         data: {
           selectedInstance: (context: Context) => context.selectedInstance,
+          duplicateMode: (context: Context) => context.duplicateMode,
         },
       },
     },

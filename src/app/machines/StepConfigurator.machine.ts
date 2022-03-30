@@ -1,7 +1,7 @@
 import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
-import { ConnectorType } from '@rhoas/connector-management-sdk';
+import { ConnectorType, Connector } from '@rhoas/connector-management-sdk';
 
 type Context = {
   connector: ConnectorType;
@@ -9,6 +9,7 @@ type Context = {
   activeStep: number;
   isActiveStepValid: boolean;
   configuration: unknown;
+  connectorData?: Connector;
 };
 
 const model = createModel(

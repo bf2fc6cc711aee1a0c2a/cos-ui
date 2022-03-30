@@ -16,11 +16,6 @@ import {
   TitleSizes,
   Flex,
   FlexItem,
-  TextContent,
-  TextList,
-  TextListItem,
-  TextListItemVariants,
-  TextListVariants,
 } from '@patternfly/react-core';
 import { EyeIcon, EyeSlashIcon } from '@patternfly/react-icons';
 
@@ -69,13 +64,13 @@ export function Review() {
     userServiceAccount,
     configString,
     savingError,
+    // duplicateMode,
   } = useReviewMachine();
 
   const onToggleJSONView = useCallback(
     () => setToggleView((prev) => !prev),
     []
   );
-
   const config = JSON.parse(configString);
   const connector = JSON.parse(configString).connector;
   const kafkaTopic = JSON.parse(configString).kafka;
@@ -83,11 +78,13 @@ export function Review() {
   const modifiedObject = _.mapKeys(config, (_, key) => {
     return (key = key.replace(/\./g, '_'));
   });
+  try {
+    delete modifiedObject['error_handler'];
+  } catch (e) {}
 
   const maskValue = (value: any) => {
     return '*'.repeat(value.length);
   };
-
   return (
     <StepBodyLayout
       title={t('Review')}
@@ -289,7 +286,7 @@ export function Review() {
                 {topic && (
                   <Grid>
                     <GridItem span={4}>
-                      <strong>{_.startCase(topic)}</strong>
+                      <strong>{_.startCase('topic')}</strong>
                     </GridItem>
                     <GridItem span={8}>{topic}</GridItem>
                   </Grid>
@@ -311,16 +308,14 @@ export const DataShape: FC<DataShape> = ({ data }) => {
     <>
       {Object.keys(data).map((key) => {
         return (
-          <TextContent>
-            <TextList component={TextListVariants.dl}>
-              <TextListItem component={TextListItemVariants.dt}>
-                {_.upperFirst(key)}:
-              </TextListItem>
-              <TextListItem component={TextListItemVariants.dd}>
-                {data[key].format}
-              </TextListItem>
-            </TextList>
-          </TextContent>
+          <Grid key={key}>
+            <GridItem span={2}>
+              <strong>{_.startCase(key)}:</strong>
+            </GridItem>
+            <GridItem span={10}>
+              {typeof data[key] === 'string' ? data[key] : data[key].format}
+            </GridItem>
+          </Grid>
         );
       })}
     </>

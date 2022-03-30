@@ -18,6 +18,7 @@ type Context = {
   response?: ApiSuccessResponse<ConnectorCluster>;
   selectedCluster?: ConnectorCluster;
   error?: Object;
+  duplicateMode?: boolean;
 };
 
 const model = createModel(
@@ -56,7 +57,7 @@ const selectCluster = model.assign(
   },
   'selectCluster'
 );
-const reset = model.assign(
+const deselectCluster = model.assign(
   {
     selectedCluster: undefined,
   },
@@ -136,7 +137,7 @@ export const clustersMachine = model.createMachine(
                   },
                   deselectCluster: {
                     target: 'verify',
-                    actions: reset,
+                    actions: deselectCluster,
                   },
                   confirm: {
                     target: '#done',
@@ -153,6 +154,7 @@ export const clustersMachine = model.createMachine(
         type: 'final',
         data: {
           selectedCluster: (context: Context) => context.selectedCluster,
+          duplicateMode: (context: Context) => context.duplicateMode,
         },
       },
     },

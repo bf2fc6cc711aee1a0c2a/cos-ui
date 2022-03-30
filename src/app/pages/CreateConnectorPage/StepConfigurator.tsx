@@ -6,6 +6,8 @@ import {
   ConnectorConfiguratorComponent,
   ConnectorConfiguratorProps,
 } from '@app/machines/StepConfiguratorLoader.machine';
+import { clearSecretEmptyValue, mapToObject } from '@utils/shared';
+import _ from 'lodash';
 import React, { ComponentType, FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,34 +26,52 @@ import { ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
 const ConnectedCustomConfigurator: FunctionComponent<{
   Configurator: ConnectorConfiguratorComponent;
   actor: ConfiguratorActorRef;
-}> = ({ actor, Configurator }) => {
-  const { activeStep, configuration, connector } = useSelector(
+  duplicateMode: boolean | undefined;
+}> = ({ actor, Configurator, duplicateMode }) => {
+  let { activeStep, configuration, connector, connectorData } = useSelector(
     actor,
     useCallback(
       (state: typeof actor.state) => ({
         connector: state.context.connector,
         activeStep: state.context.activeStep,
         configuration: state.context.configuration,
+        connectorData: state.context.connectorData,
       }),
       [actor]
     )
   );
-
+  if (duplicateMode) {
+    clearSecretEmptyValue(configuration);
+    const defaultEntries = JSON.parse(JSON.stringify(connectorData?.connector));
+    let combineConfiguration = {};
+    if (configuration instanceof Map) {
+      combineConfiguration = _.merge(
+        {},
+        defaultEntries,
+        mapToObject(configuration)
+      );
+    } else {
+      combineConfiguration = _.merge({}, defaultEntries, configuration);
+    }
+    configuration = new Map(Object.entries(combineConfiguration));
+  }
   return (
     <Configurator
       activeStep={activeStep}
       configuration={configuration}
       connector={connector}
-      onChange={(configuration, isValid) =>
-        actor.send({ type: 'change', configuration, isValid })
-      }
+      isViewMode={false}
+      onChange={(configuration, isValid) => {
+        actor.send({ type: 'change', configuration, isValid });
+      }}
     />
   );
 };
 
 const ConnectedJsonSchemaConfigurator: FunctionComponent<{
   actor: ConfiguratorActorRef;
-}> = ({ actor }) => {
+  duplicateMode: boolean | undefined;
+}> = ({ actor, duplicateMode }) => {
   const { configuration, connector } = useSelector(
     actor,
     useCallback(
@@ -62,11 +82,13 @@ const ConnectedJsonSchemaConfigurator: FunctionComponent<{
       [actor]
     )
   );
+  if (duplicateMode) clearSecretEmptyValue(configuration);
 
   return (
     <JsonSchemaConfigurator
       schema={(connector as ConnectorTypeAllOf).schema!}
       configuration={configuration || {}}
+      duplicateMode={duplicateMode}
       onChange={(configuration, isValid) =>
         actor.send({ type: 'change', configuration, isValid })
       }
@@ -87,6 +109,7 @@ export const ConfiguratorStep: FunctionComponent = () => {
     Configurator,
     configuratorRef,
     hasCustomConfigurator,
+    duplicateMode,
   } = useSelector(
     service,
     useCallback(
@@ -104,6 +127,7 @@ export const ConfiguratorStep: FunctionComponent = () => {
           hasCustomConfigurator,
           configuration: state.context.connectorConfiguration,
           Configurator: state.context.Configurator,
+          duplicateMode: state.context.duplicateMode,
           configuratorRef: state.children
             .configuratorRef as ConfiguratorActorRef,
         };
@@ -111,7 +135,6 @@ export const ConfiguratorStep: FunctionComponent = () => {
       [service]
     )
   );
-
   return (
     <StepBodyLayout
       title={t('Configurations')}
@@ -143,11 +166,17 @@ export const ConfiguratorStep: FunctionComponent = () => {
                 <ConnectedCustomConfigurator
                   actor={configuratorRef}
                   Configurator={Configurator as ConnectorConfiguratorComponent}
+                  duplicateMode={duplicateMode}
                 />
               </React.Suspense>
             );
           default:
-            return <ConnectedJsonSchemaConfigurator actor={configuratorRef} />;
+            return (
+              <ConnectedJsonSchemaConfigurator
+                actor={configuratorRef}
+                duplicateMode={duplicateMode}
+              />
+            );
         }
       })()}
     </StepBodyLayout>

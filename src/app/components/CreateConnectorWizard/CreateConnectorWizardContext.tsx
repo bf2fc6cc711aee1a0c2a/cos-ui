@@ -34,6 +34,7 @@ import { useInterpret, useSelector } from '@xstate/react';
 import { ActorRef } from 'xstate';
 
 import {
+  Connector,
   ConnectorCluster,
   ConnectorType,
   ObjectReference,
@@ -53,6 +54,10 @@ type CreateConnectorWizardProviderProps = {
   fetchConfigurator: (
     connector: ConnectorType
   ) => Promise<ConnectorConfiguratorResponse>;
+  connectorData?: Connector;
+  connectorTypeDetails?: ConnectorType;
+  connectorId?: string;
+  duplicateMode?: boolean;
   onSave: () => void;
 };
 
@@ -63,6 +68,10 @@ export const CreateConnectorWizardProvider: FunctionComponent<CreateConnectorWiz
     connectorsApiBasePath,
     fetchConfigurator,
     onSave,
+    connectorData,
+    connectorTypeDetails,
+    connectorId,
+    duplicateMode,
   }) => {
     const makeConfiguratorLoaderMachine = useCallback(
       () =>
@@ -80,6 +89,10 @@ export const CreateConnectorWizardProvider: FunctionComponent<CreateConnectorWiz
         accessToken,
         connectorsApiBasePath,
         onSave,
+        connectorId,
+        connectorData,
+        connectorTypeDetails,
+        duplicateMode,
       },
       services: {
         makeConfiguratorLoaderMachine,
@@ -149,11 +162,12 @@ export const useClustersMachine = () => {
       PAGINATED_MACHINE_ID
     ] as PaginatedApiActorType<ConnectorCluster, {}, ConnectorCluster>
   );
-  const { selectedId } = useSelector(
+  const { selectedId, duplicateMode } = useSelector(
     clusterRef,
     useCallback(
       (state: EmittedFrom<typeof clusterRef>) => ({
         selectedId: state.context.selectedCluster?.id,
+        duplicateMode: state.context.duplicateMode,
       }),
       []
     )
@@ -164,6 +178,10 @@ export const useClustersMachine = () => {
     },
     [clusterRef]
   );
+  const onDeselectCluster = useCallback(() => {
+    clusterRef.send({ type: 'deselectCluster' });
+  }, [clusterRef]);
+
   const onQuery = useCallback(
     (request: PaginatedApiRequest<{}>) => {
       clusterRef.send({ type: 'api.query', ...request });
@@ -173,7 +191,9 @@ export const useClustersMachine = () => {
   return {
     ...api,
     selectedId,
+    duplicateMode,
     onSelect,
+    onDeselectCluster,
     onQuery,
   };
 };
@@ -203,15 +223,18 @@ export const useConnectorTypesMachine = () => {
       ConnectorType
     >
   );
-  const { selectedId } = useSelector(
+  const { selectedId, connectorTypeDetails, duplicateMode } = useSelector(
     connectorTypeRef,
     useCallback(
       (state: EmittedFrom<typeof connectorTypeRef>) => ({
         selectedId: (state.context.selectedConnector as ObjectReference)?.id,
+        duplicateMode: state.context.duplicateMode,
+        connectorTypeDetails: state.context.connectorTypeDetails,
       }),
       []
     )
   );
+
   const onSelect = useCallback(
     (selectedConnector: string) => {
       connectorTypeRef.send({ type: 'selectConnector', selectedConnector });
@@ -229,6 +252,8 @@ export const useConnectorTypesMachine = () => {
     selectedId,
     onSelect,
     onQuery,
+    connectorTypeDetails,
+    duplicateMode,
   };
 };
 
@@ -253,11 +278,12 @@ export const useKafkasMachine = () => {
       PAGINATED_MACHINE_ID
     ] as PaginatedApiActorType<KafkaRequest, KafkasQuery, KafkaRequest>
   );
-  const { selectedId } = useSelector(
+  const { selectedId, duplicateMode } = useSelector(
     kafkaRef,
     useCallback(
       (state: EmittedFrom<typeof kafkaRef>) => ({
         selectedId: state.context.selectedInstance?.id,
+        duplicateMode: state.context.duplicateMode,
       }),
       []
     )
@@ -268,6 +294,11 @@ export const useKafkasMachine = () => {
     },
     [kafkaRef]
   );
+
+  const onDeselect = useCallback(() => {
+    kafkaRef.send({ type: 'deselectInstance' });
+  }, [kafkaRef]);
+
   const onQuery = useCallback(
     (request: PaginatedApiRequest<KafkasQuery>) => {
       kafkaRef.send({ type: 'api.query', ...request });
@@ -277,20 +308,23 @@ export const useKafkasMachine = () => {
   return {
     ...api,
     selectedId,
+    duplicateMode,
     onSelect,
+    onDeselect,
     onQuery,
   };
 };
 
 export const useBasicMachine = () => {
   const { basicRef } = useCreateConnectorWizard();
-  const { name, sACreated, serviceAccount } = useSelector(
+  const { name, sACreated, serviceAccount, duplicateMode } = useSelector(
     basicRef,
     useCallback(
       (state: EmittedFrom<typeof basicRef>) => ({
         name: state.context.name,
         sACreated: state.context.sACreated,
         serviceAccount: state.context.userServiceAccount,
+        duplicateMode: state.context.duplicateMode,
       }),
       []
     )
@@ -322,6 +356,7 @@ export const useBasicMachine = () => {
     onSetSaCreated,
     onSetName,
     onSetServiceAccount,
+    duplicateMode,
   };
 };
 
@@ -338,6 +373,7 @@ export const useReviewMachine = () => {
     configString,
     isSaving,
     savingError,
+    duplicateMode,
   } = useSelector(
     reviewRef,
     useCallback(
@@ -352,6 +388,7 @@ export const useReviewMachine = () => {
         configString: state.context.configString,
         isSaving: state.hasTag('saving'),
         savingError: state.context.savingError,
+        duplicateMode: state.context.duplicateMode,
       }),
       []
     )
@@ -368,19 +405,21 @@ export const useReviewMachine = () => {
     configString,
     isSaving,
     savingError,
+    duplicateMode,
   };
 };
 
 export const useErrorHandlingMachine = () => {
   const { errorRef } = useCreateConnectorWizard();
 
-  const { connector, topic, errorHandler } = useSelector(
+  const { connector, topic, errorHandler, duplicateMode } = useSelector(
     errorRef,
     useCallback(
       (state: EmittedFrom<typeof errorRef>) => ({
         topic: state.context.topic,
         errorHandler: state.context.userErrorHandler,
         connector: state.context.connector,
+        duplicateMode: state.context.duplicateMode,
       }),
       []
     )
@@ -406,5 +445,6 @@ export const useErrorHandlingMachine = () => {
     onSetErrorHandler,
     onSetTopic,
     connector,
+    duplicateMode,
   };
 };

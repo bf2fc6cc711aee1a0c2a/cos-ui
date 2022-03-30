@@ -73,6 +73,7 @@
   "common.something_went_wrong": "common.something_went_wrong",
   "Create connector": "Create connector",
   "Changes you have made will be lost and no connector will be created.": "Changes you have made will be lost and no connector will be created.",
+  "Duplicate connector": "Duplicate connector",
   "clusterStepDescription": "Select an  OSD cluster to host the connector.",
   "basicStepDescription": "Configure the common information for your connector instance.",
   "service-account-desc-text": "A service account enables the Connectors instance to authenticate with the Kafka instance. Provide credentials of an existing service account that has access to the Kafka instance or create a new service account.",

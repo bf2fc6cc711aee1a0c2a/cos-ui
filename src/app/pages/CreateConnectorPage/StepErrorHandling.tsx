@@ -21,11 +21,25 @@ export const StepErrorHandling: FunctionComponent = () => {
   const [isOpen, setOpen] = React.useState<boolean>(false);
   const { t } = useTranslation();
 
-  const { connector, topic, errorHandler, onSetTopic, onSetErrorHandler } =
-    useErrorHandlingMachine();
+  const {
+    connector,
+    topic,
+    errorHandler,
+    onSetTopic,
+    onSetErrorHandler,
+    duplicateMode,
+  } = useErrorHandlingMachine();
+
+  if (duplicateMode && typeof errorHandler === 'object') {
+    const unkownKey = Object.keys(errorHandler);
+    onSetErrorHandler(unkownKey[0]);
+    errorHandler[unkownKey[0]] === undefined
+      ? onSetTopic('')
+      : onSetTopic(errorHandler[unkownKey[0]].topic);
+  }
 
   const onToggle = useCallback(() => setOpen((isOpen) => !isOpen), []);
-  const onSelect = useCallback((_: any, selection: any, isPlaceholder: any) => {
+  const onSelect = useCallback((_, selection: any, isPlaceholder: any) => {
     if (isPlaceholder) {
       clearSelection();
     } else {

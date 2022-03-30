@@ -5,8 +5,10 @@ import { createModel } from 'xstate/lib/model';
 
 type Context = {
   name: string;
+
   sACreated: boolean;
-  userServiceAccount: UserProvidedServiceAccount;
+  userServiceAccount?: UserProvidedServiceAccount;
+  duplicateMode?: boolean | undefined;
 };
 
 const model = createModel(
@@ -104,6 +106,7 @@ export const basicMachine = model.createMachine(
           name: (context: Context) => context.name,
           sACreated: (context: Context) => context.sACreated,
           userServiceAccount: (context: Context) => context.userServiceAccount,
+          duplicateMode: (context: Context) => context.duplicateMode,
         },
       },
     },
