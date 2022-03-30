@@ -34,7 +34,7 @@ type CreateServiceAccountProps = {
   isOpen: boolean;
   sACreated: boolean;
   handleModalToggle: () => void;
-  serviceAccount: any;
+  serviceAccount: UserProvidedServiceAccount;
   onSetServiceAccount: (data: UserProvidedServiceAccount) => void;
   onSetSaCreated: (val: boolean) => void;
 };

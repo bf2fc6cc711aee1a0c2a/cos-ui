@@ -114,7 +114,7 @@ export const StepCommon: FC = () => {
       <CreateServiceAccount
         isOpen={isOpen}
         handleModalToggle={handleModalToggle}
-        serviceAccount={serviceAccount}
+        serviceAccount={serviceAccount!}
         onSetServiceAccount={onSetServiceAccount}
         onSetSaCreated={onSetSaCreated}
         sACreated={sACreated}
