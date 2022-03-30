@@ -81,7 +81,7 @@ export function Review() {
   try {
     delete modifiedObject['error_handler'];
   } catch (e) {}
-  
+
   const maskValue = (value: any) => {
     return '*'.repeat(value.length);
   };
