@@ -8,8 +8,6 @@ import {
   Channel,
   Configuration,
   Connector,
-  ConnectorCluster,
-  ConnectorClustersApi,
   ConnectorDesiredState,
   ConnectorNamespace,
   ConnectorNamespacesApi,
@@ -297,43 +295,6 @@ export const fetchConnectors = ({
   };
 };
 
-export const fetchClusters = ({
-  accessToken,
-  connectorsApiBasePath,
-}: CommonApiProps): ApiCallback<ConnectorCluster, {}> => {
-  const connectorsAPI = new ConnectorClustersApi(
-    new Configuration({
-      accessToken,
-      basePath: connectorsApiBasePath,
-    })
-  );
-  return (request, onSuccess, onError) => {
-    const CancelToken = axios.CancelToken;
-    const source = CancelToken.source();
-    const { page, size } = request;
-    connectorsAPI
-      .listConnectorClusters(`${page}`, `${size}`, {
-        cancelToken: source.token,
-      })
-      .then((response) => {
-        onSuccess({
-          items: response.data.items || [],
-          total: response.data.total,
-          page: response.data.page,
-          size: response.data.size,
-        });
-      })
-      .catch((error) => {
-        if (!axios.isCancel(error)) {
-          onError({ error: error.message, page: request.page });
-        }
-      });
-    return () => {
-      source.cancel('Operation canceled by the user.');
-    };
-  };
-};
-
 export const fetchConnectorNamespaces = ({
   accessToken,
   connectorsApiBasePath,
@@ -565,7 +526,7 @@ export const createServiceAccount = ({
 
 export type SaveConnectorProps = {
   kafka: KafkaRequest;
-  cluster: ConnectorCluster;
+  namespace: ConnectorNamespace;
   connectorType: ConnectorType;
 
   configuration: object;
@@ -581,7 +542,7 @@ export const saveConnector = ({
   accessToken,
   connectorsApiBasePath,
   kafka,
-  cluster,
+  namespace,
   connectorType,
   configuration,
   name,
@@ -618,7 +579,7 @@ export const saveConnector = ({
       kind: 'Connector',
       name: name,
       channel: Channel.Stable,
-      namespace_id: cluster.id,
+      namespace_id: namespace.id,
       desired_state: ConnectorDesiredState.Ready,
       connector_type_id: (connectorType as ObjectReference).id!,
       kafka: {

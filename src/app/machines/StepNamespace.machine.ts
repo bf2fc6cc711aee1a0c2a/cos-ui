@@ -1,10 +1,10 @@
 import { fetchConnectorNamespaces } from '@apis/api';
 import { PAGINATED_MACHINE_ID } from '@constants/constants';
-import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 import { ActorRefFrom, send, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
+import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 import {
   ApiSuccessResponse,
@@ -24,7 +24,6 @@ const model = createModel(
   {
     accessToken: () => Promise.resolve(''),
     connectorsApiBasePath: '',
-    clusters: undefined,
     selectedNamespace: undefined,
     error: undefined,
   } as Context,
@@ -33,7 +32,7 @@ const model = createModel(
       selectNamespace: (payload: { selectedNamespace: string }) => ({
         ...payload,
       }),
-      deselectCluster: () => ({}),
+      deselectNamespace: () => ({}),
       confirm: () => ({}),
       ...getPaginatedApiMachineEvents<
         ConnectorNamespace,
@@ -64,12 +63,12 @@ const reset = model.assign(
   {
     selectedNamespace: undefined,
   },
-  'deselectCluster'
+  'deselectNamespace'
 );
 
 export const namespacesMachine = model.createMachine(
   {
-    id: 'clusters',
+    id: 'namespaces',
     initial: 'root',
     context: model.initialContext,
     states: {
@@ -118,8 +117,8 @@ export const namespacesMachine = model.createMachine(
             states: {
               verify: {
                 always: [
-                  { target: 'selecting', cond: 'noClusterSelected' },
-                  { target: 'valid', cond: 'clusterSelected' },
+                  { target: 'selecting', cond: 'noNamespaceSelected' },
+                  { target: 'valid', cond: 'namespaceSelected' },
                 ],
               },
               selecting: {
@@ -139,13 +138,13 @@ export const namespacesMachine = model.createMachine(
                     actions: selectNamespace,
                     cond: (_, event) => event.selectedNamespace !== undefined,
                   },
-                  deselectCluster: {
+                  deselectNamespace: {
                     target: 'verify',
                     actions: reset,
                   },
                   confirm: {
                     target: '#done',
-                    cond: 'clusterSelected',
+                    cond: 'namespaceSelected',
                   },
                 },
               },
@@ -164,8 +163,8 @@ export const namespacesMachine = model.createMachine(
   },
   {
     guards: {
-      clusterSelected: (context) => context.selectedNamespace !== undefined,
-      noClusterSelected: (context) => context.selectedNamespace === undefined,
+      namespaceSelected: (context) => context.selectedNamespace !== undefined,
+      noNamespaceSelected: (context) => context.selectedNamespace === undefined,
     },
   }
 );

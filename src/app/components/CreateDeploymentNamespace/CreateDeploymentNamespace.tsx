@@ -44,7 +44,7 @@ export const CreateDeploymentNamespace: React.FC<CreateDeploymentNamespaceProps>
         onClose={onModalToggle}
         actions={[
           <Button key="confirm" variant="primary" onClick={onCreateNameSpace}>
-            {t('create a namespace')}
+            {t('createNamespace')}
           </Button>,
           <Button key="cancel" variant="link" onClick={onModalToggle}>
             Cancel

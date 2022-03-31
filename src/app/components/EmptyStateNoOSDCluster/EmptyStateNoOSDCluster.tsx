@@ -2,17 +2,19 @@ import React, { FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
+  Bullseye,
   Button,
-  ButtonVariant,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
+  EmptyStateSecondaryActions,
   EmptyStateVariant,
   Title,
-  TitleSizes,
 } from '@patternfly/react-core';
-import { ClusterIcon } from '@patternfly/react-icons';
-import { css } from '@patternfly/react-styles';
+import {
+  ExternalLinkSquareAltIcon,
+  PlusCircleIcon,
+} from '@patternfly/react-icons';
 
 type EmptyStateNoOSDClusterProps = {
   onModalToggle: () => void;
@@ -22,23 +24,22 @@ export const EmptyStateNoOSDCluster: FunctionComponent<EmptyStateNoOSDClusterPro
   ({ onModalToggle }) => {
     const { t } = useTranslation();
     return (
-      <EmptyState
-        variant={EmptyStateVariant.xl}
-        className={css('pf-u-pt-2xl pf-u-pt-3xl-on-md')}
-      >
-        <EmptyStateIcon icon={ClusterIcon} />
-        <Title headingLevel={'h1'} size={TitleSizes['4xl']}>
-        {t('No deployment namespace available')}
-        </Title>
-        <EmptyStateBody>
-        <Button
-            variant={ButtonVariant.primary}
-            isInline
-            onClick={onModalToggle}
-          >
-            {t('Create a namespace')}
+      <Bullseye>
+        <EmptyState variant={EmptyStateVariant.large}>
+          <EmptyStateIcon icon={PlusCircleIcon} />
+          <Title headingLevel="h4" size="lg">
+            {t('noNamespaceAvailable')}
+          </Title>
+          <EmptyStateBody>{t('namespaceEmptyMsg')}</EmptyStateBody>
+          <Button variant="primary" onClick={onModalToggle}>
+            {t('registerEvalNamespace')}
           </Button>
-        </EmptyStateBody>
-      </EmptyState>
+          <EmptyStateSecondaryActions>
+            <Button variant="link" icon={<ExternalLinkSquareAltIcon />}>
+              {t('osdInstallationGuide')}
+            </Button>
+          </EmptyStateSecondaryActions>
+        </EmptyState>
+      </Bullseye>
     );
   };

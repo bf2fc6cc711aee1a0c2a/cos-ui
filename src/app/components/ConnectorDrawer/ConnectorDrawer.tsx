@@ -57,9 +57,7 @@ export const ConnectorDrawer: FunctionComponent<ConnectorDrawerProps> = ({
               bootstrapServer={connector.kafka!.url!}
               kafkaId={connector.kafka.id}
               owner={connector.owner!}
-              namespaceId={
-                connector.namespace_id!
-              }
+              namespaceId={connector.namespace_id!}
               createdAt={new Date(connector.created_at!)}
               modifiedAt={new Date(connector.modified_at!)}
               status={connector.status?.state!}

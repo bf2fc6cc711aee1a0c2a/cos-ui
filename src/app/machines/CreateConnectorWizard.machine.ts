@@ -1,5 +1,4 @@
 import { UserProvidedServiceAccount } from '@apis/api';
-import { clustersMachine } from '@app/machines/StepClusters.machine';
 import { basicMachine } from '@app/machines/StepCommon.machine';
 import { configuratorMachine } from '@app/machines/StepConfigurator.machine';
 import {
@@ -17,7 +16,7 @@ import { createModel } from 'xstate/lib/model';
 
 import {
   Connector,
-  ConnectorCluster,
+  ConnectorNamespace,
   ConnectorType,
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
@@ -37,8 +36,7 @@ type Context = {
   connectorsApiBasePath: string;
   kafkaManagementApiBasePath: string;
   selectedKafkaInstance?: KafkaRequest;
-  selectedCluster?: ConnectorCluster;
-  selectedNamespace?: unknown;
+  selectedNamespace?: ConnectorNamespace;
   selectedConnector?: ConnectorType;
   Configurator?: ConnectorConfiguratorType;
   configurationSteps?: string[] | false;
@@ -193,15 +191,14 @@ export const creationWizardMachine = model.createMachine(
           data: (context) => ({
             accessToken: context.accessToken,
             connectorsApiBasePath: context.connectorsApiBasePath,
-            // selectedNamespace: defaultNameSpace,
             selectedNamespace: context.duplicateMode
-                ? {
-                    id: context.connectorData?.namespace_id,
-                  }
-                : context.selectedNamespace,
-              connectorData: context.connectorData,
-              connectorTypeDetails: context.connectorTypeDetails,
-              duplicateMode: context.duplicateMode,
+              ? {
+                  id: context.connectorData?.namespace_id,
+                }
+              : context.selectedNamespace,
+            connectorData: context.connectorData,
+            connectorTypeDetails: context.connectorTypeDetails,
+            duplicateMode: context.duplicateMode,
           }),
           onDone: {
             target: 'basicConfiguration',
@@ -231,54 +228,7 @@ export const creationWizardMachine = model.createMachine(
           prev: 'selectKafka',
         },
       },
-      selectCluster: {
-        initial: 'selecting',
-        invoke: {
-          id: 'selectClusterRef',
-          src: clustersMachine,
-          data: (context) => {
-            return {
-              accessToken: context.accessToken,
-              connectorsApiBasePath: context.connectorsApiBasePath,
-              selectedCluster: context.duplicateMode
-                ? {
-                    id: context.connectorData?.namespace_id,
-                  }
-                : context.selectedCluster,
-              connectorData: context.connectorData,
-              connectorTypeDetails: context.connectorTypeDetails,
-              duplicateMode: context.duplicateMode,
-            };
-          },
-          onDone: {
-            target: 'basicConfiguration',
-            actions: assign({
-              selectedCluster: (_, event) => event.data.selectedCluster,
-              duplicateMode: (context, _) => context.duplicateMode,
-            }),
-          },
-          onError: '.error',
-        },
-        states: {
-          error: {},
-          selecting: {
-            on: {
-              isValid: 'valid',
-            },
-          },
-          valid: {
-            on: {
-              isInvalid: 'selecting',
-              next: {
-                actions: send('confirm', { to: 'selectClusterRef' }),
-              },
-            },
-          },
-        },
-        on: {
-          prev: 'selectKafka',
-        },
-      },
+
       basicConfiguration: {
         id: 'configureBasic',
         initial: 'submittable',
@@ -291,7 +241,7 @@ export const creationWizardMachine = model.createMachine(
               connectorsApiBasePath: context.connectorsApiBasePath,
               kafkaManagementApiBasePath: context.kafkaManagementApiBasePath,
               kafka: context.selectedKafkaInstance,
-              cluster: context.selectedNamespace,
+              namespace: context.selectedNamespace,
               connectorType: context.selectedConnector,
               initialConfiguration: context.connectorConfiguration,
               name: context.duplicateMode
@@ -464,7 +414,7 @@ export const creationWizardMachine = model.createMachine(
               connectorsApiBasePath: context.connectorsApiBasePath,
               kafkaManagementApiBasePath: context.kafkaManagementApiBasePath,
               kafka: context.selectedKafkaInstance,
-              cluster: context.selectedNamespace,
+              namespace: context.selectedNamespace,
               connector: context.selectedConnector,
               configuration: context.connectorConfiguration,
               initialConfiguration: context.connectorConfiguration,
@@ -522,7 +472,7 @@ export const creationWizardMachine = model.createMachine(
               connectorsApiBasePath: context.connectorsApiBasePath,
               kafkaManagementApiBasePath: context.kafkaManagementApiBasePath,
               kafka: context.selectedKafkaInstance,
-              cluster: context.selectedNamespace,
+              namespace: context.selectedNamespace,
               connectorType: context.selectedConnector,
               configuration: context.connectorConfiguration,
               initialConfiguration: context.connectorConfiguration,
@@ -621,7 +571,7 @@ export const creationWizardMachine = model.createMachine(
     guards: {
       isKafkaInstanceSelected: (context) =>
         context.selectedKafkaInstance !== undefined,
-        isNamespaceSelected: (context) => context.selectedNamespace !== undefined,
+      isNamespaceSelected: (context) => context.selectedNamespace !== undefined,
       isConnectorSelected: (context, event) => {
         const subStep = (event as { subStep?: number }).subStep;
         if (subStep) {

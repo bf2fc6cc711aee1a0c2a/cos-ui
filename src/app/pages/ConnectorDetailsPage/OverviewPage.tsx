@@ -36,10 +36,7 @@ export const OverviewPage: FC<OverviewPageProps> = ({ connectorData }) => {
           {textListItem('Connector type', connectorData?.connector_type_id)}
           {textListItem('Kafka_instance', connectorData?.kafka?.id)}
           {textListItem('Bootstrap server', connectorData?.kafka?.url)}
-          {textListItem(
-            'Deployment namespace',
-            connectorData?.namespace_id
-          )}
+          {textListItem('Deployment namespace', connectorData?.namespace_id)}
           {textListItem('Owner', connectorData?.owner)}
           {textListItem('Time created', connectorData?.created_at)}
           {textListItem('Time updated', connectorData?.modified_at)}

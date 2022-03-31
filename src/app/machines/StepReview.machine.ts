@@ -5,7 +5,7 @@ import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import {
-  ConnectorCluster,
+  ConnectorNamespace,
   ConnectorType,
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
@@ -15,7 +15,7 @@ type Context = {
   connectorsApiBasePath: string;
 
   kafka: KafkaRequest;
-  cluster: ConnectorCluster;
+  namespace: ConnectorNamespace;
   connectorType: ConnectorType;
 
   initialConfiguration: unknown;
@@ -50,7 +50,7 @@ const model = createModel(
 
 const initialize = model.assign((context) => ({
   kafka: context.kafka,
-  cluster: context.cluster,
+  namespace: context.namespace,
   connectorType: context.connectorType,
 
   name: context.name,
@@ -94,7 +94,7 @@ export const reviewMachine = model.createMachine(
               accessToken: context.accessToken,
               connectorsApiBasePath: context.connectorsApiBasePath,
               kafka: context.kafka,
-              cluster: context.cluster,
+              namespace: context.namespace,
               connectorType: context.connectorType,
               configuration: JSON.parse(context.configString),
               name: context.name,

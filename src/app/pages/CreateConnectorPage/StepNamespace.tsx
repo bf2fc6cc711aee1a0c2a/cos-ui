@@ -9,6 +9,7 @@ import { Loading } from '@app/components/Loading/Loading';
 import { Pagination } from '@app/components/Pagination/Pagination';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { useDebounce } from '@utils/useDebounce';
+import { t } from 'i18next';
 import React, { FunctionComponent, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,7 +27,8 @@ import {
   InputGroup,
   TextInput,
   Toolbar,
-  ToolbarContent, // ToolbarGroup,
+  ToolbarContent,
+  ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
@@ -40,8 +42,8 @@ export function SelectNamespace() {
 
 const ClustersGallery: FunctionComponent = () => {
   const { t } = useTranslation();
-  const [isModalOpen, setIsModalOpen] = React.useState<boolean>(true);
-  // const history = useHistory();
+  const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
+
   const {
     response,
     selectedId,
@@ -61,8 +63,8 @@ const ClustersGallery: FunctionComponent = () => {
 
   return (
     <StepBodyLayout
-      title={t('OSD cluster')}
-      description={t('clusterStepDescription')}
+      title={t('Namespace')}
+      description={t('namespaceStepDescription')}
     >
       {(() => {
         switch (true) {
@@ -84,6 +86,7 @@ const ClustersGallery: FunctionComponent = () => {
                   isModalOpen={isModalOpen}
                   onModalToggle={onModalToggle}
                 />
+                <ClustersToolbar />
                 <EmptyStateNoOSDCluster onModalToggle={onModalToggle} />
               </>
             );
@@ -124,10 +127,7 @@ const ClustersGallery: FunctionComponent = () => {
                                 Cluster id
                               </DescriptionListTerm>
                               <DescriptionListDescription>
-                                {
-                                  //@ts-expect-error
-                                  i.cluster_id
-                                }
+                                {i.cluster_id!}
                               </DescriptionListDescription>
                             </DescriptionListGroup>
                             <DescriptionListGroup>
@@ -247,11 +247,11 @@ const ClustersToolbar: FunctionComponent = () => {
       <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
         {toggleGroupItems}
       </ToolbarToggleGroup>
-      {/* <ToolbarGroup variant="icon-button-group">
+      <ToolbarGroup variant="icon-button-group">
         <ToolbarItem>
-          <Button variant="primary">{t('createClustersInstance')}</Button>
+          <Button variant="secondary">{t('registerEvalNamespace')}</Button>
         </ToolbarItem>
-      </ToolbarGroup> */}
+      </ToolbarGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
         <ClustersPagination isCompact />
       </ToolbarItem>
