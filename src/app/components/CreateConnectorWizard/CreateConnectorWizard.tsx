@@ -6,11 +6,12 @@ import {
 } from '@app/components/UncontrolledWizard/UncontrolledWizard';
 import { creationWizardMachine } from '@app/machines/CreateConnectorWizard.machine';
 import { ConfiguratorActorRef } from '@app/machines/StepConfigurator.machine';
-import { SelectCluster } from '@app/pages/CreateConnectorPage/StepClusters';
+// import { SelectCluster } from '@app/pages/CreateConnectorPage/StepClusters';
 import { StepCommon } from '@app/pages/CreateConnectorPage/StepCommon';
 import { ConfiguratorStep } from '@app/pages/CreateConnectorPage/StepConfigurator';
 import { SelectConnectorType } from '@app/pages/CreateConnectorPage/StepConnectorTypes';
 import { StepErrorHandling } from '@app/pages/CreateConnectorPage/StepErrorHandling';
+// import { SelectNamespace } from '@app/pages/CreateConnectorPage/StepNamespace';
 import { SelectKafkaInstance } from '@app/pages/CreateConnectorPage/StepKafkas';
 import { Review } from '@app/pages/CreateConnectorPage/StepReview';
 import React, { FunctionComponent, useCallback } from 'react';
@@ -20,6 +21,7 @@ import { useSelector, useActor } from '@xstate/react';
 
 import './CreateConnectorWizard.css';
 import { useCreateConnectorWizardService } from './CreateConnectorWizardContext';
+import { SelectNamespace } from '@app/pages/CreateConnectorPage/StepNamespace';
 
 function useKafkaInstanceStep() {
   const { t } = useTranslation();
@@ -237,15 +239,17 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
       kafkaInstanceStep,
       {
         name: t('OSD cluster'),
-        isActive: state.matches('selectCluster'),
+        // isActive: state.matches('selectCluster'),
+        isActive: state.matches('selectNamespace'),
         component: (
           <StepErrorBoundary>
-            <SelectCluster />
+            {/* <SelectCluster /> */}
+            <SelectNamespace />
           </StepErrorBoundary>
         ),
         canJumpTo:
-          creationWizardMachine.transition(state, 'jumpToSelectCluster')
-            .changed || state.matches('selectCluster'),
+        creationWizardMachine.transition(state, 'jumpToSelectNamespace')
+        .changed || state.matches('selectNamespace'),
         enableNext: creationWizardMachine.transition(state, 'next').changed,
       },
       {
@@ -294,7 +298,8 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
           send('jumpToSelectKafka');
           break;
         case 3:
-          send('jumpToSelectCluster');
+          // send('jumpToSelectCluster');
+          send('jumpToSelectNamespace');
           break;
         case 4:
           send('jumpToBasicConfiguration');

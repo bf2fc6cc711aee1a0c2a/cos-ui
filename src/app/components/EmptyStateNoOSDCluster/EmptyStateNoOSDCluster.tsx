@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import {
   Button,
@@ -15,11 +15,11 @@ import { ClusterIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 
 type EmptyStateNoOSDClusterProps = {
-  onHelp: () => void;
+  onModalToggle: () => void;
 };
 
 export const EmptyStateNoOSDCluster: FunctionComponent<EmptyStateNoOSDClusterProps> =
-  ({ onHelp }) => {
+  ({ onModalToggle }) => {
     const { t } = useTranslation();
     return (
       <EmptyState
@@ -28,21 +28,16 @@ export const EmptyStateNoOSDCluster: FunctionComponent<EmptyStateNoOSDClusterPro
       >
         <EmptyStateIcon icon={ClusterIcon} />
         <Title headingLevel={'h1'} size={TitleSizes['4xl']}>
-          {t('No OSD Cluster available')}
+        {t('No deployment namespace available')}
         </Title>
         <EmptyStateBody>
-          <Trans>
-            Development preview instances are available for creation. For help
-            getting started, access the{' '}
-            <Button
-              variant={ButtonVariant.link}
-              isSmall
-              isInline
-              onClick={onHelp}
-            >
-              quick start guide.
-            </Button>
-          </Trans>
+        <Button
+            variant={ButtonVariant.primary}
+            isInline
+            onClick={onModalToggle}
+          >
+            {t('Create a namespace')}
+          </Button>
         </EmptyStateBody>
       </EmptyState>
     );

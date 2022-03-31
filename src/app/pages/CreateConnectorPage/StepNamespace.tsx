@@ -1,6 +1,6 @@
 import {
-  useClustersMachineIsReady,
-  useClustersMachine,
+  useNamespaceMachineIsReady,
+  useNamespaceMachine,
 } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { CreateDeploymentNamespace } from '@app/components/CreateDeploymentNamespace/CreateDeploymentNamespace';
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
@@ -9,7 +9,7 @@ import { Loading } from '@app/components/Loading/Loading';
 import { Pagination } from '@app/components/Pagination/Pagination';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { useDebounce } from '@utils/useDebounce';
-import React, { FunctionComponent, useCallback, useEffect, useRef } from 'react';
+import React, { FunctionComponent, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -32,8 +32,8 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
-export function SelectCluster() {
-  const isReady = useClustersMachineIsReady();
+export function SelectNamespace() {
+  const isReady = useNamespaceMachineIsReady();
 
   return isReady ? <ClustersGallery /> : null;
 }
@@ -45,31 +45,19 @@ const ClustersGallery: FunctionComponent = () => {
   const {
     response,
     selectedId,
-    duplicateMode,
     loading,
     error,
     noResults,
-    onDeselectCluster,
     // results,
     queryEmpty,
+    // queryResults,
     firstRequest,
     onSelect,
     onQuery,
-  } = useClustersMachine();
+  } = useNamespaceMachine();
   const onModalToggle = useCallback(() => {
     setIsModalOpen((prev) => !prev);
   }, []);
-
-  useEffect(() => {
-    if (duplicateMode && response) {
-      if (response?.items?.find((i) => i.id === selectedId)) {
-        onSelect(selectedId!);
-      } else {
-        onDeselectCluster();
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [duplicateMode, response, onDeselectCluster]);
 
   return (
     <StepBodyLayout
@@ -92,12 +80,12 @@ const ClustersGallery: FunctionComponent = () => {
           case noResults || error:
             return (
               <>
-              <CreateDeploymentNamespace
-                isModalOpen={isModalOpen}
-                onModalToggle={onModalToggle}
-              />
-              <EmptyStateNoOSDCluster onModalToggle={onModalToggle} />
-            </>
+                <CreateDeploymentNamespace
+                  isModalOpen={isModalOpen}
+                  onModalToggle={onModalToggle}
+                />
+                <EmptyStateNoOSDCluster onModalToggle={onModalToggle} />
+              </>
             );
           case loading:
             return (
@@ -164,7 +152,7 @@ const ClustersGallery: FunctionComponent = () => {
 
 const ClustersToolbar: FunctionComponent = () => {
   // const { t } = useTranslation();
-  const { request, onQuery } = useClustersMachine();
+  const { request, onQuery } = useNamespaceMachine();
 
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnQuery = useDebounce(onQuery, 1000);
@@ -287,7 +275,7 @@ type ClustersPaginationProps = {
 const ClustersPagination: FunctionComponent<ClustersPaginationProps> = ({
   isCompact = false,
 }) => {
-  const { request, response, onQuery } = useClustersMachine();
+  const { request, response, onQuery } = useNamespaceMachine();
   return (
     <Pagination
       itemCount={response?.total || 0}

@@ -11,6 +11,8 @@ import {
   ConnectorCluster,
   ConnectorClustersApi,
   ConnectorDesiredState,
+  ConnectorNamespace,
+  ConnectorNamespacesApi,
   ConnectorsApi,
   ConnectorType,
   ConnectorTypeAllOf,
@@ -51,6 +53,10 @@ export type FetchCallbacks<RawDataType> = (
   onSuccess: (payload?: RawDataType) => void,
   onError: (errorMsg: string) => void
 ) => () => void;
+
+// interface ConnectorWithNameSpace extends Connector {
+//   namespace_id: string;
+// }
 
 export const startConnector = ({
   accessToken,
@@ -269,7 +275,7 @@ export const fetchConnectors = ({
     const { page, size /*, name = '' */ } = request;
     // const query = name.length > 0 ? `name LIKE ${name}` : undefined;
     connectorsAPI
-      .listConnectors(`${page}`, `${size}`, {
+      .listConnectors(`${page}`, `${size}`, undefined, undefined, {
         cancelToken: source.token,
       })
       .then((response) => {
@@ -328,6 +334,40 @@ export const fetchClusters = ({
   };
 };
 
+export const fetchConnectorNamespaces = ({
+  accessToken,
+  connectorsApiBasePath,
+}: CommonApiProps): ApiCallback<ConnectorNamespace, {}> => {
+  const namespacesAPI = new ConnectorNamespacesApi(
+    new Configuration({
+      accessToken,
+      basePath: connectorsApiBasePath,
+    })
+  );
+  return (request, onSuccess, onError) => {
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    const { page, size } = request;
+    namespacesAPI
+      .listConnectorNamespaces(`${page}`, `${size}`)
+      .then((response) => {
+        onSuccess({
+          items: response.data.items || [],
+          total: response.data.total,
+          page: response.data.page,
+          size: response.data.size,
+        });
+      })
+      .catch((error) => {
+        if (!axios.isCancel(error)) {
+          onError({ error: error.message, page: request.page });
+        }
+      });
+    return () => {
+      source.cancel('Operation canceled by the user.');
+    };
+  };
+};
 export type ConnectorTypesQuery = {
   name?: string;
   categories?: string[];
@@ -578,10 +618,7 @@ export const saveConnector = ({
       kind: 'Connector',
       name: name,
       channel: Channel.Stable,
-      deployment_location: {
-        kind: 'addon',
-        cluster_id: cluster.id,
-      },
+      namespace_id: cluster.id,
       desired_state: ConnectorDesiredState.Ready,
       connector_type_id: (connectorType as ObjectReference).id!,
       kafka: {

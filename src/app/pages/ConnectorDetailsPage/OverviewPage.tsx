@@ -37,8 +37,8 @@ export const OverviewPage: FC<OverviewPageProps> = ({ connectorData }) => {
           {textListItem('Kafka_instance', connectorData?.kafka?.id)}
           {textListItem('Bootstrap server', connectorData?.kafka?.url)}
           {textListItem(
-            'Targeted OSD Cluster',
-            connectorData?.deployment_location?.cluster_id
+            'Deployment namespace',
+            connectorData?.namespace_id
           )}
           {textListItem('Owner', connectorData?.owner)}
           {textListItem('Time created', connectorData?.created_at)}
