@@ -52,10 +52,6 @@ export type FetchCallbacks<RawDataType> = (
   onError: (errorMsg: string) => void
 ) => () => void;
 
-// interface ConnectorWithNameSpace extends Connector {
-//   namespace_id: string;
-// }
-
 export const startConnector = ({
   accessToken,
   connectorsApiBasePath,

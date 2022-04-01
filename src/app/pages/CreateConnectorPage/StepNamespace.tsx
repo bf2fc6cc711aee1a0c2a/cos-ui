@@ -2,11 +2,11 @@ import {
   useNamespaceMachineIsReady,
   useNamespaceMachine,
 } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
-import { CreateDeploymentNamespace } from '@app/components/CreateDeploymentNamespace/CreateDeploymentNamespace';
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
-import { EmptyStateNoOSDCluster } from '@app/components/EmptyStateNoOSDCluster/EmptyStateNoOSDCluster';
+import { EmptyStateNoNamespace } from '@app/components/EmptyStateNoNamespace/EmptyStateNoNamespace';
 import { Loading } from '@app/components/Loading/Loading';
 import { Pagination } from '@app/components/Pagination/Pagination';
+import { RegisterEvalNamespace } from '@app/components/RegisterEvalNamespace/RegisterEvalNamespace';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { useDebounce } from '@utils/useDebounce';
 import { t } from 'i18next';
@@ -52,7 +52,6 @@ const ClustersGallery: FunctionComponent = () => {
     noResults,
     // results,
     queryEmpty,
-    // queryResults,
     firstRequest,
     onSelect,
     onQuery,
@@ -82,12 +81,12 @@ const ClustersGallery: FunctionComponent = () => {
           case noResults || error:
             return (
               <>
-                <CreateDeploymentNamespace
+                <RegisterEvalNamespace
                   isModalOpen={isModalOpen}
                   onModalToggle={onModalToggle}
                 />
                 <ClustersToolbar />
-                <EmptyStateNoOSDCluster onModalToggle={onModalToggle} />
+                <EmptyStateNoNamespace onModalToggle={onModalToggle} />
               </>
             );
           case loading:
@@ -117,21 +116,25 @@ const ClustersGallery: FunctionComponent = () => {
                         <CardBody>
                           <DescriptionList>
                             <DescriptionListGroup>
-                              <DescriptionListTerm>Owner</DescriptionListTerm>
+                              <DescriptionListTerm>
+                                {t('owner')}
+                              </DescriptionListTerm>
                               <DescriptionListDescription>
                                 {i.owner}
                               </DescriptionListDescription>
                             </DescriptionListGroup>
                             <DescriptionListGroup>
                               <DescriptionListTerm>
-                                Cluster id
+                                {t('clusterId')}
                               </DescriptionListTerm>
                               <DescriptionListDescription>
                                 {i.cluster_id!}
                               </DescriptionListDescription>
                             </DescriptionListGroup>
                             <DescriptionListGroup>
-                              <DescriptionListTerm>Created</DescriptionListTerm>
+                              <DescriptionListTerm>
+                                {t('created')}
+                              </DescriptionListTerm>
                               <DescriptionListDescription>
                                 {i.created_at}
                               </DescriptionListDescription>

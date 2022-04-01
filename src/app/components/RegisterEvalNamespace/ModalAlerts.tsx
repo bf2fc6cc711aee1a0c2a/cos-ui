@@ -9,7 +9,7 @@ export const ModalAlerts: VoidFunctionComponent = () => {
     <Alert
       variant={AlertVariant.info}
       isInline
-      title={t('Your instance will expire after 48 hours.')}
+      title={t('namespaceExpireAlert')}
     />
   );
 };

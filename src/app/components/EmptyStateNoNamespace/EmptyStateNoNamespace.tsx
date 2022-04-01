@@ -16,11 +16,11 @@ import {
   PlusCircleIcon,
 } from '@patternfly/react-icons';
 
-type EmptyStateNoOSDClusterProps = {
+type EmptyStateNoNamespaceProps = {
   onModalToggle: () => void;
 };
 
-export const EmptyStateNoOSDCluster: FunctionComponent<EmptyStateNoOSDClusterProps> =
+export const EmptyStateNoNamespace: FunctionComponent<EmptyStateNoNamespaceProps> =
   ({ onModalToggle }) => {
     const { t } = useTranslation();
     return (

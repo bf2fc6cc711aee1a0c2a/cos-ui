@@ -237,11 +237,9 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
       kafkaInstanceStep,
       {
         name: t('Namespace'),
-        // isActive: state.matches('selectCluster'),
         isActive: state.matches('selectNamespace'),
         component: (
           <StepErrorBoundary>
-            {/* <SelectCluster /> */}
             <SelectNamespace />
           </StepErrorBoundary>
         ),
@@ -296,7 +294,6 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
           send('jumpToSelectKafka');
           break;
         case 3:
-          // send('jumpToSelectCluster');
           send('jumpToSelectNamespace');
           break;
         case 4:
