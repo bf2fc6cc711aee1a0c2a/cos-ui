@@ -57,7 +57,7 @@ export const ConnectorDrawer: FunctionComponent<ConnectorDrawerProps> = ({
               bootstrapServer={connector.kafka!.url!}
               kafkaId={connector.kafka.id}
               owner={connector.owner!}
-              cluster={connector.deployment_location.cluster_id!}
+              namespaceId={connector.namespace_id!}
               createdAt={new Date(connector.created_at!)}
               modifiedAt={new Date(connector.modified_at!)}
               status={connector.status?.state!}
@@ -78,7 +78,7 @@ export type ConnectorDrawerPanelContentProps = {
   bootstrapServer: string;
   kafkaId: string;
   owner: string;
-  cluster: string;
+  namespaceId: string;
   createdAt: Date;
   modifiedAt: Date;
   status: string;
@@ -92,7 +92,7 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
     bootstrapServer,
     kafkaId,
     owner,
-    cluster,
+    namespaceId,
     createdAt,
     modifiedAt,
     status,
@@ -163,7 +163,7 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
                     {textListItem('Connector Id', id)}
                     {textListItem('Bootstrap server', bootstrapServer)}
                     {textListItem('Kafka_instance', kafkaId)}
-                    {textListItem('Targeted OSD Cluster', cluster)}
+                    {textListItem('Deployment namespace', namespaceId)}
                     {textListItem('Owner', owner)}
                     {textListItem(
                       'Time created',

@@ -1,10 +1,10 @@
-import { fetchClusters } from '@apis/api';
+import { fetchConnectorNamespaces } from '@apis/api';
 import { PAGINATED_MACHINE_ID } from '@constants/constants';
 
 import { ActorRefFrom, send, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
-import { ConnectorCluster } from '@rhoas/connector-management-sdk';
+import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 import {
   ApiSuccessResponse,
@@ -15,28 +15,30 @@ import {
 type Context = {
   accessToken: () => Promise<string>;
   connectorsApiBasePath: string;
-  response?: ApiSuccessResponse<ConnectorCluster>;
-  selectedCluster?: ConnectorCluster;
+  response?: ApiSuccessResponse<ConnectorNamespace>;
+  selectedNamespace?: ConnectorNamespace;
   error?: Object;
-  duplicateMode?: boolean;
 };
 
 const model = createModel(
   {
     accessToken: () => Promise.resolve(''),
     connectorsApiBasePath: '',
-    clusters: undefined,
-    selectedCluster: undefined,
+    selectedNamespace: undefined,
     error: undefined,
   } as Context,
   {
     events: {
-      selectCluster: (payload: { selectedCluster: string }) => ({
+      selectNamespace: (payload: { selectedNamespace: string }) => ({
         ...payload,
       }),
-      deselectCluster: () => ({}),
+      deselectNamespace: () => ({}),
       confirm: () => ({}),
-      ...getPaginatedApiMachineEvents<ConnectorCluster, {}, ConnectorCluster>(),
+      ...getPaginatedApiMachineEvents<
+        ConnectorNamespace,
+        {},
+        ConnectorNamespace
+      >(),
     },
   }
 );
@@ -47,26 +49,26 @@ const success = model.assign((_context, event) => {
     response,
   };
 }, 'api.success');
-const selectCluster = model.assign(
+const selectNamespace = model.assign(
   {
-    selectedCluster: (context, event) => {
+    selectedNamespace: (context, event) => {
       return context.response?.items?.find(
-        (i) => i.id === event.selectedCluster
+        (i) => i.id === event.selectedNamespace
       );
     },
   },
-  'selectCluster'
+  'selectNamespace'
 );
-const deselectCluster = model.assign(
+const reset = model.assign(
   {
-    selectedCluster: undefined,
+    selectedNamespace: undefined,
   },
-  'deselectCluster'
+  'deselectNamespace'
 );
 
-export const clustersMachine = model.createMachine(
+export const namespacesMachine = model.createMachine(
   {
-    id: 'clusters',
+    id: 'namespaces',
     initial: 'root',
     context: model.initialContext,
     states: {
@@ -78,10 +80,11 @@ export const clustersMachine = model.createMachine(
             invoke: {
               id: PAGINATED_MACHINE_ID,
               src: (context) =>
-                makePaginatedApiMachine<ConnectorCluster, {}, ConnectorCluster>(
-                  fetchClusters(context),
-                  (i) => i
-                ),
+                makePaginatedApiMachine<
+                  ConnectorNamespace,
+                  {},
+                  ConnectorNamespace
+                >(fetchConnectorNamespaces(context), (i) => i),
             },
             states: {
               idle: {
@@ -114,34 +117,34 @@ export const clustersMachine = model.createMachine(
             states: {
               verify: {
                 always: [
-                  { target: 'selecting', cond: 'noClusterSelected' },
-                  { target: 'valid', cond: 'clusterSelected' },
+                  { target: 'selecting', cond: 'noNamespaceSelected' },
+                  { target: 'valid', cond: 'namespaceSelected' },
                 ],
               },
               selecting: {
                 entry: sendParent('isInvalid'),
                 on: {
-                  selectCluster: {
+                  selectNamespace: {
                     target: 'valid',
-                    actions: selectCluster,
+                    actions: selectNamespace,
                   },
                 },
               },
               valid: {
                 entry: sendParent('isValid'),
                 on: {
-                  selectCluster: {
+                  selectNamespace: {
                     target: 'verify',
-                    actions: selectCluster,
-                    cond: (_, event) => event.selectedCluster !== undefined,
+                    actions: selectNamespace,
+                    cond: (_, event) => event.selectedNamespace !== undefined,
                   },
-                  deselectCluster: {
+                  deselectNamespace: {
                     target: 'verify',
-                    actions: deselectCluster,
+                    actions: reset,
                   },
                   confirm: {
                     target: '#done',
-                    cond: 'clusterSelected',
+                    cond: 'namespaceSelected',
                   },
                 },
               },
@@ -153,18 +156,17 @@ export const clustersMachine = model.createMachine(
         id: 'done',
         type: 'final',
         data: {
-          selectedCluster: (context: Context) => context.selectedCluster,
-          duplicateMode: (context: Context) => context.duplicateMode,
+          selectedNamespace: (context: Context) => context.selectedNamespace,
         },
       },
     },
   },
   {
     guards: {
-      clusterSelected: (context) => context.selectedCluster !== undefined,
-      noClusterSelected: (context) => context.selectedCluster === undefined,
+      namespaceSelected: (context) => context.selectedNamespace !== undefined,
+      noNamespaceSelected: (context) => context.selectedNamespace === undefined,
     },
   }
 );
 
-export type ClustersMachineActorRef = ActorRefFrom<typeof clustersMachine>;
+export type NamespaceMachineActorRef = ActorRefFrom<typeof namespacesMachine>;

@@ -1,14 +1,16 @@
 import {
-  useClustersMachineIsReady,
-  useClustersMachine,
+  useNamespaceMachineIsReady,
+  useNamespaceMachine,
 } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
-import { EmptyStateNoOSDCluster } from '@app/components/EmptyStateNoOSDCluster/EmptyStateNoOSDCluster';
+import { EmptyStateNoNamespace } from '@app/components/EmptyStateNoNamespace/EmptyStateNoNamespace';
 import { Loading } from '@app/components/Loading/Loading';
 import { Pagination } from '@app/components/Pagination/Pagination';
+import { RegisterEvalNamespace } from '@app/components/RegisterEvalNamespace/RegisterEvalNamespace';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { useDebounce } from '@utils/useDebounce';
-import React, { FunctionComponent, useEffect, useRef } from 'react';
+import { t } from 'i18next';
+import React, { FunctionComponent, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -25,51 +27,43 @@ import {
   InputGroup,
   TextInput,
   Toolbar,
-  ToolbarContent, // ToolbarGroup,
+  ToolbarContent,
+  ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
-export function SelectCluster() {
-  const isReady = useClustersMachineIsReady();
+export function SelectNamespace() {
+  const isReady = useNamespaceMachineIsReady();
 
   return isReady ? <ClustersGallery /> : null;
 }
 
 const ClustersGallery: FunctionComponent = () => {
   const { t } = useTranslation();
-  // const history = useHistory();
+  const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
+
   const {
     response,
     selectedId,
-    duplicateMode,
     loading,
     error,
     noResults,
-    onDeselectCluster,
     // results,
     queryEmpty,
     firstRequest,
     onSelect,
     onQuery,
-  } = useClustersMachine();
-
-  useEffect(() => {
-    if (duplicateMode && response) {
-      if (response?.items?.find((i) => i.id === selectedId)) {
-        onSelect(selectedId!);
-      } else {
-        onDeselectCluster();
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [duplicateMode, response, onDeselectCluster]);
+  } = useNamespaceMachine();
+  const onModalToggle = useCallback(() => {
+    setIsModalOpen((prev) => !prev);
+  }, []);
 
   return (
     <StepBodyLayout
-      title={t('OSD cluster')}
-      description={t('clusterStepDescription')}
+      title={t('Namespace')}
+      description={t('namespaceStepDescription')}
     >
       {(() => {
         switch (true) {
@@ -86,11 +80,14 @@ const ClustersGallery: FunctionComponent = () => {
             );
           case noResults || error:
             return (
-              <EmptyStateNoOSDCluster
-                onHelp={function (): void {
-                  throw new Error('Function not implemented.');
-                }}
-              />
+              <>
+                <RegisterEvalNamespace
+                  isModalOpen={isModalOpen}
+                  onModalToggle={onModalToggle}
+                />
+                <ClustersToolbar />
+                <EmptyStateNoNamespace onModalToggle={onModalToggle} />
+              </>
             );
           case loading:
             return (
@@ -119,13 +116,25 @@ const ClustersGallery: FunctionComponent = () => {
                         <CardBody>
                           <DescriptionList>
                             <DescriptionListGroup>
-                              <DescriptionListTerm>Owner</DescriptionListTerm>
+                              <DescriptionListTerm>
+                                {t('owner')}
+                              </DescriptionListTerm>
                               <DescriptionListDescription>
                                 {i.owner}
                               </DescriptionListDescription>
                             </DescriptionListGroup>
                             <DescriptionListGroup>
-                              <DescriptionListTerm>Created</DescriptionListTerm>
+                              <DescriptionListTerm>
+                                {t('clusterId')}
+                              </DescriptionListTerm>
+                              <DescriptionListDescription>
+                                {i.cluster_id!}
+                              </DescriptionListDescription>
+                            </DescriptionListGroup>
+                            <DescriptionListGroup>
+                              <DescriptionListTerm>
+                                {t('created')}
+                              </DescriptionListTerm>
                               <DescriptionListDescription>
                                 {i.created_at}
                               </DescriptionListDescription>
@@ -146,7 +155,7 @@ const ClustersGallery: FunctionComponent = () => {
 
 const ClustersToolbar: FunctionComponent = () => {
   // const { t } = useTranslation();
-  const { request, onQuery } = useClustersMachine();
+  const { request, onQuery } = useNamespaceMachine();
 
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnQuery = useDebounce(onQuery, 1000);
@@ -241,11 +250,11 @@ const ClustersToolbar: FunctionComponent = () => {
       <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
         {toggleGroupItems}
       </ToolbarToggleGroup>
-      {/* <ToolbarGroup variant="icon-button-group">
+      <ToolbarGroup variant="icon-button-group">
         <ToolbarItem>
-          <Button variant="primary">{t('createClustersInstance')}</Button>
+          <Button variant="secondary">{t('registerEvalNamespace')}</Button>
         </ToolbarItem>
-      </ToolbarGroup> */}
+      </ToolbarGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
         <ClustersPagination isCompact />
       </ToolbarItem>
@@ -269,7 +278,7 @@ type ClustersPaginationProps = {
 const ClustersPagination: FunctionComponent<ClustersPaginationProps> = ({
   isCompact = false,
 }) => {
-  const { request, response, onQuery } = useClustersMachine();
+  const { request, response, onQuery } = useNamespaceMachine();
   return (
     <Pagination
       itemCount={response?.total || 0}

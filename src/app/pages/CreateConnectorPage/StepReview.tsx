@@ -56,7 +56,7 @@ export function Review() {
   };
   const {
     kafka,
-    cluster,
+    namespace,
     connectorType,
     name,
     topic,
@@ -64,7 +64,6 @@ export function Review() {
     userServiceAccount,
     configString,
     savingError,
-    // duplicateMode,
   } = useReviewMachine();
 
   const onToggleJSONView = useCallback(
@@ -134,9 +133,9 @@ export function Review() {
             </Grid>
             <Grid>
               <GridItem span={4}>
-                <strong>{t('OSD Cluster')}</strong>
+                <strong>{t('Namespace')}</strong>
               </GridItem>
-              <GridItem span={8}>{cluster.name}</GridItem>
+              <GridItem span={8}>{namespace.name}</GridItem>
             </Grid>
 
             <Title headingLevel="h3" size={TitleSizes['2xl']}>

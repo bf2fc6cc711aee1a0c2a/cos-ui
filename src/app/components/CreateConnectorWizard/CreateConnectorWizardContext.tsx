@@ -12,7 +12,6 @@ import {
   PaginatedApiActorType,
   PaginatedApiRequest,
 } from '@app/machines/PaginatedResponse.machine';
-import { ClustersMachineActorRef } from '@app/machines/StepClusters.machine';
 import { BasicMachineActorRef } from '@app/machines/StepCommon.machine';
 import {
   ConnectorConfiguratorResponse,
@@ -21,6 +20,7 @@ import {
 import { ConnectorTypesMachineActorRef } from '@app/machines/StepConnectorTypes.machine';
 import { ErrorHandlingMachineActorRef } from '@app/machines/StepErrorHandling.machine';
 import { KafkaMachineActorRef } from '@app/machines/StepKafkas.machine';
+import { NamespaceMachineActorRef } from '@app/machines/StepNamespace.machine';
 import { ReviewMachineActorRef } from '@app/machines/StepReview.machine';
 import { PAGINATED_MACHINE_ID } from '@constants/constants';
 import React, {
@@ -35,7 +35,7 @@ import { ActorRef } from 'xstate';
 
 import {
   Connector,
-  ConnectorCluster,
+  ConnectorNamespace,
   ConnectorType,
   ObjectReference,
 } from '@rhoas/connector-management-sdk';
@@ -118,7 +118,7 @@ export const useCreateConnectorWizardService = () => {
 export const useCreateConnectorWizard = (): {
   connectorTypeRef: ConnectorTypesMachineActorRef;
   kafkaRef: KafkaMachineActorRef;
-  clusterRef: ClustersMachineActorRef;
+  namespaceRef: NamespaceMachineActorRef;
   basicRef: BasicMachineActorRef;
   errorRef: ErrorHandlingMachineActorRef;
   reviewRef: ReviewMachineActorRef;
@@ -131,7 +131,8 @@ export const useCreateConnectorWizard = (): {
         connectorTypeRef: state.children
           .selectConnectorRef as ConnectorTypesMachineActorRef,
         kafkaRef: state.children.selectKafkaInstanceRef as KafkaMachineActorRef,
-        clusterRef: state.children.selectClusterRef as ClustersMachineActorRef,
+        namespaceRef: state.children
+          .selectNamespaceRef as NamespaceMachineActorRef,
         basicRef: state.children.basicRef as BasicMachineActorRef,
         errorRef: state.children.errorRef as ErrorHandlingMachineActorRef,
         reviewRef: state.children.reviewRef as ReviewMachineActorRef,
@@ -141,59 +142,52 @@ export const useCreateConnectorWizard = (): {
   );
 };
 
-export const useClustersMachineIsReady = () => {
-  const { clusterRef } = useCreateConnectorWizard();
+export const useNamespaceMachineIsReady = () => {
+  const { namespaceRef } = useCreateConnectorWizard();
   return useSelector(
-    clusterRef,
+    namespaceRef,
     useCallback(
-      (state: EmittedFrom<typeof clusterRef>) => {
+      (state: EmittedFrom<typeof namespaceRef>) => {
         return state.matches({ root: { api: 'ready' } });
         // eslint-disable-next-line react-hooks/exhaustive-deps
       },
-      [clusterRef]
+      [namespaceRef]
     )
   );
 };
 
-export const useClustersMachine = () => {
-  const { clusterRef } = useCreateConnectorWizard();
-  const api = usePagination<ConnectorCluster, {}, ConnectorCluster>(
-    clusterRef.getSnapshot()?.children[
+export const useNamespaceMachine = () => {
+  const { namespaceRef } = useCreateConnectorWizard();
+  const api = usePagination<ConnectorNamespace, {}, ConnectorNamespace>(
+    namespaceRef.getSnapshot()?.children[
       PAGINATED_MACHINE_ID
-    ] as PaginatedApiActorType<ConnectorCluster, {}, ConnectorCluster>
+    ] as PaginatedApiActorType<ConnectorNamespace, {}, ConnectorNamespace>
   );
-  const { selectedId, duplicateMode } = useSelector(
-    clusterRef,
+  const { selectedId } = useSelector(
+    namespaceRef,
     useCallback(
-      (state: EmittedFrom<typeof clusterRef>) => ({
-        selectedId: state.context.selectedCluster?.id,
-        duplicateMode: state.context.duplicateMode,
+      (state: EmittedFrom<typeof namespaceRef>) => ({
+        selectedId: state.context.selectedNamespace?.id,
       }),
       []
     )
   );
   const onSelect = useCallback(
-    (selectedCluster: string) => {
-      clusterRef.send({ type: 'selectCluster', selectedCluster });
+    (selectedNamespace: string) => {
+      namespaceRef.send({ type: 'selectNamespace', selectedNamespace });
     },
-    [clusterRef]
+    [namespaceRef]
   );
-  const onDeselectCluster = useCallback(() => {
-    clusterRef.send({ type: 'deselectCluster' });
-  }, [clusterRef]);
-
   const onQuery = useCallback(
     (request: PaginatedApiRequest<{}>) => {
-      clusterRef.send({ type: 'api.query', ...request });
+      namespaceRef.send({ type: 'api.query', ...request });
     },
-    [clusterRef]
+    [namespaceRef]
   );
   return {
     ...api,
     selectedId,
-    duplicateMode,
     onSelect,
-    onDeselectCluster,
     onQuery,
   };
 };
@@ -364,7 +358,7 @@ export const useReviewMachine = () => {
   const { reviewRef } = useCreateConnectorWizard();
   const {
     kafka,
-    cluster,
+    namespace,
     connectorType,
     topic,
     userErrorHandler,
@@ -379,7 +373,7 @@ export const useReviewMachine = () => {
     useCallback(
       (state: EmittedFrom<typeof reviewRef>) => ({
         kafka: state.context.kafka,
-        cluster: state.context.cluster,
+        namespace: state.context.namespace,
         connectorType: state.context.connectorType,
         name: state.context.name,
         userServiceAccount: state.context.userServiceAccount,
@@ -396,7 +390,7 @@ export const useReviewMachine = () => {
 
   return {
     kafka,
-    cluster,
+    namespace,
     connectorType,
     topic,
     userErrorHandler,

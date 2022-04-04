@@ -8,9 +8,9 @@ import {
   Channel,
   Configuration,
   Connector,
-  ConnectorCluster,
-  ConnectorClustersApi,
   ConnectorDesiredState,
+  ConnectorNamespace,
+  ConnectorNamespacesApi,
   ConnectorsApi,
   ConnectorType,
   ConnectorTypeAllOf,
@@ -269,7 +269,7 @@ export const fetchConnectors = ({
     const { page, size /*, name = '' */ } = request;
     // const query = name.length > 0 ? `name LIKE ${name}` : undefined;
     connectorsAPI
-      .listConnectors(`${page}`, `${size}`, {
+      .listConnectors(`${page}`, `${size}`, undefined, undefined, {
         cancelToken: source.token,
       })
       .then((response) => {
@@ -291,11 +291,11 @@ export const fetchConnectors = ({
   };
 };
 
-export const fetchClusters = ({
+export const fetchConnectorNamespaces = ({
   accessToken,
   connectorsApiBasePath,
-}: CommonApiProps): ApiCallback<ConnectorCluster, {}> => {
-  const connectorsAPI = new ConnectorClustersApi(
+}: CommonApiProps): ApiCallback<ConnectorNamespace, {}> => {
+  const namespacesAPI = new ConnectorNamespacesApi(
     new Configuration({
       accessToken,
       basePath: connectorsApiBasePath,
@@ -305,10 +305,8 @@ export const fetchClusters = ({
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     const { page, size } = request;
-    connectorsAPI
-      .listConnectorClusters(`${page}`, `${size}`, {
-        cancelToken: source.token,
-      })
+    namespacesAPI
+      .listConnectorNamespaces(`${page}`, `${size}`)
       .then((response) => {
         onSuccess({
           items: response.data.items || [],
@@ -327,7 +325,6 @@ export const fetchClusters = ({
     };
   };
 };
-
 export type ConnectorTypesQuery = {
   name?: string;
   categories?: string[];
@@ -525,7 +522,7 @@ export const createServiceAccount = ({
 
 export type SaveConnectorProps = {
   kafka: KafkaRequest;
-  cluster: ConnectorCluster;
+  namespace: ConnectorNamespace;
   connectorType: ConnectorType;
 
   configuration: object;
@@ -541,7 +538,7 @@ export const saveConnector = ({
   accessToken,
   connectorsApiBasePath,
   kafka,
-  cluster,
+  namespace,
   connectorType,
   configuration,
   name,
@@ -578,10 +575,7 @@ export const saveConnector = ({
       kind: 'Connector',
       name: name,
       channel: Channel.Stable,
-      deployment_location: {
-        kind: 'addon',
-        cluster_id: cluster.id,
-      },
+      namespace_id: namespace.id,
       desired_state: ConnectorDesiredState.Ready,
       connector_type_id: (connectorType as ObjectReference).id!,
       kafka: {

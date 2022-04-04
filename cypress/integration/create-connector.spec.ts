@@ -7,7 +7,7 @@ const testMachine = Machine({
   initial: 'loadingConnectors',
   context: {
     willKafkaApiFail: false,
-    willClusterApiFail: false,
+    willNamespaceApiFail: false,
     willConnectorsApiFail: false,
   },
   states: {
@@ -48,7 +48,7 @@ const testMachine = Machine({
     },
     selectKafka: {
       on: {
-        CLICK_KAFKA_INSTANCE: 'loadingClusters',
+        CLICK_KAFKA_INSTANCE: 'loadingNamespace',
       },
       meta: {
         test: () => cy.findByText('badwords').should('exist'),
@@ -61,30 +61,30 @@ const testMachine = Machine({
           cy.findByText('No Kafka instance available').should('exist'),
       },
     },
-    loadingClusters: {
+    loadingNamespace: {
       always: [
         {
-          target: 'selectCluster',
-          cond: (ctx) => !ctx.willClusterApiFail,
+          target: 'selectNamespace',
+          cond: (ctx) => !ctx.willNamespaceApiFail,
         },
         {
-          target: 'selectClusterEmptyState',
-          cond: (ctx) => ctx.willClusterApiFail,
+          target: 'selectNamespaceEmptyState',
+          cond: (ctx) => ctx.willNamespaceApiFail,
         },
       ],
     },
-    selectCluster: {
+    selectNamespace: {
       on: {
-        CLICK_CLUSTER: 'basicConfiguration',
+        CLICK_NAMESPACE: 'basicConfiguration',
       },
       meta: {
-        test: () => cy.findByText('megalord').should('exist'),
+        test: () => cy.findByText('default-connector-namespace').should('exist'),
       },
     },
-    selectClusterEmptyState: {
+    selectNamespaceEmptyState: {
       meta: {
         noCoverage: true,
-        test: () => cy.findByText('No OSD Cluster available').should('exist'),
+        test: () => cy.findByText('No namespace available').should('exist'),
       },
     },
     basicConfiguration: {
@@ -170,8 +170,8 @@ describe('Connector creation', () => {
       cy.intercept(Cypress.env('kafkasApiPath'), {
         fixture: 'kafkas.json',
       });
-      cy.intercept(Cypress.env('clustersApiPath'), {
-        fixture: 'clusters.json',
+      cy.intercept(Cypress.env('namespacesApiPath'), {
+        fixture: 'namespaces.json',
       });
       cy.intercept(Cypress.env('serviceAccountApiPath'), {
         fixture: 'serviceAccount.json',
@@ -193,8 +193,8 @@ describe('Connector creation', () => {
         cy.findByText('badwords').click();
         cy.findByText('Next').click();
       },
-      CLICK_CLUSTER: () => {
-        cy.findByText('megalord').click();
+      CLICK_NAMESPACE: () => {
+        cy.findByText('default-connector-namespace').click();
         cy.findByText('Next').click();
       },
       CONFIGURE_BASIC: () => {
@@ -223,10 +223,7 @@ describe('Connector creation', () => {
             kind: 'Connector',
             name: 'my-connector',
             channel: 'stable',
-            deployment_location: {
-              kind: 'addon',
-              cluster_id: '1r9uyAjkDfKKOr5pOnZbfdzj23D',
-            },
+            namespace_id: "c928s834guu03nmd3r20",
             desired_state: 'ready',
             connector_type_id: 'telegram-source',
             kafka: {
@@ -259,7 +256,7 @@ describe('Connector creation', () => {
     const testModel = createModel(
       testMachine.withContext({
         willKafkaApiFail: false,
-        willClusterApiFail: false,
+        willNamespaceApiFail: false,
         willConnectorsApiFail: true,
       })
     ).withEvents({
@@ -283,7 +280,7 @@ describe('Connector creation', () => {
     const testModel = createModel(
       testMachine.withContext({
         willKafkaApiFail: true,
-        willClusterApiFail: false,
+        willNamespaceApiFail: false,
         willConnectorsApiFail: false,
       })
     ).withEvents({
@@ -301,7 +298,7 @@ describe('Connector creation', () => {
     runTheTests(testModel);
   });
 
-  describe('Clusters API error', () => {
+  describe('Namespaces API error', () => {
     beforeEach(() => {
       cy.intercept(Cypress.env('connectorTypesApiPath'), {
         fixture: 'connectorTypes.json',
@@ -309,14 +306,14 @@ describe('Connector creation', () => {
       cy.intercept(Cypress.env('kafkasApiPath'), {
         fixture: 'kafkas.json',
       });
-      cy.intercept(Cypress.env('clustersApiPath'), {
+      cy.intercept(Cypress.env('namespacesApiPath'), {
         statusCode: 404,
       });
     });
     const testModel = createModel(
       testMachine.withContext({
         willKafkaApiFail: false,
-        willClusterApiFail: true,
+        willNamespaceApiFail: true,
         willConnectorsApiFail: false,
       })
     ).withEvents({
