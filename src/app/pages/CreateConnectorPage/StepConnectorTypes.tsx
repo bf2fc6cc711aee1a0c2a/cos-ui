@@ -63,9 +63,7 @@ export function ConnectorTypesGallery() {
     loading,
     error,
     noResults,
-    // results,
     queryEmpty,
-    // queryResults,
     duplicateMode,
     connectorTypeDetails,
     firstRequest,
@@ -346,7 +344,12 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
       </ToolbarToggleGroup>
       {!duplicateMode && (
         <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
-          <ConnectorTypesPagination isCompact />
+          <ConnectorTypesPagination
+            isCompact
+            onChange={(page, size) =>
+              onQuery({ page, size, query: request.query || {} })
+            }
+          />
         </ToolbarItem>
       )}
     </>
@@ -366,16 +369,17 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
 
 type ConnectorTypesPaginationProps = {
   isCompact?: boolean;
+  onChange: (page: number, size: number) => void;
 };
 const ConnectorTypesPagination: FunctionComponent<ConnectorTypesPaginationProps> =
-  ({ isCompact = false }) => {
-    const { request, response, onQuery } = useConnectorTypesMachine();
+  ({ isCompact = false, onChange }) => {
+    const { request, response } = useConnectorTypesMachine();
     return (
       <Pagination
         itemCount={response?.total || 0}
         page={request.page}
         perPage={request.size}
-        onChange={(page, size) => onQuery({ page, size })}
+        onChange={onChange}
         isCompact={isCompact}
       />
     );
