@@ -184,10 +184,15 @@ export const useNamespaceMachine = () => {
     },
     [namespaceRef]
   );
+
+  const onRefresh = useCallback(() => {
+    namespaceRef.send({ type: 'api.refresh' });
+  }, [namespaceRef]);
   return {
     ...api,
     selectedId,
     onSelect,
+    onRefresh,
     onQuery,
   };
 };

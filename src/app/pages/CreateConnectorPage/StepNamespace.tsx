@@ -1,3 +1,4 @@
+import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus';
 import {
   useNamespaceMachineIsReady,
   useNamespaceMachine,
@@ -10,10 +11,18 @@ import { RegisterEvalNamespace } from '@app/components/RegisterEvalNamespace/Reg
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { useDebounce } from '@utils/useDebounce';
 import { t } from 'i18next';
-import React, { FunctionComponent, useCallback, useRef } from 'react';
+import _ from 'lodash';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
+  Alert,
   Button,
   Card,
   CardBody,
@@ -25,6 +34,8 @@ import {
   DescriptionListTerm,
   Gallery,
   InputGroup,
+  Stack,
+  StackItem,
   TextInput,
   Toolbar,
   ToolbarContent,
@@ -34,6 +45,19 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
+import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
+
+import './StepNamespace.css';
+
+const getPendingTime = (expireTime: Date) => {
+  let diff = expireTime.getTime() - new Date().getTime();
+  diff = diff / 1000;
+  let hourDiff = Math.floor(diff / 3600);
+  diff -= hourDiff * 3600;
+  let minuteDiff = Math.floor(diff / 60);
+  return ` ${hourDiff} hours ${minuteDiff} minute.`;
+};
+
 export function SelectNamespace() {
   const isReady = useNamespaceMachineIsReady();
 
@@ -42,7 +66,10 @@ export function SelectNamespace() {
 
 const ClustersGallery: FunctionComponent = () => {
   const { t } = useTranslation();
-  const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [evalInstance, setEvalInstance] = useState<
+    ConnectorNamespace | undefined
+  >();
 
   const {
     response,
@@ -50,15 +77,31 @@ const ClustersGallery: FunctionComponent = () => {
     loading,
     error,
     noResults,
-    // results,
     queryEmpty,
     firstRequest,
     onSelect,
+    onRefresh,
     onQuery,
   } = useNamespaceMachine();
   const onModalToggle = useCallback(() => {
     setIsModalOpen((prev) => !prev);
   }, []);
+
+  const refreshResponse = () => {
+    onRefresh();
+  };
+
+  const onNamespaceSelection = (namesace: ConnectorNamespace) => {
+    namesace.status.state === 'ready' && onSelect(namesace.id!);
+  };
+
+  useEffect(() => {
+    const id = response?.items?.find(
+      (namespace) =>
+        namespace.tenant.kind === 'user' && _.has(namespace, 'expiration')
+    );
+    id && setEvalInstance(id);
+  }, [response]);
 
   return (
     <StepBodyLayout
@@ -72,7 +115,10 @@ const ClustersGallery: FunctionComponent = () => {
           case queryEmpty:
             return (
               <>
-                <ClustersToolbar />
+                <ClustersToolbar
+                  onModalToggle={onModalToggle}
+                  isEvalPresent={!!evalInstance}
+                />
                 <EmptyStateNoMatchesFound
                   onClear={() => onQuery({ page: 1, size: 10 })}
                 />
@@ -81,37 +127,85 @@ const ClustersGallery: FunctionComponent = () => {
           case noResults || error:
             return (
               <>
-                <RegisterEvalNamespace
-                  isModalOpen={isModalOpen}
+                <ClustersToolbar
                   onModalToggle={onModalToggle}
+                  isEvalPresent={!!evalInstance}
                 />
-                <ClustersToolbar />
                 <EmptyStateNoNamespace onModalToggle={onModalToggle} />
               </>
             );
           case loading:
             return (
               <>
-                <ClustersToolbar />
+                <ClustersToolbar
+                  onModalToggle={onModalToggle}
+                  isEvalPresent={!!evalInstance}
+                />
                 <Loading />
               </>
             );
           default:
             return (
               <>
-                <ClustersToolbar />
+                <ClustersToolbar
+                  onModalToggle={onModalToggle}
+                  isEvalPresent={!!evalInstance}
+                />
                 <div className={'pf-l-stack__item pf-m-fill'}>
+                  {!!evalInstance && (
+                    <Alert
+                      variant="info"
+                      className="pf-u-mb-md"
+                      isInline
+                      title={
+                        <span>
+                          {t('evalNamespaceExpire')}
+                          {getPendingTime(new Date(evalInstance.expiration!))}
+                        </span>
+                      }
+                    />
+                  )}
                   <Gallery hasGutter>
                     {response?.items?.map((i) => (
                       <Card
-                        isHoverable
+                        isHoverable={i.status.state === 'ready'}
                         key={i.id}
-                        isSelectable
+                        isSelectable={i.status.state === 'ready'}
                         isSelected={selectedId === i.id}
-                        onClick={() => onSelect(i.id!)}
+                        onClick={() => onNamespaceSelection(i)}
+                        className={
+                          i.status.state === 'deleting'
+                            ? 'pf-u-background-color-disabled-color-200'
+                            : ''
+                        }
                       >
                         <CardHeader>
-                          <CardTitle>{i.name}</CardTitle>
+                          <Stack>
+                            <StackItem>
+                              {' '}
+                              <CardTitle>{i.name}</CardTitle>
+                            </StackItem>
+                            <StackItem>
+                              {i.status.state === 'disconnected' && (
+                                <div className="pf-u-pt-md status">
+                                  <ConnectorStatus
+                                    name={''}
+                                    status={i.status.state}
+                                  />
+                                </div>
+                              )}
+                              {i.status.state === 'deleting' && (
+                                <div className="pf-u-pt-md">
+                                  <Alert
+                                    variant="danger"
+                                    isInline
+                                    isPlain
+                                    title={t('namespaceDeleting')}
+                                  />
+                                </div>
+                              )}
+                            </StackItem>
+                          </Stack>
                         </CardHeader>
                         <CardBody>
                           <DescriptionList>
@@ -149,11 +243,23 @@ const ClustersGallery: FunctionComponent = () => {
             );
         }
       })()}
+      <RegisterEvalNamespace
+        isModalOpen={isModalOpen}
+        onModalToggle={onModalToggle}
+        refreshResponse={refreshResponse}
+      />
     </StepBodyLayout>
   );
 };
 
-const ClustersToolbar: FunctionComponent = () => {
+type ClustersToolbarProps = {
+  onModalToggle: () => void;
+  isEvalPresent: boolean;
+};
+const ClustersToolbar: FunctionComponent<ClustersToolbarProps> = ({
+  onModalToggle,
+  isEvalPresent,
+}) => {
   // const { t } = useTranslation();
   const { request, onQuery } = useNamespaceMachine();
 
@@ -252,7 +358,13 @@ const ClustersToolbar: FunctionComponent = () => {
       </ToolbarToggleGroup>
       <ToolbarGroup variant="icon-button-group">
         <ToolbarItem>
-          <Button variant="secondary">{t('registerEvalNamespace')}</Button>
+          <Button
+            variant="secondary"
+            isDisabled={isEvalPresent}
+            onClick={onModalToggle}
+          >
+            {t('registerEvalNamespace')}
+          </Button>
         </ToolbarItem>
       </ToolbarGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>

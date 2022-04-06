@@ -48,6 +48,7 @@ export const ConnectorStatusIcon: FunctionComponent<ConnectorStatusProps> = ({
       return <PendingIcon />;
     case 'provisioning':
     case 'preparing':
+    case 'disconnected':
       return (
         <Spinner
           size="md"
@@ -71,6 +72,7 @@ export enum ConnectorStatuses {
   Provisioning = 'provisioning',
   Deleting = 'deleting',
   Deleted = 'deleted',
+  Disconnected = 'disconnected',
 }
 
 export function useConnectorStatusLabel(status: string) {
@@ -85,6 +87,7 @@ export function useConnectorStatusLabel(status: string) {
     { value: ConnectorStatuses.Provisioning, label: t('Creation in progress') },
     { value: ConnectorStatuses.Deleting, label: t('Deleting') },
     { value: ConnectorStatuses.Deleted, label: t('Deleted') },
+    { value: ConnectorStatuses.Disconnected, label: t('Provisioning') },
   ];
 
   return statusOptions.find((s) => s.value === status)?.label || status;
