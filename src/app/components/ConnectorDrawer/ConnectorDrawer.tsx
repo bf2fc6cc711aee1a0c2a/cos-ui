@@ -22,10 +22,6 @@ import {
   TabTitleText,
   Text,
   TextContent,
-  TextList,
-  TextListItem,
-  TextListItemVariants,
-  TextListVariants,
   TextVariants,
   Title,
   TitleSizes,
@@ -33,6 +29,7 @@ import {
 
 import { Connector } from '@rhoas/connector-management-sdk';
 
+import { ConnectorInfoTextList } from '../ConnectorInfoTextList/ConnectorInfoTextList';
 import './ConnectorDrawer.css';
 
 export type ConnectorDrawerProps = {
@@ -61,6 +58,7 @@ export const ConnectorDrawer: FunctionComponent<ConnectorDrawerProps> = ({
               createdAt={new Date(connector.created_at!)}
               modifiedAt={new Date(connector.modified_at!)}
               status={connector.status?.state!}
+              error={connector.status?.error}
               onClose={onClose}
             />
           ) : undefined
@@ -82,6 +80,7 @@ export type ConnectorDrawerPanelContentProps = {
   createdAt: Date;
   modifiedAt: Date;
   status: string;
+  error?: string;
   onClose: () => void;
 };
 
@@ -96,6 +95,7 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
     createdAt,
     modifiedAt,
     status,
+    error,
     onClose,
   }) => {
     const { t } = useTranslation();
@@ -104,21 +104,6 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
     const selectActiveKey = (_: MouseEvent, eventKey: string | number) => {
       setActiveTabKey(eventKey);
     };
-
-    const textListItem = (title: string, value?: ReactNode) => (
-      <>
-        {value && (
-          <>
-            <TextListItem component={TextListItemVariants.dt}>
-              {title}
-            </TextListItem>
-            <TextListItem component={TextListItemVariants.dd}>
-              {value}
-            </TextListItem>
-          </>
-        )}
-      </>
-    );
 
     return (
       <DrawerPanelContent widths={{ default: 'width_50' }}>
@@ -157,34 +142,17 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
               title={<TabTitleText>{t('Details')}</TabTitleText>}
             >
               <div className="connector-drawer__tab-content">
-                <TextContent>
-                  <TextList component={TextListVariants.dl}>
-                    {textListItem('Connector', name)}
-                    {textListItem('Connector Id', id)}
-                    {textListItem('Bootstrap server', bootstrapServer)}
-                    {textListItem('Kafka_instance', kafkaId)}
-                    {textListItem('Deployment namespace', namespaceId)}
-                    {textListItem('Owner', owner)}
-                    {textListItem(
-                      'Time created',
-                      <time
-                        title={t('{{date}}', { date: createdAt })}
-                        dateTime={createdAt.toISOString()}
-                      >
-                        {t('{{ date, ago }}', { date: createdAt })}
-                      </time>
-                    )}
-                    {textListItem(
-                      'Time updated',
-                      <time
-                        title={t('{{date}}', { date: modifiedAt })}
-                        dateTime={modifiedAt.toISOString()}
-                      >
-                        {t('{{ date, ago }}', { date: modifiedAt })}
-                      </time>
-                    )}
-                  </TextList>
-                </TextContent>
+                <ConnectorInfoTextList
+                  name={name}
+                  id={id}
+                  bootstrapServer={bootstrapServer}
+                  kafkaId={kafkaId}
+                  namespaceId={namespaceId}
+                  owner={owner}
+                  createdAt={createdAt}
+                  modifiedAt={modifiedAt}
+                  error={error}
+                />
               </div>
             </Tab>
             {/* <Tab
