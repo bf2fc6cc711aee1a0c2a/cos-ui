@@ -16,9 +16,6 @@ import {
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 
-export type ConfigurationType = {
-  [key: string]: any;
-};
 export type ConfigurationStepProps = {
   editMode: boolean;
   schema: Record<string, any>;
@@ -64,7 +61,7 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
           {Object.entries(schema.properties)
             .filter(([key, value]: [string, any]) => {
               if (['object', 'array'].includes(value.type)) {
-                if (key === 'data_shape') {
+                if (key === 'data_shape' && formConfiguration[key]) {
                   return true;
                 }
                 return false;
@@ -100,16 +97,12 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
                 }
               >
                 {key === 'data_shape' ? (
-                  <DataShape
-                    data={(formConfiguration as ConfigurationType)[key]}
-                  />
+                  <DataShape data={formConfiguration[key]} />
                 ) : (
                   <Text component={TextVariants.p}>
-                    {_.isObject((formConfiguration as ConfigurationType)[key])
-                      ? JSON.stringify(
-                          (formConfiguration as ConfigurationType)[key]
-                        )
-                      : (formConfiguration as ConfigurationType)[key]}
+                    {_.isObject(formConfiguration[key])
+                      ? JSON.stringify(formConfiguration[key])
+                      : formConfiguration[key]}
                   </Text>
                 )}
               </FormGroup>
