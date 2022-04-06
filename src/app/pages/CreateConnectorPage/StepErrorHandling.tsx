@@ -68,10 +68,10 @@ export const StepErrorHandling: FunctionComponent = () => {
     return <SelectOption key={keys[0]} value={keys[0]} />;
   });
 
-  useEffect(()=>{
-    errorHandler ?? onSetErrorHandler(Object.keys(error_handler["default"])[0])
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[]);
+  useEffect(() => {
+    errorHandler ?? onSetErrorHandler(Object.keys(error_handler['default'])[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <StepBodyLayout
