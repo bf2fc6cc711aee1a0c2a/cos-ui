@@ -91,8 +91,8 @@ const ClustersGallery: FunctionComponent = () => {
     onRefresh();
   };
 
-  const onNamespaceSelection = (namesace: ConnectorNamespace) => {
-    namesace.status.state === 'ready' && onSelect(namesace.id!);
+  const onNamespaceSelection = (namespace: ConnectorNamespace) => {
+    namespace.status.state === 'ready' && onSelect(namespace.id!);
   };
 
   useEffect(() => {
