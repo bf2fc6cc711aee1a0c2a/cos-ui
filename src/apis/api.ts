@@ -33,6 +33,10 @@ type ConnectorApiProps = {
   connector: Connector;
 } & CommonApiProps;
 
+type EvalNamespaceApiProps = {
+  evalName: string;
+} & CommonApiProps;
+
 type ConnectorEditProps = {
   connectorUpdate: { [key: string]: any };
   connectorId: string;
@@ -283,6 +287,49 @@ export const fetchConnectors = ({
       .catch((error) => {
         if (!axios.isCancel(error)) {
           onError({ error: error.message, page: request.page });
+        }
+      });
+    return () => {
+      source.cancel('Operation canceled by the user.');
+    };
+  };
+};
+
+export const registerEvalNamespace = ({
+  accessToken,
+  connectorsApiBasePath,
+  evalName,
+}: EvalNamespaceApiProps): FetchCallbacks<ConnectorNamespace> => {
+  const namespacesAPI = new ConnectorNamespacesApi(
+    new Configuration({
+      accessToken,
+      basePath: connectorsApiBasePath,
+    })
+  );
+  return (onSuccess, onError) => {
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    namespacesAPI
+      .createEvaluationNamespace(
+        {
+          name: evalName,
+          annotations: [
+            {
+              key: 'connector_mgmt.api.openshift.com/profile',
+              value: 'default-profile',
+            },
+          ],
+        },
+        {
+          cancelToken: source.token,
+        }
+      )
+      .then((response) => {
+        onSuccess(response.data);
+      })
+      .catch((error) => {
+        if (!axios.isCancel(error)) {
+          onError(error.response.data.reason);
         }
       });
     return () => {
