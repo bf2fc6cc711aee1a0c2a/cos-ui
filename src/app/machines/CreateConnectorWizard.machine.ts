@@ -48,7 +48,7 @@ type Context = {
   topic: string;
   userServiceAccount: UserProvidedServiceAccount;
   userErrorHandler: string;
-  onSave?: () => void;
+  onSave?: (name: string) => void;
   connectorData?: Connector;
   connectorTypeDetails?: ConnectorType;
   connectorId?: string;
@@ -619,7 +619,7 @@ export const creationWizardMachine = model.createMachine(
     actions: {
       notifySave: (context) => {
         if (context.onSave) {
-          context.onSave();
+          context.onSave(context.name);
         }
       },
     },

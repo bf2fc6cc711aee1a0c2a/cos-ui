@@ -17,11 +17,9 @@ export const EmptyStateGenericError: FunctionComponent = () => {
     <EmptyState variant={EmptyStateVariant.full}>
       <EmptyStateIcon icon={ExclamationCircleIcon} />
       <Title headingLevel={'h1'} size={TitleSizes['lg']}>
-        {t('Something went wrong')}
+        {t('somethingWentWrong')}
       </Title>
-      <EmptyStateBody>
-        {t('There was a problem processing the request. Please try again.')}
-      </EmptyStateBody>
+      <EmptyStateBody>{t('genericErrorBody')}</EmptyStateBody>
     </EmptyState>
   );
 };

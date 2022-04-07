@@ -129,7 +129,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
       alert?.addAlert({
         id: 'connectors-table-error',
         variant: AlertVariant.danger,
-        title: t('something_went_wrong'),
+        title: t('somethingWentWrong'),
         description,
       });
     },
@@ -141,7 +141,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
     alert?.addAlert({
       id: 'connector-created',
       variant: AlertVariant.success,
-      title: t('edit.edit-success'),
+      title: t('editAlertSuccessTitle'),
     });
     onSave();
   }, [alert, t, updateEditMode, onSave]);
@@ -230,7 +230,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
               >
                 <Tab
                   eventKey={0}
-                  title={<TabTitleText>{t('Common')}</TabTitleText>}
+                  title={<TabTitleText>{t('common')}</TabTitleText>}
                 ></Tab>
                 {connectorData.connector_type_id.includes('debezium') &&
                   configurator &&
@@ -249,12 +249,12 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
                     <Tab
                       eventKey={1}
                       title={
-                        <TabTitleText>{t('Connector specific')}</TabTitleText>
+                        <TabTitleText>{t('connectorSpecific')}</TabTitleText>
                       }
                     ></Tab>
                     <Tab
                       eventKey={2}
-                      title={<TabTitleText>{t('Error handling')}</TabTitleText>}
+                      title={<TabTitleText>{t('errorHandling')}</TabTitleText>}
                     ></Tab>
                   </>
                 )}
@@ -334,7 +334,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
               <GridItem span={2} className="pf-u-pl-md">
                 {!editMode && (
                   <Button variant="primary" onClick={changeEditMode}>
-                    {t('Edit Properties')}
+                    {t('editProperties')}
                   </Button>
                 )}
               </GridItem>
@@ -360,26 +360,26 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
             variant="secondary"
             onClick={userTouched ? openLeaveConfirm : onCancelEdit}
           >
-            {t('Cancel')}
+            {t('cancel')}
           </Button>
         </PageSection>
       )}
 
       <Modal
-        title={t('Leave page?')}
+        title={t('leaveEditConfirmModalTitle')}
         variant={'small'}
         isOpen={askForLeaveConfirm}
         onClose={closeLeaveConfirm}
         actions={[
           <Button key="confirm" variant="primary" onClick={onCancelEdit}>
-            {t('Leave')}
+            {t('leave')}
           </Button>,
           <Button key="cancel" variant="link" onClick={closeLeaveConfirm}>
-            {t('Cancel')}
+            {t('cancel')}
           </Button>,
         ]}
       >
-        {t('Changes you made to the connector properties will not be saved.')}
+        {t('leaveEditConfirmModalDescription')}
       </Modal>
     </>
   );

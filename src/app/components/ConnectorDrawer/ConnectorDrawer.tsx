@@ -139,7 +139,7 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
           <Tabs activeKey={activeTabKey} onSelect={selectActiveKey}>
             <Tab
               eventKey={0}
-              title={<TabTitleText>{t('Details')}</TabTitleText>}
+              title={<TabTitleText>{t('details')}</TabTitleText>}
             >
               <div className="connector-drawer__tab-content">
                 <ConnectorInfoTextList

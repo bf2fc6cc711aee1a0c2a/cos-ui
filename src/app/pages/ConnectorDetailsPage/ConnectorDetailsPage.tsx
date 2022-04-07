@@ -81,7 +81,7 @@ export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({
       alert?.addAlert({
         id: 'connectors-table-error',
         variant: AlertVariant.danger,
-        title: t('something_went_wrong'),
+        title: t('somethingWentWrong'),
         description,
       });
     },
@@ -146,13 +146,13 @@ export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({
             >
               <Tab
                 eventKey={CONNECTOR_DETAILS_TABS.Overview}
-                title={<TabTitleText>{t('Overview')}</TabTitleText>}
+                title={<TabTitleText>{t('overview')}</TabTitleText>}
               >
                 <OverviewPage connectorData={connectorData} />
               </Tab>
               <Tab
                 eventKey={CONNECTOR_DETAILS_TABS.Configuration}
-                title={<TabTitleText>{t('Configuration')}</TabTitleText>}
+                title={<TabTitleText>{t('configuration')}</TabTitleText>}
               >
                 {connectorTypeDetails ? (
                   <ConfigurationPage
@@ -221,7 +221,7 @@ export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
     <PageSection variant={'light'} hasShadowBottom>
       <Breadcrumb>
         <BreadcrumbItem to={basename?.getBasename()}>
-          {t('Connectors')}
+          {t('connectorsInstances')}
         </BreadcrumbItem>
         <BreadcrumbItem isActive>{connectorData?.name}</BreadcrumbItem>
       </Breadcrumb>

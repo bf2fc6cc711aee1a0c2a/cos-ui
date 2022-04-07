@@ -38,7 +38,7 @@ function useKafkaInstanceStep() {
     )
   );
   return {
-    name: t('Kafka instance'),
+    name: t('kafkaInstance'),
     isActive,
     component: (
       <StepErrorBoundary>
@@ -68,7 +68,7 @@ function useBasicStep() {
     )
   );
   return {
-    name: t('Common'),
+    name: t('common'),
     isActive,
     component: (
       <StepErrorBoundary>
@@ -97,7 +97,7 @@ function useConnectorSpecificStep() {
     )
   );
   return {
-    name: t('Connector Specific'),
+    name: t('connectorSpecific'),
     isActive,
     component: (
       <StepErrorBoundary>
@@ -127,7 +127,7 @@ function useErrorHandlingStep() {
     )
   );
   return {
-    name: t('Error handling'),
+    name: t('errorHandling'),
     isActive,
     component: (
       <StepErrorBoundary>
@@ -222,7 +222,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
 
     const steps = [
       {
-        name: t('Connector'),
+        name: t('connector'),
         isActive: state.matches('selectConnector'),
         component: (
           <StepErrorBoundary>
@@ -236,7 +236,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
       },
       kafkaInstanceStep,
       {
-        name: t('Namespace'),
+        name: t('namespace'),
         isActive: state.matches('selectNamespace'),
         component: (
           <StepErrorBoundary>
@@ -249,7 +249,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
         enableNext: creationWizardMachine.transition(state, 'next').changed,
       },
       {
-        name: t('Configurations'),
+        name: t('configurations'),
         isActive: state.matches('basicConfiguration'),
         canJumpTo:
           creationWizardMachine.transition(state, 'jumpToBasicConfiguration')
@@ -258,7 +258,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
         steps: loadSubSteps(),
       },
       {
-        name: t('Review'),
+        name: t('review'),
         isActive: state.matches('reviewConfiguration'),
         component: (
           <StepErrorBoundary>
@@ -269,7 +269,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
           creationWizardMachine.transition(state, 'jumpToReviewConfiguration')
             .changed || state.matches('reviewConfiguration'),
         enableNext: creationWizardMachine.transition(state, 'next').changed,
-        nextButtonText: 'Create connector',
+        nextButtonText: t('createConnector'),
       },
     ];
 

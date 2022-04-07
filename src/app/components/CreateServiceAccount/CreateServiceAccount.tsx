@@ -84,7 +84,7 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
       alert?.addAlert({
         id: 'connectors-table-error',
         variant: AlertVariant.danger,
-        title: t('something_went_wrong'),
+        title: t('somethingWentWrong'),
         description,
       });
       setLoading(false);
@@ -107,7 +107,7 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
   return (
     <Modal
       variant={ModalVariant.medium}
-      title={sACreated ? '' : t('create_service_account')}
+      title={sACreated ? '' : t('createServiceAccount')}
       isOpen={isOpen}
       onClose={handleModalToggle}
       actions={
@@ -117,15 +117,15 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
               <Button
                 key="Create"
                 variant="primary"
-                spinnerAriaValueText={loading ? t('Loading') : undefined}
+                spinnerAriaValueText={loading ? t('loading') : undefined}
                 isLoading={loading}
                 isDisabled={validated === 'error' || loading}
                 onClick={createSA}
               >
-                {t('Create')}
+                {t('create')}
               </Button>,
               <Button key="cancel" variant="link" onClick={handleModalToggle}>
-                {t('Cancel')}
+                {t('cancel')}
               </Button>,
             ]
       }
@@ -134,12 +134,12 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
         <EmptyState variant={EmptyStateVariant.large}>
           <EmptyStateIcon icon={KeyIcon} />
           <Title headingLevel="h4" size="lg">
-            {t('credentials-generated')}
+            {t('credentialsGenerated')}
           </Title>
 
           <TextContent className={'pf-u-mt-lg'}>
             <Text component={TextVariants.small}>
-              {t('connect-kafka-with-sa')}
+              {t('connectKafkaWithSA')}
             </Text>
           </TextContent>
           <InputGroup className={'pf-u-mt-lg'}>
@@ -147,7 +147,7 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
               style={{ whiteSpace: 'nowrap' }}
               id="Client-id-value"
             >
-              {t('client-id')}
+              {t('clientId')}
             </InputGroupText>
             <ClipboardCopy
               isReadOnly
@@ -163,7 +163,7 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
               style={{ whiteSpace: 'nowrap' }}
               id="Client-secret-value"
             >
-              {t('client-secret')}
+              {t('clientSecret')}
             </InputGroupText>
             <ClipboardCopy
               className="pf-u-w-100"
@@ -176,14 +176,14 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
           </InputGroup>
           <TextContent className={'pf-u-mt-lg'}>
             <Text component={TextVariants.small}>
-              {t('service-account-alert-msg')}
+              {t('serviceAccountAlertMsg')}
             </Text>
           </TextContent>
           <Bullseye className="pf-u-mt-lg">
             <Checkbox
               id="copied"
-              label={t('copied-clientid-secret')}
-              aria-label={t('copied-clientid-secret')}
+              label={t('copiedClientidSecret')}
+              aria-label={t('copiedClientidSecret')}
               onChange={() => setCopied(!copied)}
               isChecked={copied}
             />
@@ -200,15 +200,15 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
       ) : (
         <Form>
           <FormGroup
-            label={t('short-description')}
+            label={t('shortDescription')}
             labelIcon={
               <Popover
-                headerContent={<div>{t('short-description')}</div>}
-                bodyContent={<div>{t('short-description-help-text')}</div>}
+                headerContent={<div>{t('shortDescription')}</div>}
+                bodyContent={<div>{t('shortDescriptionHelpText')}</div>}
               >
                 <button
                   type="button"
-                  aria-label={t('short-description-tooltip')}
+                  aria-label={t('shortDescriptionTooltip')}
                   onClick={(e) => e.preventDefault()}
                   aria-describedby="short-description"
                   className="pf-c-form__group-label-help"
@@ -219,10 +219,10 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
             }
             isRequired
             fieldId="short-description-01"
-            helperText={t('short-description-example-text')}
+            helperText={t('shortDescriptionExampleText')}
             helperTextInvalid={
               sortDesc.length > 0
-                ? t('short-description-example-text')
+                ? t('shortDescriptionExampleText')
                 : t('required')
             }
             validated={validated}

@@ -73,7 +73,7 @@ export function ConnectorTypesGallery() {
   } = useConnectorTypesMachine();
   return (
     <StepBodyLayout
-      title={t('Connector')}
+      title={t('connector')}
       description={t('connectorTypeStepDescription')}
     >
       {(() => {

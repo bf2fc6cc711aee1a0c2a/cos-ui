@@ -137,7 +137,7 @@ export const ConfiguratorStep: FunctionComponent = () => {
   );
   return (
     <StepBodyLayout
-      title={t('Configurations')}
+      title={t('configurations')}
       description={t('configurationStepDescription')}
     >
       {(() => {

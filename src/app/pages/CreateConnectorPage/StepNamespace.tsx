@@ -117,7 +117,7 @@ const ClustersGallery: FunctionComponent = () => {
 
   return (
     <StepBodyLayout
-      title={t('Namespace')}
+      title={t('namespace')}
       description={t('namespaceStepDescription')}
     >
       {(() => {
@@ -231,7 +231,7 @@ const ClustersGallery: FunctionComponent = () => {
                             </DescriptionListGroup>
                             <DescriptionListGroup>
                               <DescriptionListTerm>
-                                {t('clusterID')}
+                                {t('clusterId')}
                               </DescriptionListTerm>
                               <DescriptionListDescription>
                                 {i.cluster_id!}

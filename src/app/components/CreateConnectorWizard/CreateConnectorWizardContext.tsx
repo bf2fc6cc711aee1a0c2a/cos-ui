@@ -58,7 +58,7 @@ type CreateConnectorWizardProviderProps = {
   connectorTypeDetails?: ConnectorType;
   connectorId?: string;
   duplicateMode?: boolean;
-  onSave: () => void;
+  onSave: (name: string) => void;
 };
 
 export const CreateConnectorWizardProvider: FunctionComponent<CreateConnectorWizardProviderProps> =

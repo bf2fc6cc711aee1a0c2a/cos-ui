@@ -40,7 +40,7 @@ describe('Connectors page', () => {
         element?.textContent === '1 - 2 of 2 '
     );
 
-    cy.findByText('Create connector instance').click();
+    cy.findByText('Create Connectors instance').click();
   });
 
   it('opens the details for a connector', () => {
@@ -120,8 +120,8 @@ describe('Connectors page', () => {
       fixture: 'noConnectors.json',
     });
     cy.visit(Cypress.env('homepage'));
-    cy.findByText('Welcome to Managed Connectors').click();
-    cy.findAllByText('Create Connector').should('exist');
+    cy.findByText('No Connector instances').click();
+    cy.findAllByText('Create a Connectors instance').should('exist');
   });
 
   it('shows an empty state with an API error and shows an error notification', () => {
@@ -129,7 +129,7 @@ describe('Connectors page', () => {
       statusCode: 404,
     });
     cy.visit(Cypress.env('homepage'));
-    cy.findByText('Something went wrong').should('exist');
+    cy.findAllByText('Something went wrong').should('exist');
   });
 
   it('errors on the API while polling are not shown to the user', () => {

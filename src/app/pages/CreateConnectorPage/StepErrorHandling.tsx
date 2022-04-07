@@ -70,15 +70,13 @@ export const StepErrorHandling: FunctionComponent = () => {
 
   return (
     <StepBodyLayout
-      title={t('Error handler')}
-      description={t(
-        'Configure error handling stop, log and dead letter queues'
-      )}
+      title={t('errorHandler')}
+      description={t('errorHandlingStepDescription')}
     >
       <Grid hasGutter>
         <Form className="pf-m-9-col-on-lg">
           <FormGroup
-            label={t('Error handler')}
+            label={t('errorHandler')}
             fieldId="error-handler_strategy"
             className="error-handler_strategy pf-u-mb-0"
           >

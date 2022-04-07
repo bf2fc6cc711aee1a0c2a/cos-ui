@@ -46,14 +46,18 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
     [history]
   );
 
-  const onConnectorSave = useCallback(() => {
-    alert?.addAlert({
-      id: 'connector-created',
-      variant: AlertVariant.success,
-      title: t('wizard.creation-success'),
-    });
-    goToConnectorsList();
-  }, [alert, goToConnectorsList, t]);
+  const onConnectorSave = useCallback(
+    (name: string) => {
+      alert?.addAlert({
+        id: 'connector-created',
+        variant: AlertVariant.success,
+        title: t('creationSuccessAlertTitle'),
+        description: t('creationSuccessAlertDescription', { name }),
+      });
+      goToConnectorsList();
+    },
+    [alert, goToConnectorsList, t]
+  );
   return (
     <CosContextProvider
       getToken={getToken}
