@@ -141,8 +141,8 @@
     "release:canary": "changeset publish --tag canary",
     "i18n": "i18next './src/**/*.{ts,tsx}' [-oc] -c './i18next-parser.config.js' -o './locales/$LOCALE/$NAMESPACE.json'",
     "lint-staged": "npm run lint:fix && npm run format:fix",
-    "storybook": "start-storybook -s public -p 6006",
-    "build-storybook": "build-storybook -s public",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook",
     "chromatic": "npx chromatic"
   },
   "husky": {
