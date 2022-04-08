@@ -3,8 +3,6 @@ import { useCos } from '@context/CosContext';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const short = require('short-uuid'); 
-
 import {
   Modal,
   Button,
@@ -18,9 +16,11 @@ import {
 } from '@patternfly/react-core';
 
 import { useAlert } from '@rhoas/app-services-ui-shared';
+import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 import { ModalAlerts } from './ModalAlerts';
-import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
+
+const short = require('short-uuid');
 
 type RegisterEvalNamespaceProps = {
   isModalOpen: boolean;
@@ -34,15 +34,15 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
   refreshResponse,
 }) => {
   const { t } = useTranslation();
-  const [evalNamespace, setEvalNamespace] = useState<string>("")
+  const [evalNamespace, setEvalNamespace] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { connectorsApiBasePath, getToken } = useCos();
   const alert = useAlert();
 
-  useEffect(()=>{
+  useEffect(() => {
     setEvalNamespace(`eval-namespace-${short.generate()}`);
-  },[]);
+  }, []);
 
   const onSuccess = useCallback((data?: ConnectorNamespace) => {
     refreshResponse();
@@ -84,7 +84,14 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
       isOpen={isModalOpen}
       onClose={onModalToggle}
       actions={[
-        <Button key="confirm" variant="primary" isLoading={isLoading} spinnerAriaValueText={isLoading ? t('Loading') : undefined} isDisabled={isLoading} onClick={onRegister}>
+        <Button
+          key="confirm"
+          variant="primary"
+          isLoading={isLoading}
+          spinnerAriaValueText={isLoading ? t('Loading') : undefined}
+          isDisabled={isLoading}
+          onClick={onRegister}
+        >
           {t('register')}
         </Button>,
         <Button key="cancel" variant="link" onClick={onModalToggle}>
