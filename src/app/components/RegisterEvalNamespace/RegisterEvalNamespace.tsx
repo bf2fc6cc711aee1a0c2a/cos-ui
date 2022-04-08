@@ -1,7 +1,9 @@
 import { registerEvalNamespace } from '@apis/api';
 import { useCos } from '@context/CosContext';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+const short = require('short-uuid'); 
 
 import {
   Modal,
@@ -18,6 +20,7 @@ import {
 import { useAlert } from '@rhoas/app-services-ui-shared';
 
 import { ModalAlerts } from './ModalAlerts';
+import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 type RegisterEvalNamespaceProps = {
   isModalOpen: boolean;
@@ -31,18 +34,30 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
   refreshResponse,
 }) => {
   const { t } = useTranslation();
+  const [evalNamespace, setEvalNamespace] = useState<string>("")
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { connectorsApiBasePath, getToken } = useCos();
   const alert = useAlert();
 
-  const onSuccess = useCallback((data?: any) => {
-    console.log(data);
+  useEffect(()=>{
+    setEvalNamespace(`eval-namespace-${short.generate()}`);
+  },[]);
+
+  const onSuccess = useCallback((data?: ConnectorNamespace) => {
     refreshResponse();
+    setIsLoading(false);
     onModalToggle();
+    alert?.addAlert({
+      id: 'eval-namespace-register-success',
+      variant: AlertVariant.success,
+      title: t(`${data?.name} registered successfully.`),
+    });
   }, []);
 
   const onError = useCallback(
     (description: string) => {
+      setIsLoading(false);
       alert?.addAlert({
         id: 'eval-namespace-register-error',
         variant: AlertVariant.danger,
@@ -54,10 +69,11 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
   );
 
   const onRegister = () => {
+    setIsLoading(true);
     registerEvalNamespace({
       accessToken: getToken,
       connectorsApiBasePath: connectorsApiBasePath,
-      evalName: 'default-eval-namespace',
+      evalName: evalNamespace,
     })(onSuccess, onError);
   };
 
@@ -68,7 +84,7 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
       isOpen={isModalOpen}
       onClose={onModalToggle}
       actions={[
-        <Button key="confirm" variant="primary" onClick={onRegister}>
+        <Button key="confirm" variant="primary" isLoading={isLoading} spinnerAriaValueText={isLoading ? t('Loading') : undefined} isDisabled={isLoading} onClick={onRegister}>
           {t('register')}
         </Button>,
         <Button key="cancel" variant="link" onClick={onModalToggle}>
@@ -85,7 +101,7 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
       </Text>
       <Form className="pf-u-mt-lg pf-u-mb-lg">
         <FormGroup label={t('Name')} isRequired fieldId="name">
-          <Text component={TextVariants.p}>default-eval-namespace</Text>
+          <Text component={TextVariants.p}>{evalNamespace}</Text>
         </FormGroup>
         <FormGroup label={t('Duration')} isRequired fieldId="name">
           <Text component={TextVariants.p}>48 hours</Text>

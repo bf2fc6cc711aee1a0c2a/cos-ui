@@ -64,6 +64,18 @@ export function SelectNamespace() {
   return isReady ? <ClustersGallery /> : null;
 }
 
+const warningType = (expireTime: Date) => {
+  let diff = expireTime.getTime() - new Date().getTime();
+  diff = diff / 1000;
+  let hourDiff = Math.floor(diff / 3600);
+  if (hourDiff >= 24) {
+    return 'info';
+  } else if (hourDiff >= 3) {
+    return 'warning';
+  }
+  return 'danger';
+};
+
 const ClustersGallery: FunctionComponent = () => {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -152,9 +164,9 @@ const ClustersGallery: FunctionComponent = () => {
                   isEvalPresent={!!evalInstance}
                 />
                 <div className={'pf-l-stack__item pf-m-fill'}>
-                  {!!evalInstance && (
+                  {!!evalInstance && evalInstance?.id === selectedId && (
                     <Alert
-                      variant="info"
+                      variant={warningType(new Date(evalInstance.expiration!))}
                       className="pf-u-mb-md"
                       isInline
                       title={
@@ -219,7 +231,7 @@ const ClustersGallery: FunctionComponent = () => {
                             </DescriptionListGroup>
                             <DescriptionListGroup>
                               <DescriptionListTerm>
-                                {t('clusterId')}
+                                {t('clusterID')}
                               </DescriptionListTerm>
                               <DescriptionListDescription>
                                 {i.cluster_id!}
@@ -230,7 +242,18 @@ const ClustersGallery: FunctionComponent = () => {
                                 {t('created')}
                               </DescriptionListTerm>
                               <DescriptionListDescription>
-                                {i.created_at}
+                                <time
+                                  title={t('{{date}}', {
+                                    date: new Date(i.created_at!),
+                                  })}
+                                  dateTime={new Date(
+                                    i.created_at!
+                                  ).toISOString()}
+                                >
+                                  {t('{{ date, ago }}', {
+                                    date: new Date(i.created_at!),
+                                  })}
+                                </time>
                               </DescriptionListDescription>
                             </DescriptionListGroup>
                           </DescriptionList>
