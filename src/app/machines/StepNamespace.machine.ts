@@ -84,7 +84,9 @@ export const namespacesMachine = model.createMachine(
                   ConnectorNamespace,
                   {},
                   ConnectorNamespace
-                >(fetchConnectorNamespaces(context), (i) => i),
+                >(fetchConnectorNamespaces(context), (i) => i, {
+                  pollingEnabled: true,
+                }),
             },
             states: {
               idle: {
