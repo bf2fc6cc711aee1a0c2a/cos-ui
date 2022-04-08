@@ -94,7 +94,7 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
         >
           {t('register')}
         </Button>,
-        <Button key="cancel" variant="link" onClick={onModalToggle}>
+        <Button key="cancel" variant="link" isDisabled={isLoading} onClick={onModalToggle}>
           {t('Cancel')}
         </Button>,
       ]}

@@ -112,7 +112,7 @@ const ClustersGallery: FunctionComponent = () => {
       (namespace) =>
         namespace.tenant.kind === 'user' && _.has(namespace, 'expiration')
     );
-    id && setEvalInstance(id);
+    id ? setEvalInstance(id) : setEvalInstance(undefined);
   }, [response]);
 
   return (
