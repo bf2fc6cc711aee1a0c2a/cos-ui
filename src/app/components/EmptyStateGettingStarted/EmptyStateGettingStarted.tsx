@@ -11,7 +11,7 @@ import {
   Title,
   TitleSizes,
 } from '@patternfly/react-core';
-import SpaceShuttleIcon from '@patternfly/react-icons/dist/js/icons/space-shuttle-icon';
+import { PlusCircleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 
 type EmptyStateGettingStartedProps = {
@@ -27,12 +27,12 @@ export const EmptyStateGettingStarted: FunctionComponent<EmptyStateGettingStarte
         variant={EmptyStateVariant.xl}
         className={css('pf-u-pt-2xl pf-u-pt-3xl-on-md')}
       >
-        <EmptyStateIcon icon={SpaceShuttleIcon} />
+        <EmptyStateIcon icon={PlusCircleIcon} />
         <Title headingLevel={'h1'} size={TitleSizes['4xl']}>
-          {t('Welcome to Managed Connectors')}
+          {t('noConnectorInstances')}
         </Title>
         <EmptyStateBody>
-          <Trans>
+          <Trans i18nKey={'gettingStartedBody'}>
             For help getting started, access the{' '}
             <Button
               variant={ButtonVariant.link}
@@ -45,7 +45,7 @@ export const EmptyStateGettingStarted: FunctionComponent<EmptyStateGettingStarte
           </Trans>
         </EmptyStateBody>
         <Button variant={'primary'} onClick={onCreate}>
-          {t('Create Connector')}
+          {t('createAConnectorsInstance')}
         </Button>
       </EmptyState>
     );

@@ -26,7 +26,7 @@ const getLabelIcon = (name: string, content: string) =>
         <Popover bodyContent={content}>
           <button
             type="button"
-            aria-label={t('More info for {{name}}', { name })}
+            aria-label={t('moreConnectorInfo', { name })}
             onClick={(e) => e.preventDefault()}
             aria-describedby="form-group-label-info"
             className="pf-c-form__group-label-help"

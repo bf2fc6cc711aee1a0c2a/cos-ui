@@ -1,9 +1,8 @@
 import React, { FunctionComponent } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import {
   Button,
-  ButtonVariant,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
@@ -11,39 +10,29 @@ import {
   Title,
   TitleSizes,
 } from '@patternfly/react-core';
-import { SpaceShuttleIcon } from '@patternfly/react-icons';
+import { PlusCircleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 
 type EmptyStateNoKafkaInstancesProps = {
-  onHelp: () => void;
+  onCreate: () => void;
 };
 
 export const EmptyStateNoKafkaInstances: FunctionComponent<EmptyStateNoKafkaInstancesProps> =
-  ({ onHelp }) => {
+  ({ onCreate }) => {
     const { t } = useTranslation();
     return (
       <EmptyState
         variant={EmptyStateVariant.xl}
         className={css('pf-u-pt-2xl pf-u-pt-3xl-on-md')}
       >
-        <EmptyStateIcon icon={SpaceShuttleIcon} />
+        <EmptyStateIcon icon={PlusCircleIcon} />
         <Title headingLevel={'h1'} size={TitleSizes['4xl']}>
-          {t('No Kafka instance available')}
+          {t('noKafkaInstanceAvailable')}
         </Title>
-        <EmptyStateBody>
-          <Trans>
-            Development preview instances are available for creation. For help
-            getting started, access the{' '}
-            <Button
-              variant={ButtonVariant.link}
-              isSmall
-              isInline
-              onClick={onHelp}
-            >
-              quick start guide.
-            </Button>
-          </Trans>
-        </EmptyStateBody>
+        <EmptyStateBody>{t('noKafkaInstanceAvailableBody')}</EmptyStateBody>
+        <Button variant={'primary'} onClick={onCreate}>
+          {t('createKafkaInstance')}
+        </Button>
       </EmptyState>
     );
   };

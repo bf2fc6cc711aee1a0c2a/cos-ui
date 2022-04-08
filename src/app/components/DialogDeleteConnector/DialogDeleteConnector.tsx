@@ -39,7 +39,7 @@ export const DialogDeleteConnector: React.FunctionComponent<DialogDeleteConnecto
     return (
       <Modal
         variant={ModalVariant.small}
-        title={t('Delete connector')}
+        title={t('deleteConnectorModalTitle')}
         titleIconVariant="warning"
         isOpen={showDialog}
         onClose={onCancel}
@@ -50,21 +50,21 @@ export const DialogDeleteConnector: React.FunctionComponent<DialogDeleteConnecto
             isDisabled={!canDelete}
             onClick={onConfirmDelete}
           >
-            {t('Delete')}
+            {t('delete')}
           </Button>,
           <Button key="cancel" variant="link" onClick={onCancelDelete}>
-            {t('Cancel')}
+            {t('cancel')}
           </Button>,
         ]}
       >
         <Stack>
           <StackItem>
-            <Trans>
+            <Trans i18nKey={'deleteConnectorModalDescription'}>
               Connector <strong>{{ connectorName }}</strong> will be deleted.
             </Trans>
           </StackItem>
           <StackItem>
-            <Trans>
+            <Trans i18nKey={'deleteConnectorModalConfirmationPrompt'}>
               Type <strong>{{ connectorName }}</strong> to confirm the deletion.
             </Trans>
           </StackItem>

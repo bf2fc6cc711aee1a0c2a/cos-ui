@@ -28,10 +28,10 @@ export const EmptyStateNoMatchesFound: FunctionComponent<NoMatchFoundProps> = ({
     >
       <EmptyStateIcon icon={SearchIcon} />
       <Title headingLevel={'h2'} size={TitleSizes['xl']}>
-        {t('No results found')}
+        {t('noResultsFound')}
       </Title>
       <EmptyStateBody>
-        <Trans>
+        <Trans i18nKey={'noFilterResultsFound'}>
           No results match the filter criteria.{' '}
           <Button
             variant={ButtonVariant.link}
@@ -39,7 +39,7 @@ export const EmptyStateNoMatchesFound: FunctionComponent<NoMatchFoundProps> = ({
             isInline
             onClick={onClear}
           >
-            {t('Clear all filters')}
+            {t('clearAllFilters')}
           </Button>{' '}
           to show results.
         </Trans>

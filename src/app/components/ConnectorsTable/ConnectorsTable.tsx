@@ -25,10 +25,10 @@ export const ConnectorsTable: FunctionComponent = ({ children }) => {
     >
       <Thead>
         <Tr>
-          <Th>{t('Name')}</Th>
-          <Th>{t('Connector')}</Th>
+          <Th>{t('name')}</Th>
+          <Th>{t('connector')}</Th>
           {/* <Th>{t('Category')}</Th> */}
-          <Th>{t('Status')}</Th>
+          <Th>{t('status')}</Th>
         </Tr>
       </Thead>
       <Tbody>{children}</Tbody>
@@ -73,27 +73,27 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
 
   const actions: IActions = [
     {
-      title: 'Start',
+      title: t('start'),
       onClick: onStart,
       isDisabled: !canStart,
     },
     {
-      title: 'Stop',
+      title: t('stop'),
       onClick: onStop,
       isDisabled: !canStop,
     },
     {
-      title: 'Delete',
+      title: t('delete'),
       onClick: onDelete,
       isDisabled: !canDelete,
     },
     {
-      title: 'Edit',
+      title: t('edit'),
       onClick: () => openDetail('configuration'),
       isDisabled: false,
     },
     {
-      title: 'Duplicate connector',
+      title: t('duplicateConnector'),
       onClick: () => onDuplicateConnector(connectorId),
       isDisabled: false,
     },
@@ -101,7 +101,7 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
       isSeparator: true,
     },
     {
-      title: 'Details',
+      title: t('details'),
       onClick: onSelect,
     },
   ];
@@ -120,7 +120,7 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
         isSelected && 'pf-m-selected'
       )}
     >
-      <Td dataLabel={t('Name')}>
+      <Td dataLabel={t('name')}>
         <Text
           component={TextVariants.a}
           isVisitedLink
@@ -129,9 +129,9 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
           {name}
         </Text>
       </Td>
-      <Td dataLabel={t('Type')}>{type}</Td>
+      <Td dataLabel={t('type')}>{type}</Td>
       {/* <Td dataLabel={t('Category')}>{category}</Td> */}
-      <Td dataLabel={t('Status')}>
+      <Td dataLabel={t('status')}>
         <ConnectorStatus name={name} status={status} />
       </Td>
       <Td

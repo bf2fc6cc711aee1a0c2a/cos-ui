@@ -85,7 +85,7 @@ const KafkasGallery: FunctionComponent = () => {
 
   return (
     <StepBodyLayout
-      title={t('Kafka instance')}
+      title={t('kafkaInstance')}
       description={t('kafkaStepDescription')}
     >
       {(() => {
@@ -104,7 +104,7 @@ const KafkasGallery: FunctionComponent = () => {
           case noResults || error:
             return (
               <EmptyStateNoKafkaInstances
-                onHelp={function (): void {
+                onCreate={function (): void {
                   throw new Error('Function not implemented.');
                 }}
               />
@@ -341,7 +341,7 @@ const KafkaToolbar: FunctionComponent = () => {
             }
             selections={statuses}
             isOpen={statusesToggled}
-            placeholderText={t('Filter by status')}
+            placeholderText={t('filterByStatus')}
           >
             {statusMenuItems}
           </Select>
@@ -351,19 +351,19 @@ const KafkaToolbar: FunctionComponent = () => {
           chips={cloudProviders.map((v) => stringToChip(v, t))}
           deleteChip={onSelectCloudProvider}
           deleteChipGroup={() => onDeleteQueryGroup('cloudProviders')}
-          categoryName={t('CloudProvider')}
-          showToolbarItem={selectedCategory === t('CloudProvider')}
+          categoryName={t('cloudProvider')}
+          showToolbarItem={selectedCategory === t('cloudProvider')}
         >
           <Select
             variant={'checkbox'}
-            aria-label={t('CloudProvider')}
+            aria-label={t('cloudProvider')}
             onToggle={onToggleCloudProviders}
             onSelect={(_, v) =>
               onSelectCloudProvider('', stringToChip(v as string, t))
             }
             selections={cloudProviders}
             isOpen={cloudProvidersToggled}
-            placeholderText={t('Filter by cloud provider')}
+            placeholderText={t('filterByCloudProvider')}
           >
             {cloudProviderMenuItems}
           </Select>
@@ -385,7 +385,7 @@ const KafkaToolbar: FunctionComponent = () => {
             }
             selections={regions}
             isOpen={regionsToggled}
-            placeholderText={t('Filter by region')}
+            placeholderText={t('filterByRegion')}
           >
             {regionMenuItems}
           </Select>
@@ -494,7 +494,7 @@ const KafkaToolbar: FunctionComponent = () => {
       </ToolbarToggleGroup>
       <ToolbarGroup variant="icon-button-group">
         <ToolbarItem>
-          <Button variant="primary">{t('Create Kafka instance')}</Button>
+          <Button variant="primary">{t('createKafkaInstance')}</Button>
         </ToolbarItem>
       </ToolbarGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>

@@ -41,13 +41,13 @@ export const StepCommon: FC = () => {
   return (
     <>
       <StepBodyLayout
-        title={t('Common')}
+        title={t('common')}
         description={t('basicStepDescription')}
       >
         <Grid hasGutter>
           <Form className="pf-m-9-col-on-lg">
             <FormGroup
-              label={t('Name')}
+              label={t('name')}
               isRequired
               fieldId="name"
               helperText="Please provide a unique name for the connector"
@@ -56,13 +56,13 @@ export const StepCommon: FC = () => {
               <TextInput value={name} onChange={onSetName} id="name" />
             </FormGroup>
             <FormGroup
-              label={t('Service account')}
+              label={t('serviceAccount')}
               fieldId="service-account"
               className="pf-u-mb-0"
             >
               <TextContent>
                 <span className="step-common_service_account-desc">
-                  {t('service-account-desc-text')}
+                  {t('serviceAccountDescText')}
                 </span>
               </TextContent>
               <Button
@@ -71,14 +71,14 @@ export const StepCommon: FC = () => {
                 className="pf-u-mt-md"
                 isDisabled={sACreated}
               >
-                {t('create-service-account')}
+                {t('createServiceAccount')}
               </Button>
             </FormGroup>
 
             {serviceAccount && (
               <>
                 <FormGroup
-                  label={t('client-id')}
+                  label={t('clientId')}
                   isRequired
                   fieldId="clientId"
                   className="pf-u-mb-0"
@@ -92,7 +92,7 @@ export const StepCommon: FC = () => {
                   />
                 </FormGroup>
                 <FormGroup
-                  label={t('client-secret')}
+                  label={t('clientSecret')}
                   isRequired
                   fieldId="clientSecret"
                   className="pf-u-mb-0"

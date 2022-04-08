@@ -29,7 +29,7 @@ export const ConnectorsToolbar: FunctionComponent<ConnectorsToolbarProps> = ({
             className="pf-c-button pf-m-primary"
             to={'/create-connector'}
           >
-            {t('createConnectorInstance')}
+            {t('createConnectorsInstance')}
           </NavLink>
         </ToolbarItem>
       </ToolbarGroup>

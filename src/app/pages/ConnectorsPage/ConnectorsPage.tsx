@@ -44,7 +44,7 @@ export const ConnectedConnectorsPage: FunctionComponent<ConnectedConnectorsPageP
         alert?.addAlert({
           id: 'connectors-table-error',
           variant: AlertVariant.danger,
-          title: t('common.something_went_wrong'),
+          title: t('somethingWentWrong'),
           description,
         });
       },
@@ -176,7 +176,7 @@ const ConnectorsPageTitle: FunctionComponent = () => {
   const { t } = useTranslation();
   return (
     <TextContent>
-      <Title headingLevel="h1">{t('Connectors')}</Title>
+      <Title headingLevel="h1">{t('connectorsInstances')}</Title>
     </TextContent>
   );
 };

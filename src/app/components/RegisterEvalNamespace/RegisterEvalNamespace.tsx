@@ -61,7 +61,7 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
       alert?.addAlert({
         id: 'eval-namespace-register-error',
         variant: AlertVariant.danger,
-        title: t('something_went_wrong'),
+        title: t('somethingWentWrong'),
         description,
       });
     },
@@ -100,7 +100,7 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
           isDisabled={isLoading}
           onClick={onModalToggle}
         >
-          {t('Cancel')}
+          {t('cancel')}
         </Button>,
       ]}
     >
@@ -112,10 +112,10 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
         {t('namespaceInformation')}
       </Text>
       <Form className="pf-u-mt-lg pf-u-mb-lg">
-        <FormGroup label={t('Name')} isRequired fieldId="name">
+        <FormGroup label={t('name')} isRequired fieldId="name">
           <Text component={TextVariants.p}>{evalNamespace}</Text>
         </FormGroup>
-        <FormGroup label={t('Duration')} isRequired fieldId="name">
+        <FormGroup label={t('duration')} isRequired fieldId="name">
           <Text component={TextVariants.p}>48 hours</Text>
         </FormGroup>
       </Form>

@@ -53,15 +53,15 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
     return (
       <TextContent>
         <TextList component={TextListVariants.dl}>
-          {textListItem('Connector', name)}
-          {textListItem('Connector Id', id)}
-          {textListItem('Connector type', type)}
-          {textListItem('Bootstrap server', bootstrapServer)}
-          {textListItem('Kafka_instance', kafkaId)}
-          {textListItem('Deployment namespace', namespaceId)}
-          {textListItem('Owner', owner)}
+          {textListItem(t('connector'), name)}
+          {textListItem(t('connectorId'), id)}
+          {textListItem(t('connectorType'), type)}
+          {textListItem(t('bootstrapServer'), bootstrapServer)}
+          {textListItem(t('kafkaInstance'), kafkaId)}
+          {textListItem(t('deploymentNamespace'), namespaceId)}
+          {textListItem(t('owner'), owner)}
           {textListItem(
-            'Time created',
+            t('timeCreated'),
             <time
               title={t('{{date}}', { date: createdAt })}
               dateTime={createdAt.toISOString()}
@@ -70,7 +70,7 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
             </time>
           )}
           {textListItem(
-            'Time updated',
+            t('timeUpdated'),
             <time
               title={t('{{date}}', { date: modifiedAt })}
               dateTime={modifiedAt.toISOString()}
@@ -78,7 +78,7 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
               {t('{{ date, ago }}', { date: modifiedAt })}
             </time>
           )}
-          {textListItem('Failure Reason', error)}
+          {textListItem(t('failureReason'), error)}
         </TextList>
       </TextContent>
     );

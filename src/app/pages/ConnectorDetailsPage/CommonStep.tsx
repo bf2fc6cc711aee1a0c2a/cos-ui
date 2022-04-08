@@ -41,15 +41,15 @@ export const CommonStep: FC<CommonStepProp> = ({
         size={TitleSizes['2xl']}
         className={'pf-u-pr-md pf-u-pb-md'}
       >
-        {t('Common')}
+        {t('common')}
       </Title>
       <Form>
         <FormGroup
-          label={t('Connector name')}
+          label={t('connectorName')}
           isRequired
           fieldId="connector-name"
           labelIcon={
-            <Popover bodyContent={<p>{t('Unique name for the connector.')}</p>}>
+            <Popover bodyContent={<p>{t('connectorNamePopoverBody')}</p>}>
               <button
                 type="button"
                 aria-label="More info for name field."
@@ -72,10 +72,10 @@ export const CommonStep: FC<CommonStepProp> = ({
             <Text component={TextVariants.p}>{configuration.name}</Text>
           )}
         </FormGroup>
-        <FormGroup label={t('Service account')} fieldId="service-account">
+        <FormGroup label={t('serviceAccount')} fieldId="service-account">
           {true !== undefined && (
             <>
-              <FormGroup label={t('client-id')} isRequired fieldId="clientId">
+              <FormGroup label={t('clientId')} isRequired fieldId="clientId">
                 <ClipboardCopy isReadOnly hoverTip="copy" clickTip="Copied">
                   {configuration?.service_account?.client_id}
                 </ClipboardCopy>

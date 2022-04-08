@@ -113,7 +113,7 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
       </Title>
       <Form>
         <FormGroup
-          label={t('Error handler')}
+          label={t('errorHandler')}
           fieldId="error-handler_strategy"
           className="error-handler_strategy"
         >

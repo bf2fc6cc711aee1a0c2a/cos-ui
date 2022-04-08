@@ -58,7 +58,7 @@ const testMachine = Machine({
       meta: {
         noCoverage: true,
         test: () =>
-          cy.findByText('No Kafka instance available').should('exist'),
+          cy.findByText('No Kafka instances').should('exist'),
       },
     },
     loadingNamespace: {
@@ -211,7 +211,7 @@ describe('Connector creation', () => {
         cy.findByText('Next').should('be.enabled').click();
       },
       SAVE_CONNECTOR: () => {
-        cy.findByRole('button', { name: 'Create connector' })
+        cy.findByRole('button', { name: 'Create Connector' })
           .should('be.enabled')
           .click();
         cy.wait('@serviceAccount')

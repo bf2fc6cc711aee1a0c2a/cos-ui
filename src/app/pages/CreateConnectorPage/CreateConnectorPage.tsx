@@ -18,7 +18,7 @@ import {
 import { useBasename, useConfig } from '@rhoas/app-services-ui-shared';
 
 type CreateConnectorPageProps = {
-  onSave: () => void;
+  onSave: (name: string) => void;
   onClose: () => void;
 };
 export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
@@ -35,12 +35,14 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
         <PageSection variant={'light'} hasShadowBottom>
           <Breadcrumb>
             <BreadcrumbItem to={basename?.getBasename()}>
-              {t('Connectors')}
+              {t('connectorsInstances')}
             </BreadcrumbItem>
-            <BreadcrumbItem isActive>{t('Create connector')}</BreadcrumbItem>
+            <BreadcrumbItem isActive>
+              {t('createAConnectorsInstance')}
+            </BreadcrumbItem>
           </Breadcrumb>
           <Level className={'pf-u-pt-md pf-u-pb-md'}>
-            <Title headingLevel="h1">{t('Create connector')}</Title>
+            <Title headingLevel="h1">{t('createAConnectorsInstance')}</Title>
           </Level>
         </PageSection>
         <PageSection
@@ -71,9 +73,7 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
                 </Button>,
               ]}
             >
-              {t(
-                'Changes you have made will be lost and no connector will be created.'
-              )}
+              {t('leaveCreateConnectorConfirmModalDescription')}
             </Modal>
           </CreateConnectorWizardProvider>
         </PageSection>

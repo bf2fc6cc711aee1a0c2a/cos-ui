@@ -86,7 +86,7 @@ export function Review() {
   };
   return (
     <StepBodyLayout
-      title={t('Review')}
+      title={t('review')}
       description={
         !toggleView
           ? t('reviewStepDescription')
@@ -95,8 +95,8 @@ export function Review() {
       component={
         <Switch
           id="toggle-json-view"
-          label={t('ViewJSONFormat')}
-          labelOff={t('ViewJSONFormat')}
+          label={t('viewJSONFormat')}
+          labelOff={t('viewJSONFormat')}
           isChecked={toggleView}
           onChange={onToggleJSONView}
         />
@@ -119,7 +119,7 @@ export function Review() {
           <>
             <Grid>
               <GridItem span={4}>
-                <strong>{t('Connector category')}</strong>
+                <strong>{t('connectorCategory')}</strong>
               </GridItem>
               <GridItem span={8}>
                 {(connectorType as ConnectorTypeAllOf).description}
@@ -127,29 +127,29 @@ export function Review() {
             </Grid>
             <Grid>
               <GridItem span={4}>
-                <strong>{t('Kafka instance')}</strong>
+                <strong>{t('kafkaInstance')}</strong>
               </GridItem>
               <GridItem span={8}>{kafka.name}</GridItem>
             </Grid>
             <Grid>
               <GridItem span={4}>
-                <strong>{t('Namespace')}</strong>
+                <strong>{t('namespace')}</strong>
               </GridItem>
               <GridItem span={8}>{namespace.name}</GridItem>
             </Grid>
 
             <Title headingLevel="h3" size={TitleSizes['2xl']}>
-              {t('Basic')}
+              {t('basic')}
             </Title>
             <Grid>
               <GridItem span={4}>
-                <strong>{t('Connector name')}</strong>
+                <strong>{t('connectorName')}</strong>
               </GridItem>
               <GridItem span={8}>{name}</GridItem>
             </Grid>
             <Grid>
               <GridItem span={4}>
-                <strong>{t('Type')}</strong>
+                <strong>{t('type')}</strong>
               </GridItem>
               <GridItem span={8}>
                 {(connectorType as ConnectorTypeAllOf).labels?.map(
@@ -160,7 +160,7 @@ export function Review() {
             {userServiceAccount?.clientId && (
               <Grid>
                 <GridItem span={4}>
-                  <strong>{t('client-id')}</strong>
+                  <strong>{t('clientId')}</strong>
                 </GridItem>
                 <GridItem span={8}>
                   <Flex>
@@ -180,7 +180,7 @@ export function Review() {
             {userServiceAccount?.clientSecret && (
               <Grid>
                 <GridItem span={4}>
-                  <strong>{t('client-secret')}</strong>
+                  <strong>{t('clientSecret')}</strong>
                 </GridItem>
                 <GridItem span={8}>
                   <Flex>
@@ -202,7 +202,7 @@ export function Review() {
               </Grid>
             )}
             <Title headingLevel="h3" size={TitleSizes['2xl']}>
-              {t('Connector specific')}
+              {t('connectorSpecific')}
             </Title>
             {connector &&
               Object.keys(connector).map((el) => {
@@ -212,8 +212,8 @@ export function Review() {
                       <strong>{_.startCase(el)}</strong>
                     </GridItem>
                     <GridItem span={8}>
-                      {_.startCase(el) === t('Access Key') ||
-                      _.startCase(el) === t('Secret Key') ? (
+                      {_.startCase(el) === t('accessKey') ||
+                      _.startCase(el) === t('secretKey') ? (
                         <Flex>
                           <FlexItem>
                             {toggleMaskView[el]
@@ -255,8 +255,8 @@ export function Review() {
                       <strong>{_.startCase(el)}</strong>
                     </GridItem>
                     <GridItem span={8}>
-                      {_.startCase(el) === t('Database Password') ||
-                      _.startCase(el) === t('Password') ? (
+                      {_.startCase(el) === t('databasePassword') ||
+                      _.startCase(el) === t('password') ? (
                         maskValue(modifiedObject[el])
                       ) : typeof modifiedObject[el] === 'object' ? (
                         el === 'data_shape' ? (
@@ -274,18 +274,18 @@ export function Review() {
             {userErrorHandler && (
               <>
                 <Title headingLevel="h3" size={TitleSizes['2xl']}>
-                  {t('Error handling')}
+                  {t('errorHandling')}
                 </Title>
                 <Grid>
                   <GridItem span={4}>
-                    <strong>{t('Error handling')}</strong>
+                    <strong>{t('errorHandling')}</strong>
                   </GridItem>
                   <GridItem span={8}>{userErrorHandler}</GridItem>
                 </Grid>
                 {topic && (
                   <Grid>
                     <GridItem span={4}>
-                      <strong>{_.startCase('topic')}</strong>
+                      <strong>{t('topic')}</strong>
                     </GridItem>
                     <GridItem span={8}>{topic}</GridItem>
                   </Grid>

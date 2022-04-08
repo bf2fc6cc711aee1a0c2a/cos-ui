@@ -47,7 +47,7 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
         size={TitleSizes['2xl']}
         className={'pf-u-pr-md pf-u-pb-md'}
       >
-        {t('Connector specific')}
+        {t('connectorSpecific')}
       </Title>
       {editMode ? (
         <JsonSchemaConfigurator

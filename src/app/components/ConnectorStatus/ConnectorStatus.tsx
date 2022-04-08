@@ -79,15 +79,15 @@ export function useConnectorStatusLabel(status: string) {
   const { t } = useTranslation();
 
   const statusOptions = [
-    { value: ConnectorStatuses.Ready, label: t('Running') },
-    { value: ConnectorStatuses.Failed, label: t('Failed') },
-    { value: ConnectorStatuses.Assigning, label: t('Creation pending') },
-    { value: ConnectorStatuses.Assigned, label: t('Creation in progress') },
-    { value: ConnectorStatuses.Updating, label: t('Creation in progress') },
-    { value: ConnectorStatuses.Provisioning, label: t('Creation in progress') },
-    { value: ConnectorStatuses.Deleting, label: t('Deleting') },
-    { value: ConnectorStatuses.Deleted, label: t('Deleted') },
-    { value: ConnectorStatuses.Disconnected, label: t('Provisioning') },
+    { value: ConnectorStatuses.Ready, label: t('running') },
+    { value: ConnectorStatuses.Failed, label: t('failed') },
+    { value: ConnectorStatuses.Assigning, label: t('creationPending') },
+    { value: ConnectorStatuses.Assigned, label: t('creationInProgress') },
+    { value: ConnectorStatuses.Updating, label: t('creationInProgress') },
+    { value: ConnectorStatuses.Provisioning, label: t('creationInProgress') },
+    { value: ConnectorStatuses.Deleting, label: t('deleting') },
+    { value: ConnectorStatuses.Deleted, label: t('deleted') },
+    { value: ConnectorStatuses.Disconnected, label: t('provisioning') },
   ];
 
   return statusOptions.find((s) => s.value === status)?.label || status;

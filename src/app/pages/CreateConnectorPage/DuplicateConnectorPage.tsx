@@ -32,7 +32,7 @@ import {
 import { Connector, ConnectorType } from '@rhoas/connector-management-sdk';
 
 type DuplicateConnectorPageProps = {
-  onSave: () => void;
+  onSave: (name: string) => void;
   onClose: () => void;
 };
 export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPageProps> =
@@ -62,7 +62,7 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
         alert?.addAlert({
           id: 'connectors-table-error',
           variant: AlertVariant.danger,
-          title: t('something_went_wrong'),
+          title: t('somethingWentWrong'),
           description,
         });
       },
@@ -104,12 +104,12 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
         <PageSection variant={'light'} hasShadowBottom>
           <Breadcrumb>
             <BreadcrumbItem to={basename?.getBasename()}>
-              {t('Connectors')}
+              {t('connectorsInstances')}
             </BreadcrumbItem>
-            <BreadcrumbItem isActive>{t('Duplicate connector')}</BreadcrumbItem>
+            <BreadcrumbItem isActive>{t('duplicateConnector')}</BreadcrumbItem>
           </Breadcrumb>
           <Level className={'pf-u-pt-md pf-u-pb-md'}>
-            <Title headingLevel="h1">{t('Duplicate connector')}</Title>
+            <Title headingLevel="h1">{t('duplicateConnector')}</Title>
           </Level>
         </PageSection>
         <PageSection
@@ -149,9 +149,7 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
                   </Button>,
                 ]}
               >
-                {t(
-                  'Changes you have made will be lost and no connector will be created.'
-                )}
+                {t('leaveDuplicateConnectorConfirmModalDescription')}
               </Modal>
             </CreateConnectorWizardProvider>
           ) : (
