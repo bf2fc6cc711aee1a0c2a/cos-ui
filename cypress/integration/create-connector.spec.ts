@@ -84,7 +84,7 @@ const testMachine = Machine({
     selectNamespaceEmptyState: {
       meta: {
         noCoverage: true,
-        test: () => cy.findByText('No namespace available').should('exist'),
+        test: () => cy.findByText('No namespace').should('exist'),
       },
     },
     basicConfiguration: {
@@ -198,7 +198,7 @@ describe('Connector creation', () => {
         cy.findByText('Next').click();
       },
       CONFIGURE_BASIC: () => {
-        cy.findByLabelText('Name *').type('my-connector');
+        cy.findByLabelText('Connectors instance name *').type('my-connector');
         cy.findByLabelText('Client ID *').type('client-id');
         cy.findByLabelText('Client secret *').type('client-secret');
         cy.findByText('Next').should('be.enabled').click();
