@@ -60,7 +60,7 @@ const ConnectedCustomConfigurator: FunctionComponent<{
       activeStep={activeStep}
       configuration={configuration}
       connector={connector}
-      isViewMode={false}
+      isViewMode={duplicateMode && false}
       onChange={(configuration, isValid) => {
         actor.send({ type: 'change', configuration, isValid });
       }}
