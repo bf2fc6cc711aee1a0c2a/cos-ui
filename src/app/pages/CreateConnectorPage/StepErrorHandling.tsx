@@ -94,10 +94,10 @@ export const StepErrorHandling: FunctionComponent = () => {
           </FormGroup>
           {errorHandler === 'dead_letter_queue' && (
             <FormGroup
-              label={t("deadLetterTopicName")}
+              label={t('deadLetterTopicName')}
               isRequired
               fieldId="topic"
-              helperText={t("deadLetterTopicHelper")}
+              helperText={t('deadLetterTopicHelper')}
             >
               <TextInput value={topic} onChange={onSetTopic} id="topic" />
             </FormGroup>

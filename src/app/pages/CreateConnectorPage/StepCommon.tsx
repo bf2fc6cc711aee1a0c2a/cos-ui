@@ -50,7 +50,7 @@ export const StepCommon: FC = () => {
               label={t('connectorsInstanceName')}
               isRequired
               fieldId="name"
-              helperText={t("connectorsInstanceHelper")}
+              helperText={t('connectorsInstanceHelper')}
               className="pf-u-mb-0"
             >
               <TextInput value={name} onChange={onSetName} id="name" />

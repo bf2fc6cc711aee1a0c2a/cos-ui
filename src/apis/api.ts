@@ -325,7 +325,7 @@ export const registerEvalNamespace = ({
         }
       )
       .then((response) => {
-        onSuccess(response.data.name || "");
+        onSuccess(response.data.name || '');
       })
       .catch((error) => {
         if (!axios.isCancel(error)) {
