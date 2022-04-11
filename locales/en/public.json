@@ -77,7 +77,7 @@
   "kafkaStepDescription": "The selected Kafka instance works with your Connectors instance. A source connector ingests data from another system into a Kafka instance. A sink connector propagates data from a Kafka instance into another system.",
   "leave": "Leave",
   "leaveCreateConnectorConfirmModalDescription": "Changes you have made will be lost and no connector will be created.",
-  "leaveDuplicateConfirmModalDescription": "Changes you have made will be lost and no connector will be created.",
+  "leaveDuplicateConnectorConfirmModalDescription": "Changes you have made will be lost and no connector will be created.",
   "leaveEditConfirmModalDescription": "Changes you have made to the connector properties will not be saved.",
   "leaveEditConfirmModalTitle": "Leave page?",
   "loading": "Loading",
