@@ -11,5 +11,6 @@ module.exports = {
   },
   core: {
     builder: "webpack5"
-  }
+  },
+  staticDirs: ['../public', { from: '../locales', to: '/locales'} ]
 };
