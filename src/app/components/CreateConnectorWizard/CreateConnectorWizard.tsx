@@ -249,7 +249,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
         enableNext: creationWizardMachine.transition(state, 'next').changed,
       },
       {
-        name: t('configurations'),
+        name: t('configuration'),
         isActive: state.matches('basicConfiguration'),
         canJumpTo:
           creationWizardMachine.transition(state, 'jumpToBasicConfiguration')

@@ -113,7 +113,7 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
               component={TextVariants.small}
               className="connector-drawer__header-text"
             >
-              Connector name
+              {t("connectorName")}
             </Text>
 
             <Flex>

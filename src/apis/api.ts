@@ -299,7 +299,7 @@ export const registerEvalNamespace = ({
   accessToken,
   connectorsApiBasePath,
   evalName,
-}: EvalNamespaceApiProps): FetchCallbacks<ConnectorNamespace> => {
+}: EvalNamespaceApiProps): FetchCallbacks<string> => {
   const namespacesAPI = new ConnectorNamespacesApi(
     new Configuration({
       accessToken,
@@ -325,7 +325,7 @@ export const registerEvalNamespace = ({
         }
       )
       .then((response) => {
-        onSuccess(response.data);
+        onSuccess(response.data.name || "");
       })
       .catch((error) => {
         if (!axios.isCancel(error)) {
