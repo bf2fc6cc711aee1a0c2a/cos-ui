@@ -42,6 +42,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
+  Tooltip,
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
@@ -381,13 +382,23 @@ const ClustersToolbar: FunctionComponent<ClustersToolbarProps> = ({
       </ToolbarToggleGroup>
       <ToolbarGroup variant="icon-button-group">
         <ToolbarItem>
-          <Button
-            variant="secondary"
-            isDisabled={isEvalPresent}
-            onClick={onModalToggle}
+          <Tooltip
+            content={
+              <div>
+                {isEvalPresent
+                  ? t('namespaceDisabledTooltip')
+                  : t('namespaceEnabledTooltip')}
+              </div>
+            }
           >
-            {t('registerEvalNamespace')}
-          </Button>
+            <Button
+              variant="secondary"
+              isDisabled={isEvalPresent}
+              onClick={onModalToggle}
+            >
+              {t('createPreviewNamespace')}
+            </Button>
+          </Tooltip>
         </ToolbarItem>
       </ToolbarGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>

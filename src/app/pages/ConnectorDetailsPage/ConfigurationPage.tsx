@@ -230,7 +230,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
               >
                 <Tab
                   eventKey={0}
-                  title={<TabTitleText>{t('common')}</TabTitleText>}
+                  title={<TabTitleText>{t('core')}</TabTitleText>}
                 ></Tab>
                 {connectorData.connector_type_id.includes('debezium') &&
                   configurator &&

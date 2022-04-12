@@ -70,13 +70,13 @@ export const StepErrorHandling: FunctionComponent = () => {
 
   return (
     <StepBodyLayout
-      title={t('errorHandler')}
+      title={t('errorHandling')}
       description={t('errorHandlingStepDescription')}
     >
       <Grid hasGutter>
         <Form className="pf-m-9-col-on-lg">
           <FormGroup
-            label={t('errorHandler')}
+            label={t('errorHandlingMethod')}
             fieldId="error-handler_strategy"
             className="error-handler_strategy pf-u-mb-0"
           >
@@ -94,10 +94,10 @@ export const StepErrorHandling: FunctionComponent = () => {
           </FormGroup>
           {errorHandler === 'dead_letter_queue' && (
             <FormGroup
-              label="Dead Letter Topic Name"
+              label={t('deadLetterTopicName')}
               isRequired
               fieldId="topic"
-              helperText="The name of the Kafka topic used as dead letter queue"
+              helperText={t('deadLetterTopicHelper')}
             >
               <TextInput value={topic} onChange={onSetTopic} id="topic" />
             </FormGroup>

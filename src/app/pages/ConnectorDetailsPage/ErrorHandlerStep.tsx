@@ -1,3 +1,4 @@
+import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { createValidator } from '@utils/createValidator';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
@@ -15,8 +16,6 @@ import {
   Text,
   TextInput,
   TextVariants,
-  Title,
-  TitleSizes,
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 
@@ -103,14 +102,10 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
     return <SelectOption key={keys[0]} value={keys[0]} />;
   });
   return (
-    <>
-      <Title
-        headingLevel="h3"
-        size={TitleSizes['2xl']}
-        className={'pf-u-pr-md pf-u-pb-md'}
-      >
-        Error handling
-      </Title>
+    <StepBodyLayout
+      title={t('errorHandling')}
+      description={t('errorHandlingStepDescription')}
+    >
       <Form>
         <FormGroup
           label={t('errorHandler')}
@@ -164,6 +159,6 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
           </FormGroup>
         )}
       </Form>
-    </>
+    </StepBodyLayout>
   );
 };

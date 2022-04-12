@@ -40,17 +40,14 @@ export const StepCommon: FC = () => {
 
   return (
     <>
-      <StepBodyLayout
-        title={t('common')}
-        description={t('basicStepDescription')}
-      >
+      <StepBodyLayout title={t('core')} description={t('basicStepDescription')}>
         <Grid hasGutter>
           <Form className="pf-m-9-col-on-lg">
             <FormGroup
-              label={t('name')}
+              label={t('connectorsInstanceName')}
               isRequired
               fieldId="name"
-              helperText="Please provide a unique name for the connector"
+              helperText={t('connectorsInstanceHelper')}
               className="pf-u-mb-0"
             >
               <TextInput value={name} onChange={onSetName} id="name" />

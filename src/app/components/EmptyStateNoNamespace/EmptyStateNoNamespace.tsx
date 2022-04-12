@@ -32,7 +32,7 @@ export const EmptyStateNoNamespace: FunctionComponent<EmptyStateNoNamespaceProps
           </Title>
           <EmptyStateBody>{t('namespaceEmptyMsg')}</EmptyStateBody>
           <Button variant="primary" onClick={onModalToggle}>
-            {t('registerEvalNamespace')}
+            {t('createPreviewNamespace')}
           </Button>
           <EmptyStateSecondaryActions>
             <Button variant="link" icon={<ExternalLinkSquareAltIcon />}>

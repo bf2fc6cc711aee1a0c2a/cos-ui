@@ -16,7 +16,6 @@ import {
 } from '@patternfly/react-core';
 
 import { useAlert } from '@rhoas/app-services-ui-shared';
-import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 import { ModalAlerts } from './ModalAlerts';
 
@@ -44,14 +43,15 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
     setEvalNamespace(`eval-namespace-${short.generate()}`);
   }, []);
 
-  const onSuccess = useCallback((data?: ConnectorNamespace) => {
+  const onSuccess = useCallback((name: string | undefined) => {
     refreshResponse();
     setIsLoading(false);
     onModalToggle();
     alert?.addAlert({
       id: 'eval-namespace-register-success',
       variant: AlertVariant.success,
-      title: t(`${data?.name} registered successfully.`),
+      title: t(`namespaceReady`),
+      description: t('creationSuccessAlertDescription', { name }),
     });
   }, []);
 
@@ -80,7 +80,7 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
   return (
     <Modal
       variant={ModalVariant.medium}
-      title={t('registrationEvalNamespace')}
+      title={t('createPreviewNamespace')}
       isOpen={isModalOpen}
       onClose={onModalToggle}
       actions={[
@@ -92,7 +92,7 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
           isDisabled={isLoading}
           onClick={onRegister}
         >
-          {t('register')}
+          {t('create')}
         </Button>,
         <Button
           key="cancel"

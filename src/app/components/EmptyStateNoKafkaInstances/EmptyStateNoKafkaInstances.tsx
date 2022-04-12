@@ -22,7 +22,7 @@ export const EmptyStateNoKafkaInstances: FunctionComponent<EmptyStateNoKafkaInst
     const { t } = useTranslation();
     return (
       <EmptyState
-        variant={EmptyStateVariant.xl}
+        variant={EmptyStateVariant.large}
         className={css('pf-u-pt-2xl pf-u-pt-3xl-on-md')}
       >
         <EmptyStateIcon icon={PlusCircleIcon} />

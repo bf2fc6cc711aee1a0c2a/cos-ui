@@ -58,7 +58,7 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
           {textListItem(t('connectorType'), type)}
           {textListItem(t('bootstrapServer'), bootstrapServer)}
           {textListItem(t('kafkaInstance'), kafkaId)}
-          {textListItem(t('deploymentNamespace'), namespaceId)}
+          {textListItem(t('namespace'), namespaceId)}
           {textListItem(t('owner'), owner)}
           {textListItem(
             t('timeCreated'),
