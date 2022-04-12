@@ -1,3 +1,4 @@
+import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,8 +10,6 @@ import {
   Text,
   TextInput,
   TextVariants,
-  Title,
-  TitleSizes,
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 
@@ -35,14 +34,7 @@ export const CommonStep: FC<CommonStepProp> = ({
   };
 
   return (
-    <>
-      <Title
-        headingLevel="h3"
-        size={TitleSizes['2xl']}
-        className={'pf-u-pr-md pf-u-pb-md'}
-      >
-        {t('common')}
-      </Title>
+    <StepBodyLayout title={t('core')} description={t('basicStepDescription')}>
       <Form>
         <FormGroup
           label={t('connectorName')}
@@ -84,6 +76,6 @@ export const CommonStep: FC<CommonStepProp> = ({
           )}
         </FormGroup>
       </Form>
-    </>
+    </StepBodyLayout>
   );
 };

@@ -68,7 +68,7 @@ function useBasicStep() {
     )
   );
   return {
-    name: t('common'),
+    name: t('core'),
     isActive,
     component: (
       <StepErrorBoundary>

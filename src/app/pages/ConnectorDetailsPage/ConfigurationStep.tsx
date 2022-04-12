@@ -1,4 +1,5 @@
 import { JsonSchemaConfigurator } from '@app/components/JsonSchemaConfigurator/JsonSchemaConfigurator';
+import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { clearSecretEmptyValue } from '@utils/shared';
 import _ from 'lodash';
 import React from 'react';
@@ -11,8 +12,6 @@ import {
   Popover,
   Text,
   TextVariants,
-  Title,
-  TitleSizes,
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 
@@ -41,14 +40,10 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
   };
 
   return (
-    <>
-      <Title
-        headingLevel="h3"
-        size={TitleSizes['2xl']}
-        className={'pf-u-pr-md pf-u-pb-md'}
-      >
-        {t('connectorSpecific')}
-      </Title>
+    <StepBodyLayout
+      title={t('configurations')}
+      description={t('configurationStepDescription')}
+    >
       {editMode ? (
         <JsonSchemaConfigurator
           schema={schema}
@@ -109,7 +104,7 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
             ))}
         </Form>
       )}
-    </>
+    </StepBodyLayout>
   );
 };
 type DataShape = {

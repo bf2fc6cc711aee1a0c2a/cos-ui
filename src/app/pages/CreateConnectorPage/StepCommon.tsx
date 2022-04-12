@@ -40,10 +40,7 @@ export const StepCommon: FC = () => {
 
   return (
     <>
-      <StepBodyLayout
-        title={t('common')}
-        description={t('basicStepDescription')}
-      >
+      <StepBodyLayout title={t('core')} description={t('basicStepDescription')}>
         <Grid hasGutter>
           <Form className="pf-m-9-col-on-lg">
             <FormGroup
