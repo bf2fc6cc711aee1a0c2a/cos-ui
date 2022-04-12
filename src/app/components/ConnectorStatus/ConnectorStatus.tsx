@@ -1,14 +1,14 @@
+import { capitalize } from 'lodash';
 import React, { FunctionComponent } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { Flex, FlexItem, Spinner } from '@patternfly/react-core';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
-  PendingIcon,
+  OutlinedPauseCircleIcon,
+  OutlinedTimesCircleIcon,
 } from '@patternfly/react-icons';
-
-import './ConnectorStatus.css';
+import * as tokens from '@patternfly/react-tokens';
 
 type ConnectorStatusProps = {
   name: string;
@@ -20,7 +20,6 @@ export const ConnectorStatus: FunctionComponent<ConnectorStatusProps> = ({
   status,
 }) => {
   const label = useConnectorStatusLabel(status);
-
   return (
     <Flex>
       <FlexItem spacer={{ default: 'spacerSm' }}>
@@ -37,58 +36,26 @@ export const ConnectorStatusIcon: FunctionComponent<ConnectorStatusProps> = ({
 }) => {
   switch (status?.toLowerCase()) {
     case 'ready':
-      return (
-        <CheckCircleIcon className="cos--connectors__table--icon--completed" />
-      );
+      return <CheckCircleIcon color={tokens.global_success_color_100.value} />;
     case 'failed':
       return (
-        <ExclamationCircleIcon className="cos--connectors__table--icon--failed" />
+        <ExclamationCircleIcon color={tokens.global_danger_color_100.value} />
       );
-    case 'accepted':
-      return <PendingIcon />;
-    case 'provisioning':
-    case 'preparing':
-    case 'disconnected':
+    case 'stopped':
+      return <OutlinedPauseCircleIcon />;
+    case 'deleted':
+      return <OutlinedTimesCircleIcon />;
+    default:
       return (
         <Spinner
           size="md"
           aria-label={name}
-          aria-valuetext="Creation in progress"
+          aria-valuetext="Please wait, tasks are in progress"
         />
       );
-    case 'deprovision':
-    case 'deleted':
-      return null;
   }
-  return <PendingIcon />;
 };
 
-export enum ConnectorStatuses {
-  Ready = 'ready',
-  Failed = 'failed',
-  Assigning = 'assigning',
-  Assigned = 'assigned',
-  Updating = 'updating',
-  Provisioning = 'provisioning',
-  Deleting = 'deleting',
-  Deleted = 'deleted',
-  Disconnected = 'disconnected',
-}
-
 export function useConnectorStatusLabel(status: string) {
-  const { t } = useTranslation();
-
-  const statusOptions = [
-    { value: ConnectorStatuses.Ready, label: t('running') },
-    { value: ConnectorStatuses.Failed, label: t('failed') },
-    { value: ConnectorStatuses.Assigning, label: t('creationPending') },
-    { value: ConnectorStatuses.Assigned, label: t('creationInProgress') },
-    { value: ConnectorStatuses.Updating, label: t('creationInProgress') },
-    { value: ConnectorStatuses.Provisioning, label: t('creationInProgress') },
-    { value: ConnectorStatuses.Deleting, label: t('deleting') },
-    { value: ConnectorStatuses.Deleted, label: t('deleted') },
-    { value: ConnectorStatuses.Disconnected, label: t('provisioning') },
-  ];
-
-  return statusOptions.find((s) => s.value === status)?.label || status;
+  return typeof status !== undefined ? capitalize(status) : 'Undefined';
 }
