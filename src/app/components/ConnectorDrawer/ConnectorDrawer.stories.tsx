@@ -4,7 +4,7 @@ import React from 'react';
 
 import { Drawer, DrawerContent } from '@patternfly/react-core';
 
-import { ConnectorStatuses } from '../ConnectorStatus/ConnectorStatus';
+import { ConnectorStatusValues } from '../ConnectorStatus/ConnectorStatus.stories';
 import { ConnectorDrawerPanelContent } from './ConnectorDrawer';
 
 export default {
@@ -29,7 +29,7 @@ export default {
   },
   argTypes: {
     status: {
-      options: Object.values(ConnectorStatuses),
+      options: Object.values(ConnectorStatusValues),
       control: 'radio',
     },
   },
