@@ -49,7 +49,6 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
     const [connectorData, setConnectorData] = useState<Connector>();
     const { hash } = useLocation();
     const connectorId = hash.split('&')[0].substring(1);
-    const [duplicateMode, setDuplicateMode] = useState<boolean | undefined>();
     const getConnectorData = useCallback((data) => {
       setConnectorData(data as Connector);
     }, []);
@@ -72,12 +71,6 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
     const getConnectorTypeInfo = useCallback((data) => {
       setConnectorTypeDetails(data as ConnectorType);
     }, []);
-
-    useEffect(() => {
-      if (connectorId !== undefined) {
-        setDuplicateMode(true);
-      }
-    }, [connectorId]);
 
     useEffect(() => {
       getConnector({
@@ -127,12 +120,12 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
               connectorId={connectorId}
               connectorData={connectorData}
               connectorTypeDetails={connectorTypeDetails}
-              duplicateMode={duplicateMode}
+              duplicateMode={true}
               onSave={onSave}
             >
               <CreateConnectorWizard onClose={openLeaveConfirm} />
               <Modal
-                title={t('Leave page?')}
+                title={t('leaveDuplicateConnectorConfirmModalTitle')}
                 variant={'small'}
                 isOpen={askForLeaveConfirm}
                 onClose={closeLeaveConfirm}

@@ -338,7 +338,9 @@ export const creationWizardMachine = model.createMachine(
                   name: context.name,
                   steps: context.configurationSteps || ['single step'],
                   activeStep: context.activeConfigurationStep || 0,
-                  isActiveStepValid: context.connectorConfiguration !== false,
+                  isActiveStepValid:
+                    context.duplicateMode ||
+                    context.connectorConfiguration !== false,
                   duplicateMode: context.duplicateMode,
                   connectorData: context.connectorData,
                 };

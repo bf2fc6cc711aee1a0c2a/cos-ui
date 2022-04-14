@@ -4,7 +4,7 @@ import { StepErrorBoundary } from '@app/components/StepErrorBoundary/StepErrorBo
 import { ConnectorConfiguratorComponent } from '@app/machines/StepConfiguratorLoader.machine';
 import { useCos } from '@context/CosContext';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
-import { clearSecretEmptyValue, mapToObject } from '@utils/shared';
+import { clearEmptyObjectValues, mapToObject } from '@utils/shared';
 import _ from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -366,7 +366,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
       )}
 
       <Modal
-        title={t('leaveEditConfirmModalTitle')}
+        title={t('leaveEditConnectorConfirmModalTitle')}
         variant={'small'}
         isOpen={askForLeaveConfirm}
         onClose={closeLeaveConfirm}
@@ -379,7 +379,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
           </Button>,
         ]}
       >
-        {t('leaveEditConfirmModalDescription')}
+        {t('leaveEditConnectorConfirmModalDescription')}
       </Modal>
     </>
   );
@@ -408,10 +408,10 @@ const ConnectedCustomConfigurator: FC<{
   if (configuration instanceof Map) {
     formConfiguration = new Map(configuration);
   } else {
-    formConfiguration = JSON.parse(JSON.stringify(configuration));
-    clearSecretEmptyValue(formConfiguration);
+    formConfiguration = clearEmptyObjectValues(
+      JSON.parse(JSON.stringify(configuration))
+    );
   }
-
   return (
     <Configurator
       activeStep={step - 1}
