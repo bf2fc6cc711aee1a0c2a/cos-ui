@@ -1,4 +1,5 @@
 import { useCreateConnectorWizardService } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
+import { createDefaultFromSchema } from '@app/components/JsonSchemaConfigurator/CustomJsonSchemaBridge';
 import { JsonSchemaConfigurator } from '@app/components/JsonSchemaConfigurator/JsonSchemaConfigurator';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { ConfiguratorActorRef } from '@app/machines/StepConfigurator.machine';
@@ -6,7 +7,7 @@ import {
   ConnectorConfiguratorComponent,
   ConnectorConfiguratorProps,
 } from '@app/machines/StepConfiguratorLoader.machine';
-import { clearSecretEmptyValue, mapToObject } from '@utils/shared';
+import { clearEmptyObjectValues, mapToObject } from '@utils/shared';
 import _ from 'lodash';
 import React, { ComponentType, FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -41,17 +42,17 @@ const ConnectedCustomConfigurator: FunctionComponent<{
     )
   );
   if (duplicateMode) {
-    clearSecretEmptyValue(configuration);
+    const clearedConfiguration = clearEmptyObjectValues(configuration);
     const defaultEntries = JSON.parse(JSON.stringify(connectorData?.connector));
     let combineConfiguration = {};
     if (configuration instanceof Map) {
       combineConfiguration = _.merge(
         {},
         defaultEntries,
-        mapToObject(configuration)
+        mapToObject(clearedConfiguration)
       );
     } else {
-      combineConfiguration = _.merge({}, defaultEntries, configuration);
+      combineConfiguration = _.merge({}, defaultEntries, clearedConfiguration);
     }
     configuration = new Map(Object.entries(combineConfiguration));
   }
@@ -82,12 +83,26 @@ const ConnectedJsonSchemaConfigurator: FunctionComponent<{
       [actor]
     )
   );
-  if (duplicateMode) clearSecretEmptyValue(configuration);
-
+  const schema = (connector as ConnectorTypeAllOf).schema!;
+  // uniforms will not set this field, let's pull the default value
+  // from the schema
+  const dataShape = createDefaultFromSchema('data_shape', schema);
+  const initialConfiguration = {
+    ...(dataShape && { data_shape: dataShape }),
+  };
   return (
     <JsonSchemaConfigurator
-      schema={(connector as ConnectorTypeAllOf).schema!}
-      configuration={configuration || {}}
+      schema={schema}
+      configuration={
+        // cater for connectors that have not been created via
+        // the UI and do not contain this data_shape attribute
+        configuration
+          ? typeof (configuration as { data_shape: unknown }).data_shape !==
+            'undefined'
+            ? configuration
+            : { ...(configuration as any), data_shape: dataShape }
+          : initialConfiguration
+      }
       duplicateMode={duplicateMode}
       onChange={(configuration, isValid) =>
         actor.send({ type: 'change', configuration, isValid })

@@ -1,6 +1,6 @@
 import { JsonSchemaConfigurator } from '@app/components/JsonSchemaConfigurator/JsonSchemaConfigurator';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
-import { clearSecretEmptyValue } from '@utils/shared';
+import { clearEmptyObjectValues } from '@utils/shared';
 import _ from 'lodash';
 import React from 'react';
 import { FC } from 'react';
@@ -31,8 +31,9 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const formConfiguration = JSON.parse(JSON.stringify(configuration));
-  clearSecretEmptyValue(formConfiguration);
+  const formConfiguration = clearEmptyObjectValues(
+    JSON.parse(JSON.stringify(configuration))
+  );
 
   const onChange = (config: unknown, isValid: boolean) => {
     onUpdateConfiguration('connector', config);

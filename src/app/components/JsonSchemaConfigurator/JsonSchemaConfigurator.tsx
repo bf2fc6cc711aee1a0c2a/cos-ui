@@ -1,6 +1,5 @@
-import { Resolver } from '@stoplight/json-ref-resolver';
 import { createValidator } from '@utils/createValidator';
-import { clearSecretEmptyValue } from '@utils/shared';
+import { clearEmptyObjectValues } from '@utils/shared';
 import { ValidateFunction } from 'ajv';
 import _ from 'lodash';
 import React, { FunctionComponent } from 'react';
@@ -22,110 +21,42 @@ type JsonSchemaConfiguratorProps = {
   editCase?: boolean;
   duplicateMode?: boolean;
 };
-const resolver = new Resolver();
 
 export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorProps> =
   ({ schema, configuration, onChange, editCase, duplicateMode }) => {
     schema.type = schema.type || 'object';
-    // Suppress the experimental steps from the UI for the moment
-    try {
-      delete schema.properties.steps;
-    } catch (e) {}
 
     const schemaValidator = createValidator(schema);
-    const bridge = new CustomJsonSchemaBridge(schema, schemaValidator);
-    const { required } = bridge.schema;
+    const bridge = new CustomJsonSchemaBridge(
+      schema,
+      schemaValidator,
+      editCase || duplicateMode
+    );
 
-    async function getDataShape(): Promise<any> {
-      const copiedBridge = JSON.parse(JSON.stringify(bridge));
-      let obj: any = [];
-      for (const [key] of Object.entries(
-        copiedBridge.schema.properties.data_shape?.properties
-      )) {
-        const dataShapeReolved = await resolver.resolve(copiedBridge.schema, {
-          jsonPointer: `#/$defs/data_shape/${key}`,
-        });
-        const result = await dataShapeReolved.result;
-        obj = { ...obj, [key]: result };
-      }
-      return obj;
-    }
-
-    const onChangeWizard = async (model: any, isValid: boolean) => {
-      const copiedModel = JSON.parse(JSON.stringify(model));
-      let dataShapePointer: any = [];
-      if (copiedModel.data_shape !== undefined) {
-        dataShapePointer = await getDataShape();
-        const { data_shape } = copiedModel;
-        Object.keys(data_shape).map((key) => {
-          const defaultValue =
-            dataShapePointer[key].properties?.format?.default;
-          if (_.isEmpty(data_shape[key])) {
-            copiedModel.data_shape[key] = { format: defaultValue };
-          }
-        });
-      }
-
-      const requiredEntries = {};
-      for (const [key, value] of Object.entries(copiedModel)) {
-        for (const r in required) {
-          if (key === required[r] && value !== undefined) {
-            const obj = { [key]: value };
-            Object.assign(requiredEntries, obj);
-          }
-        }
-      }
-      const compareRequiredEntriesKeys = (
-        requiredEntries: any,
-        required: any
-      ) => {
-        const aKeys = Object.keys(requiredEntries).sort();
-        const bKeys = required.slice().sort();
-        return JSON.stringify(aKeys) === JSON.stringify(bKeys);
-      };
-      isValid =
-        copiedModel.data_shape === undefined
-          ? compareRequiredEntriesKeys(requiredEntries, required)
-          : compareRequiredEntriesKeys(requiredEntries, required);
-
-      if (isValid) {
-        onChange(copiedModel, isValid);
-      } else {
-        onChange(copiedModel, false);
-      }
+    const onChangeModel = async (model: any) => {
+      // schemaValidator returns null when there's no errors in the form
+      const errors = schemaValidator(model);
+      // handy for seeing form validation problems
+      // console.log("Errors: ", errors);
+      onChange(model, errors === null);
     };
-    React.useEffect(() => {
-      if (duplicateMode) {
-        clearSecretEmptyValue(configuration);
-        onChange(configuration, true);
-      }
-    }, [configuration]);
 
+    // no need to create form elements for error_handler, processors or steps
+    const { error_handler, processors, steps, ...properties } =
+      bridge.schema.properties;
+    // this is great for diagnosing form rendering problems
+    // console.log('properties: ', properties, ' configuration: ', configuration);
     return (
       <Grid hasGutter>
         <KameletForm
           schema={bridge}
-          model={configuration}
-          onChangeModel={(model: any) => onChangeWizard(model, false)}
+          model={clearEmptyObjectValues(configuration)}
+          onChangeModel={(model: any) => onChangeModel(model)}
           className="connector-specific pf-c-form pf-m-9-col-on-lg"
         >
-          {Object.keys(bridge.schema.properties).map((key) => {
-            if (!['processors', 'error_handler'].includes(key)) {
-              return (
-                <AutoField
-                  key={key}
-                  name={key}
-                  disabled={
-                    (editCase || duplicateMode) &&
-                    _.find(bridge.schema.properties[key].oneOf, {
-                      format: 'password',
-                    })
-                  }
-                />
-              );
-            }
-            return false;
-          })}
+          {Object.keys(properties).map((key) => (
+            <AutoField key={key} name={key} />
+          ))}
         </KameletForm>
       </Grid>
     );
@@ -140,5 +71,4 @@ function Auto(parent: any): any {
   }
   return _;
 }
-
 const KameletForm = Auto(ValidatedQuickForm);
