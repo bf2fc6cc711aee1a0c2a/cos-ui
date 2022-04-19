@@ -83,9 +83,8 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
       isDisabled: !canStop,
     },
     {
-      title: t('delete'),
-      onClick: onDelete,
-      isDisabled: !canDelete,
+      title: t('details'),
+      onClick: onSelect,
     },
     {
       title: t('edit'),
@@ -93,7 +92,7 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
       isDisabled: false,
     },
     {
-      title: t('duplicateConnector'),
+      title: t('duplicate'),
       onClick: () => onDuplicateConnector(connectorId),
       isDisabled: false,
     },
@@ -101,8 +100,9 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
       isSeparator: true,
     },
     {
-      title: t('details'),
-      onClick: onSelect,
+      title: t('delete'),
+      onClick: onDelete,
+      isDisabled: !canDelete,
     },
   ];
 

@@ -101,7 +101,7 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
 
   return (
     <StepBodyLayout
-      title={t('configurations')}
+      title={t('connectorSpecific')}
       description={t('configurationStepDescription')}
     >
       {editMode ? (
