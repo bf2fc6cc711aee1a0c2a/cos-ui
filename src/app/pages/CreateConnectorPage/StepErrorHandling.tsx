@@ -1,7 +1,7 @@
 import { useErrorHandlingMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { createValidator } from '@utils/createValidator';
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { FunctionComponent, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { JSONSchemaBridge } from 'uniforms-bridge-json-schema';
 
@@ -67,6 +67,11 @@ export const StepErrorHandling: FunctionComponent = () => {
     const keys = Object.keys(item.properties);
     return <SelectOption key={keys[0]} value={keys[0]} />;
   });
+
+  useEffect(() => {
+    errorHandler ?? onSetErrorHandler(Object.keys(error_handler['default'])[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <StepBodyLayout

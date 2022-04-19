@@ -26,7 +26,7 @@ export type ErrorHandler = {
 export type ErrorHandlerStepProps = {
   editMode: boolean;
   schema: Record<string, any>;
-  configuration: ErrorHandler;
+  configuration: ErrorHandler | undefined;
   changeIsValid: (isValid: boolean) => void;
   onUpdateConfiguration: (type: string, update: any) => void;
 };
@@ -41,6 +41,11 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
   const [topic, setTopic] = useState<string>();
   const [errorHandler, setErrorHandler] = useState<any>();
   const { t } = useTranslation();
+
+  const schemaValidator = createValidator(schema);
+  const bridge = new JSONSchemaBridge(schema, schemaValidator);
+  const { error_handler } = bridge.schema?.properties;
+  const oneOf = error_handler['oneOf'];
 
   const onToggle = () => setOpen((isOpen) => !isOpen);
 
@@ -71,8 +76,13 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
   };
 
   useEffect(() => {
-    setErrorHandler(Object.keys(configuration)[0]);
+    setErrorHandler(
+      configuration
+        ? Object.keys(configuration)[0]
+        : Object.keys(error_handler.default)[0]
+    );
     if (
+      configuration &&
       Object.keys(configuration)[0] === 'dead_letter_queue' &&
       !_.isEmpty(configuration.dead_letter_queue)
     ) {
@@ -91,11 +101,6 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
     val ? changeIsValid(true) : changeIsValid(false);
     onUpdateConfiguration('error', { dead_letter_queue: { topic: val } });
   };
-
-  const schemaValidator = createValidator(schema);
-  const bridge = new JSONSchemaBridge(schema, schemaValidator);
-  const { error_handler } = bridge.schema?.properties;
-  const oneOf = error_handler['oneOf'];
 
   const dropdownItems = oneOf.map((item: any) => {
     const keys = Object.keys(item.properties);
