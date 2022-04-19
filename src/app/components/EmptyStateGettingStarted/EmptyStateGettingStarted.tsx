@@ -24,11 +24,11 @@ export const EmptyStateGettingStarted: FunctionComponent<EmptyStateGettingStarte
     const { t } = useTranslation();
     return (
       <EmptyState
-        variant={EmptyStateVariant.xl}
+        variant={EmptyStateVariant.large}
         className={css('pf-u-pt-2xl pf-u-pt-3xl-on-md')}
       >
         <EmptyStateIcon icon={PlusCircleIcon} />
-        <Title headingLevel={'h1'} size={TitleSizes['4xl']}>
+        <Title headingLevel={'h1'} size={TitleSizes['xl']}>
           {t('noConnectorInstances')}
         </Title>
         <EmptyStateBody>
