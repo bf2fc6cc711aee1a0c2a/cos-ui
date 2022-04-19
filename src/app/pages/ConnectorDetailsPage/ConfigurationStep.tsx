@@ -1,6 +1,9 @@
 import { JsonSchemaConfigurator } from '@app/components/JsonSchemaConfigurator/JsonSchemaConfigurator';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
-import { clearEmptyObjectValues } from '@utils/shared';
+import {
+  clearEmptyObjectValues,
+  patchConfigurationObject,
+} from '@utils/shared';
 import _ from 'lodash';
 import React from 'react';
 import { FC } from 'react';
@@ -14,6 +17,8 @@ import {
   TextVariants,
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
+
+import './ConfigurationStep.css';
 
 export type ConfigurationStepProps = {
   editMode: boolean;
@@ -31,13 +36,67 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const formConfiguration = clearEmptyObjectValues(
-    JSON.parse(JSON.stringify(configuration))
+  const formConfiguration = patchConfigurationObject(
+    schema,
+    clearEmptyObjectValues(JSON.parse(JSON.stringify(configuration)))
   );
 
   const onChange = (config: unknown, isValid: boolean) => {
     onUpdateConfiguration('connector', config);
     changeIsValid(isValid);
+  };
+
+  const getFieldViewComponent = (
+    propertyKey: string,
+    propertyDefinition: { title?: string; type?: string; 'x-group'?: string },
+    value: any
+  ): React.ReactNode => {
+    const { title, type, 'x-group': xGroup } = propertyDefinition;
+    // a good place to start troubleshooting problems in the detail view
+    /*
+    console.log(
+      'getViewComponent, propertyName: ',
+      propertyName,
+      ' propertyDefinition: ',
+      propertyDefinition,
+      ' value: ',
+      value
+    );
+    */
+    const propertyNameFallback = _.capitalize(propertyKey.replace('_', ' '));
+    const noPropertySet = (name: string) => (
+      <Text className={'connector-detail__field_view_no_value'}>
+        {t('propertyNotConfigured', { name })}
+      </Text>
+    );
+    // Use the schema to determine the best way to
+    // represent the data
+    switch (type) {
+      case 'object':
+        if (propertyKey === 'data_shape') {
+          return <DataShape data={value} />;
+        }
+        if (value) {
+          return (
+            <Text component={TextVariants.pre}>{JSON.stringify(value)}</Text>
+          );
+        }
+        return noPropertySet(title || propertyNameFallback);
+      case 'boolean':
+        if (typeof value !== 'undefined') {
+          return <Text>{JSON.stringify(value)}</Text>;
+        }
+        return noPropertySet(title || propertyNameFallback);
+      default:
+        switch (xGroup) {
+          case 'credentials':
+            return <Text>**************************</Text>;
+        }
+        if (typeof value !== 'undefined') {
+          return <Text>{value}</Text>;
+        }
+        return noPropertySet(title || propertyNameFallback);
+    }
   };
 
   return (
@@ -48,9 +107,9 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
       {editMode ? (
         <JsonSchemaConfigurator
           schema={schema}
-          configuration={formConfiguration || {}}
+          configuration={formConfiguration}
           onChange={onChange}
-          editCase={true}
+          editMode={true}
         />
       ) : (
         <Form>
@@ -92,14 +151,10 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
                   </Popover>
                 }
               >
-                {key === 'data_shape' ? (
-                  <DataShape data={formConfiguration[key]} />
-                ) : (
-                  <Text component={TextVariants.p}>
-                    {_.isObject(formConfiguration[key])
-                      ? JSON.stringify(formConfiguration[key])
-                      : formConfiguration[key]}
-                  </Text>
+                {getFieldViewComponent(
+                  key,
+                  schema.properties[key],
+                  formConfiguration[key]
                 )}
               </FormGroup>
             ))}

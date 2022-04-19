@@ -3,6 +3,7 @@ import { clearEmptyObjectValues } from '@utils/shared';
 import { ValidateFunction } from 'ajv';
 import _ from 'lodash';
 import React, { FunctionComponent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AutoForm, ValidatedQuickForm } from 'uniforms';
 import { AutoField } from 'uniforms-patternfly';
 
@@ -17,27 +18,29 @@ export type ValidatorResultType = ValidateFunction<unknown>['errors'];
 type JsonSchemaConfiguratorProps = {
   schema: Record<string, any>;
   configuration: unknown;
-  onChange: (configuration: unknown, isValid: boolean) => void;
-  editCase?: boolean;
   duplicateMode?: boolean;
+  editMode?: boolean;
+  onChange: (configuration: unknown, isValid: boolean) => void;
 };
 
 export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorProps> =
-  ({ schema, configuration, onChange, editCase, duplicateMode }) => {
+  ({ schema, configuration, duplicateMode, editMode, onChange }) => {
+    const { t } = useTranslation();
     schema.type = schema.type || 'object';
 
     const schemaValidator = createValidator(schema);
     const bridge = new CustomJsonSchemaBridge(
       schema,
       schemaValidator,
-      editCase || duplicateMode
+      t,
+      duplicateMode || editMode || false
     );
 
     const onChangeModel = async (model: any) => {
       // schemaValidator returns null when there's no errors in the form
       const errors = schemaValidator(model);
       // handy for seeing form validation problems
-      // console.log("Errors: ", errors);
+      // console.log("onChangeModel, form validation errors: ", errors);
       onChange(model, errors === null);
     };
 
