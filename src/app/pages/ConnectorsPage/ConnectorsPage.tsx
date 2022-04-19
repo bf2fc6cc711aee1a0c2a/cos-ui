@@ -15,9 +15,18 @@ import {
   useConnector,
 } from '@app/machines/Connector.machine';
 import { useCos } from '@context/CosContext';
-import React, { FunctionComponent, useCallback, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useContext,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 
+import {
+  QuickStartContext,
+  QuickStartContextValues,
+} from '@patternfly/quickstarts';
 import { Card, PageSection, TextContent, Title } from '@patternfly/react-core';
 
 import { AlertVariant, useAlert } from '@rhoas/app-services-ui-shared';
@@ -100,6 +109,8 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
   onConnectorDetail,
   onDuplicateConnector,
 }: ConnectorsPageBodyProps) => {
+  const { t } = useTranslation();
+  const qsContext: QuickStartContextValues = useContext(QuickStartContext);
   const {
     loading,
     error,
@@ -145,9 +156,10 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
       return (
         <EmptyStateGettingStarted
           onCreate={onCreateConnector}
-          onHelp={function (): void {
-            throw new Error('Function not implemented.');
-          }}
+          onHelp={() =>
+            qsContext.setActiveQuickStart &&
+            qsContext.setActiveQuickStart(t('getting-started-connectors'))
+          }
         />
       );
     case error:
