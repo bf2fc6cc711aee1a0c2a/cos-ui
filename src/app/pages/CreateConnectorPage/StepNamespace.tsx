@@ -109,7 +109,6 @@ const ClustersGallery: FunctionComponent = () => {
 
   const getEvalNamespaceAlert = (expiration: string): string => {
     const { hours, min } = getPendingTime(new Date(expiration));
-    console.log(hours, min);
     if (hours < 0 || min < 0) {
       return t('evalNamespaceExpiredMsg');
     }
