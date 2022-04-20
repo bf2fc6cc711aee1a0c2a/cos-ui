@@ -109,7 +109,7 @@ export function ConnectorTypesGallery() {
                         variant="info"
                         className="pf-u-mb-md"
                         isInline
-                        title="Kafka instances and namespaces both expire after 48 hours. When duplicating a Connectors instance, select a new Kafka instance and namespace. "
+                        title={t('duplicateAlertConnectorType')}
                       />
                       <Gallery hasGutter>
                         <Card

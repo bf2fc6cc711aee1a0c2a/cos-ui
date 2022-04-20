@@ -56,7 +56,7 @@ const getPendingTime = (expireTime: Date) => {
   let hourDiff = Math.floor(diff / 3600);
   diff -= hourDiff * 3600;
   let minuteDiff = Math.floor(diff / 60);
-  return ` ${hourDiff} hours ${minuteDiff} minute.`;
+  return { hours: hourDiff, min: minuteDiff };
 };
 
 export function SelectNamespace() {
@@ -83,16 +83,19 @@ const ClustersGallery: FunctionComponent = () => {
   const [evalInstance, setEvalInstance] = useState<
     ConnectorNamespace | undefined
   >();
+  const [namespaceExpired, setNamespaceExpired] = useState<boolean>(false);
 
   const {
     response,
     selectedId,
+    duplicateMode,
     loading,
     error,
     noResults,
     queryEmpty,
     firstRequest,
     onSelect,
+    onDeselect,
     onRefresh,
     onQuery,
   } = useNamespaceMachine();
@@ -102,6 +105,14 @@ const ClustersGallery: FunctionComponent = () => {
 
   const refreshResponse = () => {
     onRefresh();
+  };
+
+  const getEvalNamespaceAlert = (expiration: string): string => {
+    const { hours, min } = getPendingTime(new Date(expiration));
+    if (hours < 0 || min < 0) {
+      return t('evalNamespaceExpiredMsg');
+    }
+    return t('evalNamespaceExpire', { hours, min });
   };
 
   const onNamespaceSelection = (namespace: ConnectorNamespace) => {
@@ -115,6 +126,18 @@ const ClustersGallery: FunctionComponent = () => {
     );
     id ? setEvalInstance(id) : setEvalInstance(undefined);
   }, [response]);
+
+  useEffect(() => {
+    if (duplicateMode && response) {
+      if (response?.items?.find((i) => i.id === selectedId)) {
+        onSelect(selectedId!);
+      } else {
+        setNamespaceExpired(true);
+        onDeselect();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [duplicateMode, response, onDeselect]);
 
   return (
     <StepBodyLayout
@@ -165,6 +188,15 @@ const ClustersGallery: FunctionComponent = () => {
                   isEvalPresent={!!evalInstance}
                 />
                 <div className={'pf-l-stack__item pf-m-fill'}>
+                  {duplicateMode && namespaceExpired && (
+                    <Alert
+                      variant="info"
+                      className="pf-u-mb-md"
+                      isInline
+                      title={t('duplicateAlertNamespace')}
+                    />
+                  )}
+
                   {!!evalInstance && evalInstance?.id === selectedId && (
                     <Alert
                       variant={warningType(new Date(evalInstance.expiration!))}
@@ -172,8 +204,7 @@ const ClustersGallery: FunctionComponent = () => {
                       isInline
                       title={
                         <span>
-                          {t('evalNamespaceExpire')}
-                          {getPendingTime(new Date(evalInstance.expiration!))}
+                          {getEvalNamespaceAlert(evalInstance.expiration!)}
                         </span>
                       }
                     />
