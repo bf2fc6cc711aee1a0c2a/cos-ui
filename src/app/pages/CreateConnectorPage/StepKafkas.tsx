@@ -21,6 +21,7 @@ import { stringToChip } from 'src/utils/stringToChip';
 import { useDebounce } from 'src/utils/useDebounce';
 
 import {
+  Alert,
   Button,
   Card,
   CardBody,
@@ -56,6 +57,9 @@ export const SelectKafkaInstance: FunctionComponent = () => {
 };
 const KafkasGallery: FunctionComponent = () => {
   const { t } = useTranslation();
+
+  const [kafkaExpired, setKafkaExpired] = useState<boolean>(false);
+
   const {
     response,
     loading,
@@ -77,6 +81,7 @@ const KafkasGallery: FunctionComponent = () => {
       if (response?.items?.find((i) => i.id === selectedId)) {
         onSelect(selectedId!);
       } else {
+        setKafkaExpired(true);
         onDeselect();
       }
     }
@@ -121,6 +126,14 @@ const KafkasGallery: FunctionComponent = () => {
               <>
                 <KafkaToolbar />
                 <div className={'pf-l-stack__item pf-m-fill'}>
+                  {duplicateMode && kafkaExpired && (
+                    <Alert
+                      variant="info"
+                      className="pf-u-mb-md"
+                      isInline
+                      title={t('duplicateAlertKafka')}
+                    />
+                  )}
                   <Gallery hasGutter>
                     {response?.items?.map((i) => (
                       <Card

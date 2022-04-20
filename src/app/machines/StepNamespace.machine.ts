@@ -18,6 +18,7 @@ type Context = {
   response?: ApiSuccessResponse<ConnectorNamespace>;
   selectedNamespace?: ConnectorNamespace;
   error?: Object;
+  duplicateMode?: boolean | undefined;
 };
 
 const model = createModel(
@@ -59,7 +60,7 @@ const selectNamespace = model.assign(
   },
   'selectNamespace'
 );
-const reset = model.assign(
+const deselectNamespace = model.assign(
   {
     selectedNamespace: undefined,
   },
@@ -142,7 +143,7 @@ export const namespacesMachine = model.createMachine(
                   },
                   deselectNamespace: {
                     target: 'verify',
-                    actions: reset,
+                    actions: deselectNamespace,
                   },
                   confirm: {
                     target: '#done',
@@ -159,6 +160,7 @@ export const namespacesMachine = model.createMachine(
         type: 'final',
         data: {
           selectedNamespace: (context: Context) => context.selectedNamespace,
+          duplicateMode: (context: Context) => context.duplicateMode,
         },
       },
     },

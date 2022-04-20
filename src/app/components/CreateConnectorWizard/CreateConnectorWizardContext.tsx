@@ -163,11 +163,12 @@ export const useNamespaceMachine = () => {
       PAGINATED_MACHINE_ID
     ] as PaginatedApiActorType<ConnectorNamespace, {}, ConnectorNamespace>
   );
-  const { selectedId } = useSelector(
+  const { selectedId, duplicateMode } = useSelector(
     namespaceRef,
     useCallback(
       (state: EmittedFrom<typeof namespaceRef>) => ({
         selectedId: state.context.selectedNamespace?.id,
+        duplicateMode: state.context.duplicateMode,
       }),
       []
     )
@@ -178,6 +179,11 @@ export const useNamespaceMachine = () => {
     },
     [namespaceRef]
   );
+
+  const onDeselect = useCallback(() => {
+    namespaceRef.send({ type: 'deselectNamespace' });
+  }, [namespaceRef]);
+
   const onQuery = useCallback(
     (request: PaginatedApiRequest<{}>) => {
       namespaceRef.send({ type: 'api.query', ...request });
@@ -191,7 +197,9 @@ export const useNamespaceMachine = () => {
   return {
     ...api,
     selectedId,
+    duplicateMode,
     onSelect,
+    onDeselect,
     onRefresh,
     onQuery,
   };

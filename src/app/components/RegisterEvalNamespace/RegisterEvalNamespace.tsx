@@ -40,7 +40,7 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
   const alert = useAlert();
 
   useEffect(() => {
-    setEvalNamespace(`eval-namespace-${short.generate()}`);
+    setEvalNamespace(`preview-namespace-${short.generate()}`);
   }, []);
 
   const onSuccess = useCallback((name: string | undefined) => {
@@ -48,7 +48,7 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
     setIsLoading(false);
     onModalToggle();
     alert?.addAlert({
-      id: 'eval-namespace-register-success',
+      id: 'preview-namespace-register-success',
       variant: AlertVariant.success,
       title: t(`namespaceReady`),
       description: t('creationSuccessAlertDescription', { name }),
@@ -59,7 +59,7 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
     (description: string) => {
       setIsLoading(false);
       alert?.addAlert({
-        id: 'eval-namespace-register-error',
+        id: 'preview-namespace-register-error',
         variant: AlertVariant.danger,
         title: t('somethingWentWrong'),
         description,
