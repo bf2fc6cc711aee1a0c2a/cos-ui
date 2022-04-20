@@ -48,10 +48,14 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
 
   const getFieldViewComponent = (
     propertyKey: string,
-    propertyDefinition: { title?: string; type?: string; 'x-group'?: string },
+    propertyDefinition: {
+      title?: string;
+      type?: string;
+      oneOf?: Array<{ format: string }>;
+    },
     value: any
   ): React.ReactNode => {
-    const { title, type, 'x-group': xGroup } = propertyDefinition;
+    const { title, type, oneOf } = propertyDefinition;
     // a good place to start troubleshooting problems in the detail view
     /*
     console.log(
@@ -88,9 +92,12 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
         }
         return noPropertySet(title || propertyNameFallback);
       default:
-        switch (xGroup) {
-          case 'credentials':
+        if (typeof oneOf !== 'undefined') {
+          // we are assuming the schema is consistent here
+          const [def] = oneOf;
+          if (def.format === 'password') {
             return <Text>**************************</Text>;
+          }
         }
         if (typeof value !== 'undefined') {
           return <Text>{value}</Text>;

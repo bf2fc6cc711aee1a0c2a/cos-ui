@@ -62,8 +62,8 @@ export class CustomJsonSchemaBridge extends JSONSchemaBridge {
    */
   getProps(name: string): any {
     const { description, example, label, ...props } = super.getProps(name);
-    const { 'x-group': xGroup } = this.getField(name);
-    if (xGroup === 'credentials') {
+    const { isSecret } = this.getField(name);
+    if (isSecret) {
       return {
         ...props,
         ...(this.showCredentialHelpText && {
@@ -85,7 +85,7 @@ export class CustomJsonSchemaBridge extends JSONSchemaBridge {
   }
 
   getField(name: string): Record<string, any> {
-    const { oneOf, 'x-group': xGroup, ...field } = super.getField(name);
+    const { oneOf, ...field } = super.getField(name);
     // use this to look at field information
     /*
     console.log(
@@ -101,20 +101,20 @@ export class CustomJsonSchemaBridge extends JSONSchemaBridge {
     // https://uniforms.tools/docs/api-bridges/#note-on-allofanyofoneof
     // we need to pick the appropriate type for the form, let's use the
     // schema to guide these choices.
-    switch (xGroup) {
-      case 'credentials':
-        // credentials are either a string field or an opaque object, for
-        // forms let's pick the string field and override it to a password
-        const [asString] = oneOf;
-        return {
-          ...asString,
-          name,
-          required: field.required,
-          type: 'password',
-          'x-group': xGroup,
-        };
-      default:
-        return { name, ...field };
+    if (typeof oneOf !== 'undefined') {
+      // credentials are either a string field or an opaque object, for
+      // forms let's pick the string field and override it to a password
+      // We are assuming that the schema is consistent here
+      const [asString] = oneOf;
+      return {
+        ...asString,
+        name,
+        required: field.required,
+        type: asString.format,
+        isSecret: asString.format === 'password',
+      };
+    } else {
+      return { name, ...field };
     }
   }
 }
