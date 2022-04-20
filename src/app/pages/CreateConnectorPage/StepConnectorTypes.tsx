@@ -273,10 +273,18 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
   }, [nameInputRef, name]);
 
   const typeMenuItems = [
-    <SelectOption key="sink" value="sink">
+    <SelectOption
+      key="sink"
+      value="sink"
+      description={t('shortDescriptionSink')}
+    >
       {t('sink')}
     </SelectOption>,
-    <SelectOption key="source" value="source">
+    <SelectOption
+      key="source"
+      value="source"
+      description={t('shortDescriptionSource')}
+    >
       {t('source')}
     </SelectOption>,
   ];
