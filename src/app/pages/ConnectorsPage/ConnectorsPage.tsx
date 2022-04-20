@@ -124,6 +124,10 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
     query,
   } = useConnectorsMachine();
 
+  const currentConnectorRef = response?.items?.filter((ref) => {
+    return ref.id == `connector-${selectedConnector?.id}`;
+  })[0];
+
   switch (true) {
     case firstRequest:
       return <Loading />;
@@ -167,7 +171,10 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
     default:
       return (
         <ConnectorDrawer
+          currentConnectorRef={currentConnectorRef as ConnectorMachineActorRef}
           connector={selectedConnector}
+          onConnectorDetail={onConnectorDetail}
+          onDuplicateConnector={onDuplicateConnector}
           onClose={deselectConnector}
         >
           <PageSection variant={'light'}>
@@ -257,7 +264,6 @@ const ConnectedRow: FunctionComponent<ConnectedRowProps> = ({
     onDelete,
     onSelect,
   } = useConnector(connectorRef);
-
   const [showDeleteConnectorConfirm, setShowDeleteConnectorConfirm] =
     useState(false);
 
