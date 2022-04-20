@@ -10,6 +10,7 @@ import {
   EmptyStateSecondaryActions,
   EmptyStateVariant,
   Title,
+  TitleSizes,
 } from '@patternfly/react-core';
 import {
   ExternalLinkSquareAltIcon,
@@ -27,7 +28,7 @@ export const EmptyStateNoNamespace: FunctionComponent<EmptyStateNoNamespaceProps
       <Bullseye>
         <EmptyState variant={EmptyStateVariant.large}>
           <EmptyStateIcon icon={PlusCircleIcon} />
-          <Title headingLevel="h4" size="lg">
+          <Title headingLevel={'h1'} size={TitleSizes['xl']}>
             {t('noNamespaceAvailable')}
           </Title>
           <EmptyStateBody>{t('namespaceEmptyMsg')}</EmptyStateBody>

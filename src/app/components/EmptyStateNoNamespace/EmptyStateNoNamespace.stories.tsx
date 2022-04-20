@@ -14,4 +14,4 @@ const Template: ComponentStory<typeof EmptyStateNoNamespace> = (args) => (
   <EmptyStateNoNamespace {...args} />
 );
 
-export const NoOSDCluster = Template.bind({});
+export const NoNamespace = Template.bind({});

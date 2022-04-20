@@ -26,7 +26,7 @@ export const EmptyStateNoKafkaInstances: FunctionComponent<EmptyStateNoKafkaInst
         className={css('pf-u-pt-2xl pf-u-pt-3xl-on-md')}
       >
         <EmptyStateIcon icon={PlusCircleIcon} />
-        <Title headingLevel={'h1'} size={TitleSizes['4xl']}>
+        <Title headingLevel={'h1'} size={TitleSizes['xl']}>
           {t('noKafkaInstanceAvailable')}
         </Title>
         <EmptyStateBody>{t('noKafkaInstanceAvailableBody')}</EmptyStateBody>
