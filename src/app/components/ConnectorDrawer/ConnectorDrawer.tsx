@@ -1,5 +1,4 @@
 import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus';
-import { DialogDeleteConnector } from '@app/components/DialogDeleteConnector/DialogDeleteConnector';
 import {
   ConnectorMachineActorRef,
   useConnector,
@@ -9,7 +8,6 @@ import React, {
   ReactNode,
   useState,
   MouseEvent,
-  SyntheticEvent,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -31,15 +29,11 @@ import {
   TextVariants,
   Title,
   TitleSizes,
-  DropdownItem,
-  Dropdown,
-  KebabToggle,
-  DropdownPosition,
-  DropdownSeparator,
 } from '@patternfly/react-core';
 
 import { Connector } from '@rhoas/connector-management-sdk';
 
+import { ConnectorActionsMenu } from '../ConnectorActions/ConnectorActionsMenu';
 import { ConnectorInfoTextList } from '../ConnectorInfoTextList/ConnectorInfoTextList';
 import './ConnectorDrawer.css';
 
@@ -122,8 +116,6 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
     onConnectorDetail,
     onDuplicateConnector,
   }) => {
-    const [showDeleteConnectorConfirm, setShowDeleteConnectorConfirm] =
-      useState(false);
     const { t } = useTranslation();
     const [activeTabKey, setActiveTabKey] = useState<string | number>(0);
 
@@ -131,157 +123,81 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
       setActiveTabKey(eventKey);
     };
 
-    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const { connector } = useConnector(
+      currentConnectorRef as ConnectorMachineActorRef
+    );
 
-    const {
-      connector,
-      canStart,
-      canStop,
-      canDelete,
-      onStart,
-      onStop,
-      onDelete,
-    } = useConnector(currentConnectorRef as ConnectorMachineActorRef);
-    const onToggle = (isOpen: boolean) => {
-      setIsOpen(isOpen);
-    };
-    const onSelect = (
-      _event?: SyntheticEvent<HTMLDivElement, Event> | undefined
-    ) => {
-      setIsOpen(!isOpen);
-      onFocus();
-    };
-    const onFocus = () => {
-      const element = document.getElementById('connector-action');
-      element?.focus();
-    };
-    const doCancelDeleteConnector = () => {
-      setShowDeleteConnectorConfirm(false);
-    };
-    const doDeleteConnector = () => {
-      setShowDeleteConnectorConfirm(false);
-      onDelete();
-    };
+    React.useEffect(() => {
+      if (connector.status?.state == 'deleted') {
+        onClose();
+      }
+    }, [connector, onClose]);
 
-    const dropdownItems = [
-      <DropdownItem
-        key="start action"
-        component="button"
-        onClick={onStart}
-        isDisabled={!canStart}
-      >
-        {t('Start')}
-      </DropdownItem>,
-      <DropdownItem
-        key="stop action"
-        component="button"
-        onClick={onStop}
-        isDisabled={!canStop}
-      >
-        {t('Stop')}
-      </DropdownItem>,
-      <DropdownItem
-        key="edit action"
-        component="button"
-        onClick={() => onConnectorDetail(id, 'configuration')}
-      >
-        {t('Edit')}
-      </DropdownItem>,
-      <DropdownItem
-        key="Duplicate action"
-        component="button"
-        onClick={() => onDuplicateConnector(id)}
-      >
-        {t('Duplicate')}
-      </DropdownItem>,
-      <DropdownSeparator key="separator" />,
-      <DropdownItem
-        key="delete action"
-        component="button"
-        onClick={() => setShowDeleteConnectorConfirm(true)}
-        isDisabled={!canDelete}
-      >
-        {t('Delete')}
-      </DropdownItem>,
-    ];
     return (
-      <>
-        <DialogDeleteConnector
-          connectorName={name}
-          showDialog={showDeleteConnectorConfirm}
-          onCancel={doCancelDeleteConnector}
-          onConfirm={doDeleteConnector}
-        />
-        <DrawerPanelContent widths={{ default: 'width_50' }}>
-          <DrawerHead>
-            <TextContent>
-              <Text
-                component={TextVariants.small}
-                className="connector-drawer__header-text"
-              >
-                {t('connectorName')}
-              </Text>
-              <Flex>
-                <FlexItem>
-                  <Title
-                    headingLevel={'h2'}
-                    size={TitleSizes['xl']}
-                    className="connector-drawer__header-title"
-                  >
-                    {name}
-                  </Title>
-                </FlexItem>
-                <FlexItem spacer={{ default: 'spacerSm' }}>
-                  <ConnectorStatus
-                    name={name}
-                    status={connector.status?.state!}
-                  />
-                </FlexItem>
-              </Flex>
-            </TextContent>
-            <DrawerActions>
-              <Dropdown
-                onSelect={onSelect}
-                toggle={
-                  <KebabToggle onToggle={onToggle} id="connector-action" />
-                }
-                isOpen={isOpen}
-                isPlain
-                dropdownItems={dropdownItems}
-                position={DropdownPosition.right}
-              />
-              <DrawerCloseButton onClick={onClose} />
-            </DrawerActions>
-          </DrawerHead>
-          <DrawerPanelBody>
-            <Tabs activeKey={activeTabKey} onSelect={selectActiveKey}>
-              <Tab
-                eventKey={0}
-                title={<TabTitleText>{t('details')}</TabTitleText>}
-              >
-                <div className="connector-drawer__tab-content">
-                  <ConnectorInfoTextList
-                    name={name}
-                    id={id}
-                    bootstrapServer={bootstrapServer}
-                    kafkaId={kafkaId}
-                    namespaceId={namespaceId}
-                    owner={owner}
-                    createdAt={createdAt}
-                    modifiedAt={new Date(connector.modified_at!)}
-                    error={error}
-                  />
-                </div>
-              </Tab>
-              {/* <Tab
+      <DrawerPanelContent widths={{ default: 'width_50' }}>
+        <DrawerHead>
+          <TextContent>
+            <Text
+              component={TextVariants.small}
+              className="connector-drawer__header-text"
+            >
+              {t('connectorName')}
+            </Text>
+            <Flex>
+              <FlexItem>
+                <Title
+                  headingLevel={'h2'}
+                  size={TitleSizes['xl']}
+                  className="connector-drawer__header-title"
+                >
+                  {name}
+                </Title>
+              </FlexItem>
+              <FlexItem spacer={{ default: 'spacerSm' }}>
+                <ConnectorStatus
+                  name={name}
+                  status={connector.status?.state!}
+                />
+              </FlexItem>
+            </Flex>
+          </TextContent>
+          <DrawerActions>
+            <ConnectorActionsMenu
+              onDuplicateConnector={onDuplicateConnector}
+              onConnectorDetail={onConnectorDetail}
+              onClose={onClose}
+            />
+            <DrawerCloseButton onClick={onClose} />
+          </DrawerActions>
+        </DrawerHead>
+        <DrawerPanelBody>
+          <Tabs activeKey={activeTabKey} onSelect={selectActiveKey}>
+            <Tab
+              eventKey={0}
+              title={<TabTitleText>{t('details')}</TabTitleText>}
+            >
+              <div className="connector-drawer__tab-content">
+                <ConnectorInfoTextList
+                  name={name}
+                  id={id}
+                  bootstrapServer={bootstrapServer}
+                  kafkaId={kafkaId}
+                  namespaceId={namespaceId}
+                  owner={owner}
+                  createdAt={createdAt}
+                  modifiedAt={new Date(connector.modified_at!)}
+                  error={error}
+                />
+              </div>
+            </Tab>
+            {/* <Tab
               eventKey={1}
               title={<TabTitleText>{t('configurations')}</TabTitleText>}
             >
               Configuration
             </Tab> */}
-            </Tabs>
-          </DrawerPanelBody>
-        </DrawerPanelContent>
-      </>
+          </Tabs>
+        </DrawerPanelBody>
+      </DrawerPanelContent>
     );
   };
