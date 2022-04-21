@@ -48,17 +48,15 @@ const ConnectedCustomConfigurator: FunctionComponent<{
     const defaultEntries = JSON.parse(JSON.stringify(connectorData?.connector));
     let combineConfiguration = {};
     if (configuration instanceof Map) {
-      combineConfiguration = _.merge(
-        {},
-        defaultEntries,
-        clearEmptyObjectValues(mapToObject(configuration))
-      );
+      combineConfiguration = {
+        ...defaultEntries,
+        ...clearEmptyObjectValues(mapToObject(configuration)),
+      };
     } else {
-      combineConfiguration = _.merge(
-        {},
-        defaultEntries,
-        clearEmptyObjectValues(configuration)
-      );
+      combineConfiguration = {
+        ...defaultEntries,
+        ...clearEmptyObjectValues(configuration),
+      };
     }
     configuration = new Map(Object.entries(combineConfiguration));
   }
