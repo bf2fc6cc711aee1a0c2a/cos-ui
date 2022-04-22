@@ -33,8 +33,6 @@ import {
 } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
 
-// import { useConnectorsMachine } from '../ConnectorsPage/ConnectorsPageContext';
-
 type DuplicateConnectorPageProps = {
   onSave: (name: string) => void;
   onClose: () => void;
