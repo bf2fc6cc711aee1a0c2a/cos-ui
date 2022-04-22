@@ -33,6 +33,8 @@ import {
 } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
 
+// import { useConnectorsMachine } from '../ConnectorsPage/ConnectorsPageContext';
+
 type DuplicateConnectorPageProps = {
   onSave: (name: string) => void;
   onClose: () => void;
@@ -93,8 +95,6 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [connectorData]);
-    const connectorType = connectorData?.connector_type_id.split('_');
-    connectorType?.pop();
 
     return (
       <>
@@ -109,8 +109,8 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
             <Title headingLevel="h1">{t('duplicateConnector')}</Title>
             {connectorData && connectorTypeDetails ? (
               <Text>
-                <strong>Connector Category: </strong>
-                {_.startCase(connectorType?.join(' '))}
+                <strong>{t('Connector')}: </strong>
+                {connectorTypeDetails.name}
               </Text>
             ) : null}
           </TextContent>
