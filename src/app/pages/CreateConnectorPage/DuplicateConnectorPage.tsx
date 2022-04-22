@@ -4,6 +4,7 @@ import { CreateConnectorWizardProvider } from '@app/components/CreateConnectorWi
 import { Loading } from '@app/components/Loading/Loading';
 import { useCos } from '@context/CosContext';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
+import _ from 'lodash';
 import React, {
   FunctionComponent,
   useState,
@@ -17,9 +18,10 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   Button,
-  Level,
+  TextContent,
   Modal,
   PageSection,
+  Text,
   Title,
 } from '@patternfly/react-core';
 
@@ -29,7 +31,7 @@ import {
   useBasename,
   useConfig,
 } from '@rhoas/app-services-ui-shared';
-import { Connector, ConnectorType } from '@rhoas/connector-management-sdk';
+import { Connector, ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
 
 type DuplicateConnectorPageProps = {
   onSave: (name: string) => void;
@@ -54,7 +56,7 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
     }, []);
 
     const [connectorTypeDetails, setConnectorTypeDetails] =
-      useState<ConnectorType>();
+      useState<ConnectorTypeAllOf>();
 
     const onError = useCallback(
       (description: string) => {
@@ -69,7 +71,7 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
     );
 
     const getConnectorTypeInfo = useCallback((data) => {
-      setConnectorTypeDetails(data as ConnectorType);
+      setConnectorTypeDetails(data as ConnectorTypeAllOf);
     }, []);
 
     useEffect(() => {
@@ -91,6 +93,8 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [connectorData]);
+    const connectorType = connectorData?.connector_type_id.split('_');
+    connectorType?.pop();
 
     return (
       <>
@@ -101,9 +105,15 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
             </BreadcrumbItem>
             <BreadcrumbItem isActive>{t('duplicateConnector')}</BreadcrumbItem>
           </Breadcrumb>
-          <Level className={'pf-u-pt-md pf-u-pb-md'}>
+          <TextContent className={'pf-u-pt-md pf-u-pb-md'}>
             <Title headingLevel="h1">{t('duplicateConnector')}</Title>
-          </Level>
+            {connectorData && connectorTypeDetails ? (
+              <Text>
+                <strong>Connector Category: </strong>
+                {_.startCase(connectorType?.join(' '))}
+              </Text>
+            ) : null}
+          </TextContent>
         </PageSection>
         <PageSection
           padding={{ default: 'noPadding' }}
