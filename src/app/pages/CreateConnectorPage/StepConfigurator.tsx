@@ -119,6 +119,8 @@ export const ConfiguratorStep: FunctionComponent = () => {
     configuratorRef,
     hasCustomConfigurator,
     duplicateMode,
+    configurationSteps,
+    activeConfigurationStep,
   } = useSelector(
     service,
     useCallback(
@@ -139,6 +141,8 @@ export const ConfiguratorStep: FunctionComponent = () => {
           duplicateMode: state.context.duplicateMode,
           configuratorRef: state.children
             .configuratorRef as ConfiguratorActorRef,
+          configurationSteps: state.context.configurationSteps,
+          activeConfigurationStep: state.context.activeConfigurationStep,
         };
       },
       [service]
@@ -146,7 +150,12 @@ export const ConfiguratorStep: FunctionComponent = () => {
   );
   return (
     <StepBodyLayout
-      title={t('connectorSpecific')}
+      title={
+        typeof configurationSteps === 'object' &&
+        activeConfigurationStep !== undefined
+          ? t(configurationSteps[activeConfigurationStep])
+          : t('connectorSpecific')
+      }
       description={t('configurationStepDescription')}
     >
       {(() => {
