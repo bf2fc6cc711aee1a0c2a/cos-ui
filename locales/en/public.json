@@ -109,7 +109,7 @@
   "namespaceIsReady": "{{name}} namespace is ready.",
   "namespaceModelAlert": "The namespace will be ready shortly after creation.",
   "namespaceReady": "Namespace ready",
-  "namespaceStepDescription": "The selected namespace hosts your Connectors instance. Use a namespace in an OpenShift Dedicated trial cluster, or have Red Hat create a preview namespace for you. For instructions on adding a namespace to a trial cluster, access the guide.",
+  "namespaceStepDescription": "The selected namespace hosts your Connectors instance. Use a namespace in an OpenShift Dedicated trial cluster, or have Red Hat create a preview namespace for you. For instructions on adding a namespace to a trial cluster, access the <1>guide</1>.",
   "noConnectorInstances": "No Connector instances",
   "noDeploymentNamespaceAvailable": "No deployment namespace available",
   "noFilterResultsFound": "No results match the filter criteria. <2>{t('clearAllFilters')}</2> to show results.",
@@ -158,5 +158,7 @@
   "shortDescriptionSink": "Propagates data from a Kafka instance into another system",
   "shortDescriptionSource": "Ingests data from another system into a Kafka instance",
   "Connection": "Connection",
-  "Connector": "Connector"
+  "Connector": "Connector",
+  "credentialsGenerated": "Credentials successfully generated",
+  "copiedClientidSecret": "I have copied the client ID and secret"
 }

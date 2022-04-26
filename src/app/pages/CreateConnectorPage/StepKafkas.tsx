@@ -109,8 +109,11 @@ const KafkasGallery: FunctionComponent = () => {
           case noResults || error:
             return (
               <EmptyStateNoKafkaInstances
-                onCreate={function (): void {
-                  throw new Error('Function not implemented.');
+                onCreate={() => {
+                  window.open(
+                    'https://console.redhat.com/application-services/streams/kafkas',
+                    '_blank'
+                  );
                 }}
               />
             );
@@ -507,7 +510,14 @@ const KafkaToolbar: FunctionComponent = () => {
       </ToolbarToggleGroup>
       <ToolbarGroup variant="icon-button-group">
         <ToolbarItem>
-          <Button variant="primary">{t('createKafkaInstance')}</Button>
+          <Button
+            variant="primary"
+            component="a"
+            href="https://console.redhat.com/application-services/streams/kafkas"
+            target="_blank"
+          >
+            {t('createKafkaInstance')}
+          </Button>
         </ToolbarItem>
       </ToolbarGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
