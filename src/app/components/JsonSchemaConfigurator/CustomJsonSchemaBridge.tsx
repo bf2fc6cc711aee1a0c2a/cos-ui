@@ -40,17 +40,20 @@ const getLabelIcon = (name: string, content: string) =>
  */
 export class CustomJsonSchemaBridge extends JSONSchemaBridge {
   showCredentialHelpText: boolean;
+  duplicateMode: boolean;
   t: TFunction<'translation', undefined>;
 
   constructor(
     schema: any,
     validator: any,
     t: TFunction<'translation', undefined>,
-    showCredentialHelpText: boolean
+    showCredentialHelpText: boolean,
+    duplicateMode: boolean
   ) {
     super(schema, validator);
     this.t = t;
     this.showCredentialHelpText = showCredentialHelpText;
+    this.duplicateMode = duplicateMode;
   }
 
   /**
@@ -67,7 +70,9 @@ export class CustomJsonSchemaBridge extends JSONSchemaBridge {
       return {
         ...props,
         ...(this.showCredentialHelpText && {
-          helperText: this.t('credentialFieldHelpText'),
+          helperText: this.duplicateMode
+            ? this.t('credentialDuplicateFieldHelpText')
+            : this.t('credentialEditFieldHelpText'),
         }),
         labelIcon: getLabelIcon(label || name, description),
         name,

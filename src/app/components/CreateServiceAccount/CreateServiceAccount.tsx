@@ -96,6 +96,7 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
     if (validated === 'default' && sortDesc.length === 0) {
       setValidated('error');
     } else {
+      setLoading(true);
       createServiceAccount({
         accessToken: getToken,
         kafkaManagementApiBasePath: kafkaManagementApiBasePath,

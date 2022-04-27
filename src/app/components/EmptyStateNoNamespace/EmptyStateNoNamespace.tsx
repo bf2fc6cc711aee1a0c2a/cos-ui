@@ -36,9 +36,13 @@ export const EmptyStateNoNamespace: FunctionComponent<EmptyStateNoNamespaceProps
             {t('createPreviewNamespace')}
           </Button>
           <EmptyStateSecondaryActions>
-            <Button variant="link" icon={<ExternalLinkSquareAltIcon />}>
+            <a
+              href="https://access.redhat.com/documentation/en-us/red_hat_openshift_connectors"
+              target="_blank"
+            >
+              <ExternalLinkSquareAltIcon />
               {t('osdInstallationGuide')}
-            </Button>
+            </a>
           </EmptyStateSecondaryActions>
         </EmptyState>
       </Bullseye>

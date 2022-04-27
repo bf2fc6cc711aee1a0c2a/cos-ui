@@ -33,7 +33,8 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
       schema,
       schemaValidator,
       t,
-      duplicateMode || editMode || false
+      duplicateMode || editMode || false,
+      duplicateMode || false
     );
 
     const onChangeModel = async (model: any) => {
