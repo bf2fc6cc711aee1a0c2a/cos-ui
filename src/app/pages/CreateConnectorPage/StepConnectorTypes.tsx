@@ -140,7 +140,7 @@ export function ConnectorTypesGallery() {
                               </DescriptionListGroup> */}
                               <DescriptionListGroup>
                                 <DescriptionListTerm>
-                                {t("version")}
+                                  {t('version')}
                                 </DescriptionListTerm>
                                 <DescriptionListDescription>
                                   {
@@ -187,7 +187,7 @@ export function ConnectorTypesGallery() {
                                 </DescriptionListGroup> */}
                                 <DescriptionListGroup>
                                   <DescriptionListTerm>
-                                    {t("version")}
+                                    {t('version')}
                                   </DescriptionListTerm>
                                   <DescriptionListDescription>
                                     {(c as ConnectorTypeAllOf).version}
