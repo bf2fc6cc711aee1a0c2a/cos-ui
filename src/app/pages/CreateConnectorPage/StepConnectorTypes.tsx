@@ -130,17 +130,17 @@ export function ConnectorTypesGallery() {
                           </CardHeader>
                           <CardBody>
                             <DescriptionList>
-                              <DescriptionListGroup>
+                              {/* <DescriptionListGroup>
                                 <DescriptionListDescription>
                                   {
                                     (connectorTypeDetails as ConnectorTypeAllOf)
                                       .description
                                   }
                                 </DescriptionListDescription>
-                              </DescriptionListGroup>
+                              </DescriptionListGroup> */}
                               <DescriptionListGroup>
                                 <DescriptionListTerm>
-                                  Version
+                                {t("version")}
                                 </DescriptionListTerm>
                                 <DescriptionListDescription>
                                   {
@@ -180,14 +180,14 @@ export function ConnectorTypesGallery() {
                             </CardHeader>
                             <CardBody>
                               <DescriptionList>
-                                <DescriptionListGroup>
+                                {/* <DescriptionListGroup>
                                   <DescriptionListDescription>
                                     {(c as ConnectorTypeAllOf).description}
                                   </DescriptionListDescription>
-                                </DescriptionListGroup>
+                                </DescriptionListGroup> */}
                                 <DescriptionListGroup>
                                   <DescriptionListTerm>
-                                    Version
+                                    {t("version")}
                                   </DescriptionListTerm>
                                   <DescriptionListDescription>
                                     {(c as ConnectorTypeAllOf).version}
