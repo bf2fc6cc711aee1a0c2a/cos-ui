@@ -7,15 +7,12 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
-  EmptyStateSecondaryActions,
   EmptyStateVariant,
   Title,
   TitleSizes,
+  Tooltip,
 } from '@patternfly/react-core';
-import {
-  ExternalLinkSquareAltIcon,
-  PlusCircleIcon,
-} from '@patternfly/react-icons';
+import { PlusCircleIcon } from '@patternfly/react-icons';
 
 type EmptyStateNoNamespaceProps = {
   onModalToggle: () => void;
@@ -32,18 +29,11 @@ export const EmptyStateNoNamespace: FunctionComponent<EmptyStateNoNamespaceProps
             {t('noNamespaceAvailable')}
           </Title>
           <EmptyStateBody>{t('namespaceEmptyMsg')}</EmptyStateBody>
-          <Button variant="primary" onClick={onModalToggle}>
-            {t('createPreviewNamespace')}
-          </Button>
-          <EmptyStateSecondaryActions>
-            <a
-              href="https://access.redhat.com/documentation/en-us/red_hat_openshift_connectors"
-              target="_blank"
-            >
-              <ExternalLinkSquareAltIcon />
-              {t('osdInstallationGuide')}
-            </a>
-          </EmptyStateSecondaryActions>
+          <Tooltip content={<div>{t('namespaceEnabledTooltip')}</div>}>
+            <Button variant="primary" onClick={onModalToggle}>
+              {t('createPreviewNamespace')}
+            </Button>
+          </Tooltip>
         </EmptyState>
       </Bullseye>
     );
