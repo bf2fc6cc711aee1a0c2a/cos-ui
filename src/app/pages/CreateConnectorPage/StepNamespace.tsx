@@ -19,8 +19,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import {
   Alert,
@@ -143,20 +142,7 @@ const ClustersGallery: FunctionComponent = () => {
   return (
     <StepBodyLayout
       title={t('namespace')}
-      description={
-        <Trans i18nKey="namespaceStepDescription">
-          {t('namespaceStepDescription')}
-          <Link
-            to={{
-              pathname:
-                'https://access.redhat.com/documentation/en-us/red_hat_openshift_connectors',
-            }}
-            target="_blank"
-          >
-            guide
-          </Link>
-        </Trans>
-      }
+      description={t('namespaceStepDescription')}
     >
       {(() => {
         switch (true) {
