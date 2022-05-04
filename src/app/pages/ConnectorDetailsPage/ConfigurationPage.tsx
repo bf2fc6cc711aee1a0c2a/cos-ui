@@ -127,7 +127,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
   const onError = useCallback(
     (description: string) => {
       alert?.addAlert({
-        id: 'connectors-table-error',
+        id: 'connector-update-error',
         variant: AlertVariant.danger,
         title: t('somethingWentWrong'),
         description,
@@ -139,7 +139,7 @@ export const ConfigurationPage: FC<ConfigurationPageProps> = ({
   const onSuccess = useCallback(() => {
     updateEditMode(false);
     alert?.addAlert({
-      id: 'connector-created',
+      id: 'connector-update-success',
       variant: AlertVariant.success,
       title: t('editAlertSuccessTitle'),
     });

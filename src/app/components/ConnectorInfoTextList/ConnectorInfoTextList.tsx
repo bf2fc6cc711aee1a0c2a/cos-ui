@@ -2,12 +2,18 @@ import React, { FunctionComponent, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
+  Alert,
   TextContent,
   TextList,
   TextListItem,
   TextListItemVariants,
   TextListVariants,
 } from '@patternfly/react-core';
+import { OutlinedClockIcon } from '@patternfly/react-icons';
+
+import './ConnectorInfoTextList.css';
+
+type AlertType = 'info' | 'warning' | 'danger' | undefined;
 
 export type ConnectorInfoTextListProps = {
   name: string;
@@ -17,6 +23,8 @@ export type ConnectorInfoTextListProps = {
   kafkaId: string;
   owner: string;
   namespaceId: string;
+  namespaceMsg?: string | undefined;
+  namespaceMsgVariant: AlertType;
   createdAt: Date;
   modifiedAt: Date;
   error?: string;
@@ -31,6 +39,8 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
     kafkaId,
     owner,
     namespaceId,
+    namespaceMsg,
+    namespaceMsgVariant,
     createdAt,
     modifiedAt,
     error,
@@ -59,6 +69,18 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
           {textListItem(t('bootstrapServer'), bootstrapServer)}
           {textListItem(t('kafkaInstance'), kafkaId)}
           {textListItem(t('namespace'), namespaceId)}
+          {namespaceMsg &&
+            textListItem(
+              t(''),
+              <Alert
+                customIcon={<OutlinedClockIcon />}
+                className="my-class"
+                variant={namespaceMsgVariant}
+                isInline
+                isPlain
+                title={namespaceMsg}
+              />
+            )}
           {textListItem(t('owner'), owner)}
           {textListItem(
             t('timeCreated'),

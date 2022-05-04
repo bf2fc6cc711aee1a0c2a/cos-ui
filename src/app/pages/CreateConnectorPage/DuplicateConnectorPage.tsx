@@ -61,7 +61,7 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
     const onError = useCallback(
       (description: string) => {
         alert?.addAlert({
-          id: 'connectors-table-error',
+          id: 'connector-duplicate-error',
           variant: AlertVariant.danger,
           title: t('somethingWentWrong'),
           description,
