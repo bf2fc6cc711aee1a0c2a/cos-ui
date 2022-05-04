@@ -47,6 +47,10 @@ type ConnectorDetailProps = {
   connectorId: string;
 } & CommonApiProps;
 
+type ConnectorNamespaceProps = {
+  namespaceId: string;
+} & CommonApiProps;
+
 type ConnectorTypeProps = {
   connectorTypeId: string;
 } & CommonApiProps;
@@ -326,6 +330,39 @@ export const registerEvalNamespace = ({
       )
       .then((response) => {
         onSuccess(response.data.name || '');
+      })
+      .catch((error) => {
+        if (!axios.isCancel(error)) {
+          onError(error.response.data.reason);
+        }
+      });
+    return () => {
+      source.cancel('Operation canceled by the user.');
+    };
+  };
+};
+
+export const getNamespace = ({
+  accessToken,
+  connectorsApiBasePath,
+  namespaceId,
+}: ConnectorNamespaceProps): FetchCallbacks<ConnectorNamespace> => {
+  const namespacesAPI = new ConnectorNamespacesApi(
+    new Configuration({
+      accessToken,
+      basePath: connectorsApiBasePath,
+    })
+  );
+
+  return (onSuccess, onError) => {
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    namespacesAPI
+      .getConnectorNamespace(namespaceId!, {
+        cancelToken: source.token,
+      })
+      .then((response) => {
+        onSuccess(response.data);
       })
       .catch((error) => {
         if (!axios.isCancel(error)) {

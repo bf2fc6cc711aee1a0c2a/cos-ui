@@ -9,6 +9,7 @@ import { Loading } from '@app/components/Loading/Loading';
 import { Pagination } from '@app/components/Pagination/Pagination';
 import { RegisterEvalNamespace } from '@app/components/RegisterEvalNamespace/RegisterEvalNamespace';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
+import { getPendingTime, warningType } from '@utils/shared';
 import { useDebounce } from '@utils/useDebounce';
 import { t } from 'i18next';
 import _ from 'lodash';
@@ -44,38 +45,17 @@ import {
   ToolbarToggleGroup,
   Tooltip,
 } from '@patternfly/react-core';
-import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
+import { ClockIcon, FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
 import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 import './StepNamespace.css';
-
-const getPendingTime = (expireTime: Date) => {
-  let diff = expireTime.getTime() - new Date().getTime();
-  diff = diff / 1000;
-  let hourDiff = Math.floor(diff / 3600);
-  diff -= hourDiff * 3600;
-  let minuteDiff = Math.floor(diff / 60);
-  return { hours: hourDiff, min: minuteDiff };
-};
 
 export function SelectNamespace() {
   const isReady = useNamespaceMachineIsReady();
 
   return isReady ? <ClustersGallery /> : null;
 }
-
-const warningType = (expireTime: Date) => {
-  let diff = expireTime.getTime() - new Date().getTime();
-  diff = diff / 1000;
-  let hourDiff = Math.floor(diff / 3600);
-  if (hourDiff >= 24) {
-    return 'info';
-  } else if (hourDiff >= 3) {
-    return 'warning';
-  }
-  return 'danger';
-};
 
 const ClustersGallery: FunctionComponent = () => {
   const { t } = useTranslation();
@@ -199,6 +179,7 @@ const ClustersGallery: FunctionComponent = () => {
 
                   {!!evalInstance && evalInstance?.id === selectedId && (
                     <Alert
+                      customIcon={<ClockIcon />}
                       variant={warningType(new Date(evalInstance.expiration!))}
                       className="pf-u-mb-md"
                       isInline

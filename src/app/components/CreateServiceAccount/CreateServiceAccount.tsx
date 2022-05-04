@@ -82,7 +82,7 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
   const onError = useCallback(
     (description: string) => {
       alert?.addAlert({
-        id: 'connectors-table-error',
+        id: 'connector-service-account',
         variant: AlertVariant.danger,
         title: t('somethingWentWrong'),
         description,

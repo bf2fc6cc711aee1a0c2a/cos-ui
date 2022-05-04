@@ -12,9 +12,10 @@
       "created_at": "2021-07-14T16:12:44.343678Z",
       "modified_at": "2021-07-15T07:48:51.118606Z",
       "name": "dbz-postgres-conn",
+      "namespace_id": "c9ns6husvba2r48dqnd0",
       "deployment_location": {
         "kind": "addon",
-        "cluster_id": "1uR6GL7Pz4BlxiO1RLnNKmtQeno"
+        "cluster_id": "c9ns6husvba2r48dqnd0"
       },
       "kafka": {
         "url": "lb-cos--vgitqo-mk-imjg-eyqfbazqdiv.bf2.kafka.rhcloud.com:443",

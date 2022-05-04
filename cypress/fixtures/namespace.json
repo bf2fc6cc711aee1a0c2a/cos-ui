@@ -1,0 +1,38 @@
+{
+    "id": "c9ns6husvba2r48dqnd0",
+    "kind": "ConnectorNamespace",
+    "href": "/api/connector_mgmt/v1/kafka_connector_namespaces/c9ns6husvba2r48dqnd0",
+    "owner": "ishukla_kafka_supporting",
+    "created_at": "2022-05-02T11:40:55.297718Z",
+    "modified_at": "2022-05-04T07:33:12.693152Z",
+    "name": "preview-namespace-98BqNxEdVGVT6uEU2Z9QbY",
+    "annotations": [
+      {
+        "key": "connector_mgmt.api.openshift.com/profile",
+        "value": "default-profile"
+      },
+      {
+        "key": "connector_mgmt.bf2.org/profile",
+        "value": "evaluation-profile"
+      }
+    ],
+    "resource_version": 255730,
+    "quota": {
+      "connectors": 4,
+      "memory_requests": "1Gi",
+      "memory_limits": "2Gi",
+      "cpu_requests": "1",
+      "cpu_limits": "2"
+    },
+    "cluster_id": "c95j6gu6ar2c9mtr5vj0",
+    "expiration": "2022-05-04T11:40:55.295784Z",
+    "tenant": {
+      "kind": "user",
+      "id": "ishukla_kafka_supporting"
+    },
+    "status": {
+      "state": "ready",
+      "version": "255723",
+      "connectors_deployed": 1
+    }
+  }

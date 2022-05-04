@@ -79,7 +79,7 @@ export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({
   const onError = useCallback(
     (description: string) => {
       alert?.addAlert({
-        id: 'connectors-table-error',
+        id: 'connector-details-page',
         variant: AlertVariant.danger,
         title: t('somethingWentWrong'),
         description,

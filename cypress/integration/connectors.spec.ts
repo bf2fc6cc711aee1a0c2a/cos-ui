@@ -46,11 +46,13 @@ describe('Connectors page', () => {
   it('opens the details for a connector', () => {
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'connectorsPolling.json',
-    }).as('connectors');
+    }).as('connectors');    
     cy.visit(Cypress.env('homepage'));
-    cy.wait('@connectors');
     // should open the drawer with the details of the connector
     cy.findByText('debezium-postgres-1.9.0.Alpha1').click();
+    cy.intercept(Cypress.env('namespaceApiPath'), {
+      fixture: 'namespace.json',
+    }).as('namespace');
     cy.findByText('Connector name').should('exist');
     cy.findByText('Details').should('exist');
     cy.findByText(

@@ -1,17 +1,24 @@
+import { getNamespace } from '@apis/api';
 import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus';
 import {
   ConnectorMachineActorRef,
   useConnector,
 } from '@app/machines/Connector.machine';
+import { useCos } from '@context/CosContext';
+import { getPendingTime, warningType } from '@utils/shared';
 import React, {
   FunctionComponent,
   ReactNode,
   useState,
   MouseEvent,
+  useCallback,
+  useEffect,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
+  Alert,
+  AlertVariant,
   Drawer,
   DrawerActions,
   DrawerCloseButton,
@@ -30,8 +37,10 @@ import {
   Title,
   TitleSizes,
 } from '@patternfly/react-core';
+import { ClockIcon } from '@patternfly/react-icons';
 
-import { Connector } from '@rhoas/connector-management-sdk';
+import { useAlert } from '@rhoas/app-services-ui-shared';
+import { Connector, ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 import { ConnectorActionsMenu } from '../ConnectorActions/ConnectorActionsMenu';
 import { ConnectorInfoTextList } from '../ConnectorInfoTextList/ConnectorInfoTextList';
@@ -119,6 +128,37 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
     const { t } = useTranslation();
     const [activeTabKey, setActiveTabKey] = useState<string | number>(0);
 
+    const [namespaceData, setNamespaceData] = useState<ConnectorNamespace>();
+
+    const { connectorsApiBasePath, getToken } = useCos();
+
+    const alert = useAlert();
+
+    const getNamespaceData = useCallback((data) => {
+      setNamespaceData(data as ConnectorNamespace);
+    }, []);
+
+    const onError = useCallback(
+      (description: string) => {
+        alert?.addAlert({
+          id: 'connector-drawer',
+          variant: AlertVariant.danger,
+          title: t('somethingWentWrong'),
+          description,
+        });
+      },
+      [alert, t]
+    );
+
+    useEffect(() => {
+      getNamespace({
+        accessToken: getToken,
+        connectorsApiBasePath: connectorsApiBasePath,
+        namespaceId: namespaceId,
+      })(getNamespaceData, onError);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [namespaceId]);
+
     const selectActiveKey = (_: MouseEvent, eventKey: string | number) => {
       setActiveTabKey(eventKey);
     };
@@ -132,6 +172,22 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
         onClose();
       }
     }, [connector, onClose]);
+
+    const getConnectorExpireAlert = (expiration: string): string => {
+      const { hours, min } = getPendingTime(new Date(expiration));
+      if (hours < 0 || min < 0) {
+        return t('connectorExpiredMsg');
+      }
+      return t('connectorExpire', { hours, min });
+    };
+
+    const getConnectorExpireInlineAlert = (expiration: string): string => {
+      const { hours, min } = getPendingTime(new Date(expiration));
+      if (hours < 0 || min < 0) {
+        return t('connectorExpiredInline');
+      }
+      return t('connectorExpireInline', { hours, min });
+    };
 
     return (
       <DrawerPanelContent widths={{ default: 'width_50' }}>
@@ -176,13 +232,31 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
               eventKey={0}
               title={<TabTitleText>{t('details')}</TabTitleText>}
             >
+              {namespaceData?.expiration && (
+                <Alert
+                  customIcon={<ClockIcon />}
+                  className="pf-u-mt-md"
+                  variant={warningType(new Date(namespaceData?.expiration!))}
+                  isInline
+                  title={getConnectorExpireAlert(namespaceData?.expiration!)}
+                />
+              )}
               <div className="connector-drawer__tab-content">
                 <ConnectorInfoTextList
                   name={name}
                   id={id}
                   bootstrapServer={bootstrapServer}
                   kafkaId={kafkaId}
-                  namespaceId={namespaceId}
+                  namespaceId={namespaceData ? namespaceData.name : namespaceId}
+                  namespaceMsg={
+                    namespaceData?.expiration &&
+                    getConnectorExpireInlineAlert(namespaceData?.expiration!)
+                  }
+                  namespaceMsgVariant={
+                    namespaceData?.expiration
+                      ? warningType(new Date(namespaceData?.expiration!))
+                      : undefined
+                  }
                   owner={owner}
                   createdAt={createdAt}
                   modifiedAt={new Date(connector.modified_at!)}
