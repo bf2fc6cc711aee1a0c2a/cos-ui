@@ -162,7 +162,7 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
           onCreate={onCreateConnector}
           onHelp={() =>
             qsContext.setActiveQuickStart &&
-            qsContext.setActiveQuickStart(t('getting-started-connectors'))
+            qsContext.setActiveQuickStart(t('connectors-getting-started'))
           }
         />
       );
