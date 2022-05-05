@@ -4,6 +4,7 @@ import { useCos } from '@context/CosContext';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
 import React, { FunctionComponent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 import {
   Breadcrumb,
@@ -15,7 +16,7 @@ import {
   Title,
 } from '@patternfly/react-core';
 
-import { useBasename, useConfig } from '@rhoas/app-services-ui-shared';
+import { useConfig } from '@rhoas/app-services-ui-shared';
 
 type CreateConnectorPageProps = {
   onSave: (name: string) => void;
@@ -25,7 +26,6 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
   ({ onSave, onClose }) => {
     const { t } = useTranslation();
     const config = useConfig();
-    const basename = useBasename();
     const { connectorsApiBasePath, getToken } = useCos();
     const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
     const openLeaveConfirm = () => setAskForLeaveConfirm(true);
@@ -34,8 +34,8 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
       <>
         <PageSection variant={'light'} hasShadowBottom>
           <Breadcrumb>
-            <BreadcrumbItem to={basename?.getBasename()}>
-              {t('connectorsInstances')}
+            <BreadcrumbItem>
+              <Link to={'/'}>{t('connectorsInstances')}</Link>
             </BreadcrumbItem>
             <BreadcrumbItem isActive>
               {t('createAConnectorsInstance')}
