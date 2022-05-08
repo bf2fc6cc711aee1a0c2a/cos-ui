@@ -317,12 +317,7 @@ export const registerEvalNamespace = ({
       .createEvaluationNamespace(
         {
           name: evalName,
-          annotations: [
-            {
-              key: 'connector_mgmt.api.openshift.com/profile',
-              value: 'default-profile',
-            },
-          ],
+          annotations: [],
         },
         {
           cancelToken: source.token,
