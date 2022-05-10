@@ -5,7 +5,7 @@ import { CONNECTOR_DETAILS_TABS } from '@constants/constants';
 import { useCos } from '@context/CosContext';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 
 import {
   PageSection,
@@ -21,7 +21,7 @@ import {
   AlertVariant,
 } from '@patternfly/react-core';
 
-import { useAlert, useBasename } from '@rhoas/app-services-ui-shared';
+import { useAlert } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorType } from '@rhoas/connector-management-sdk';
 
 import { ConfigurationPage } from './ConfigurationPage';
@@ -182,7 +182,6 @@ export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
   connectorData,
 }) => {
   const { t } = useTranslation();
-  const basename = useBasename();
 
   // const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -220,8 +219,8 @@ export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
   return (
     <PageSection variant={'light'} hasShadowBottom>
       <Breadcrumb>
-        <BreadcrumbItem to={basename?.getBasename()}>
-          {t('connectorsInstances')}
+        <BreadcrumbItem>
+          <Link to={'/'}>{t('connectorsInstances')}</Link>
         </BreadcrumbItem>
         <BreadcrumbItem isActive>{connectorData?.name}</BreadcrumbItem>
       </Breadcrumb>

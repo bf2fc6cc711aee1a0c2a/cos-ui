@@ -12,7 +12,7 @@ import React, {
   useCallback,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import {
   Breadcrumb,
@@ -28,7 +28,6 @@ import {
 import {
   AlertVariant,
   useAlert,
-  useBasename,
   useConfig,
 } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
@@ -42,7 +41,6 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
     const { t } = useTranslation();
     const alert = useAlert();
     const config = useConfig();
-    const basename = useBasename();
     const { connectorsApiBasePath, getToken } = useCos();
     const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
     const openLeaveConfirm = () => setAskForLeaveConfirm(true);
@@ -98,8 +96,8 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
       <>
         <PageSection variant={'light'} hasShadowBottom>
           <Breadcrumb>
-            <BreadcrumbItem to={basename?.getBasename()}>
-              {t('connectorsInstances')}
+            <BreadcrumbItem>
+              <Link to={'/'}>{t('connectorsInstances')}</Link>
             </BreadcrumbItem>
             <BreadcrumbItem isActive>{t('duplicateConnector')}</BreadcrumbItem>
           </Breadcrumb>
