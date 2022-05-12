@@ -82,9 +82,14 @@ export const OverviewPage: FC<OverviewPageProps> = ({ connectorData }) => {
         />
       )}
 
-      {connectorData?.status?.error && (
+      {connectorData?.status?.state === 'failed' && (
         <Hint className="pf-u-mb-md">
           <HintBody>
+            <p>
+              This service is currently available as a preview, and it is not
+              commercially available or fully supported by our Customer Support
+              team at this time.
+            </p>
             You can still get help by emailing us at{' '}
             <i>rhosak-eval-support@redhat.com</i>. This mailing list is
             monitored by the Red Hat OpenShift Application Services team.
