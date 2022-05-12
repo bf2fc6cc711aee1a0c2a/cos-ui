@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import {
   Alert,
   AlertVariant,
+  Hint,
+  HintBody,
   PageSection,
   PageSectionVariants,
 } from '@patternfly/react-core';
@@ -78,6 +80,16 @@ export const OverviewPage: FC<OverviewPageProps> = ({ connectorData }) => {
           isInline
           title={getConnectorExpireAlert(namespaceData?.expiration!)}
         />
+      )}
+
+      {connectorData?.status?.error && (
+        <Hint className="pf-u-mb-md">
+          <HintBody>
+            You can still get help by emailing us at{' '}
+            <i>rhosak-eval-support@redhat.com</i>. This mailing list is
+            monitored by the Red Hat OpenShift Application Services team.
+          </HintBody>
+        </Hint>
       )}
 
       <ConnectorInfoTextList

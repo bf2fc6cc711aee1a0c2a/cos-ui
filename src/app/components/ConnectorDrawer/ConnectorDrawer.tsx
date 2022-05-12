@@ -28,6 +28,8 @@ import {
   DrawerPanelContent,
   Flex,
   FlexItem,
+  Hint,
+  HintBody,
   Tab,
   Tabs,
   TabTitleText,
@@ -241,6 +243,18 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
                   title={getConnectorExpireAlert(namespaceData?.expiration!)}
                 />
               )}
+
+              {error && (
+                <Hint className="pf-u-mt-md">
+                  <HintBody>
+                    You can still get help by emailing us at{' '}
+                    <i>rhosak-eval-support@redhat.com</i>. This mailing list is
+                    monitored by the Red Hat OpenShift Application Services
+                    team.
+                  </HintBody>
+                </Hint>
+              )}
+
               <div className="connector-drawer__tab-content">
                 <ConnectorInfoTextList
                   name={name}
