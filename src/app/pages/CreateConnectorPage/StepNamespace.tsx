@@ -214,8 +214,9 @@ const ClustersGallery: FunctionComponent = () => {
                               {i.status.state === 'disconnected' && (
                                 <div className="pf-u-pt-md status">
                                   <ConnectorStatus
+                                    desiredState={''}
                                     name={''}
-                                    status={i.status.state}
+                                    state={i.status.state}
                                   />
                                 </div>
                               )}

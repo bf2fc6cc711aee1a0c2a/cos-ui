@@ -37,7 +37,7 @@ describe('Connectors page', () => {
     cy.findAllByText(
       (_, element) =>
         element?.className === 'pf-c-pagination__total-items' &&
-        element?.textContent === '1 - 2 of 2 '
+        element?.textContent === '1 - 5 of 5 '
     );
 
     cy.findByText('Create Connectors instance').click();

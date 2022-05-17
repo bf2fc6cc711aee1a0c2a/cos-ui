@@ -1,0 +1,17 @@
+.connector-status__split {
+  --pf-l-split--m-gutter--MarginRight: 0.5rem;
+}
+
+.connector-status-label__stack {
+  height: 24px;
+}
+
+.connector-status-label__state-label {
+  margin-top: -4px;
+  font-size: small;
+}
+
+.connector-status-label__desired-state-label {
+  margin-top: -4px;
+  font-size: x-small;
+}

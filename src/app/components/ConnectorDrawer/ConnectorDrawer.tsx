@@ -214,8 +214,9 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
               </FlexItem>
               <FlexItem spacer={{ default: 'spacerSm' }}>
                 <ConnectorStatus
+                  desiredState={connector.desired_state!}
                   name={name}
-                  status={connector.status?.state!}
+                  state={connector.status?.state!}
                 />
               </FlexItem>
             </Flex>

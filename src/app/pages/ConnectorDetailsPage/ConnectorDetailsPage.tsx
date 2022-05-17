@@ -231,8 +231,9 @@ export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
               {connectorData?.name}
             </Title>
             <ConnectorStatus
+              desiredState={connectorData?.desired_state!}
               name={connectorData?.name!}
-              status={connectorData?.status?.state!}
+              state={connectorData?.status?.state!}
             />
           </Level>
         </LevelItem>
