@@ -148,7 +148,7 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
         <Popover
           aria-label="Failed connector popover"
           position={PopoverPosition.auto}
-            hideOnOutsideClick={true}
+          hideOnOutsideClick={true}
           headerContent={
             <h1 color={tokens.global_danger_color_100.value}>
               <ExclamationCircleIcon

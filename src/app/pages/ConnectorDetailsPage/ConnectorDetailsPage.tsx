@@ -256,20 +256,20 @@ export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
       {connectorData?.status?.state === 'failed' && (
         <Hint>
           <HintBody>
-              <p>{t('previewModeMsg')}</p>
-              <Trans i18nKey={'supportEmailMsg'}>
-                You can still get help by emailing us at
-                <ClipboardCopy
-                  hoverTip="Copy"
-                  clickTip="Copied"
-                  variant="inline-compact"
-                >
-                  rhosak-eval-support@redhat.com
-                </ClipboardCopy>
-                . This mailing list is monitored by the Red Hat OpenShift
-                Application Services team.
-              </Trans>
-            </HintBody>
+            <p>{t('previewModeMsg')}</p>
+            <Trans i18nKey={'supportEmailMsg'}>
+              You can still get help by emailing us at
+              <ClipboardCopy
+                hoverTip="Copy"
+                clickTip="Copied"
+                variant="inline-compact"
+              >
+                rhosak-eval-support@redhat.com
+              </ClipboardCopy>
+              . This mailing list is monitored by the Red Hat OpenShift
+              Application Services team.
+            </Trans>
+          </HintBody>
         </Hint>
       )}
     </PageSection>
