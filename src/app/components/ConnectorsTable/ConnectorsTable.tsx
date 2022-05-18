@@ -20,7 +20,6 @@ import {
   Thead,
   Tr,
 } from '@patternfly/react-table';
-import * as tokens from '@patternfly/react-tokens';
 
 import './ConnectorsTable.css';
 
@@ -150,11 +149,8 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
           position={PopoverPosition.auto}
           hideOnOutsideClick={true}
           headerContent={
-            <h1 color={tokens.global_danger_color_100.value}>
-              <ExclamationCircleIcon
-                color={tokens.global_danger_color_100.value}
-              />{' '}
-              Failed
+            <h1 className="connectors-failed_pop_over">
+              <ExclamationCircleIcon /> Failed
             </h1>
           }
           bodyContent={

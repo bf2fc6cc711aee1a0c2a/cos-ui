@@ -4,7 +4,7 @@ import { Loading } from '@app/components/Loading/Loading';
 import { CONNECTOR_DETAILS_TABS } from '@constants/constants';
 import { useCos } from '@context/CosContext';
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 
 import {
@@ -19,9 +19,6 @@ import {
   Title,
   PageSectionVariants,
   AlertVariant,
-  ClipboardCopy,
-  Hint,
-  HintBody,
 } from '@patternfly/react-core';
 
 import { useAlert } from '@rhoas/app-services-ui-shared';
@@ -253,25 +250,6 @@ export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
           /> */}
         </LevelItem>
       </Level>
-      {connectorData?.status?.state === 'failed' && (
-        <Hint>
-          <HintBody>
-            <p>{t('previewModeMsg')}</p>
-            <Trans i18nKey={'supportEmailMsg'}>
-              You can still get help by emailing us at
-              <ClipboardCopy
-                hoverTip="Copy"
-                clickTip="Copied"
-                variant="inline-compact"
-              >
-                rhosak-eval-support@redhat.com
-              </ClipboardCopy>
-              . This mailing list is monitored by the Red Hat OpenShift
-              Application Services team.
-            </Trans>
-          </HintBody>
-        </Hint>
-      )}
     </PageSection>
   );
 };
