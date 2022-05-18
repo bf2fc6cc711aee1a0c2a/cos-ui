@@ -1,8 +1,8 @@
 {
   "kind": "ConnectorList",
   "page": 1,
-  "size": 2,
-  "total": 2,
+  "size": 5,
+  "total": 5,
   "items": [
     {
       "id": "1vLK2A3Gl34hHjAxMj93Ma8Ajh8",
@@ -90,6 +90,136 @@
       "resource_version": 705,
       "status": {
         "state": "stopped"
+      }
+    },
+    {
+      "id": "c9uc8g84k5n8rhm5r16g",
+      "kind": "Connector",
+      "href": "/api/connector_mgmt/v1/kafka_connectors/c9uc8g84k5n8rhm5r16g",
+      "owner": "openbridge_kafka_supporting",
+      "created_at": "2022-05-12T08:24:34.261605Z",
+      "modified_at": "2022-05-12T08:24:34.252443Z",
+      "name": "ob-dev-prcs-0308c1e7-213c-45ce-8cfd-97b56c10d7c3",
+      "connector_type_id": "aws_sqs_source_0.1",
+      "namespace_id": "c95j6h66ar2c9mtr5vjg",
+      "channel": "stable",
+      "desired_state": "ready",
+      "resource_version": 7216,
+      "kafka": {
+        "id": "kafkaId-ignored",
+        "url": "https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443"
+      },
+      "service_account": {
+        "client_id": "srvc-acct-35219453-7a88-485c-8b9a-bcdeb3de694e",
+        "client_secret": ""
+      },
+      "schema_registry": {
+        "id": "",
+        "url": ""
+      },
+      "connector": {
+        "aws_access_key": {},
+        "aws_queue_name_or_arn": "netscan-notifications",
+        "aws_queue_u_r_l": "https://sqs.us-east-1.amazonaws.com/730990693722/netscan-notifications",
+        "aws_region": "us-east-1",
+        "aws_secret_key": {},
+        "kafka_topic": "ob-dev-prcs-0308c1e7-213c-45ce-8cfd-97b56c10d7c3",
+        "processors": [
+          {
+            "log": {
+              "multiLine": true,
+              "showHeaders": true
+            }
+          }
+        ]
+      },
+      "status": {
+        "state": "failed",
+        "error": "Error: The security token included in the request is invalid. (Service: Sqs, Status Code: 403, Request ID: eda323d7-e075-5f3e-9372-792b8e4be96b, Extended Request ID: null) error.stacktrace:software.amazon.awssdk.services.sqs.model.SqsException: The security token included in the request is invalid. (Service: Sqs, Status Code: 403, Request ID: eda323d7-e075-5f3e-9372-792b8e4be96b, Extended Request ID: null)\n\tat software.amazon.awssdk.core.internal.http.CombinedResponseHandler.handleErrorResponse(CombinedResponseHandler.java:123)\n\tat software.amazon.awssdk.core.internal.http.CombinedResponseHandler.handleResponse(CombinedResponseHandler.java:79)\n\tat software.amazon.awssdk.core.internal.http.CombinedResponseHandler.handle(CombinedResponseHandler.java:59)\n\tat software.amazon.awssdk.core.internal.http.CombinedResponseHandler.handle(CombinedResponseHandler.java:40)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.HandleResponseStage.execute(HandleResponseStage.java:40)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.HandleResponseStage.execute(HandleResponseStage.java:30)\n\tat software.amazon.awssdk.core.internal.http.pipeline.RequestPipelineBuilder$ComposingRequestPipelineStage.execute(RequestPipelineBuilder.java:206)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallAttemptTimeoutTrackingStage.execute(ApiCallAttemptTimeoutTrackingStage.java:73)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallAttemptTimeoutTrackingStage.execute(ApiCallAttemptTimeoutTrackingStage.java:42)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.TimeoutExceptionHandlingStage.execute(TimeoutExceptionHandlingStage.java:78)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.TimeoutExceptionHandlingStage.execute(TimeoutExceptionHandlingStage.java:40)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallAttemptMetricCollectionStage.execute(ApiCallAttemptMetricCollectionStage.java:50)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallAttemptMetricCollectionStage.execute(ApiCallAttemptMetricCollectionStage.java:36)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.RetryableStage.execute(RetryableStage.java:81)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.RetryableStage.execute(RetryableStage.java:36)\n\tat software.amazon.awssdk.core.internal.http.pipeline.RequestPipelineBuilder$ComposingRequestPipelineStage.execute(RequestPipelineBuilder.java:206)\n\tat software.amazon.awssdk.core.internal.http.StreamManagingStage.execute(StreamManagingStage.java:56)\n\tat software.amazon.awssdk.core.internal.http.StreamManagingStage.execute(StreamManagingStage.java:36)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallTimeoutTrackingStage.executeWithTimer(ApiCallTimeoutTrackingStage.java:80)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallTimeoutTrackingStage.execute(ApiCallTimeoutTrackingStage.java:60)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallTimeoutTrackingStage.execute(ApiCallTimeoutTrackingStage.java:42)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallMetricCollectionStage.execute(ApiCallMetricCollectionStage.java:48)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.ApiCallMetricCollectionStage.execute(ApiCallMetricCollectionStage.java:31)\n\tat software.amazon.awssdk.core.internal.http.pipeline.RequestPipelineBuilder$ComposingRequestPipelineStage.execute(RequestPipelineBuilder.java:206)\n\tat software.amazon.awssdk.core.internal.http.pipeline.RequestPipelineBuilder$ComposingRequestPipelineStage.execute(RequestPipelineBuilder.java:206)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.ExecutionFailureExceptionReportingStage.execute(ExecutionFailureExceptionReportingStage.java:37)\n\tat software.amazon.awssdk.core.internal.http.pipeline.stages.ExecutionFailureExceptionReportingStage.execute(ExecutionFailureExceptionReportingStage.java:26)\n\tat software.amazon.awssdk.core.internal.http.AmazonSyncHttpClient$RequestExecutionBuilderImpl.execute(AmazonSyncHttpClient.java:193)\n\tat software.amazon.awssdk.core.internal.handler.BaseSyncClientHandler.invoke(BaseSyncClientHandler.java:103)\n\tat software.amazon.awssdk.core.internal.handler.BaseSyncClientHandler.doExecute(BaseSyncClientHandler.java:167)\n\tat software.amazon.awssdk.core.internal.handler.BaseSyncClientHandler.lambda$execute$1(BaseSyncClientHandler.java:82)\n\tat software.amazon.awssdk.core.internal.handler.BaseSyncClientHandler.measureApiCallSuccess(BaseSyncClientHandler.java:175)\n\tat software.amazon.awssdk.core.internal.handler.BaseSyncClientHandler.execute(BaseSyncClientHandler.java:76)\n\tat software.amazon.awssdk.core.client.handler.SdkSyncClientHandler.execute(SdkSyncClientHandler.java:45)\n\tat software.amazon.awssdk.awscore.client.handler.AwsSyncClientHandler.execute(AwsSyncClientHandler.java:56)\n\tat software.amazon.awssdk.services.sqs.DefaultSqsClient.receiveMessage(DefaultSqsClient.java:1401)\n\tat org.apache.camel.component.aws2.sqs.Sqs2Consumer.poll(Sqs2Consumer.java:109)\n\tat org.apache.camel.support.ScheduledPollConsumer.doRun(ScheduledPollConsumer.java:202)\n\tat org.apache.camel.support.ScheduledPollConsumer.run(ScheduledPollConsumer.java:116)\n\tat java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)\n\tat java.base/java.util.concurrent.FutureTask.runAndReset(FutureTask.java:305)\n\tat java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:829)\n "
+      }
+    },
+    {
+      "id": "c9v7a91rrl5s1sq2t9ag",
+      "kind": "Connector",
+      "href": "/api/connector_mgmt/v1/kafka_connectors/c9v7a91rrl5s1sq2t9ag",
+      "owner": "rpitzerj_kafka_supporting",
+      "created_at": "2022-05-13T15:11:32.392563Z",
+      "modified_at": "2022-05-13T15:11:32.381229Z",
+      "name": "rpitzerj-test",
+      "connector_type_id": "jms_amqp_10_sink_0.1",
+      "namespace_id": "c95j6h66ar2c9mtr5vjg",
+      "channel": "stable",
+      "desired_state": "stopped",
+      "resource_version": 7823,
+      "kafka": {
+        "id": "c9ujdvi51mrrjobhdn60",
+        "url": "rpitzerj-c-ujdvi--mrrjobhdn-a.bf2.kafka.rhcloud.com:443"
+      },
+      "service_account": {
+        "client_id": "srvc-acct-68d59b6c-44d7-449e-bdd3-4f5427dbc4af",
+        "client_secret": ""
+      },
+      "schema_registry": {
+        "id": "",
+        "url": ""
+      },
+      "connector": {
+        "data_shape": {
+          "consumes": {
+            "format": "application/octet-stream"
+          }
+        },
+        "error_handler": {
+          "stop": {}
+        },
+        "jms_amqp_destination_name": "test",
+        "jms_amqp_remote_u_r_i": "amqp://my-host:31616",
+        "kafka_topic": "test"
+      },
+      "status": {
+        "state": "deprovisioning"
+      }
+    },
+    {
+      "id": "c9j6grba1s3agvr0u3l0",
+      "kind": "Connector",
+      "href": "/api/connector_mgmt/v1/kafka_connectors/c9j6grba1s3agvr0u3l0",
+      "owner": "tma_kafka_supporting",
+      "created_at": "2022-04-25T09:22:53.679336Z",
+      "modified_at": "2022-04-27T19:01:10.045173Z",
+      "name": "wert",
+      "connector_type_id": "aws_cloudwatch_sink_0.1",
+      "namespace_id": "c95j6h66ar2c9mtr5vjg",
+      "channel": "stable",
+      "desired_state": "ready",
+      "resource_version": 4761,
+      "kafka": {
+        "id": "c9ibrao6r41954reskd0",
+        "url": "testing-c-ibrao-r-----reskda.bf2.kafka.rhcloud.com:443"
+      },
+      "service_account": {
+        "client_id": "erg",
+        "client_secret": ""
+      },
+      "schema_registry": {
+        "id": "",
+        "url": ""
+      },
+      "connector": {
+        "aws_cw_namespace": "dfg",
+        "aws_region": "us",
+        "data_shape": {
+          "consumes": {
+            "format": "application/octet-stream"
+          }
+        },
+        "error_handler": {
+          "stop": {}
+        },
+        "kafka_topic": "df"
+      },
+      "status": {
+        "state": "assigning"
       }
     }
   ]

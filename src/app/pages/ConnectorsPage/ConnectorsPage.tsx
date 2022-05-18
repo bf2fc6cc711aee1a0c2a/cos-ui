@@ -290,10 +290,11 @@ const ConnectedRow: FunctionComponent<ConnectedRowProps> = ({
       />
       <ConnectorsTableRow
         connectorId={connector.id!}
+        desiredState={connector.desired_state!}
         name={connector.name!}
         type={connector.connector_type_id!}
         category={'TODO: MISSING'}
-        status={connector.status?.state!}
+        state={connector.status?.state!}
         isSelected={selectedConnector?.id === connector.id}
         canStart={canStart}
         canStop={canStop}

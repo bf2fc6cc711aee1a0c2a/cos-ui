@@ -1,7 +1,13 @@
 import { capitalize } from 'lodash';
-import React, { FunctionComponent } from 'react';
+import React, { FC } from 'react';
 
-import { Flex, FlexItem, Spinner } from '@patternfly/react-core';
+import {
+  Split,
+  SplitItem,
+  Spinner,
+  Stack,
+  StackItem,
+} from '@patternfly/react-core';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -10,31 +16,69 @@ import {
 } from '@patternfly/react-icons';
 import * as tokens from '@patternfly/react-tokens';
 
+import './ConnectorStatus.css';
+
 type ConnectorStatusProps = {
+  desiredState: string;
   name: string;
-  status: string;
+  state: string;
 };
 
-export const ConnectorStatus: FunctionComponent<ConnectorStatusProps> = ({
+export const ConnectorStatus: FC<ConnectorStatusProps> = ({
+  desiredState,
   name,
-  status,
-}) => {
-  const label = useConnectorStatusLabel(status);
-  return (
-    <Flex>
-      <FlexItem spacer={{ default: 'spacerSm' }}>
-        <ConnectorStatusIcon name={name} status={status} />
-      </FlexItem>
-      <FlexItem>{label}</FlexItem>
-    </Flex>
-  );
+  state,
+}) => (
+  <Split className={'connector-status__split'} hasGutter>
+    <SplitItem>
+      <ConnectorStatusIcon name={name} state={state} />
+    </SplitItem>
+    <SplitItem isFilled>
+      <ConnectorStatusLabel desiredState={desiredState} state={state} />
+    </SplitItem>
+  </Split>
+);
+
+type ConnectorStatusLabelProps = {
+  desiredState: string;
+  state: string;
 };
 
-export const ConnectorStatusIcon: FunctionComponent<ConnectorStatusProps> = ({
-  name,
-  status,
+export const ConnectorStatusLabel: FC<ConnectorStatusLabelProps> = ({
+  desiredState,
+  state,
 }) => {
-  switch (status?.toLowerCase()) {
+  switch (state?.toLowerCase()) {
+    case 'ready':
+    case 'failed':
+    case 'stopped':
+    case 'deleted':
+    case '':
+      return <>{convertToLabel(state)}</>;
+    default:
+      return (
+        <Stack className={'connector-status-label__stack'}>
+          <StackItem className={'connector-status-label__state-label'}>
+            {convertToLabel(state)}
+          </StackItem>
+          <StackItem className={'connector-status-label__desired-state-label'}>
+            Transitioning to <b>{convertToLabel(desiredState)}</b>
+          </StackItem>
+        </Stack>
+      );
+  }
+};
+
+type ConnectorStatusIconProps = {
+  name: string;
+  state: string;
+};
+
+export const ConnectorStatusIcon: FC<ConnectorStatusIconProps> = ({
+  name,
+  state,
+}) => {
+  switch (state?.toLowerCase()) {
     case 'ready':
       return <CheckCircleIcon color={tokens.global_success_color_100.value} />;
     case 'failed':
@@ -56,6 +100,6 @@ export const ConnectorStatusIcon: FunctionComponent<ConnectorStatusProps> = ({
   }
 };
 
-export function useConnectorStatusLabel(status: string) {
-  return typeof status !== undefined ? capitalize(status) : 'Undefined';
+export function convertToLabel(state: string) {
+  return typeof state !== undefined ? capitalize(state) : 'Undefined';
 }

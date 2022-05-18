@@ -38,10 +38,11 @@ export const ConnectorsTable: FunctionComponent = ({ children }) => {
 
 type ConnectorsTableRowProps = {
   connectorId: string;
+  desiredState: string;
   name: string;
   type: string;
   category: string;
-  status: string;
+  state: string;
   isSelected: boolean;
   canStart: boolean;
   canStop: boolean;
@@ -55,9 +56,10 @@ type ConnectorsTableRowProps = {
 };
 export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
   connectorId,
+  desiredState,
   name,
   type,
-  status,
+  state,
   isSelected,
   canStart,
   canStop,
@@ -132,7 +134,11 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
       <Td dataLabel={t('type')}>{type}</Td>
       {/* <Td dataLabel={t('Category')}>{category}</Td> */}
       <Td dataLabel={t('status')}>
-        <ConnectorStatus name={name} status={status} />
+        <ConnectorStatus
+          desiredState={desiredState}
+          name={name}
+          state={state}
+        />
       </Td>
       <Td
         actions={{ items: actions }}
