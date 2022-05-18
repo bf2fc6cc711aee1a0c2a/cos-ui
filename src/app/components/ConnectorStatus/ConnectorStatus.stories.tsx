@@ -34,7 +34,7 @@ const Template: ComponentStory<typeof ConnectorStatus> = (args) => (
   <List component={ListComponent.ol} type={OrderType.number}>
     {Object.values(ConnectorStatusValues).map((s, idx) => (
       <ListItem>
-        <ConnectorStatus key={idx} {...args} status={s} />
+        <ConnectorStatus key={idx} {...args} desiredState={'ready'} state={s} />
       </ListItem>
     ))}
   </List>
