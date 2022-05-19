@@ -14,11 +14,12 @@ import React, {
   useCallback,
   useEffect,
 } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import {
   Alert,
   AlertVariant,
+  ClipboardCopy,
   Drawer,
   DrawerActions,
   DrawerCloseButton,
@@ -221,6 +222,7 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
               </FlexItem>
             </Flex>
           </TextContent>
+
           <DrawerActions>
             <ConnectorActionsMenu
               onDuplicateConnector={onDuplicateConnector}
@@ -230,6 +232,25 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
             <DrawerCloseButton onClick={onClose} />
           </DrawerActions>
         </DrawerHead>
+        {status === 'failed' && (
+          <Hint className="pf-u-mr-lg pf-u-ml-lg pf-u-p-md">
+            <HintBody>
+              <p>{t('previewModeMsg')}</p>
+              <Trans i18nKey={'supportEmailMsg'}>
+                You can still get help by emailing us at
+                <ClipboardCopy
+                  hoverTip="Copy"
+                  clickTip="Copied"
+                  variant="inline-compact"
+                >
+                  rhosak-eval-support@redhat.com
+                </ClipboardCopy>
+                . This mailing list is monitored by the Red Hat OpenShift
+                Application Services team.
+              </Trans>
+            </HintBody>
+          </Hint>
+        )}
         <DrawerPanelBody>
           <Tabs activeKey={activeTabKey} onSelect={selectActiveKey}>
             <Tab
@@ -244,22 +265,6 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
                   isInline
                   title={getConnectorExpireAlert(namespaceData?.expiration!)}
                 />
-              )}
-
-              {status === 'failed' && (
-                <Hint className="pf-u-mt-md">
-                  <HintBody>
-                    <p>
-                      This service is currently available as a preview, and it
-                      is not commercially available or fully supported by our
-                      Customer Support team at this time.
-                    </p>
-                    You can still get help by emailing us at{' '}
-                    <i>rhosak-eval-support@redhat.com</i>. This mailing list is
-                    monitored by the Red Hat OpenShift Application Services
-                    team.
-                  </HintBody>
-                </Hint>
               )}
 
               <div className="connector-drawer__tab-content">

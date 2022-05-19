@@ -1,8 +1,15 @@
 import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus';
 import React, { FunctionComponent } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
-import { Text, TextVariants } from '@patternfly/react-core';
+import {
+  ClipboardCopy,
+  Popover,
+  PopoverPosition,
+  Text,
+  TextVariants,
+} from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import {
   IActions,
@@ -73,6 +80,8 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const popoverRef = React.useRef(null);
+
   const actions: IActions = [
     {
       title: t('start'),
@@ -134,11 +143,48 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
       <Td dataLabel={t('type')}>{type}</Td>
       {/* <Td dataLabel={t('Category')}>{category}</Td> */}
       <Td dataLabel={t('status')}>
-        <ConnectorStatus
-          desiredState={desiredState}
-          name={name}
-          state={state}
+        <Popover
+          aria-label="Failed connector popover"
+          position={PopoverPosition.auto}
+          hideOnOutsideClick={true}
+          headerContent={
+            <h1 className="connectors-failed_pop_over">
+              <ExclamationCircleIcon /> {t('failed')}
+            </h1>
+          }
+          bodyContent={
+            <div>
+              <p>{t('previewModeMsg')}</p>
+              <Trans i18nKey={'supportEmailMsg'}>
+                You can still get help by emailing us at
+                <ClipboardCopy
+                  hoverTip="Copy"
+                  clickTip="Copied"
+                  variant="inline-compact"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  rhosak-eval-support@redhat.com
+                </ClipboardCopy>
+                . This mailing list is monitored by the Red Hat OpenShift
+                Application Services team.
+              </Trans>
+            </div>
+          }
+          reference={popoverRef}
         />
+        <div
+          id="connector-status"
+          onClick={(e) =>
+            state?.toLowerCase() === 'failed' ? e.stopPropagation() : null
+          }
+          ref={state?.toLowerCase() === 'failed' ? popoverRef : null}
+        >
+          <ConnectorStatus
+            desiredState={desiredState}
+            name={name}
+            state={state}
+          />
+        </div>
       </Td>
       <Td
         actions={{ items: actions }}

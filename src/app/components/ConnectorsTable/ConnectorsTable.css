@@ -35,6 +35,10 @@
   ); /* Makes bottom box shadow visible */
 }
 
+.connectors-failed_pop_over {
+  color: var(--pf-global--danger-color--100);
+}
+
 @media screen and (min-width: 768px) {
   .pf-c-table-row__item td:first-child::before {
     position: absolute;

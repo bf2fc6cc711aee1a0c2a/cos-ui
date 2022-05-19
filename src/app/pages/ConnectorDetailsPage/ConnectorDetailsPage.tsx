@@ -217,7 +217,7 @@ export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
   // ];
 
   return (
-    <PageSection variant={'light'} hasShadowBottom>
+    <PageSection variant={'light'}>
       <Breadcrumb>
         <BreadcrumbItem>
           <Link to={'/'}>{t('connectorsInstances')}</Link>
