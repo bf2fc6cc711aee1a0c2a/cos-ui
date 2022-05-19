@@ -49,18 +49,18 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
     const { t } = useTranslation();
     const [failureReasonExpand, setFailureReasonExpand] = React.useState(false);
     const getFailureReason = (value: string): ReactNode => {
-      if ((value as string).length > 120) {
+      if ((value as string).length > 200) {
         return (
           <>
-            {!failureReasonExpand && (value as string).length > 120
-              ? (value as string).substring(0, 120) + '... '
+            {!failureReasonExpand && (value as string).length > 200
+              ? (value as string).substring(0, 200) + '... '
               : value}
 
             <Button
               onClick={() => setFailureReasonExpand(!failureReasonExpand)}
               variant={'link'}
             >
-              {failureReasonExpand ? 'view less' : 'view more'}
+              {failureReasonExpand ? t('viewLess') : t('viewMore')}
             </Button>
           </>
         );
