@@ -143,14 +143,13 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
       <Td dataLabel={t('type')}>{type}</Td>
       {/* <Td dataLabel={t('Category')}>{category}</Td> */}
       <Td dataLabel={t('status')}>
-        
         <Popover
           aria-label="Failed connector popover"
           position={PopoverPosition.auto}
           hideOnOutsideClick={true}
           headerContent={
             <h1 className="connectors-failed_pop_over">
-              <ExclamationCircleIcon /> Failed
+              <ExclamationCircleIcon /> {t('failed')}
             </h1>
           }
           bodyContent={
@@ -181,10 +180,10 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
           ref={state?.toLowerCase() === 'failed' ? popoverRef : null}
         >
           <ConnectorStatus
-          desiredState={desiredState}
-          name={name}
-          state={state}
-        />
+            desiredState={desiredState}
+            name={name}
+            state={state}
+          />
         </div>
       </Td>
       <Td
