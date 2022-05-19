@@ -161,6 +161,8 @@
   "type": "Type",
   "us-east-1": "US East, N. Virginia",
   "version": "Version",
+  "viewMore": "view more",
+  "viewLess": "view less",
   "viewJSONFormat": "View JSON format",
   "shortDescriptionSink": "Propagates data from a Kafka instance into another system",
   "shortDescriptionSource": "Ingests data from another system into a Kafka instance",

@@ -58,6 +58,9 @@ describe('Connectors page', () => {
     cy.findByText(
       'lb-cos--vgitqo-mk-imjg-eyqfbazqdiv.bf2.kafka.rhcloud.com:443'
     ).should('exist');
+    cy.findByText(
+      'view more'
+    ).should('exist');
     cy.findByLabelText('Close drawer panel').click();
     cy.findByText('Connector name').should('not.exist');
 

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import {
   Alert,
+  Button,
   TextContent,
   TextList,
   TextListItem,
@@ -46,6 +47,26 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
     error,
   }) => {
     const { t } = useTranslation();
+    const [failureReasonExpand, setFailureReasonExpand] = React.useState(false);
+    const getFailureReason = (value: string): ReactNode => {
+      if ((value as string).length > 200) {
+        return (
+          <>
+            {!failureReasonExpand && (value as string).length > 200
+              ? (value as string).substring(0, 200) + '... '
+              : value}
+
+            <Button
+              onClick={() => setFailureReasonExpand(!failureReasonExpand)}
+              variant={'link'}
+            >
+              {failureReasonExpand ? t('viewLess') : t('viewMore')}
+            </Button>
+          </>
+        );
+      }
+      return value;
+    };
     const textListItem = (title: string, value?: ReactNode) => (
       <>
         {value && (
@@ -54,7 +75,9 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
               {title}
             </TextListItem>
             <TextListItem component={TextListItemVariants.dd}>
-              {value}
+              {title === t('failureReason')
+                ? getFailureReason(value as string)
+                : value}
             </TextListItem>
           </>
         )}
