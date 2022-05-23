@@ -1,5 +1,5 @@
 import { capitalize } from 'lodash';
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 
 import {
   Split,
@@ -7,6 +7,9 @@ import {
   Spinner,
   Stack,
   StackItem,
+  Button,
+  Popover,
+  PopoverPosition,
 } from '@patternfly/react-core';
 import {
   CheckCircleIcon,
@@ -22,19 +25,31 @@ type ConnectorStatusProps = {
   desiredState: string;
   name: string;
   state: string;
+  clickable?: boolean;
+  popoverBody?: ReactNode;
+  popoverHeader?: ReactNode;
 };
 
 export const ConnectorStatus: FC<ConnectorStatusProps> = ({
   desiredState,
   name,
   state,
+  clickable,
+  popoverBody,
+  popoverHeader,
 }) => (
   <Split className={'connector-status__split'} hasGutter>
     <SplitItem>
       <ConnectorStatusIcon name={name} state={state} />
     </SplitItem>
     <SplitItem isFilled>
-      <ConnectorStatusLabel desiredState={desiredState} state={state} />
+      <ConnectorStatusLabel
+        desiredState={desiredState}
+        state={state}
+        clickable={clickable}
+        popoverBody={popoverBody}
+        popoverHeader={popoverHeader}
+      />
     </SplitItem>
   </Split>
 );
@@ -42,11 +57,17 @@ export const ConnectorStatus: FC<ConnectorStatusProps> = ({
 type ConnectorStatusLabelProps = {
   desiredState: string;
   state: string;
+  clickable: boolean | undefined;
+  popoverBody: ReactNode;
+  popoverHeader: ReactNode;
 };
 
 export const ConnectorStatusLabel: FC<ConnectorStatusLabelProps> = ({
   desiredState,
   state,
+  clickable,
+  popoverBody,
+  popoverHeader,
 }) => {
   switch (state?.toLowerCase()) {
     case 'ready':
@@ -54,7 +75,25 @@ export const ConnectorStatusLabel: FC<ConnectorStatusLabelProps> = ({
     case 'stopped':
     case 'deleted':
     case '':
-      return <>{convertToLabel(state)}</>;
+      return (
+        <>
+          {clickable ? (
+            <Popover
+              aria-label="connector status popover"
+              position={PopoverPosition.auto}
+              hideOnOutsideClick={true}
+              headerContent={popoverHeader}
+              bodyContent={popoverBody}
+            >
+              <Button variant="link" isInline>
+                {convertToLabel(state)}
+              </Button>
+            </Popover>
+          ) : (
+            convertToLabel(state)
+          )}
+        </>
+      );
     default:
       return (
         <Stack className={'connector-status-label__stack'}>
