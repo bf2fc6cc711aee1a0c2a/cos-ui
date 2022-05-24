@@ -317,7 +317,6 @@ export const registerEvalNamespace = ({
       .createEvaluationNamespace(
         {
           name: evalName,
-          annotations: [],
         },
         {
           cancelToken: source.token,
@@ -654,7 +653,7 @@ export const saveConnector = ({
       kind: 'Connector',
       name: name,
       channel: Channel.Stable,
-      namespace_id: namespace.id,
+      namespace_id: namespace.id!,
       desired_state: ConnectorDesiredState.Ready,
       connector_type_id: (connectorType as ObjectReference).id!,
       kafka: {
