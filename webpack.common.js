@@ -1,15 +1,15 @@
-/* eslint-disable */
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const Dotenv = require('dotenv-webpack');
-const BG_IMAGES_DIRNAME = 'bgimages';
 const { dependencies, federatedModuleName } = require('./package.json');
 delete dependencies.serve; // Needed for nodeshift bug
-const webpack = require('webpack');
 const ChunkMapper = require('@redhat-cloud-services/frontend-components-config/chunk-mapper');
+const CopyPlugin = require('copy-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ReactRefreshTypeScript = require('react-refresh-typescript');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+//const BG_IMAGES_DIRNAME = 'bgimages';
+const path = require('path');
+const webpack = require('webpack');
 
 const isPatternflyStyles = (stylesheet) =>
   stylesheet.includes('@patternfly/react-styles/css/') ||
@@ -17,9 +17,11 @@ const isPatternflyStyles = (stylesheet) =>
 
 module.exports = (env, argv) => {
   const isProduction = argv && argv.mode === 'production';
+  const isDevelopment = argv && argv.mode === 'development';
+  const entryName = process.env.DEMO_APP === 'true' ? federatedModuleName : 'app';
   return {
     entry: {
-      app: path.resolve(__dirname, 'src', 'index.tsx'),
+      [entryName]: path.resolve(__dirname, 'src', 'index.tsx'),
     },
     module: {
       rules: [
@@ -29,8 +31,12 @@ module.exports = (env, argv) => {
             {
               loader: 'ts-loader',
               options: {
-                transpileOnly: false,
-                experimentalWatchApi: true,
+                getCustomTransformers: () => ({
+                  before: [
+                    isDevelopment && new ReactRefreshTypeScript(),
+                  ].filter(Boolean),
+                }),
+                transpileOnly: isDevelopment, // dev type checking is done via fork-ts-checker-webpack-plugin
               },
             },
           ],
@@ -155,7 +161,7 @@ module.exports = (env, argv) => {
           },
         },
       }),
-    ],
+    ].filter(Boolean),
     resolve: {
       extensions: ['.js', '.ts', '.tsx', '.jsx'],
       plugins: [

@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
-const CopyPlugin = require('copy-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = merge(common('development'), {
@@ -12,10 +12,13 @@ module.exports = merge(common('development'), {
       directory: './dist',
     },
     client: {
-      overlay: true,
+      overlay: false,
+      webSocketURL: {
+        hostname: 'prod.foo.redhat.com',
+      }
     },
     historyApiFallback: true,
-    //open: true,
+    hot: true,
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
@@ -25,13 +28,14 @@ module.exports = merge(common('development'), {
     allowedHosts: 'all',
   },
   plugins: [
-    // new CopyPlugin({
-    //   patterns: [{ from: './src/keycloak.dev.json', to: 'keycloak.json' }],
-    // }),
     new webpack.DefinePlugin({
       __BASE_PATH__: JSON.stringify(
         process.env.BASE_PATH || 'https://api.stage.openshift.com'
       ),
     }),
+    new ReactRefreshWebpackPlugin({
+      library: 'cos-ui',
+    }),
+    new ForkTsCheckerWebpackPlugin(),
   ],
 });
