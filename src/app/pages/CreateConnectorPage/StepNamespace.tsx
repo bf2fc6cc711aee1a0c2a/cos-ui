@@ -1,4 +1,3 @@
-import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus';
 import {
   useNamespaceMachineIsReady,
   useNamespaceMachine,
@@ -35,6 +34,7 @@ import {
   DescriptionListTerm,
   Gallery,
   InputGroup,
+  Spinner,
   Stack,
   StackItem,
   TextInput,
@@ -213,10 +213,18 @@ const ClustersGallery: FunctionComponent = () => {
                             <StackItem>
                               {i.status.state === 'disconnected' && (
                                 <div className="pf-u-pt-md status">
-                                  <ConnectorStatus
-                                    desiredState={''}
-                                    name={''}
-                                    state={i.status.state}
+                                  <Alert
+                                    variant="info"
+                                    customIcon={
+                                      <Spinner
+                                        size="md"
+                                        aria-label={t('Provisioning')}
+                                        aria-valuetext="Please wait..."
+                                      />
+                                    }
+                                    isInline
+                                    isPlain
+                                    title={t('Provisioning')}
                                   />
                                 </div>
                               )}
