@@ -44,7 +44,7 @@
     "@changesets/changelog-github": "0.4.1",
     "@changesets/cli": "2.20.0",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.7",
-    "@redhat-cloud-services/frontend-components-config": "4.6.6",
+    "@redhat-cloud-services/frontend-components-config": "4.6.8",
     "@storybook/addon-actions": "6.5.5",
     "@storybook/addon-essentials": "6.5.5",
     "@storybook/addon-links": "6.5.5",
@@ -121,7 +121,7 @@
     "url-loader": "4.1.1",
     "webpack": "5.64.3",
     "webpack-cli": "4.9.1",
-    "webpack-dev-server": "4.6.0"
+    "webpack-dev-server": "4.7.3"
   },
   "scripts": {
     "build": "FEDERATE=1 webpack --mode production --config webpack.prod.js",
