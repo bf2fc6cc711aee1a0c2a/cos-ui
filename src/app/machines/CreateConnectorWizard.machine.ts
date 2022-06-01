@@ -571,20 +571,20 @@ export const creationWizardMachine = model.createMachine(
   },
   {
     guards: {
-      isKafkaInstanceSelected: (context) =>
-        context.selectedKafkaInstance !== undefined,
-      isNamespaceSelected: (context) => context.selectedNamespace !== undefined,
       isConnectorSelected: (context, event) => {
         const subStep = (event as { subStep?: number }).subStep;
         if (subStep) {
           return (
-            context.selectedNamespace !== undefined &&
+            context.selectedConnector !== undefined &&
             (context.connectorConfiguration !== undefined ||
               subStep <= context.activeConfigurationStep!)
           );
         }
-        return context.selectedNamespace !== undefined;
+        return context.selectedConnector !== undefined;
       },
+      isKafkaInstanceSelected: (context) =>
+        context.selectedKafkaInstance !== undefined,
+      isNamespaceSelected: (context) => context.selectedNamespace !== undefined,
       isConnectorConfigured: (context) => {
         if (!context.configurationSteps) {
           return (
