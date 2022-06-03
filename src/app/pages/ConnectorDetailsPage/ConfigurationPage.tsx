@@ -1,7 +1,7 @@
 import { updateConnector } from '@apis/api';
 import { Loading } from '@app/components/Loading/Loading';
 import { StepErrorBoundary } from '@app/components/StepErrorBoundary/StepErrorBoundary';
-import { ConnectorConfiguratorComponent } from '@app/machines/StepConfiguratorLoader.machine';
+import { ConfigurationMode, ConnectorConfiguratorComponent } from '@app/machines/StepConfiguratorLoader.machine';
 import { useCos } from '@context/CosContext';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
 import { clearEmptyObjectValues, mapToObject } from '@utils/shared';
@@ -416,7 +416,7 @@ const ConnectedCustomConfigurator: FC<{
     <Configurator
       activeStep={step - 1}
       connector={connector}
-      isViewMode={!isEditMode}
+      uiPath={isEditMode ? ConfigurationMode.EDIT : ConfigurationMode.VIEW}
       configuration={
         formConfiguration instanceof Map
           ? formConfiguration
