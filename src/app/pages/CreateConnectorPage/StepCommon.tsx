@@ -94,7 +94,9 @@ export const StepCommon: FC = () => {
                   isRequired
                   fieldId="clientSecret"
                   className="pf-u-mb-0"
-                  helperText={duplicateMode ? t('credentialDuplicateFieldHelpText') : ''}
+                  helperText={
+                    duplicateMode ? t('credentialDuplicateFieldHelpText') : ''
+                  }
                 >
                   <TextInput
                     value={serviceAccount.clientSecret}

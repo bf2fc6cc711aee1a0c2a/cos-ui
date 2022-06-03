@@ -66,7 +66,9 @@ const ConnectedCustomConfigurator: FunctionComponent<{
       activeStep={activeStep}
       configuration={configuration}
       connector={connector}
-      uiPath={duplicateMode ? ConfigurationMode.DUPLICATE : ConfigurationMode.CREATE}
+      uiPath={
+        duplicateMode ? ConfigurationMode.DUPLICATE : ConfigurationMode.CREATE
+      }
       onChange={(configuration, isValid) => {
         actor.send({ type: 'change', configuration, isValid });
       }}

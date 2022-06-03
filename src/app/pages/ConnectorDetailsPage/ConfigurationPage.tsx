@@ -1,7 +1,10 @@
 import { updateConnector } from '@apis/api';
 import { Loading } from '@app/components/Loading/Loading';
 import { StepErrorBoundary } from '@app/components/StepErrorBoundary/StepErrorBoundary';
-import { ConfigurationMode, ConnectorConfiguratorComponent } from '@app/machines/StepConfiguratorLoader.machine';
+import {
+  ConfigurationMode,
+  ConnectorConfiguratorComponent,
+} from '@app/machines/StepConfiguratorLoader.machine';
 import { useCos } from '@context/CosContext';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
 import { clearEmptyObjectValues, mapToObject } from '@utils/shared';
