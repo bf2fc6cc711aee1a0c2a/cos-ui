@@ -51,3 +51,6 @@ or if you want to run the tests against an headless Chrome
 npm run cypress
 ```
 
+## Contributing
+
+If you are contributing please check out the [Contributing Guidelines.](https://github.com/bf2fc6cc711aee1a0c2a/cos-ui/blob/main/CONTRIBUTING.md)
