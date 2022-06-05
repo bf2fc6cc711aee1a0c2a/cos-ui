@@ -3,6 +3,7 @@ import { JsonSchemaConfigurator } from '@app/components/JsonSchemaConfigurator/J
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { ConfiguratorActorRef } from '@app/machines/StepConfigurator.machine';
 import {
+  ConfigurationMode,
   ConnectorConfiguratorComponent,
   ConnectorConfiguratorProps,
 } from '@app/machines/StepConfiguratorLoader.machine';
@@ -65,7 +66,9 @@ const ConnectedCustomConfigurator: FunctionComponent<{
       activeStep={activeStep}
       configuration={configuration}
       connector={connector}
-      isViewMode={duplicateMode && false}
+      uiPath={
+        duplicateMode ? ConfigurationMode.DUPLICATE : ConfigurationMode.CREATE
+      }
       onChange={(configuration, isValid) => {
         actor.send({ type: 'change', configuration, isValid });
       }}

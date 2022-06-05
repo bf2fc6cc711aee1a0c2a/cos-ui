@@ -6,10 +6,17 @@ import { createModel } from 'xstate/lib/model';
 
 import { ConnectorType } from '@rhoas/connector-management-sdk';
 
+export enum ConfigurationMode {
+  CREATE = 'create',
+  VIEW = 'view',
+  EDIT = 'edit',
+  DUPLICATE = 'duplicate',
+}
+
 export type ConnectorConfiguratorProps = {
   activeStep?: number;
   connector: ConnectorType;
-  isViewMode?: boolean;
+  uiPath: ConfigurationMode;
   configuration?: unknown;
   onChange: (configuration: Map<string, unknown>, isValid: boolean) => void;
   duplicateMode?: boolean | undefined;
