@@ -116,7 +116,7 @@
   "namespaceStepDescription": "The selected namespace hosts your Connectors instance.",
   "noConnectorInstances": "No Connector instances",
   "noDeploymentNamespaceAvailable": "No deployment namespace available",
-  "noFilterResultsFound": "No results match the filter criteria. <2>{t('clearAllFilters')}</2> to show results.",
+  "noFilterResultsFound": "No results match the filter criteria. <2>Clear all filters</2> to show results.",
   "noKafkaInstanceAvailable": "No Kafka instances",
   "noKafkaInstanceAvailableBody": "To select a Kafka instance for your Connectors instance to work with, create a new one.",
   "noNamespaceAvailable": "No namespace",
