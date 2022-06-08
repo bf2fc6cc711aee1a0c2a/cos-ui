@@ -45,7 +45,9 @@ const Template: ComponentStory<typeof JsonSchemaConfigurator> = (
   return (
     <JsonSchemaConfigurator
       {...args}
-      schema={fixture.connector_type.json_schema}
+      schema={
+        fixture.connector_type.json_schema || fixture.connector_type.schema
+      }
     />
   );
 };

@@ -1,145 +1,195 @@
 {
-  "connector_type" : {
-    "json_schema" : {
-      "type" : "object",
-      "properties" : {
-        "connector" : {
-          "type" : "object",
-          "title" : "AWS SNS Sink",
-          "required" : [ "topicNameOrArn", "accessKey", "secretKey", "region" ],
-          "properties" : {
-            "topicNameOrArn" : {
-              "title" : "Topic Name",
-              "description" : "The SQS Topic name or ARN",
-              "type" : "string"
-            },
-            "accessKey" : {
-              "title" : "Access Key",
-              "oneOf" : [ {
-                "title" : "Access Key",
-                "description" : "The access key obtained from AWS",
-                "type" : "string",
-                "format" : "password"
-              }, {
-                "description" : "An opaque reference to the accessKey",
-                "type" : "object",
-                "properties" : { }
-              } ]
-            },
-            "secretKey" : {
-              "title" : "Secret Key",
-              "oneOf" : [ {
-                "title" : "Secret Key",
-                "description" : "The secret key obtained from AWS",
-                "type" : "string",
-                "format" : "password"
-              }, {
-                "description" : "An opaque reference to the secretKey",
-                "type" : "object",
-                "properties" : { }
-              } ]
-            },
-            "region" : {
-              "title" : "AWS Region",
-              "description" : "The AWS region to connect to",
-              "type" : "string",
-              "example" : "eu-west-1"
-            },
-            "autoCreateTopic" : {
-              "title" : "Autocreate Topic",
-              "description" : "Setting the autocreation of the SNS topic.",
-              "type" : "boolean",
-              "default" : false
-            }
-          }
-        },
-        "kafka" : {
-          "type" : "object",
-          "title" : "Managed Kafka Source",
-          "required" : [ "topic" ],
-          "properties" : {
-            "topic" : {
-              "title" : "Topic names",
-              "description" : "Comma separated list of Kafka topic names",
-              "type" : "string"
-            }
-          }
-        },
-        "steps" : {
-          "type" : "array",
-          "items" : {
-            "oneOf" : [ {
-              "type" : "object",
-              "required" : [ "insert-field" ],
-              "properties" : {
-                "insert-field" : {
-                  "title" : "Insert Field Action",
-                  "description" : "Adds a custom field with a constant value to the message in transit.\n\nThis action works with Json Object. So it will expect a Json Array or a Json Object.\n\nIf for example you have an array like '{ \"foo\":\"John\", \"bar\":30 }' and your action has been configured with field as 'element' and value as 'hello', you'll get '{ \"foo\":\"John\", \"bar\":30, \"element\":\"hello\" }'\n\nNo headers mapping supported, only constant values.",
-                  "required" : [ "field", "value" ],
-                  "properties" : {
-                    "field" : {
-                      "title" : "Field",
-                      "description" : "The name of the field to be added",
-                      "type" : "string"
-                    },
-                    "value" : {
-                      "title" : "Value",
-                      "description" : "The value of the field",
-                      "type" : "string"
-                    }
-                  },
-                  "type" : "object"
-                }
-              }
-            }, {
-              "type" : "object",
-              "required" : [ "extract-field" ],
-              "properties" : {
-                "extract-field" : {
-                  "title" : "Extract Field Action",
-                  "description" : "Extract a field from the body",
-                  "required" : [ "field" ],
-                  "properties" : {
-                    "field" : {
-                      "title" : "Field",
-                      "description" : "The name of the field to be added",
-                      "type" : "string"
-                    }
-                  },
-                  "type" : "object"
-                }
-              }
-            } ]
-          }
-        }
-      }
-    },
-    "id" : "aws_sns_sink_0.1",
-    "kind" : "ConnectorType",
-    "icon_href" : "TODO",
-    "name" : "AWS SNS Sink",
-    "description" : "AWS SNS Sink",
-    "version" : "0.1",
-    "labels" : [ "sink" ],
-    "channels" : [ "stable" ]
-  },
   "channels" : {
     "stable" : {
       "shard_metadata" : {
-        "connector_revision" : "3",
+        "annotations" : {
+          "trait.camel.apache.org/container.request-cpu" : "0.20",
+          "trait.camel.apache.org/container.request-memory" : "128m",
+          "trait.camel.apache.org/deployment.progress-deadline-seconds" : "30"
+        },
+        "connector_image" : "quay.io/rhoas/cos-connector-aws-sns:0.1.29",
+        "connector_revision" : "29",
         "connector_type" : "sink",
-        "connector_image" : "quay.io/lburgazzoli/mci:0.1.3-aws-sns-sink-0.1",
+        "consumes" : "application/octet-stream",
+        "error_handler_strategy" : "stop",
+        "kamelets" : {
+          "adapter" : {
+            "name" : "aws-sns-sink",
+            "prefix" : "aws"
+          },
+          "kafka" : {
+            "name" : "cos-kafka-source",
+            "prefix" : "kafka"
+          }
+        },
         "operators" : [ {
           "type" : "camel-connector-operator",
           "version" : "[1.0.0,2.0.0)"
         } ],
-        "kamelets" : {
-          "connector" : "aws-sns-sink",
-          "kafka" : "managed-kafka-source",
-          "insert-field" : "insert-field-action",
-          "extract-field" : "extract-field-action"
-        }
+        "produces" : "application/octet-stream"
       }
     }
+  },
+  "connector_type" : {
+    "capabilities" : [ "data_shape", "error_handler", "processors" ],
+    "channels" : [ "stable" ],
+    "description" : "Amazon Simple Notification Service sink",
+    "icon_href" : "TODO",
+    "id" : "aws_sns_sink_0.1",
+    "kind" : "ConnectorType",
+    "labels" : [ "sink" ],
+    "name" : "Amazon Simple Notification Service sink",
+    "schema" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "required" : [ "aws_topic_name_or_arn", "aws_region", "kafka_topic", "aws_access_key", "aws_secret_key" ],
+      "properties" : {
+        "aws_topic_name_or_arn" : {
+          "title" : "Topic Name",
+          "description" : "The SQS Topic name or ARN",
+          "type" : "string"
+        },
+        "aws_access_key" : {
+          "title" : "Access Key",
+          "x-group" : "credentials",
+          "oneOf" : [ {
+            "title" : "Access Key",
+            "description" : "The access key obtained from AWS",
+            "type" : "string",
+            "format" : "password"
+          }, {
+            "description" : "An opaque reference to the aws_access_key",
+            "type" : "object",
+            "properties" : { }
+          } ]
+        },
+        "aws_secret_key" : {
+          "title" : "Secret Key",
+          "x-group" : "credentials",
+          "oneOf" : [ {
+            "title" : "Secret Key",
+            "description" : "The secret key obtained from AWS",
+            "type" : "string",
+            "format" : "password"
+          }, {
+            "description" : "An opaque reference to the aws_secret_key",
+            "type" : "object",
+            "properties" : { }
+          } ]
+        },
+        "aws_region" : {
+          "title" : "AWS Region",
+          "description" : "The AWS region to connect to",
+          "type" : "string",
+          "example" : "eu-west-1",
+          "enum" : [ "af-south-1", "ap-east-1", "ap-northeast-1", "ap-northeast-2", "ap-northeast-3", "ap-south-1", "ap-southeast-1", "ap-southeast-2", "ap-southeast-3", "ca-central-1", "eu-central-1", "eu-north-1", "eu-south-1", "eu-west-1", "eu-west-2", "eu-west-3", "fips-us-east-1", "fips-us-east-2", "fips-us-west-1", "fips-us-west-2", "me-south-1", "sa-east-1", "us-east-1", "us-east-2", "us-west-1", "us-west-2", "cn-north-1", "cn-northwest-1", "us-gov-east-1", "us-gov-west-1", "us-iso-east-1", "us-iso-west-1", "us-isob-east-1" ]
+        },
+        "aws_auto_create_topic" : {
+          "title" : "Autocreate Topic",
+          "description" : "Setting the autocreation of the SNS topic.",
+          "type" : "boolean",
+          "default" : false
+        },
+        "aws_uri_endpoint_override" : {
+          "title" : "Overwrite Endpoint URI",
+          "description" : "Set the overriding endpoint URI. This option needs to be used in combination with overrideEndpoint option.",
+          "type" : "string"
+        },
+        "aws_override_endpoint" : {
+          "title" : "Endpoint Overwrite",
+          "description" : "Set the need for overiding the endpoint URI. This option needs to be used in combination with uriEndpointOverride setting.",
+          "type" : "boolean",
+          "default" : false
+        },
+        "kafka_topic" : {
+          "title" : "Topic Names",
+          "description" : "Comma separated list of Kafka topic names",
+          "type" : "string"
+        },
+        "data_shape" : {
+          "type" : "object",
+          "additionalProperties" : false,
+          "properties" : {
+            "consumes" : {
+              "$ref" : "#/$defs/data_shape/consumes"
+            }
+          }
+        },
+        "error_handler" : {
+          "type" : "object",
+          "oneOf" : [ {
+            "type" : "object",
+            "additionalProperties" : false,
+            "required" : [ "log" ],
+            "properties" : {
+              "log" : {
+                "$ref" : "#/$defs/error_handler/log"
+              }
+            }
+          }, {
+            "type" : "object",
+            "additionalProperties" : false,
+            "required" : [ "stop" ],
+            "properties" : {
+              "stop" : {
+                "$ref" : "#/$defs/error_handler/stop"
+              }
+            }
+          }, {
+            "type" : "object",
+            "additionalProperties" : false,
+            "required" : [ "dead_letter_queue" ],
+            "properties" : {
+              "dead_letter_queue" : {
+                "$ref" : "#/$defs/error_handler/dead_letter_queue"
+              }
+            }
+          } ],
+          "default" : {
+            "stop" : { }
+          }
+        },
+        "processors" : { }
+      },
+      "$defs" : {
+        "data_shape" : {
+          "consumes" : {
+            "type" : "object",
+            "additionalProperties" : false,
+            "required" : [ "format" ],
+            "properties" : {
+              "format" : {
+                "type" : "string",
+                "default" : "application/octet-stream",
+                "enum" : [ "application/octet-stream" ]
+              }
+            }
+          }
+        },
+        "error_handler" : {
+          "log" : {
+            "type" : "object",
+            "additionalProperties" : false
+          },
+          "stop" : {
+            "type" : "object",
+            "additionalProperties" : false
+          },
+          "dead_letter_queue" : {
+            "type" : "object",
+            "additionalProperties" : false,
+            "required" : [ "topic" ],
+            "properties" : {
+              "topic" : {
+                "type" : "string",
+                "title" : "Dead Letter Topic Name",
+                "description" : "The name of the Kafka topic used as dead letter queue"
+              }
+            }
+          }
+        }
+      }
+    },
+    "version" : "0.1"
   }
 }
