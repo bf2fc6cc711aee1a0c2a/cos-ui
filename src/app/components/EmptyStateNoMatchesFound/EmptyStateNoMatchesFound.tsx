@@ -39,7 +39,7 @@ export const EmptyStateNoMatchesFound: FunctionComponent<NoMatchFoundProps> = ({
             isInline
             onClick={onClear}
           >
-            {t('clearAllFilters')}
+            Clear all filters
           </Button>{' '}
           to show results.
         </Trans>
