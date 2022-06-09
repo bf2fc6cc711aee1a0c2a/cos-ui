@@ -90,7 +90,7 @@ export class CustomJsonSchemaBridge extends JSONSchemaBridge {
   }
 
   getField(name: string): Record<string, any> {
-    const { oneOf, ...field } = super.getField(name);
+    const { enum: enumValues, oneOf, ...field } = super.getField(name);
     // use this to look at field information
     /*
     console.log(
@@ -102,6 +102,18 @@ export class CustomJsonSchemaBridge extends JSONSchemaBridge {
       field
     );
     */
+    // uniforms will show the first enum value even if the underlying
+    // model object doesn't have this set or if there's no default value
+    let newEnumValues = undefined;
+    if (
+      typeof field.type !== 'undefined' &&
+      field.type === 'string' &&
+      typeof enumValues !== 'undefined'
+    ) {
+      if (enumValues[0] !== '') {
+        newEnumValues = ['', ...enumValues];
+      }
+    }
     // Due to:
     // https://uniforms.tools/docs/api-bridges/#note-on-allofanyofoneof
     // we need to pick the appropriate type for the form, let's use the
@@ -119,7 +131,11 @@ export class CustomJsonSchemaBridge extends JSONSchemaBridge {
         isSecret: asString.format === 'password',
       };
     } else {
-      return { name, ...field };
+      return {
+        name,
+        ...field,
+        ...(typeof newEnumValues !== undefined && { enum: newEnumValues }),
+      };
     }
   }
 }

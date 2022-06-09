@@ -1,146 +1,184 @@
 {
-  "connector_type" : {
-    "json_schema" : {
-      "type" : "object",
-      "properties" : {
-        "connector" : {
-          "type" : "object",
-          "title" : "MongoDB Sink",
-          "required" : [ "hosts", "collection", "password", "username", "database" ],
-          "properties" : {
-            "hosts" : {
-              "title" : "MongoDB Hosts",
-              "description" : "Comma separated list of MongoDB Host Addresses in host:port format.",
-              "type" : "string"
-            },
-            "collection" : {
-              "title" : "MongoDB Collection",
-              "description" : "Sets the name of the MongoDB collection to bind to this endpoint.",
-              "type" : "string"
-            },
-            "password" : {
-              "title" : "MongoDB Password",
-              "oneOf" : [ {
-                "title" : "MongoDB Password",
-                "description" : "User password for accessing MongoDB.",
-                "type" : "string",
-                "format" : "password"
-              }, {
-                "description" : "An opaque reference to the password",
-                "type" : "object",
-                "properties" : { }
-              } ]
-            },
-            "username" : {
-              "title" : "MongoDB Username",
-              "description" : "Username for accessing MongoDB.",
-              "type" : "string"
-            },
-            "database" : {
-              "title" : "MongoDB Database",
-              "description" : "Sets the name of the MongoDB database to target.",
-              "type" : "string"
-            },
-            "writeConcern" : {
-              "title" : "Write Concern",
-              "description" : "Configure the level of acknowledgment requested from MongoDB for write operations, possible values are ACKNOWLEDGED, W1, W2, W3, UNACKNOWLEDGED, JOURNALED, MAJORITY.",
-              "type" : "string"
-            },
-            "createCollection" : {
-              "title" : "Collection",
-              "description" : "Create collection during initialisation if it doesn't exist.",
-              "type" : "boolean",
-              "default" : false
-            }
-          }
-        },
-        "kafka" : {
-          "type" : "object",
-          "title" : "Managed Kafka Source",
-          "required" : [ "topic" ],
-          "properties" : {
-            "topic" : {
-              "title" : "Topic names",
-              "description" : "Comma separated list of Kafka topic names",
-              "type" : "string"
-            }
-          }
-        },
-        "steps" : {
-          "type" : "array",
-          "items" : {
-            "oneOf" : [ {
-              "type" : "object",
-              "required" : [ "insert-field" ],
-              "properties" : {
-                "insert-field" : {
-                  "title" : "Insert Field Action",
-                  "description" : "Adds a custom field with a constant value to the message in transit.\n\nThis action works with Json Object. So it will expect a Json Array or a Json Object.\n\nIf for example you have an array like '{ \"foo\":\"John\", \"bar\":30 }' and your action has been configured with field as 'element' and value as 'hello', you'll get '{ \"foo\":\"John\", \"bar\":30, \"element\":\"hello\" }'\n\nNo headers mapping supported, only constant values.",
-                  "required" : [ "field", "value" ],
-                  "properties" : {
-                    "field" : {
-                      "title" : "Field",
-                      "description" : "The name of the field to be added",
-                      "type" : "string"
-                    },
-                    "value" : {
-                      "title" : "Value",
-                      "description" : "The value of the field",
-                      "type" : "string"
-                    }
-                  },
-                  "type" : "object"
-                }
-              }
-            }, {
-              "type" : "object",
-              "required" : [ "extract-field" ],
-              "properties" : {
-                "extract-field" : {
-                  "title" : "Extract Field Action",
-                  "description" : "Extract a field from the body",
-                  "required" : [ "field" ],
-                  "properties" : {
-                    "field" : {
-                      "title" : "Field",
-                      "description" : "The name of the field to be added",
-                      "type" : "string"
-                    }
-                  },
-                  "type" : "object"
-                }
-              }
-            } ]
-          }
-        }
-      }
-    },
-    "id" : "mongodb_sink_0.1",
-    "kind" : "ConnectorType",
-    "icon_href" : "TODO",
-    "name" : "MongoDB Sink",
-    "description" : "MongoDB Sink",
-    "version" : "0.1",
-    "labels" : [ "sink" ],
-    "channels" : [ "stable" ]
-  },
   "channels" : {
     "stable" : {
       "shard_metadata" : {
-        "connector_revision" : "3",
+        "annotations" : {
+          "trait.camel.apache.org/container.request-cpu" : "0.20",
+          "trait.camel.apache.org/container.request-memory" : "128m",
+          "trait.camel.apache.org/deployment.progress-deadline-seconds" : "30"
+        },
+        "connector_image" : "quay.io/rhoas/cos-connector-mongodb:0.1.29",
+        "connector_revision" : "29",
         "connector_type" : "sink",
-        "connector_image" : "quay.io/lburgazzoli/mci:0.1.3-mongodb-sink-0.1",
+        "consumes" : "application/json",
+        "error_handler_strategy" : "stop",
+        "kamelets" : {
+          "adapter" : {
+            "name" : "cos-mongodb-sink",
+            "prefix" : "mongodb"
+          },
+          "kafka" : {
+            "name" : "cos-kafka-source",
+            "prefix" : "kafka"
+          }
+        },
         "operators" : [ {
           "type" : "camel-connector-operator",
           "version" : "[1.0.0,2.0.0)"
         } ],
-        "kamelets" : {
-          "connector" : "mongodb-sink",
-          "kafka" : "managed-kafka-source",
-          "insert-field" : "insert-field-action",
-          "extract-field" : "extract-field-action"
-        }
+        "produces" : "application/json"
       }
     }
+  },
+  "connector_type" : {
+    "capabilities" : [ "data_shape", "error_handler", "processors" ],
+    "channels" : [ "stable" ],
+    "description" : "MongoDB sink",
+    "icon_href" : "TODO",
+    "id" : "mongodb_sink_0.1",
+    "kind" : "ConnectorType",
+    "labels" : [ "sink" ],
+    "name" : "MongoDB sink",
+    "schema" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "required" : [ "mongodb_hosts", "mongodb_collection", "mongodb_database", "kafka_topic" ],
+      "properties" : {
+        "mongodb_hosts" : {
+          "title" : "MongoDB Hosts",
+          "description" : "Comma separated list of MongoDB Host Addresses in host:port format.",
+          "type" : "string"
+        },
+        "mongodb_collection" : {
+          "title" : "MongoDB Collection",
+          "description" : "Sets the name of the MongoDB collection to bind to this endpoint.",
+          "type" : "string"
+        },
+        "mongodb_password" : {
+          "title" : "MongoDB Password",
+          "x-group" : "credentials",
+          "oneOf" : [ {
+            "title" : "MongoDB Password",
+            "description" : "User password for accessing MongoDB.",
+            "type" : "string",
+            "format" : "password"
+          }, {
+            "description" : "An opaque reference to the mongodb_password",
+            "type" : "object",
+            "properties" : { }
+          } ]
+        },
+        "mongodb_username" : {
+          "title" : "MongoDB Username",
+          "description" : "Username for accessing MongoDB.",
+          "type" : "string",
+          "x-group" : "credentials"
+        },
+        "mongodb_database" : {
+          "title" : "MongoDB Database",
+          "description" : "Sets the name of the MongoDB database to target.",
+          "type" : "string"
+        },
+        "mongodb_write_concern" : {
+          "title" : "Write Concern",
+          "description" : "Configure the level of acknowledgment requested from MongoDB for write operations, possible values are ACKNOWLEDGED, W1, W2, W3, UNACKNOWLEDGED, JOURNALED, MAJORITY.",
+          "type" : "string"
+        },
+        "mongodb_create_collection" : {
+          "title" : "Collection",
+          "description" : "Create collection during initialisation if it doesn't exist.",
+          "type" : "boolean",
+          "default" : false
+        },
+        "kafka_topic" : {
+          "title" : "Topic Names",
+          "description" : "Comma separated list of Kafka topic names",
+          "type" : "string"
+        },
+        "data_shape" : {
+          "type" : "object",
+          "additionalProperties" : false,
+          "properties" : {
+            "consumes" : {
+              "$ref" : "#/$defs/data_shape/consumes"
+            }
+          }
+        },
+        "error_handler" : {
+          "type" : "object",
+          "oneOf" : [ {
+            "type" : "object",
+            "additionalProperties" : false,
+            "required" : [ "log" ],
+            "properties" : {
+              "log" : {
+                "$ref" : "#/$defs/error_handler/log"
+              }
+            }
+          }, {
+            "type" : "object",
+            "additionalProperties" : false,
+            "required" : [ "stop" ],
+            "properties" : {
+              "stop" : {
+                "$ref" : "#/$defs/error_handler/stop"
+              }
+            }
+          }, {
+            "type" : "object",
+            "additionalProperties" : false,
+            "required" : [ "dead_letter_queue" ],
+            "properties" : {
+              "dead_letter_queue" : {
+                "$ref" : "#/$defs/error_handler/dead_letter_queue"
+              }
+            }
+          } ],
+          "default" : {
+            "stop" : { }
+          }
+        },
+        "processors" : { }
+      },
+      "$defs" : {
+        "data_shape" : {
+          "consumes" : {
+            "type" : "object",
+            "additionalProperties" : false,
+            "required" : [ "format" ],
+            "properties" : {
+              "format" : {
+                "type" : "string",
+                "default" : "application/json",
+                "enum" : [ "application/json" ]
+              }
+            }
+          }
+        },
+        "error_handler" : {
+          "log" : {
+            "type" : "object",
+            "additionalProperties" : false
+          },
+          "stop" : {
+            "type" : "object",
+            "additionalProperties" : false
+          },
+          "dead_letter_queue" : {
+            "type" : "object",
+            "additionalProperties" : false,
+            "required" : [ "topic" ],
+            "properties" : {
+              "topic" : {
+                "type" : "string",
+                "title" : "Dead Letter Topic Name",
+                "description" : "The name of the Kafka topic used as dead letter queue"
+              }
+            }
+          }
+        }
+      }
+    },
+    "version" : "0.1"
   }
 }
