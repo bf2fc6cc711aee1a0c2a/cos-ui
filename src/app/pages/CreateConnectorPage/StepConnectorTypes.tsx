@@ -5,8 +5,9 @@ import {
 import { EmptyStateGenericError } from '@app/components/EmptyStateGenericError/EmptyStateGenericError';
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
 import { Loading } from '@app/components/Loading/Loading';
-import { Pagination } from '@app/components/Pagination/Pagination';
+// import { Pagination } from '@app/components/Pagination/Pagination';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
+import { DEFAULT_CONNECTOR_TYPES_PAGE_SIZE } from '@app/machines/StepConnectorTypes.machine';
 import React, {
   FunctionComponent,
   useCallback,
@@ -85,7 +86,12 @@ export function ConnectorTypesGallery() {
               <>
                 <ConnectorTypesToolbar duplicateMode={duplicateMode} />
                 <EmptyStateNoMatchesFound
-                  onClear={() => onQuery({ page: 1, size: 10 })}
+                  onClear={() =>
+                    onQuery({
+                      page: 1,
+                      size: DEFAULT_CONNECTOR_TYPES_PAGE_SIZE,
+                    })
+                  }
                 />
               </>
             );
@@ -350,6 +356,7 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
       <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
         {toggleGroupItems}
       </ToolbarToggleGroup>
+      {/*
       {!duplicateMode && (
         <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
           <ConnectorTypesPagination
@@ -360,6 +367,7 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
           />
         </ToolbarItem>
       )}
+      */}
     </>
   );
   return (
@@ -375,6 +383,7 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
   );
 };
 
+/*
 type ConnectorTypesPaginationProps = {
   isCompact?: boolean;
   onChange: (page: number, size: number) => void;
@@ -392,3 +401,4 @@ const ConnectorTypesPagination: FunctionComponent<ConnectorTypesPaginationProps>
       />
     );
   };
+*/

@@ -5,6 +5,8 @@ import { ActorRef, ActorRefFrom, Sender, spawn } from 'xstate';
 import { pure, sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
+const DEFAULT_PAGE_SIZE = 10;
+
 export type ApiErrorResponse = { page: number; error: string };
 export type ApiSuccessResponse<RawDataType> = {
   items: Array<RawDataType>;
@@ -60,15 +62,21 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
   service: ApiCallback<RawDataType, QueryType>,
   dataTransformer: (response: RawDataType) => DataType,
   options?: {
+    defaultSize?: number;
     pollingEnabled?: boolean;
     onBeforeSetResponse?: (previousResponse: DataType[] | undefined) => void;
   }
 ) {
+  const size = options
+    ? typeof options?.defaultSize !== 'undefined'
+      ? options?.defaultSize
+      : DEFAULT_PAGE_SIZE
+    : DEFAULT_PAGE_SIZE;
   const model = createModel(
     {
       request: {
         page: 1,
-        size: 10,
+        size,
       },
       response: undefined,
       pollingEnabled: options?.pollingEnabled || false,

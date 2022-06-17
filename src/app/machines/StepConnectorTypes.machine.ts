@@ -15,6 +15,8 @@ import {
   makePaginatedApiMachine,
 } from './PaginatedResponse.machine';
 
+export const DEFAULT_CONNECTOR_TYPES_PAGE_SIZE = 500;
+
 type Context = {
   accessToken: () => Promise<string>;
   connectorsApiBasePath: string;
@@ -90,7 +92,9 @@ export const connectorTypesMachine = model.createMachine(
                   ConnectorType,
                   ConnectorTypesQuery,
                   ConnectorType
-                >(fetchConnectorTypes(context), (i) => i),
+                >(fetchConnectorTypes(context), (i) => i, {
+                  defaultSize: DEFAULT_CONNECTOR_TYPES_PAGE_SIZE,
+                }),
             },
             states: {
               idle: {
