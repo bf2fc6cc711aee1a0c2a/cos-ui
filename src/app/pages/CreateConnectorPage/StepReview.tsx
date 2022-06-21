@@ -99,6 +99,7 @@ export function Review() {
           labelOff={t('viewJSONFormat')}
           isChecked={toggleView}
           onChange={onToggleJSONView}
+          ouiaId={'toggle'}
         />
       }
     >

@@ -39,12 +39,13 @@ export const EmptyStateGettingStarted: FunctionComponent<EmptyStateGettingStarte
               isSmall
               isInline
               onClick={onHelp}
+              ouiaId={'link-QuickStart'}
             >
               quick start guide.
             </Button>
           </Trans>
         </EmptyStateBody>
-        <Button variant={'primary'} onClick={onCreate}>
+        <Button variant={'primary'} onClick={onCreate} ouiaId={'button-create'}>
           {t('createAConnectorsInstance')}
         </Button>
       </EmptyState>

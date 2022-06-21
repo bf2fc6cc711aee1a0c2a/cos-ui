@@ -127,6 +127,10 @@ interface WizardState {
   isNavOpen: boolean;
 }
 
+function toOUIAId(victim: string): string {
+  return victim.toLocaleLowerCase().replaceAll(' ', '-');
+}
+
 export class UncontrolledWizard extends Component<WizardProps, WizardState> {
   static displayName = 'Wizard';
   private static currentId = 0;
@@ -175,50 +179,6 @@ export class UncontrolledWizard extends Component<WizardProps, WizardState> {
       }
     }
   };
-
-  // private goToStep = (step: number): void => {
-  //   const { onGoToStep } = this.props;
-  //   const { currentStep } = this.state;
-  //   const flattenedSteps = this.getFlattenedSteps();
-  //   const maxSteps = flattenedSteps.length;
-  //   if (step < 1) {
-  //     step = 1;
-  //   } else if (step > maxSteps) {
-  //     step = maxSteps;
-  //   }
-  //   this.setState({ currentStep: step, isNavOpen: false });
-  //   const { id: prevId, name: prevName } = flattenedSteps[currentStep - 1];
-  //   const { id, name } = flattenedSteps[step - 1];
-  //   return onGoToStep && onGoToStep({ id, name }, { prevId, prevName });
-  // };
-
-  // private goToStepById = (stepId: number | string): void => {
-  //   const flattenedSteps = this.getFlattenedSteps();
-  //   let step;
-  //   for (let i = 0; i < flattenedSteps.length; i++) {
-  //     if (flattenedSteps[i].id === stepId) {
-  //       step = i + 1;
-  //       break;
-  //     }
-  //   }
-  //   if (step) {
-  //     this.setState({ currentStep: step });
-  //   }
-  // };
-
-  // private goToStepByName = (stepName: string): void => {
-  //   const flattenedSteps = this.getFlattenedSteps();
-  //   let step;
-  //   for (let i = 0; i < flattenedSteps.length; i++) {
-  //     if (flattenedSteps[i].name === stepName) {
-  //       step = i + 1;
-  //       break;
-  //     }
-  //   }
-  //   if (step) {
-  //     this.setState({ currentStep: step });
-  //   }
-  // };
 
   private getFlattenedSteps = (): WizardStep[] => {
     const { steps } = this.props;
@@ -469,6 +429,12 @@ export class UncontrolledWizard extends Component<WizardProps, WizardState> {
                   type="submit"
                   onClick={onNext}
                   isDisabled={!isValid}
+                  ouiaId={toOUIAId(
+                    `button-${
+                      (activeStep && activeStep.nextButtonText) ||
+                      nextButtonText
+                    }`
+                  )}
                 >
                   {(activeStep && activeStep.nextButtonText) || nextButtonText}
                 </Button>
@@ -477,29 +443,23 @@ export class UncontrolledWizard extends Component<WizardProps, WizardState> {
                     variant={ButtonVariant.secondary}
                     onClick={onBack}
                     className={css(firstStep && 'pf-m-disabled')}
+                    ouiaId={toOUIAId(`button-${backButtonText}`)}
                   >
                     {backButtonText}
                   </Button>
                 )}
                 {!activeStep.hideCancelButton && (
                   <div className={styles.wizardFooterCancel}>
-                    <Button variant={ButtonVariant.link} onClick={onClose}>
+                    <Button
+                      variant={ButtonVariant.link}
+                      onClick={onClose}
+                      ouiaId={toOUIAId(`button-${cancelButtonText}`)}
+                    >
                       {cancelButtonText}
                     </Button>
                   </div>
                 )}
               </footer>
-              // <WizardFooterInternal
-              //   onNext={this.onNext}
-              //   onBack={this.onBack}
-              //   onClose={onClose}
-              //   isValid={isValid}
-              //   firstStep={firstStep}
-              //   activeStep={activeStep}
-              //   nextButtonText={(activeStep && activeStep.nextButtonText) || nextButtonText}
-              //   backButtonText={backButtonText}
-              //   cancelButtonText={cancelButtonText}
-              // />
             )}
           </WizardToggle>
         </div>

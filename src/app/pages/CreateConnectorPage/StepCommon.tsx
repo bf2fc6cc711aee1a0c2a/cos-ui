@@ -68,6 +68,7 @@ export const StepCommon: FC = () => {
                 onClick={handleModalToggle}
                 className="pf-u-mt-md"
                 isDisabled={sACreated}
+                ouiaId={'button-create-service-acct'}
               >
                 {t('createServiceAccount')}
               </Button>

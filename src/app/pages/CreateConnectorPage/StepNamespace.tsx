@@ -416,6 +416,7 @@ const ClustersToolbar: FunctionComponent<ClustersToolbarProps> = ({
               variant="secondary"
               isDisabled={isEvalPresent}
               onClick={onModalToggle}
+              ouiaId={'button-create'}
             >
               {t('createPreviewNamespace')}
             </Button>

@@ -308,6 +308,7 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
                 },
               })
             }
+            ouiaId={'search-field'}
             ref={nameInputRef}
           />
           <Button

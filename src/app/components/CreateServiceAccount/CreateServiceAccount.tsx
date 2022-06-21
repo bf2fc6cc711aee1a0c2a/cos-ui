@@ -122,13 +122,22 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
                 isLoading={loading}
                 isDisabled={validated === 'error' || loading}
                 onClick={createSA}
+                ouiaId={'button-create'}
               >
                 {t('create')}
               </Button>,
-              <Button key="cancel" variant="link" onClick={handleModalToggle}>
+              <Button
+                key="cancel"
+                variant="link"
+                onClick={handleModalToggle}
+                ouiaId={'button-cancel'}
+              >
                 {t('cancel')}
               </Button>,
             ]
+      }
+      ouiaId={
+        sACreated ? 'modal-CredentialsGenerated' : 'modal-CreateServiceAcct'
       }
     >
       {sACreated ? (
@@ -194,6 +203,7 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
             variant="primary"
             isDisabled={!copied}
             onClick={handleModalToggle}
+            ouiaId={'button-close'}
           >
             {t('close')}
           </Button>
