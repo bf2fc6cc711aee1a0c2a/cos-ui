@@ -14,7 +14,7 @@ module.exports = merge(common('development'), {
     client: {
       overlay: false,
       webSocketURL: {
-        hostname: 'prod.foo.redhat.com',
+        hostname: 'stage.foo.redhat.com',
       }
     },
     historyApiFallback: true,
