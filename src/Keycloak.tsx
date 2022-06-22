@@ -28,7 +28,7 @@ export const init = async () => {
   try {
     keycloak = new (Keycloak as any)({
       realm: 'redhat-external',
-      url: 'https://sso.redhat.com/auth/',
+      url: 'https://sso.stage.redhat.com/auth/',
       clientId: 'cloud-services',
       promiseType: 'native',
     });

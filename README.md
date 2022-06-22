@@ -17,9 +17,9 @@ npm install
 npm run start
 ```
 
-This will start the standalone app on `https://prod.foo.redhat.com:1337/`. 
+This will start the standalone app on `https://stage.foo.redhat.com:1337/`. 
 
-- make sure you have `127.0.0.1 prod.foo.redhat.com` in your hosts file for this to work.
+- make sure you have `127.0.0.1 stage.foo.redhat.com` in your hosts file for this to work.
 - you can also change the backend (fleet-manager) that the app will point to in the `.env` file.
 
 ## Run the UI as a federated module consumed by the application-services-ui app
