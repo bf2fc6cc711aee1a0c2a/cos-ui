@@ -28,6 +28,7 @@ export const ConnectorsToolbar: FunctionComponent<ConnectorsToolbarProps> = ({
           <NavLink
             className="pf-c-button pf-m-primary"
             to={'/create-connector'}
+            data-ouia-component-id={'button-create'}
           >
             {t('createConnectorsInstance')}
           </NavLink>
