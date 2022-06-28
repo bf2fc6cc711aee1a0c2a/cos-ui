@@ -33,29 +33,25 @@ const ConnectedCustomConfigurator: FunctionComponent<{
   actor: ConfiguratorActorRef;
   duplicateMode: boolean | undefined;
 }> = ({ actor, Configurator, duplicateMode }) => {
-  let { activeStep, configuration, connector, connectorData } = useSelector(
+  let { activeStep, configuration, connector } = useSelector(
     actor,
     useCallback(
       (state: typeof actor.state) => ({
         connector: state.context.connector,
         activeStep: state.context.activeStep,
         configuration: state.context.configuration,
-        connectorData: state.context.connectorData,
       }),
       [actor]
     )
   );
   if (duplicateMode) {
-    const defaultEntries = JSON.parse(JSON.stringify(connectorData?.connector));
     let combineConfiguration = {};
     if (configuration instanceof Map) {
       combineConfiguration = {
-        ...defaultEntries,
         ...clearEmptyObjectValues(mapToObject(configuration)),
       };
     } else {
       combineConfiguration = {
-        ...defaultEntries,
         ...clearEmptyObjectValues(configuration),
       };
     }
