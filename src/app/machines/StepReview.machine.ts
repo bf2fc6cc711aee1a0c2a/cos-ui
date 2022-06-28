@@ -1,5 +1,5 @@
 import { saveConnector, UserProvidedServiceAccount } from '@apis/api';
-import { mapToObject } from '@utils/shared';
+import { dataToPrettyString } from '@utils/shared';
 
 import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
@@ -123,14 +123,5 @@ export const reviewMachine = model.createMachine(
     },
   }
 );
-
-function dataToPrettyString(data: unknown) {
-  const dataVal = data instanceof Map ? mapToObject(data) : data;
-  try {
-    return JSON.stringify(dataVal, null, 2);
-  } catch (e) {
-    return '';
-  }
-}
 
 export type ReviewMachineActorRef = ActorRefFrom<typeof reviewMachine>;

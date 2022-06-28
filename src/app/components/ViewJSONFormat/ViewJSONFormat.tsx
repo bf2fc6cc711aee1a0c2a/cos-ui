@@ -1,4 +1,6 @@
 import { useReviewMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
+import { dataToPrettyString } from '@utils/shared';
+import _ from 'lodash';
 import React, { FunctionComponent } from 'react';
 
 import {
@@ -15,6 +17,11 @@ import {
   FileDownloadIcon,
 } from '@patternfly/react-icons';
 
+import {
+  ConnectorDesiredState,
+  ObjectReference,
+} from '@rhoas/connector-management-sdk';
+
 export const ViewJSONFormat: FunctionComponent = () => {
   const [copied, setCopied] = React.useState<boolean>(false);
   const [showServiceAccount, setShowServiceAccount] =
@@ -24,10 +31,46 @@ export const ViewJSONFormat: FunctionComponent = () => {
   const showTooltipRef = React.useRef();
   let timer: any;
 
-  const { configString } = useReviewMachine();
+  const {
+    name,
+    userServiceAccount,
+    configString,
+    kafka,
+    namespace,
+    connectorType,
+  } = useReviewMachine();
 
+  const connectorTypeConfig = _.pick(connectorType, [
+    'name',
+    'kind',
+    'channels',
+  ]);
+  const combinedConfig = _.merge(
+    {},
+    { name: name },
+    { connector_type_id: (connectorType as ObjectReference).id! },
+    { desired_state: ConnectorDesiredState.Ready },
+    connectorTypeConfig,
+    {
+      kafka: {
+        id: kafka.id!,
+        url: kafka.bootstrap_server_host || 'demo',
+      },
+    },
+    { namespace_id: namespace.id },
+    { service_account: userServiceAccount },
+    { connector: JSON.parse(configString) }
+  );
+
+  const configPrettyString = dataToPrettyString(combinedConfig);
   function maskPropertyValues(inputObj: any) {
-    const dataToHide = ['secretKey', 'accessKey'];
+    const dataToHide = [
+      'secretKey',
+      'accessKey',
+      'aws_access_key',
+      'aws_secret_key',
+      'clientSecret',
+    ];
     const json = JSON.stringify(
       inputObj,
       (key, value) => {
@@ -106,7 +149,9 @@ export const ViewJSONFormat: FunctionComponent = () => {
           id="copy-button"
           textId="code-content"
           aria-label="Copy to clipboard"
-          onClick={(e) => onClick(e, getJson(configString, showServiceAccount))}
+          onClick={(e) =>
+            onClick(e, getJson(configPrettyString, showServiceAccount))
+          }
           exitDelay={600}
           maxWidth="110px"
           variant="plain"
@@ -120,7 +165,7 @@ export const ViewJSONFormat: FunctionComponent = () => {
           ref={downloadTooltipRef}
           aria-label="Download icon"
           onClick={(e) =>
-            downloadFile(e, getJson(configString, showServiceAccount))
+            downloadFile(e, getJson(configPrettyString, showServiceAccount))
           }
         >
           <FileDownloadIcon />
@@ -135,7 +180,7 @@ export const ViewJSONFormat: FunctionComponent = () => {
   return (
     <CodeBlock actions={actions}>
       <CodeBlockCode id="code-content">
-        {getJson(configString, showServiceAccount)}
+        {getJson(configPrettyString, showServiceAccount)}
       </CodeBlockCode>
     </CodeBlock>
   );
