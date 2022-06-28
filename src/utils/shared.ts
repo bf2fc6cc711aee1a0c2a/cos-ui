@@ -7,7 +7,14 @@ export const mapToObject = (inputMap: Map<string, unknown>): object => {
   });
   return obj;
 };
-
+export const dataToPrettyString = (data: unknown) => {
+  const dataVal = data instanceof Map ? mapToObject(data) : data;
+  try {
+    return JSON.stringify(dataVal, null, 2);
+  } catch (e) {
+    return '';
+  }
+};
 /**
  * Calculate the time remaining before expiry
  * @param expireTime
