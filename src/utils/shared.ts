@@ -15,6 +15,22 @@ export const dataToPrettyString = (data: unknown) => {
     return '';
   }
 };
+
+export const getPasswordType = (schema: Record<string, any>) => {
+  let dataToHide: string[] = [];
+  const keys = Object.keys(schema.properties);
+  keys.map((key) => {
+    const oneOf = schema.properties[key].oneOf;
+    if (typeof oneOf !== 'undefined') {
+      const [def] = oneOf;
+      if (def.format === 'password') {
+        dataToHide.push(key);
+      }
+    }
+  });
+  return dataToHide;
+};
+
 /**
  * Calculate the time remaining before expiry
  * @param expireTime

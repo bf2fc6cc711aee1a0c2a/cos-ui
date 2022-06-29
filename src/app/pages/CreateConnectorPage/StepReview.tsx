@@ -1,6 +1,7 @@
 import { useReviewMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { ViewJSONFormat } from '@app/components/ViewJSONFormat/ViewJSONFormat';
+import { getPasswordType } from '@utils/shared';
 import _ from 'lodash';
 import React, { useState, useCallback, FC } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,8 +30,6 @@ export function Review() {
   }>({
     clientId: true,
     clientSecret: true,
-    accessKey: true,
-    secretKey: true,
   });
 
   const updateMaskView = (ele: any) => {
@@ -42,14 +41,6 @@ export function Review() {
         break;
       case 'clientSecret':
         updatedState.clientSecret = !toggleMaskView.clientSecret;
-        setToggleMaskView(updatedState);
-        break;
-      case 'accessKey':
-        updatedState.accessKey = !toggleMaskView.accessKey;
-        setToggleMaskView(updatedState);
-        break;
-      case 'secretKey':
-        updatedState.secretKey = !toggleMaskView.secretKey;
         setToggleMaskView(updatedState);
         break;
     }
@@ -73,6 +64,9 @@ export function Review() {
   const config = JSON.parse(configString);
   const connector = JSON.parse(configString).connector;
   const kafkaTopic = JSON.parse(configString).kafka;
+  const schema: Record<string, any> = (connectorType as ConnectorTypeAllOf)
+    .schema!;
+  const dataToHide = getPasswordType(schema);
 
   const modifiedObject = _.mapKeys(config, (_, key) => {
     return (key = key.replace(/\./g, '_'));
@@ -213,22 +207,9 @@ export function Review() {
                       <strong>{_.startCase(el)}</strong>
                     </GridItem>
                     <GridItem span={8}>
-                      {_.startCase(el) === t('accessKey') ||
-                      _.startCase(el) === t('secretKey') ? (
+                      {dataToHide.includes(el) ? (
                         <Flex>
-                          <FlexItem>
-                            {toggleMaskView[el]
-                              ? maskValue(connector[el])
-                              : connector[el]}
-                            {}
-                          </FlexItem>
-                          <FlexItem onClick={updateMaskView} id={el}>
-                            {toggleMaskView[el] ? (
-                              <EyeIcon />
-                            ) : (
-                              <EyeSlashIcon />
-                            )}
-                          </FlexItem>
+                          <FlexItem>{maskValue(connector[el])}</FlexItem>
                         </Flex>
                       ) : (
                         connector[el]
@@ -256,8 +237,7 @@ export function Review() {
                       <strong>{_.startCase(el)}</strong>
                     </GridItem>
                     <GridItem span={8}>
-                      {_.startCase(el) === t('databasePassword') ||
-                      _.startCase(el) === t('password') ? (
+                      {dataToHide.includes(el) ? (
                         maskValue(modifiedObject[el])
                       ) : typeof modifiedObject[el] === 'object' ? (
                         el === 'data_shape' ? (
