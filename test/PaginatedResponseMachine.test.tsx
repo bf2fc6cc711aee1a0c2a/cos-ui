@@ -15,7 +15,8 @@ describe('@cos-ui/machines', () => {
     jest.useFakeTimers();
 
     type TestResultType = { foo: string };
-    type TestQueryType = { bar: string };
+    type TestOrderByType = { baz: 'asc' };
+    type TestSearchType = { bar: string };
 
     const makeRequestData = (size: number) =>
       Array(size).fill({ foo: 'it works' });
@@ -33,42 +34,45 @@ describe('@cos-ui/machines', () => {
       responsePayload = context;
     });
 
-    const testApi: ApiCallback<TestResultType, TestQueryType> = jest.fn(
-      (request, onSuccess, onError) => {
-        if (request.page === 0) {
-          fail("can't fetch page 0");
-        }
-        let timer: NodeJS.Timeout | undefined;
-        if (request.page === 1 || request.page === 2) {
-          timer = global.setTimeout(() => {
-            onSuccess({
-              page: request.page,
-              size: request.size,
-              total: 100,
-              items: makeRequestData(request.size),
-            });
-            timer = undefined;
-          }, API_LATENCY);
-        }
-        if (request.page > 2) {
-          timer = global.setTimeout(() => {
-            onError({ page: request.page, error: 'error message' });
-            timer = undefined;
-          }, API_LATENCY);
-        }
-        return () => {
-          if (timer) {
-            onCancelTimerSpy();
-            clearTimeout(timer);
-            timer = undefined;
-          }
-        };
+    const testApi: ApiCallback<
+      TestResultType,
+      TestOrderByType,
+      TestSearchType
+    > = jest.fn((request, onSuccess, onError) => {
+      if (request.page === 0) {
+        fail("can't fetch page 0");
       }
-    );
+      let timer: NodeJS.Timeout | undefined;
+      if (request.page === 1 || request.page === 2) {
+        timer = global.setTimeout(() => {
+          onSuccess({
+            page: request.page,
+            size: request.size,
+            total: 100,
+            items: makeRequestData(request.size),
+          });
+          timer = undefined;
+        }, API_LATENCY);
+      }
+      if (request.page > 2) {
+        timer = global.setTimeout(() => {
+          onError({ page: request.page, error: 'error message' });
+          timer = undefined;
+        }, API_LATENCY);
+      }
+      return () => {
+        if (timer) {
+          onCancelTimerSpy();
+          clearTimeout(timer);
+          timer = undefined;
+        }
+      };
+    });
 
     const paginatedApiMachine = makePaginatedApiMachine<
       TestResultType,
-      TestQueryType,
+      TestOrderByType,
+      TestSearchType,
       TestResultType
     >(testApi, (i) => i);
 
@@ -78,7 +82,8 @@ describe('@cos-ui/machines', () => {
         events: {
           ...getPaginatedApiMachineEvents<
             TestResultType,
-            TestQueryType,
+            TestOrderByType,
+            TestSearchType,
             TestResultType
           >(),
         },
@@ -222,14 +227,14 @@ describe('@cos-ui/machines', () => {
       testService.send('api.query', {
         page: 1,
         size: 4,
-        query: { bar: 'test bar' },
+        search: { bar: 'test bar' },
       });
       jest.runAllTimers();
       expect(loadingPayload).toEqual(
         expect.objectContaining({
           page: 1,
           size: 4,
-          query: { bar: 'test bar' },
+          search: { bar: 'test bar' },
         })
       );
       expect(responsePayload).toEqual(
@@ -248,14 +253,14 @@ describe('@cos-ui/machines', () => {
 
     it('can query with a partial request object', () => {
       testService.send('api.query', {
-        query: { bar: 'test bar 2' },
+        search: { bar: 'test bar 2' },
       });
       jest.runAllTimers();
       expect(loadingPayload).toEqual(
         expect.objectContaining({
           page: 1,
           size: 4,
-          query: { bar: 'test bar 2' },
+          search: { bar: 'test bar 2' },
         })
       );
       expect(responsePayload).toEqual(

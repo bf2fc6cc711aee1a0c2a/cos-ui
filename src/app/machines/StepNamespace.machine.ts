@@ -10,6 +10,8 @@ import {
   ApiSuccessResponse,
   getPaginatedApiMachineEvents,
   makePaginatedApiMachine,
+  PlaceholderOrderBy,
+  PlaceholderSearch,
 } from './PaginatedResponse.machine';
 
 type Context = {
@@ -37,7 +39,8 @@ const model = createModel(
       confirm: () => ({}),
       ...getPaginatedApiMachineEvents<
         ConnectorNamespace,
-        {},
+        PlaceholderOrderBy,
+        PlaceholderSearch,
         ConnectorNamespace
       >(),
     },
@@ -83,7 +86,8 @@ export const namespacesMachine = model.createMachine(
               src: (context) =>
                 makePaginatedApiMachine<
                   ConnectorNamespace,
-                  {},
+                  PlaceholderOrderBy,
+                  PlaceholderSearch,
                   ConnectorNamespace
                 >(fetchConnectorNamespaces(context), (i) => i, {
                   pollingEnabled: true,

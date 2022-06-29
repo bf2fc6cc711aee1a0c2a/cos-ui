@@ -77,7 +77,7 @@ const ClustersGallery: FunctionComponent = () => {
     onSelect,
     onDeselect,
     onRefresh,
-    onQuery,
+    runQuery: onQuery,
   } = useNamespaceMachine();
   const onModalToggle = useCallback(() => {
     setIsModalOpen((prev) => !prev);
@@ -306,10 +306,10 @@ const ClustersToolbar: FunctionComponent<ClustersToolbarProps> = ({
   isEvalPresent,
 }) => {
   // const { t } = useTranslation();
-  const { request, onQuery } = useNamespaceMachine();
+  const { request, runQuery } = useNamespaceMachine();
 
   const searchInputRef = useRef<HTMLInputElement | null>(null);
-  const debouncedOnQuery = useDebounce(onQuery, 1000);
+  const debouncedOnQuery = useDebounce(runQuery, 1000);
 
   // const [statuses, setStatuses] = useState<string[]>([
   //   'Pending',
@@ -361,7 +361,9 @@ const ClustersToolbar: FunctionComponent<ClustersToolbarProps> = ({
               debouncedOnQuery({
                 size: request.size,
                 page: 1,
-                name: value,
+                search: {
+                  name: value,
+                },
               })
             }
             ref={searchInputRef}
@@ -446,13 +448,15 @@ type ClustersPaginationProps = {
 const ClustersPagination: FunctionComponent<ClustersPaginationProps> = ({
   isCompact = false,
 }) => {
-  const { request, response, onQuery } = useNamespaceMachine();
+  const { request, response, runQuery } = useNamespaceMachine();
   return (
     <Pagination
       itemCount={response?.total || 0}
       page={request.page}
       perPage={request.size}
-      onChange={(page, size) => onQuery({ page, size })}
+      onChange={(event) =>
+        runQuery({ ...event, orderBy: request.orderBy, search: request.search })
+      }
       isCompact={isCompact}
     />
   );

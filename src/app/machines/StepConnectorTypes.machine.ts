@@ -1,4 +1,8 @@
-import { ConnectorTypesQuery, fetchConnectorTypes } from '@apis/api';
+import {
+  ConnectorTypesOrderBy,
+  ConnectorTypesSearch,
+  fetchConnectorTypes,
+} from '@apis/api';
 import { PAGINATED_MACHINE_ID } from '@constants/constants';
 
 import { ActorRefFrom, send, sendParent } from 'xstate';
@@ -42,7 +46,8 @@ const model = createModel(
       confirm: () => ({}),
       ...getPaginatedApiMachineEvents<
         ConnectorType,
-        ConnectorTypesQuery,
+        ConnectorTypesOrderBy,
+        ConnectorTypesSearch,
         ConnectorType
       >(),
     },
@@ -88,7 +93,8 @@ export const connectorTypesMachine = model.createMachine(
               src: (context) =>
                 makePaginatedApiMachine<
                   ConnectorType,
-                  ConnectorTypesQuery,
+                  ConnectorTypesOrderBy,
+                  ConnectorTypesSearch,
                   ConnectorType
                 >(fetchConnectorTypes(context), (i) => i),
             },

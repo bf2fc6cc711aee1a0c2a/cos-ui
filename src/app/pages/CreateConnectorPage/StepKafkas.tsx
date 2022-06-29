@@ -73,7 +73,7 @@ const KafkasGallery: FunctionComponent = () => {
     // queryResults,
     firstRequest,
     onSelect,
-    onQuery,
+    runQuery,
   } = useKafkasMachine();
 
   useEffect(() => {
@@ -102,7 +102,7 @@ const KafkasGallery: FunctionComponent = () => {
               <>
                 <KafkaToolbar />
                 <EmptyStateNoMatchesFound
-                  onClear={() => onQuery({ page: 1, size: 10 })}
+                  onClear={() => runQuery({ page: 1, size: 10 })}
                 />
               </>
             );
@@ -186,7 +186,7 @@ const KafkasGallery: FunctionComponent = () => {
 const KafkaToolbar: FunctionComponent = () => {
   const { t } = useTranslation();
 
-  const { request, onQuery } = useKafkasMachine();
+  const { request, runQuery } = useKafkasMachine();
 
   const [statusesToggled, setStatusesToggled] = useState(false);
   const [cloudProvidersToggled, setCloudProvidersToggled] = useState(false);
@@ -210,7 +210,7 @@ const KafkaToolbar: FunctionComponent = () => {
     []
   );
 
-  const debouncedOnQuery = useDebounce(onQuery, 1000);
+  const debouncedOnQuery = useDebounce(runQuery, 1000);
 
   const {
     name,
@@ -218,21 +218,21 @@ const KafkaToolbar: FunctionComponent = () => {
     cloudProviders = [],
     regions = [],
     statuses = [],
-  } = request.query || {};
+  } = request.search || {};
 
   const clearAllFilters = useCallback(
-    () => onQuery({ page: 1, size: request.size }),
-    [onQuery, request.size]
+    () => runQuery({ page: 1, size: request.size }),
+    [runQuery, request.size]
   );
 
   const nameInputRef = useRef<HTMLInputElement | null>(null);
   const ownerInputRef = useRef<HTMLInputElement | null>(null);
 
   const onSelectFilter = (category: string, values: string[], value: string) =>
-    onQuery({
+    runQuery({
       ...request,
-      query: {
-        ...(request.query || {}),
+      search: {
+        ...(request.search || {}),
         [category]: values.includes(value)
           ? values.filter((s) => s !== value)
           : [...(values || []), value],
@@ -265,10 +265,10 @@ const KafkaToolbar: FunctionComponent = () => {
   };
 
   const onDeleteQueryGroup = (category: string) =>
-    onQuery({
+    runQuery({
       ...request,
-      query: {
-        ...(request.query || {}),
+      search: {
+        ...(request.search || {}),
         [category]: undefined,
       },
     });
@@ -425,8 +425,9 @@ const KafkaToolbar: FunctionComponent = () => {
                     debouncedOnQuery({
                       size: request.size,
                       page: 1,
-                      query: {
-                        ...request.query,
+                      orderBy: request.orderBy,
+                      search: {
+                        ...request.search,
                         name,
                       },
                     })
@@ -437,11 +438,12 @@ const KafkaToolbar: FunctionComponent = () => {
                   variant={'control'}
                   aria-label="search button for name input"
                   onClick={() =>
-                    onQuery({
+                    runQuery({
                       size: request.size,
                       page: 1,
-                      query: {
-                        ...request.query,
+                      orderBy: request.orderBy,
+                      search: {
+                        ...request.search,
                         name: nameInputRef.current?.value || '',
                       },
                     })
@@ -472,8 +474,9 @@ const KafkaToolbar: FunctionComponent = () => {
                     debouncedOnQuery({
                       size: request.size,
                       page: 1,
-                      query: {
-                        ...request.query,
+                      orderBy: request.orderBy,
+                      search: {
+                        ...request.search,
                         owner,
                       },
                     })
@@ -484,11 +487,12 @@ const KafkaToolbar: FunctionComponent = () => {
                   variant={'control'}
                   aria-label="search button for owner input"
                   onClick={() =>
-                    onQuery({
+                    runQuery({
                       size: request.size,
                       page: 1,
-                      query: {
-                        ...request.query,
+                      orderBy: request.orderBy,
+                      search: {
+                        ...request.search,
                         owner: ownerInputRef.current?.value || '',
                       },
                     })
@@ -581,14 +585,16 @@ type KafkasPaginationProps = {
 const KafkasPagination: FunctionComponent<KafkasPaginationProps> = ({
   isCompact = false,
 }) => {
-  const { request, response, onQuery } = useKafkasMachine();
+  const { request, response, runQuery } = useKafkasMachine();
 
   return (
     <Pagination
       itemCount={response?.total || 0}
       page={request.page}
       perPage={request.size}
-      onChange={(page, size) => onQuery({ page, size })}
+      onChange={(event) =>
+        runQuery({ ...event, orderBy: request.orderBy, search: request.search })
+      }
       isCompact={isCompact}
     />
   );

@@ -1,4 +1,8 @@
-import { fetchConnectors } from '@apis/api';
+import {
+  ConnectorsOrderBy,
+  ConnectorsSearch,
+  fetchConnectors,
+} from '@apis/api';
 import { PAGINATED_MACHINE_ID } from '@constants/constants';
 
 import { InterpreterFrom, send, spawn } from 'xstate';
@@ -32,7 +36,8 @@ const model = createModel(
     events: {
       ...getPaginatedApiMachineEvents<
         Connector,
-        {},
+        ConnectorsOrderBy,
+        ConnectorsSearch,
         ConnectorMachineActorRef
       >(),
       selectConnector: (payload: { connector: Connector }) => payload,
@@ -73,7 +78,8 @@ export const connectorsPageMachine = model.createMachine(
               src: (context) =>
                 makePaginatedApiMachine<
                   Connector,
-                  {},
+                  ConnectorsOrderBy,
+                  ConnectorsSearch,
                   ConnectorMachineActorRef
                 >(
                   fetchConnectors(context),

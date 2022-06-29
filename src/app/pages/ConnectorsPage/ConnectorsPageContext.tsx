@@ -1,3 +1,4 @@
+import { ConnectorsOrderBy, ConnectorsSearch } from '@apis/api';
 import { ConnectorMachineActorRef } from '@app/machines/Connector.machine';
 import {
   connectorsPageMachine,
@@ -67,21 +68,30 @@ export const useConnectorsPageIsReady = () => {
 };
 
 type useConnectorsMachineReturnType = usePaginationReturnValue<
-  {},
+  ConnectorsOrderBy,
+  ConnectorsSearch,
   ConnectorMachineActorRef
 > & {
   selectedConnector: Connector | undefined;
   deselectConnector: () => void;
-  query: (props: PaginatedApiRequest<{}>) => void;
+  runQuery: (
+    props: PaginatedApiRequest<ConnectorsOrderBy, ConnectorsSearch>
+  ) => void;
 };
 
 export const useConnectorsMachine = (): useConnectorsMachineReturnType => {
   const service = useConnectorsPageMachineService();
 
-  const apiData = usePagination<Connector, {}, ConnectorMachineActorRef>(
+  const apiData = usePagination<
+    Connector,
+    ConnectorsOrderBy,
+    ConnectorsSearch,
+    ConnectorMachineActorRef
+  >(
     service.state.children[PAGINATED_MACHINE_ID] as PaginatedApiActorType<
       Connector,
-      {},
+      ConnectorsOrderBy,
+      ConnectorsSearch,
       ConnectorMachineActorRef
     >
   );
@@ -99,8 +109,8 @@ export const useConnectorsMachine = (): useConnectorsMachineReturnType => {
     service.send({ type: 'deselectConnector' });
   }, [service]);
 
-  const query = useCallback(
-    (props: PaginatedApiRequest<{}>) => {
+  const runQuery = useCallback(
+    (props: PaginatedApiRequest<ConnectorsOrderBy, ConnectorsSearch>) => {
       service.send({ type: 'api.query', ...props });
     },
     [service]
@@ -110,6 +120,6 @@ export const useConnectorsMachine = (): useConnectorsMachineReturnType => {
     ...apiData,
     selectedConnector,
     deselectConnector,
-    query,
+    runQuery,
   };
 };

@@ -1,6 +1,7 @@
 import {
-  ConnectorTypesQuery,
-  KafkasQuery,
+  ConnectorTypesOrderBy,
+  ConnectorTypesSearch,
+  KafkasSearch,
   UserProvidedServiceAccount,
 } from '@apis/api';
 import {
@@ -11,6 +12,8 @@ import {
   usePagination,
   PaginatedApiActorType,
   PaginatedApiRequest,
+  PlaceholderOrderBy,
+  PlaceholderSearch,
 } from '@app/machines/PaginatedResponse.machine';
 import { BasicMachineActorRef } from '@app/machines/StepCommon.machine';
 import {
@@ -158,10 +161,20 @@ export const useNamespaceMachineIsReady = () => {
 
 export const useNamespaceMachine = () => {
   const { namespaceRef } = useCreateConnectorWizard();
-  const api = usePagination<ConnectorNamespace, {}, ConnectorNamespace>(
+  const api = usePagination<
+    ConnectorNamespace,
+    PlaceholderOrderBy,
+    PlaceholderSearch,
+    ConnectorNamespace
+  >(
     namespaceRef.getSnapshot()?.children[
       PAGINATED_MACHINE_ID
-    ] as PaginatedApiActorType<ConnectorNamespace, {}, ConnectorNamespace>
+    ] as PaginatedApiActorType<
+      ConnectorNamespace,
+      PlaceholderOrderBy,
+      PlaceholderSearch,
+      ConnectorNamespace
+    >
   );
   const { selectedId, duplicateMode } = useSelector(
     namespaceRef,
@@ -184,8 +197,8 @@ export const useNamespaceMachine = () => {
     namespaceRef.send({ type: 'deselectNamespace' });
   }, [namespaceRef]);
 
-  const onQuery = useCallback(
-    (request: PaginatedApiRequest<{}>) => {
+  const runQuery = useCallback(
+    (request: PaginatedApiRequest<PlaceholderOrderBy, PlaceholderSearch>) => {
       namespaceRef.send({ type: 'api.query', ...request });
     },
     [namespaceRef]
@@ -201,7 +214,7 @@ export const useNamespaceMachine = () => {
     onSelect,
     onDeselect,
     onRefresh,
-    onQuery,
+    runQuery,
   };
 };
 
@@ -221,12 +234,18 @@ export const useConnectorTypesMachineIsReady = () => {
 
 export const useConnectorTypesMachine = () => {
   const { connectorTypeRef } = useCreateConnectorWizard();
-  const api = usePagination<ConnectorType, ConnectorTypesQuery, ConnectorType>(
+  const api = usePagination<
+    ConnectorType,
+    ConnectorTypesOrderBy,
+    ConnectorTypesSearch,
+    ConnectorType
+  >(
     connectorTypeRef.getSnapshot()?.children[
       PAGINATED_MACHINE_ID
     ] as PaginatedApiActorType<
       ConnectorType,
-      ConnectorTypesQuery,
+      ConnectorTypesOrderBy,
+      ConnectorTypesSearch,
       ConnectorType
     >
   );
@@ -248,8 +267,10 @@ export const useConnectorTypesMachine = () => {
     },
     [connectorTypeRef]
   );
-  const onQuery = useCallback(
-    (request: PaginatedApiRequest<ConnectorTypesQuery>) => {
+  const runQuery = useCallback(
+    (
+      request: PaginatedApiRequest<ConnectorTypesOrderBy, ConnectorTypesSearch>
+    ) => {
       connectorTypeRef.send({ type: 'api.query', ...request });
     },
     [connectorTypeRef]
@@ -258,7 +279,7 @@ export const useConnectorTypesMachine = () => {
     ...api,
     selectedId,
     onSelect,
-    onQuery,
+    runQuery,
     connectorTypeDetails,
     duplicateMode,
   };
@@ -280,10 +301,20 @@ export const useKafkasMachineIsReady = () => {
 
 export const useKafkasMachine = () => {
   const { kafkaRef } = useCreateConnectorWizard();
-  const api = usePagination<KafkaRequest, KafkasQuery, KafkaRequest>(
+  const api = usePagination<
+    KafkaRequest,
+    PlaceholderOrderBy,
+    KafkasSearch,
+    KafkaRequest
+  >(
     kafkaRef.getSnapshot()?.children[
       PAGINATED_MACHINE_ID
-    ] as PaginatedApiActorType<KafkaRequest, KafkasQuery, KafkaRequest>
+    ] as PaginatedApiActorType<
+      KafkaRequest,
+      PlaceholderOrderBy,
+      KafkasSearch,
+      KafkaRequest
+    >
   );
   const { selectedId, duplicateMode } = useSelector(
     kafkaRef,
@@ -306,8 +337,8 @@ export const useKafkasMachine = () => {
     kafkaRef.send({ type: 'deselectInstance' });
   }, [kafkaRef]);
 
-  const onQuery = useCallback(
-    (request: PaginatedApiRequest<KafkasQuery>) => {
+  const runQuery = useCallback(
+    (request: PaginatedApiRequest<PlaceholderOrderBy, KafkasSearch>) => {
       kafkaRef.send({ type: 'api.query', ...request });
     },
     [kafkaRef]
@@ -318,7 +349,7 @@ export const useKafkasMachine = () => {
     duplicateMode,
     onSelect,
     onDeselect,
-    onQuery,
+    runQuery,
   };
 };
 
