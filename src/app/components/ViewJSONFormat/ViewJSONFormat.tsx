@@ -1,5 +1,5 @@
 import { useReviewMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
-import { dataToPrettyString } from '@utils/shared';
+import { dataToPrettyString, getPasswordType } from '@utils/shared';
 import _ from 'lodash';
 import React, { FunctionComponent } from 'react';
 
@@ -20,6 +20,7 @@ import {
 import {
   ConnectorDesiredState,
   ObjectReference,
+  ConnectorTypeAllOf,
 } from '@rhoas/connector-management-sdk';
 
 export const ViewJSONFormat: FunctionComponent = () => {
@@ -39,7 +40,8 @@ export const ViewJSONFormat: FunctionComponent = () => {
     namespace,
     connectorType,
   } = useReviewMachine();
-
+  const schema: Record<string, any> = (connectorType as ConnectorTypeAllOf)
+    .schema!;
   const connectorTypeConfig = _.pick(connectorType, [
     'name',
     'kind',
@@ -64,13 +66,7 @@ export const ViewJSONFormat: FunctionComponent = () => {
 
   const configPrettyString = dataToPrettyString(combinedConfig);
   function maskPropertyValues(inputObj: any) {
-    const dataToHide = [
-      'secretKey',
-      'accessKey',
-      'aws_access_key',
-      'aws_secret_key',
-      'clientSecret',
-    ];
+    const dataToHide = getPasswordType(schema).concat('clientSecret');
     const json = JSON.stringify(
       inputObj,
       (key, value) => {
