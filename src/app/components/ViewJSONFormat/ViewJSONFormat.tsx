@@ -40,19 +40,16 @@ export const ViewJSONFormat: FunctionComponent = () => {
     namespace,
     connectorType,
   } = useReviewMachine();
+
   const schema: Record<string, any> = (connectorType as ConnectorTypeAllOf)
     .schema!;
-  const connectorTypeConfig = _.pick(connectorType, [
-    'name',
-    'kind',
-    'channels',
-  ]);
-  const combinedConfig = _.merge(
-    {},
+  const connectorTypeConfig = connectorType as ConnectorTypeAllOf;
+  const combinedConfig = Object.assign(
     { name: name },
+    { kind: 'ConnectorType' },
+    { channels: connectorTypeConfig.channels },
     { connector_type_id: (connectorType as ObjectReference).id! },
     { desired_state: ConnectorDesiredState.Ready },
-    connectorTypeConfig,
     {
       kafka: {
         id: kafka.id!,
