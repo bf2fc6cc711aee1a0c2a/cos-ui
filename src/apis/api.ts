@@ -301,7 +301,7 @@ export const fetchConnectors = ({
     const { page, size, search } = request;
     const { name } = search || {};
     const nameSearch =
-      name && name.length > 0 ? ` name like %${name}%` : undefined;
+      name && name.length > 0 ? ` name like '%${name}%'` : undefined;
     const searchString: string = [nameSearch]
       .filter(Boolean)
       .map((s) => `(${s})`)
@@ -423,7 +423,7 @@ export const fetchConnectorNamespaces = ({
     const { page, size, search } = request;
     const { name } = search || {};
     const nameSearch =
-      name && name.length > 0 ? ` name like %${name}%` : undefined;
+      name && name.length > 0 ? ` name like '%${name}%'` : undefined;
     const searchString: string = [nameSearch]
       .filter(Boolean)
       .map((s) => `(${s})`)
@@ -483,7 +483,7 @@ export const fetchConnectorTypes = ({
     const { page, size, search } = request;
     const { name, categories = [] } = search || {};
     const nameSearch =
-      name && name.length > 0 ? ` name like %${name}%` : undefined;
+      name && name.length > 0 ? ` name like '%${name}%'` : undefined;
     const labelSearch =
       categories && categories.length > 0
         ? categories.map((s) => `label = ${s}`).join(' OR ')
@@ -548,9 +548,9 @@ export const fetchKafkaInstances = ({
     const { page, size, search } = request;
     const { name, statuses, owner, cloudProviders, regions } = search || {};
     const nameSearch =
-      name && name.length > 0 ? ` name LIKE %${name}%` : undefined;
+      name && name.length > 0 ? ` name LIKE '%${name}%'` : undefined;
     const ownerSearch =
-      owner && owner.length > 0 ? ` owner LIKE %${owner}%` : undefined;
+      owner && owner.length > 0 ? ` owner LIKE '%${owner}%'` : undefined;
     const statusSearch =
       statuses && statuses.length > 0
         ? statuses.map((s) => `status = ${s}`).join(' OR ')
