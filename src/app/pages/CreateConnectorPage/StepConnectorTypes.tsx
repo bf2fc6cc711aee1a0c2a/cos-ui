@@ -11,6 +11,7 @@ import {
   PaginationEvent,
 } from '@app/components/Pagination/Pagination';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
+import { DEFAULT_CONNECTOR_TYPES_PAGE_SIZE } from '@app/machines/StepConnectorTypes.machine';
 import React, {
   FunctionComponent,
   useCallback,
@@ -92,7 +93,7 @@ export function ConnectorTypesGallery() {
                   onClear={() =>
                     runQuery({
                       page: 1,
-                      size: 10,
+                      size: DEFAULT_CONNECTOR_TYPES_PAGE_SIZE,
                       search: undefined,
                     })
                   }
@@ -216,6 +217,7 @@ export function ConnectorTypesGallery() {
                       })}
                     </Gallery>
                   )}
+                  <ConnectorTypesPagination onChange={runQuery} />
                 </div>
               </>
             );
@@ -400,7 +402,13 @@ const ConnectorTypesPagination: FunctionComponent<ConnectorTypesPaginationProps>
         itemCount={response?.total || 0}
         page={request.page}
         perPage={request.size}
-        onChange={onChange}
+        onChange={(event) => {
+          onChange({
+            ...event,
+            orderBy: request.orderBy,
+            search: request.search,
+          });
+        }}
         isCompact={isCompact}
       />
     );

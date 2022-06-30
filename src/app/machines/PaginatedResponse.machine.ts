@@ -5,6 +5,8 @@ import { ActorRef, ActorRefFrom, Sender, spawn } from 'xstate';
 import { pure, sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
+export const DEFAULT_PAGE_SIZE = 10;
+
 export type ApiErrorResponse = { page: number; error: string };
 export type ApiSuccessResponse<RawDataType> = {
   items: Array<RawDataType>;
@@ -38,7 +40,11 @@ export type PaginatedMachineContext<RawDataType, OrderBy, Search, DataType> = {
   dataTransformer: (response: RawDataType) => DataType;
   onBeforeSetResponse?: (previousData: DataType[] | undefined) => void;
 };
-
+export type PaginatedMachineOptions<DataType> = {
+  initialPageSize?: number;
+  pollingEnabled?: boolean;
+  onBeforeSetResponse?: (previousResponse: DataType[] | undefined) => void;
+};
 export const getPaginatedApiMachineEvents = <
   RawDataType,
   OrderBy,
@@ -62,20 +68,19 @@ export const getPaginatedApiMachineEvents = <
 export function makePaginatedApiMachine<RawDataType, OrderBy, Search, DataType>(
   service: ApiCallback<RawDataType, OrderBy, Search>,
   dataTransformer: (response: RawDataType) => DataType,
-  options?: {
-    pollingEnabled?: boolean;
-    onBeforeSetResponse?: (previousResponse: DataType[] | undefined) => void;
-  }
+  options?: PaginatedMachineOptions<DataType>
 ) {
+  const { pollingEnabled, initialPageSize, onBeforeSetResponse } =
+    options || {};
   const model = createModel(
     {
       request: {
         page: 1,
-        size: 10,
+        size: initialPageSize || DEFAULT_PAGE_SIZE,
       },
       response: undefined,
-      pollingEnabled: options?.pollingEnabled || false,
-      onBeforeSetResponse: options?.onBeforeSetResponse,
+      pollingEnabled: pollingEnabled || false,
+      onBeforeSetResponse: onBeforeSetResponse,
       dataTransformer,
     } as PaginatedMachineContext<RawDataType, OrderBy, Search, DataType>,
     {

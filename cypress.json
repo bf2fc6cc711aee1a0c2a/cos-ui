@@ -6,7 +6,7 @@
     "wizard": "/create-connector",
     "connectorsApiPath": "/localhost/api/connector_mgmt/v1/kafka_connectors?page=1&size=10&orderBy=&search=",
     "connectorsActionApiPath": "/localhost/api/connector_mgmt/v1/kafka_connectors/",
-    "connectorTypesApiPath": "/localhost/api/connector_mgmt/v1/kafka_connector_types?page=1&size=10&search=",
+    "connectorTypesApiPath": "/localhost/api/connector_mgmt/v1/kafka_connector_types?page=1&size=20&search=",
     "kafkasApiPath": "https://api.openshift.com/api/kafkas_mgmt/v1/kafkas?page=1&size=10&search=",
     "namespaceApiPath": "/localhost/api/connector_mgmt/v1/kafka_connector_namespaces/c9ns6husvba2r48dqnd0",
     "namespacesApiPath": "/localhost/api/connector_mgmt/v1/kafka_connector_namespaces?page=1&size=10&search=",
