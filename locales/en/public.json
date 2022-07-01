@@ -143,7 +143,7 @@
   "selectOcmCluster": "Select OCM cluster",
   "serviceAccount": "Service account",
   "serviceAccountAlertMsg": "Make a copy of the client ID and secret to store in a safe place. The client secret won't appear again after closing this screen.",
-  "serviceAccountDescText": "A service account enables the Connectors instance to authenticate with the Kafka instance. Provide credentials of a service account that has access to the Kafka instance, or create a new one. Define the service account's permissions from the Access tab of the Kafka instance so that source connectors can consume from, and sink connectors can produce to, topics.",
+  "serviceAccountDescText": "A service account enables the Connectors instance to authenticate with the Kafka instance. Provide credentials of a service account that has access to the Kafka instance, or create a new one. Define the service account's permissions from the Access tab of the Kafka instance so that source connectors can produce to, and sink connectors can consume from, topics.",
   "shortDescription": "Short description",
   "shortDescriptionExampleText": "Must start with a letter and end with a letter or number. Valid characters include lowercase letters from a to z, numbers from 0 to 9, and hyphens ( - ).",
   "shortDescriptionHelpText": "The short description is the same as the client name in the underlying OAuth system.",
