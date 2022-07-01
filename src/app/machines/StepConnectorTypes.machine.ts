@@ -1,4 +1,8 @@
-import { ConnectorTypesQuery, fetchConnectorTypes } from '@apis/api';
+import {
+  ConnectorTypesOrderBy,
+  ConnectorTypesSearch,
+  fetchConnectorTypes,
+} from '@apis/api';
 import { PAGINATED_MACHINE_ID } from '@constants/constants';
 
 import { ActorRefFrom, send, sendParent } from 'xstate';
@@ -14,6 +18,8 @@ import {
   getPaginatedApiMachineEvents,
   makePaginatedApiMachine,
 } from './PaginatedResponse.machine';
+
+export const DEFAULT_CONNECTOR_TYPES_PAGE_SIZE = 20;
 
 type Context = {
   accessToken: () => Promise<string>;
@@ -42,7 +48,8 @@ const model = createModel(
       confirm: () => ({}),
       ...getPaginatedApiMachineEvents<
         ConnectorType,
-        ConnectorTypesQuery,
+        ConnectorTypesOrderBy,
+        ConnectorTypesSearch,
         ConnectorType
       >(),
     },
@@ -88,9 +95,12 @@ export const connectorTypesMachine = model.createMachine(
               src: (context) =>
                 makePaginatedApiMachine<
                   ConnectorType,
-                  ConnectorTypesQuery,
+                  ConnectorTypesOrderBy,
+                  ConnectorTypesSearch,
                   ConnectorType
-                >(fetchConnectorTypes(context), (i) => i),
+                >(fetchConnectorTypes(context), (i) => i, {
+                  initialPageSize: DEFAULT_CONNECTOR_TYPES_PAGE_SIZE,
+                }),
             },
             states: {
               idle: {

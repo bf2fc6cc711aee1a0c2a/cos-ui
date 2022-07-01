@@ -2,14 +2,23 @@ import React, { FunctionComponent } from 'react';
 
 import { Pagination as PFPagination } from '@patternfly/react-core';
 
-export type PaginationProps = {
+export type PaginationEvent<OrderBy, Search> = {
+  page: number;
+  size: number;
+  orderBy?: OrderBy;
+  search?: Search;
+};
+
+export type PaginationProps<OrderBy, Search> = {
   itemCount: number;
   page: number;
   perPage: number;
   isCompact?: boolean;
-  onChange: (page: number, perPage: number) => void;
+  onChange: (event: PaginationEvent<OrderBy, Search>) => void;
+  orderBy?: OrderBy;
+  search?: Search;
 };
-export const Pagination: FunctionComponent<PaginationProps> = ({
+export const Pagination: FunctionComponent<PaginationProps<object, object>> = ({
   itemCount,
   page,
   perPage,
@@ -44,8 +53,8 @@ export const Pagination: FunctionComponent<PaginationProps> = ({
       page={page}
       perPage={perPage}
       perPageOptions={defaultPerPageOptions}
-      onSetPage={(_, page) => onChange(page, perPage)}
-      onPerPageSelect={(_, perPage) => onChange(page, perPage)}
+      onSetPage={(_, page) => onChange({ page, size: perPage })}
+      onPerPageSelect={(_, perPage) => onChange({ page: 1, size: perPage })}
       variant={isCompact ? 'top' : 'bottom'}
       isCompact={isCompact}
     />

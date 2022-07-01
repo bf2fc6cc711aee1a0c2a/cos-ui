@@ -121,7 +121,7 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
     response,
     selectedConnector,
     deselectConnector,
-    query,
+    runQuery,
   } = useConnectorsMachine();
 
   const currentConnectorRef = response?.items?.filter((ref) => {
@@ -134,7 +134,7 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
     case queryEmpty:
       return (
         <EmptyStateNoMatchesFound
-          onClear={() => query({ page: 1, size: 10 })}
+          onClear={() => runQuery({ page: 1, size: 10 })}
         />
       );
     case loading:
@@ -149,7 +149,7 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
                 itemCount={response?.total || 0}
                 page={request.page}
                 perPage={request.size}
-                onChange={(page, size) => query({ page, size })}
+                onChange={runQuery}
               />
               <Loading />
             </Card>
@@ -208,7 +208,7 @@ export const ConnectedTable: FunctionComponent<ConnectorsTableProps> = ({
   onConnectorDetail,
   onDuplicateConnector,
 }) => {
-  const { request, response, selectedConnector, query } =
+  const { request, response, selectedConnector, runQuery } =
     useConnectorsMachine();
   return (
     <Card className={'pf-u-pb-xl'}>
@@ -216,7 +216,9 @@ export const ConnectedTable: FunctionComponent<ConnectorsTableProps> = ({
         itemCount={response?.total || 0}
         page={request.page}
         perPage={request.size}
-        onChange={(page, size) => query({ page, size })}
+        search={request.search}
+        orderBy={request.orderBy}
+        onChange={runQuery}
       />
       <div className={'pf-u-p-md'}>
         <ConnectorsTable>
@@ -235,7 +237,13 @@ export const ConnectedTable: FunctionComponent<ConnectorsTableProps> = ({
         itemCount={response?.total || 0}
         page={request.page}
         perPage={request.size}
-        onChange={(page, size) => query({ page, size })}
+        onChange={(event) =>
+          runQuery({
+            ...event,
+            orderBy: request.orderBy,
+            search: request.search,
+          })
+        }
         isCompact={false}
       />
     </Card>

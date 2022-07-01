@@ -13,7 +13,6 @@ import {
   ConnectorNamespacesApi,
   ConnectorsApi,
   ConnectorType,
-  ConnectorTypeAllOf,
   ConnectorTypesApi,
   ObjectReference,
   ServiceAccount,
@@ -23,6 +22,15 @@ import {
   DefaultApi,
   SecurityApi,
 } from '@rhoas/kafka-management-sdk';
+
+import { PlaceholderOrderBy } from './../app/machines/PaginatedResponse.machine';
+
+export enum SortOrderValue {
+  asc = 'asc',
+  desc = 'desc',
+}
+
+export type SortOrder = keyof typeof SortOrderValue;
 
 type CommonApiProps = {
   accessToken: () => Promise<string>;
@@ -261,10 +269,26 @@ export const getConnectorTypeDetail = ({
   };
 };
 
+export type ConnectorsOrderBy = {
+  name?: SortOrder;
+};
+
+export type ConnectorsSearch = {
+  name?: string;
+  description?: string;
+  version?: string;
+  label?: string[];
+  channel?: string;
+};
+
 export const fetchConnectors = ({
   accessToken,
   connectorsApiBasePath,
-}: CommonApiProps): ApiCallback<Connector, {}> => {
+}: CommonApiProps): ApiCallback<
+  Connector,
+  ConnectorsOrderBy,
+  ConnectorsSearch
+> => {
   const connectorsAPI = new ConnectorsApi(
     new Configuration({
       accessToken,
@@ -274,10 +298,16 @@ export const fetchConnectors = ({
   return (request, onSuccess, onError) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
-    const { page, size /*, name = '' */ } = request;
-    // const query = name.length > 0 ? `name LIKE ${name}` : undefined;
+    const { page, size, search } = request;
+    const { name } = search || {};
+    const nameSearch =
+      name && name.length > 0 ? ` name like '%${name}%'` : undefined;
+    const searchString: string = [nameSearch]
+      .filter(Boolean)
+      .map((s) => `(${s})`)
+      .join(' AND ');
     connectorsAPI
-      .listConnectors(`${page}`, `${size}`, undefined, undefined, {
+      .listConnectors(`${page}`, `${size}`, '', searchString, {
         cancelToken: source.token,
       })
       .then((response) => {
@@ -369,10 +399,18 @@ export const getNamespace = ({
   };
 };
 
+export type ConnectorNamespaceSearch = {
+  name?: string;
+};
+
 export const fetchConnectorNamespaces = ({
   accessToken,
   connectorsApiBasePath,
-}: CommonApiProps): ApiCallback<ConnectorNamespace, {}> => {
+}: CommonApiProps): ApiCallback<
+  ConnectorNamespace,
+  PlaceholderOrderBy,
+  ConnectorNamespaceSearch
+> => {
   const namespacesAPI = new ConnectorNamespacesApi(
     new Configuration({
       accessToken,
@@ -382,9 +420,16 @@ export const fetchConnectorNamespaces = ({
   return (request, onSuccess, onError) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
-    const { page, size } = request;
+    const { page, size, search } = request;
+    const { name } = search || {};
+    const nameSearch =
+      name && name.length > 0 ? ` name like '%${name}%'` : undefined;
+    const searchString: string = [nameSearch]
+      .filter(Boolean)
+      .map((s) => `(${s})`)
+      .join(' AND ');
     namespacesAPI
-      .listConnectorNamespaces(`${page}`, `${size}`)
+      .listConnectorNamespaces(`${page}`, `${size}`, undefined, searchString)
       .then((response) => {
         onSuccess({
           items: response.data.items || [],
@@ -403,15 +448,29 @@ export const fetchConnectorNamespaces = ({
     };
   };
 };
-export type ConnectorTypesQuery = {
+
+export type ConnectorTypesSearch = {
   name?: string;
   categories?: string[];
+
+  description?: string;
+  version?: string;
+  label?: string[];
+  channel?: string;
+};
+
+export type ConnectorTypesOrderBy = {
+  name?: SortOrder;
 };
 
 export const fetchConnectorTypes = ({
   accessToken,
   connectorsApiBasePath,
-}: CommonApiProps): ApiCallback<ConnectorType, ConnectorTypesQuery> => {
+}: CommonApiProps): ApiCallback<
+  ConnectorType,
+  PlaceholderOrderBy,
+  ConnectorTypesSearch
+> => {
   const connectorsAPI = new ConnectorTypesApi(
     new Configuration({
       accessToken,
@@ -421,39 +480,28 @@ export const fetchConnectorTypes = ({
   return (request, onSuccess, onError) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
-    const { page, size, query } = request;
-    const { name, categories = [] } = query || {};
+    const { page, size, search } = request;
+    const { name, categories = [] } = search || {};
+    const nameSearch =
+      name && name.length > 0 ? ` name like '%${name}%'` : undefined;
+    const labelSearch =
+      categories && categories.length > 0
+        ? categories.map((s) => `label = ${s}`).join(' OR ')
+        : undefined;
+    const searchString: string = [nameSearch, labelSearch]
+      .filter(Boolean)
+      .map((s) => `(${s})`)
+      .join(' AND ');
     connectorsAPI
-      .getConnectorTypes('1', '1000', undefined, undefined, {
+      .getConnectorTypes(`${page}`, `${size}`, undefined, searchString, {
         cancelToken: source.token,
       })
       .then((response) => {
-        const lcName = name ? name.toLowerCase() : undefined;
-        const rawItems = response.data.items || [];
-        let filteredItems = lcName
-          ? rawItems?.filter((c) =>
-              (c as ConnectorTypeAllOf).name?.toLowerCase().includes(lcName)
-            )
-          : rawItems;
-        filteredItems =
-          categories.length > 0
-            ? filteredItems?.filter(
-                (c) =>
-                  (
-                    (c as ConnectorTypeAllOf).labels?.filter((l) =>
-                      categories.includes(l)
-                    ) || []
-                  ).length > 0
-              )
-            : filteredItems;
-        const total = filteredItems.length;
-        const offset = (page - 1) * size;
-        const items = filteredItems.slice(offset, offset + size);
         onSuccess({
-          items,
-          total,
-          page,
-          size,
+          items: response.data.items || [],
+          total: response.data.total,
+          page: response.data.page,
+          size: response.data.size,
         });
       })
       .catch((error) => {
@@ -472,7 +520,7 @@ type KafkaManagementApiProps = {
   kafkaManagementBasePath: string;
 };
 
-export type KafkasQuery = {
+export type KafkasSearch = {
   name?: string;
   owner?: string;
   statuses?: string[];
@@ -483,7 +531,11 @@ export type KafkasQuery = {
 export const fetchKafkaInstances = ({
   accessToken,
   kafkaManagementBasePath,
-}: KafkaManagementApiProps): ApiCallback<KafkaRequest, KafkasQuery> => {
+}: KafkaManagementApiProps): ApiCallback<
+  KafkaRequest,
+  PlaceholderOrderBy,
+  KafkasSearch
+> => {
   const connectorsAPI = new DefaultApi(
     new Configuration({
       accessToken,
@@ -493,12 +545,12 @@ export const fetchKafkaInstances = ({
   return (request, onSuccess, onError) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
-    const { page, size, query } = request;
-    const { name, statuses, owner, cloudProviders, regions } = query || {};
+    const { page, size, search } = request;
+    const { name, statuses, owner, cloudProviders, regions } = search || {};
     const nameSearch =
-      name && name.length > 0 ? ` name LIKE ${name}` : undefined;
+      name && name.length > 0 ? ` name LIKE '%${name}%'` : undefined;
     const ownerSearch =
-      owner && owner.length > 0 ? ` owner LIKE ${owner}` : undefined;
+      owner && owner.length > 0 ? ` owner LIKE '%${owner}%'` : undefined;
     const statusSearch =
       statuses && statuses.length > 0
         ? statuses.map((s) => `status = ${s}`).join(' OR ')
@@ -511,7 +563,7 @@ export const fetchKafkaInstances = ({
       regions && regions.length > 0
         ? regions.map((s) => `region = ${s}`).join(' OR ')
         : undefined;
-    const search = [
+    const searchString = [
       nameSearch,
       ownerSearch,
       statusSearch,
@@ -522,15 +574,9 @@ export const fetchKafkaInstances = ({
       .map((s) => `(${s})`)
       .join(' AND ');
     connectorsAPI
-      .getKafkas(
-        `${page}`,
-        `${size}`,
-        undefined,
-        search as string | undefined,
-        {
-          cancelToken: source.token,
-        }
-      )
+      .getKafkas(`${page}`, `${size}`, undefined, searchString, {
+        cancelToken: source.token,
+      })
       .then((response) => {
         onSuccess({
           items: response.data.items || [],

@@ -1,4 +1,4 @@
-import { KafkasQuery, fetchKafkaInstances } from '@apis/api';
+import { KafkasSearch, fetchKafkaInstances } from '@apis/api';
 import { PAGINATED_MACHINE_ID } from '@constants/constants';
 
 import { ActorRefFrom, send } from 'xstate';
@@ -12,6 +12,7 @@ import {
   getPaginatedApiMachineEvents,
   makePaginatedApiMachine,
   PaginatedApiResponse,
+  PlaceholderOrderBy,
 } from './PaginatedResponse.machine';
 
 type Context = {
@@ -41,7 +42,8 @@ const model = createModel(
       confirm: () => ({}),
       ...getPaginatedApiMachineEvents<
         KafkaRequest,
-        KafkasQuery,
+        PlaceholderOrderBy,
+        KafkasSearch,
         KafkaRequest
       >(),
     },
@@ -87,7 +89,8 @@ export const kafkasMachine = model.createMachine(
               src: (context) =>
                 makePaginatedApiMachine<
                   KafkaRequest,
-                  KafkasQuery,
+                  PlaceholderOrderBy,
+                  KafkasSearch,
                   KafkaRequest
                 >(fetchKafkaInstances(context), (i) => i),
             },

@@ -1,3 +1,4 @@
+import { ConnectorTypesOrderBy, ConnectorTypesSearch } from '@apis/api';
 import {
   useConnectorTypesMachine,
   useConnectorTypesMachineIsReady,
@@ -5,8 +6,12 @@ import {
 import { EmptyStateGenericError } from '@app/components/EmptyStateGenericError/EmptyStateGenericError';
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
 import { Loading } from '@app/components/Loading/Loading';
-import { Pagination } from '@app/components/Pagination/Pagination';
+import {
+  Pagination,
+  PaginationEvent,
+} from '@app/components/Pagination/Pagination';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
+import { DEFAULT_CONNECTOR_TYPES_PAGE_SIZE } from '@app/machines/StepConnectorTypes.machine';
 import React, {
   FunctionComponent,
   useCallback,
@@ -69,7 +74,7 @@ export function ConnectorTypesGallery() {
     firstRequest,
     selectedId,
     onSelect,
-    onQuery,
+    runQuery,
   } = useConnectorTypesMachine();
   return (
     <StepBodyLayout
@@ -85,7 +90,13 @@ export function ConnectorTypesGallery() {
               <>
                 <ConnectorTypesToolbar duplicateMode={duplicateMode} />
                 <EmptyStateNoMatchesFound
-                  onClear={() => onQuery({ page: 1, size: 10 })}
+                  onClear={() =>
+                    runQuery({
+                      page: 1,
+                      size: DEFAULT_CONNECTOR_TYPES_PAGE_SIZE,
+                      search: undefined,
+                    })
+                  }
                 />
               </>
             );
@@ -206,6 +217,7 @@ export function ConnectorTypesGallery() {
                       })}
                     </Gallery>
                   )}
+                  <ConnectorTypesPagination onChange={runQuery} />
                 </div>
               </>
             );
@@ -221,16 +233,16 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
   duplicateMode,
 }) => {
   const { t } = useTranslation();
-  const { request, onQuery } = useConnectorTypesMachine();
+  const { request, runQuery } = useConnectorTypesMachine();
   const [categoriesToggled, setCategoriesToggled] = useState(false);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
-  const debouncedOnQuery = useDebounce(onQuery, 1000);
+  const debouncedOnQuery = useDebounce(runQuery, 1000);
 
-  const { name, categories = [] } = request.query || {};
+  const { name, categories = [] } = request.search || {};
 
   const clearAllFilters = useCallback(
-    () => onQuery({ page: 1, size: request.size }),
-    [onQuery, request.size]
+    () => runQuery({ page: 1, size: request.size, search: undefined }),
+    [runQuery, request.size]
   );
 
   const toggleCategories = useCallback(
@@ -239,10 +251,10 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
   );
 
   const onSelectFilter = (category: string, values: string[], value: string) =>
-    onQuery({
+    runQuery({
       ...request,
-      query: {
-        ...(request.query || {}),
+      search: {
+        ...(request.search || {}),
         [category]: values.includes(value)
           ? values.filter((s) => s !== value)
           : [...(values || []), value],
@@ -257,10 +269,10 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
   };
 
   const onDeleteQueryGroup = (category: string) =>
-    onQuery({
+    runQuery({
       ...request,
-      query: {
-        ...(request.query || {}),
+      search: {
+        ...(request.search || {}),
         [category]: undefined,
       },
     });
@@ -302,8 +314,8 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
               debouncedOnQuery({
                 size: request.size,
                 page: 1,
-                query: {
-                  ...request.query,
+                search: {
+                  ...request.search,
                   name,
                 },
               })
@@ -355,8 +367,8 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
         <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
           <ConnectorTypesPagination
             isCompact
-            onChange={(page, size) =>
-              onQuery({ page, size, query: request.query || {} })
+            onChange={(event) =>
+              runQuery({ ...event, search: request.search || {} })
             }
           />
         </ToolbarItem>
@@ -378,7 +390,9 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
 
 type ConnectorTypesPaginationProps = {
   isCompact?: boolean;
-  onChange: (page: number, size: number) => void;
+  onChange: (
+    event: PaginationEvent<ConnectorTypesOrderBy, ConnectorTypesSearch>
+  ) => void;
 };
 const ConnectorTypesPagination: FunctionComponent<ConnectorTypesPaginationProps> =
   ({ isCompact = false, onChange }) => {
@@ -388,7 +402,13 @@ const ConnectorTypesPagination: FunctionComponent<ConnectorTypesPaginationProps>
         itemCount={response?.total || 0}
         page={request.page}
         perPage={request.size}
-        onChange={onChange}
+        onChange={(event) => {
+          onChange({
+            ...event,
+            orderBy: request.orderBy,
+            search: request.search,
+          });
+        }}
         isCompact={isCompact}
       />
     );

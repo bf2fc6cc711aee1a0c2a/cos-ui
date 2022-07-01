@@ -5,6 +5,8 @@ import { ActorRef, ActorRefFrom, Sender, spawn } from 'xstate';
 import { pure, sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
+export const DEFAULT_PAGE_SIZE = 10;
+
 export type ApiErrorResponse = { page: number; error: string };
 export type ApiSuccessResponse<RawDataType> = {
   items: Array<RawDataType>;
@@ -12,72 +14,83 @@ export type ApiSuccessResponse<RawDataType> = {
   size: number;
   total: number;
 };
-export type ApiCallback<RawDataType, QueryType> = (
-  request: PaginatedApiRequest<QueryType>,
+export type ApiCallback<RawDataType, OrderBy, Search> = (
+  request: PaginatedApiRequest<OrderBy, Search>,
   onSuccess: (payload: ApiSuccessResponse<RawDataType>) => void,
   onError: (payload: ApiErrorResponse) => void
 ) => () => void;
-
-export type PaginatedApiRequest<QueryType> = {
+export type PlaceholderOrderBy = object;
+export type PlaceholderSearch = object;
+export type PaginatedApiRequest<OrderBy, Search> = {
   page: number;
   size: number;
-  query?: QueryType;
+  orderBy?: OrderBy;
+  search?: Search;
 };
 export type PaginatedApiResponse<DataType> = {
   total: number;
   items?: Array<DataType>;
   error?: string;
 };
-export type PaginatedMachineContext<RawDataType, QueryType, DataType> = {
-  request: PaginatedApiRequest<QueryType>;
+export type PaginatedMachineContext<RawDataType, OrderBy, Search, DataType> = {
+  request: PaginatedApiRequest<OrderBy, Search>;
   response?: PaginatedApiResponse<DataType>;
   pollingEnabled: boolean;
   actor?: ActorRef<any>;
   dataTransformer: (response: RawDataType) => DataType;
   onBeforeSetResponse?: (previousData: DataType[] | undefined) => void;
 };
-
+export type PaginatedMachineOptions<DataType> = {
+  initialPageSize?: number;
+  pollingEnabled?: boolean;
+  onBeforeSetResponse?: (previousResponse: DataType[] | undefined) => void;
+};
 export const getPaginatedApiMachineEvents = <
   RawDataType,
-  QueryType,
+  OrderBy,
+  Search,
   DataType
 >() => ({
   'api.refresh': () => ({}),
   'api.nextPage': () => ({}),
   'api.prevPage': () => ({}),
-  'api.query': (payload: PaginatedApiRequest<QueryType>) => payload,
+  'api.query': (payload: PaginatedApiRequest<OrderBy, Search>) => payload,
   'api.setResponse': (payload: ApiSuccessResponse<RawDataType>) => payload,
   'api.setError': (payload: ApiErrorResponse) => payload,
 
   // notifyParent
   'api.ready': () => ({}),
-  'api.loading': (payload: PaginatedApiRequest<QueryType>) => payload,
+  'api.loading': (payload: PaginatedApiRequest<OrderBy, Search>) => payload,
   'api.success': (payload: ApiSuccessResponse<DataType>) => payload,
   'api.error': (payload: { error: string }) => payload,
 });
 
-export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
-  service: ApiCallback<RawDataType, QueryType>,
+export function makePaginatedApiMachine<RawDataType, OrderBy, Search, DataType>(
+  service: ApiCallback<RawDataType, OrderBy, Search>,
   dataTransformer: (response: RawDataType) => DataType,
-  options?: {
-    pollingEnabled?: boolean;
-    onBeforeSetResponse?: (previousResponse: DataType[] | undefined) => void;
-  }
+  options?: PaginatedMachineOptions<DataType>
 ) {
+  const { pollingEnabled, initialPageSize, onBeforeSetResponse } =
+    options || {};
   const model = createModel(
     {
       request: {
         page: 1,
-        size: 10,
+        size: initialPageSize || DEFAULT_PAGE_SIZE,
       },
       response: undefined,
-      pollingEnabled: options?.pollingEnabled || false,
-      onBeforeSetResponse: options?.onBeforeSetResponse,
+      pollingEnabled: pollingEnabled || false,
+      onBeforeSetResponse: onBeforeSetResponse,
       dataTransformer,
-    } as PaginatedMachineContext<RawDataType, QueryType, DataType>,
+    } as PaginatedMachineContext<RawDataType, OrderBy, Search, DataType>,
     {
       events: {
-        ...getPaginatedApiMachineEvents<RawDataType, QueryType, DataType>(),
+        ...getPaginatedApiMachineEvents<
+          RawDataType,
+          OrderBy,
+          Search,
+          DataType
+        >(),
       },
       actions: {
         notifyReady: () => ({}),
@@ -135,18 +148,20 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
     };
   }, 'api.prevPage');
   const query = model.assign((context, event) => {
-    const { page, size, query } = event;
+    const { page, size, search: query } = event;
     return {
       request: {
         page: page || context.request.page,
         size: size || context.request.size,
-        query,
+        search: query,
       },
     };
   }, 'api.query');
 
   const callApi =
-    (context: PaginatedMachineContext<RawDataType, QueryType, DataType>) =>
+    (
+      context: PaginatedMachineContext<RawDataType, OrderBy, Search, DataType>
+    ) =>
     (callback: Sender<any>) => {
       return service(
         context.request!,
@@ -353,11 +368,11 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
             Math.ceil(context.response.total / context.request.size),
         isTotalZero: (context) => context.response?.total === 0,
         isQuerySuccesful: (context) =>
-          context.request.query !== undefined &&
+          context.request.search !== undefined &&
           context.response !== undefined &&
           context.response?.total > 0,
         isQueryEmpty: (context) =>
-          context.request.query !== undefined &&
+          context.request.search !== undefined &&
           context.response !== undefined &&
           context.response?.total === 0,
         isPollingEnabled: (context) => context.pollingEnabled,
@@ -367,27 +382,27 @@ export function makePaginatedApiMachine<RawDataType, QueryType, DataType>(
 }
 
 // https://stackoverflow.com/questions/50321419/typescript-returntype-of-generic-function/64919133#64919133
-class Wrapper<RawDataType, QueryType, DataType> {
+class Wrapper<RawDataType, OrderBy, Search, DataType> {
   wrapped(
-    service: ApiCallback<RawDataType, QueryType>,
+    service: ApiCallback<RawDataType, OrderBy, Search>,
     dataTransformer: (response: RawDataType) => DataType
   ) {
-    return makePaginatedApiMachine<RawDataType, QueryType, DataType>(
+    return makePaginatedApiMachine<RawDataType, OrderBy, Search, DataType>(
       service,
       dataTransformer
     );
   }
 }
 
-export type PaginatedApiActorType<RawDataType, QueryType, DataType> =
+export type PaginatedApiActorType<RawDataType, OrderBy, Search, DataType> =
   ActorRefFrom<
-    ReturnType<Wrapper<RawDataType, QueryType, DataType>['wrapped']>
+    ReturnType<Wrapper<RawDataType, OrderBy, Search, DataType>['wrapped']>
   >;
 
 // These are not _writable_ booleans, they are derived from the machine state!
 // https://discord.com/channels/795785288994652170/799416943324823592/847466843290730527
-export type usePaginationReturnValue<QueryType, DataType> = {
-  request: PaginatedApiRequest<QueryType>;
+export type usePaginationReturnValue<OrderBy, Search, DataType> = {
+  request: PaginatedApiRequest<OrderBy, Search>;
   response?: PaginatedApiResponse<DataType>;
   loading: boolean;
   queryEmpty: boolean;
@@ -397,15 +412,15 @@ export type usePaginationReturnValue<QueryType, DataType> = {
   error: boolean;
   firstRequest: boolean;
 };
-export const usePagination = <RawDataType, QueryType, DataType>(
-  actor: PaginatedApiActorType<RawDataType, QueryType, DataType>
-): usePaginationReturnValue<QueryType, DataType> => {
+export const usePagination = <RawDataType, OrderBy, Search, DataType>(
+  actor: PaginatedApiActorType<RawDataType, OrderBy, Search, DataType>
+): usePaginationReturnValue<OrderBy, Search, DataType> => {
   return useSelector(
     actor,
     useCallback(
       (
         state: typeof actor.state
-      ): usePaginationReturnValue<QueryType, DataType> => {
+      ): usePaginationReturnValue<OrderBy, Search, DataType> => {
         return {
           request: state.context.request,
           response: state.context.response,
