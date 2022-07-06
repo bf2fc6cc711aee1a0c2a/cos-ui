@@ -55,12 +55,13 @@ export const CommonStep: FC<CommonStepProp> = ({
           client_secret: configuration.service_account.client_secret,
         },
       });
-      !isSAUpdate && setIsSAUpdate((prev) => {
-        if (!prev) {
-          changeIsValid(false);
-        }
-        return true;
-      });
+      !isSAUpdate &&
+        setIsSAUpdate((prev) => {
+          if (!prev) {
+            changeIsValid(false);
+          }
+          return true;
+        });
     } else {
       onUpdateConfiguration('common', {
         ...configuration,
@@ -72,7 +73,6 @@ export const CommonStep: FC<CommonStepProp> = ({
     }
 
     val === '' ? changeIsValid(false) : changeIsValid(true);
-    
   };
 
   return (
