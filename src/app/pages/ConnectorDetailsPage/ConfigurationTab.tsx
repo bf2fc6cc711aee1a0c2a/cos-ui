@@ -63,7 +63,6 @@ const diff = (newConfig: any, oldConfig: any) => {
 };
 
 const getEditPayload = (newConfiguration: any, oldConfiguration: any) => {
-  console.log('newConfiguration', newConfiguration, 'oldConfiguration', oldConfiguration);
   const diffKeys = diff(newConfiguration, oldConfiguration);
   return diffKeys.reduce((acc, key) => {
     return { ...acc, [key]: newConfiguration[key] };
@@ -168,6 +167,9 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
       connectorId: connectorData.id!,
       ...(commonConfiguration.name !== connectorData.name && {
         updatedName: commonConfiguration.name,
+      }),
+      ...(commonConfiguration.service_account !== connectorData.service_account && {
+        updatedServiceAccount: commonConfiguration.service_account,
       }),
     })(onSuccess, onError);
   };

@@ -49,6 +49,7 @@ type ConnectorEditProps = {
   connectorUpdate: { [key: string]: any };
   connectorId: string;
   updatedName?: string;
+  updatedServiceAccount?: { [key: string]: string };
 } & CommonApiProps;
 
 type ConnectorDetailProps = {
@@ -740,6 +741,7 @@ export const updateConnector = ({
   connectorUpdate,
   connectorId,
   updatedName,
+  updatedServiceAccount
 }: ConnectorEditProps): FetchCallbacks<undefined> => {
   const connectorsAPI = new ConnectorsApi(
     new Configuration({
@@ -760,6 +762,7 @@ export const updateConnector = ({
               ...connectorUpdate,
             },
           }),
+          ...(updatedServiceAccount && {service_account: updatedServiceAccount})
         },
         {
           cancelToken: source.token,

@@ -3,15 +3,22 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
+  Button,
   ClipboardCopy,
   Form,
   FormGroup,
+  InputGroup,
   Popover,
   Text,
   TextInput,
   TextVariants,
 } from '@patternfly/react-core';
-import { ExclamationCircleIcon, HelpIcon } from '@patternfly/react-icons';
+import {
+  ExclamationCircleIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  HelpIcon,
+} from '@patternfly/react-icons';
 
 export type CommonStepProp = {
   editMode: boolean;
@@ -29,13 +36,12 @@ export const CommonStep: FC<CommonStepProp> = ({
   const { t } = useTranslation();
 
   const [isSAUpdate, setIsSAUpdate] = React.useState(false);
+  const [passwordHidden, setPasswordHidden] = React.useState<boolean>(true);
 
   const onNameChange = (val: any) => {
     onUpdateConfiguration('common', { ...configuration, name: val });
     val === '' ? changeIsValid(false) : changeIsValid(true);
   };
-
-  // React.useEffect(() => {}), [isSAUpdate];
 
   const onSAChange = (
     val: string,
@@ -61,7 +67,9 @@ export const CommonStep: FC<CommonStepProp> = ({
 
     val === '' ? changeIsValid(false) : changeIsValid(true);
     setIsSAUpdate((prev) => {
-      if(!prev) {changeIsValid(false)}
+      if (!prev) {
+        changeIsValid(false);
+      }
       return true;
     });
   };
@@ -79,7 +87,7 @@ export const CommonStep: FC<CommonStepProp> = ({
                 type="button"
                 aria-label="More info for name field."
                 onClick={(e) => e.preventDefault()}
-                aria-describedby="simple-form-name-01"
+                aria-describedby="connector-name-helper"
                 className="pf-c-form__group-label-help"
               >
                 <HelpIcon noVerticalAlign />
@@ -107,7 +115,7 @@ export const CommonStep: FC<CommonStepProp> = ({
                 type="button"
                 aria-label="More info for name field."
                 onClick={(e) => e.preventDefault()}
-                aria-describedby="simple-form-name-01"
+                aria-describedby="service-account-helper"
                 className="pf-c-form__group-label-help"
               >
                 <HelpIcon noVerticalAlign />
@@ -116,17 +124,16 @@ export const CommonStep: FC<CommonStepProp> = ({
           }
         >
           <Text component={TextVariants.p}>
-            A service account enables the Connectors instance to authenticate
-            with Kafka instance.
+            {t('serviceAccountEditDescription')}
           </Text>
         </FormGroup>
         <FormGroup
           label={t('clientId')}
           isRequired
           validated={
-            configuration?.service_account?.client_id ? 'success' : 'error'
+            configuration?.service_account?.client_id ? 'default' : 'error'
           }
-          helperTextInvalid={t('clientId')+'is required'}
+          helperTextInvalid={t('clientIdRequired')}
           helperTextInvalidIcon={<ExclamationCircleIcon />}
           fieldId="clientId"
         >
@@ -134,7 +141,7 @@ export const CommonStep: FC<CommonStepProp> = ({
             <TextInput
               value={configuration?.service_account?.client_id}
               validated={
-                configuration?.service_account?.client_id ? 'success' : 'error'
+                configuration?.service_account?.client_id ? 'default' : 'error'
               }
               onChange={onSAChange}
               id="connector-sa-id"
@@ -154,20 +161,30 @@ export const CommonStep: FC<CommonStepProp> = ({
                 ? 'success'
                 : 'error'
             }
-            helperTextInvalid={t('clientSecret')+' is required'}
+            helperTextInvalid={t('clientSecretRequired')}
             helperTextInvalidIcon={<ExclamationCircleIcon />}
             fieldId="clientSecret"
           >
-            <TextInput
-              value={configuration?.service_account?.client_secret}
-              validated={
-                configuration?.service_account?.client_secret
-                  ? 'success'
-                  : 'error'
-              }
-              onChange={onSAChange}
-              id="connector-sa-secret"
-            />
+            <InputGroup>
+              <TextInput
+                value={configuration?.service_account?.client_secret}
+                type={passwordHidden ? 'password' : 'text'}
+                validated={
+                  configuration?.service_account?.client_secret
+                    ? 'success'
+                    : 'error'
+                }
+                onChange={onSAChange}
+                id="connector-sa-secret"
+              />
+              <Button
+                variant="control"
+                onClick={() => setPasswordHidden(!passwordHidden)}
+                aria-label={passwordHidden ? 'Show password' : 'Hide password'}
+              >
+                {passwordHidden ? <EyeIcon /> : <EyeSlashIcon />}
+              </Button>
+            </InputGroup>
           </FormGroup>
         ) : (
           <></>
