@@ -34,12 +34,12 @@ import {
   ConnectorTypeAllOf,
 } from '@rhoas/connector-management-sdk';
 
-import { CommonStep } from './CommonStep';
-import './ConfigurationPage.css';
-import { ConfigurationStep } from './ConfigurationStep';
-import { ErrorHandler, ErrorHandlerStep } from './ErrorHandlerStep';
+import { CommonStep } from './ConfigurationTab/CommonStep';
+import './ConfigurationTab.css';
+import { ConfigurationStep } from './ConfigurationTab/ConfigurationStep';
+import { ErrorHandler, ErrorHandlerStep } from './ConfigurationTab/ErrorHandlerStep';
 
-export type ConfigurationPageProps = {
+export type ConfigurationTabProps = {
   onSave: () => void;
   editMode: boolean;
   updateEditMode: (editEnable: boolean) => void;
@@ -63,13 +63,14 @@ const diff = (newConfig: any, oldConfig: any) => {
 };
 
 const getEditPayload = (newConfiguration: any, oldConfiguration: any) => {
+  console.log('newConfiguration', newConfiguration, 'oldConfiguration', oldConfiguration);
   const diffKeys = diff(newConfiguration, oldConfiguration);
   return diffKeys.reduce((acc, key) => {
     return { ...acc, [key]: newConfiguration[key] };
   }, {});
 };
 
-export const ConfigurationPage: FC<ConfigurationPageProps> = ({
+export const ConfigurationTab: FC<ConfigurationTabProps> = ({
   onSave,
   editMode,
   updateEditMode,

@@ -24,16 +24,16 @@ import {
 import { useAlert } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorType } from '@rhoas/connector-management-sdk';
 
-import { ConfigurationPage } from './ConfigurationPage';
-import { OverviewPage } from './OverviewPage';
+import { ConfigurationTab } from './ConfigurationTab';
+import { OverviewTab } from './OverviewTab';
 
 export interface ParamTypes {
   id: string;
 }
 const getTab = (hash: string): string => {
   return hash.includes('&')
-    ? hash.substr(1, hash.indexOf('&') - 1)
-    : hash.substr(1);
+    ? hash.substring(1, hash.indexOf('&'))
+    : hash.substring(1);
 };
 
 type ConnectorDetailsPageProps = {
@@ -148,14 +148,14 @@ export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({
                 eventKey={CONNECTOR_DETAILS_TABS.Overview}
                 title={<TabTitleText>{t('overview')}</TabTitleText>}
               >
-                <OverviewPage connectorData={connectorData} />
+                <OverviewTab connectorData={connectorData} />
               </Tab>
               <Tab
                 eventKey={CONNECTOR_DETAILS_TABS.Configuration}
                 title={<TabTitleText>{t('configuration')}</TabTitleText>}
               >
                 {connectorTypeDetails ? (
-                  <ConfigurationPage
+                  <ConfigurationTab
                     onSave={onSave}
                     editMode={editMode || false}
                     updateEditMode={updateEditMode}
