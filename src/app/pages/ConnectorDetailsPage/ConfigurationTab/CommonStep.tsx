@@ -55,6 +55,12 @@ export const CommonStep: FC<CommonStepProp> = ({
           client_secret: configuration.service_account.client_secret,
         },
       });
+      !isSAUpdate && setIsSAUpdate((prev) => {
+        if (!prev) {
+          changeIsValid(false);
+        }
+        return true;
+      });
     } else {
       onUpdateConfiguration('common', {
         ...configuration,
@@ -66,12 +72,7 @@ export const CommonStep: FC<CommonStepProp> = ({
     }
 
     val === '' ? changeIsValid(false) : changeIsValid(true);
-    setIsSAUpdate((prev) => {
-      if (!prev) {
-        changeIsValid(false);
-      }
-      return true;
-    });
+    
   };
 
   return (
@@ -158,7 +159,7 @@ export const CommonStep: FC<CommonStepProp> = ({
             isRequired
             validated={
               configuration?.service_account?.client_secret
-                ? 'success'
+                ? 'default'
                 : 'error'
             }
             helperTextInvalid={t('clientSecretRequired')}

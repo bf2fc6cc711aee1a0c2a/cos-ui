@@ -48,8 +48,8 @@ type EvalNamespaceApiProps = {
 type ConnectorEditProps = {
   connectorUpdate: { [key: string]: any };
   connectorId: string;
-  updatedName?: string;
-  updatedServiceAccount?: { [key: string]: string };
+  updatedName?: string | undefined;
+  updatedServiceAccount?: ServiceAccount | undefined;
 } & CommonApiProps;
 
 type ConnectorDetailProps = {
