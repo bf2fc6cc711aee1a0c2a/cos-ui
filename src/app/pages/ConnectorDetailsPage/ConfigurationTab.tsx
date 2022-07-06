@@ -34,10 +34,13 @@ import {
   ConnectorTypeAllOf,
 } from '@rhoas/connector-management-sdk';
 
-import { CommonStep } from './ConfigurationTab/CommonStep';
 import './ConfigurationTab.css';
+import { CommonStep } from './ConfigurationTab/CommonStep';
 import { ConfigurationStep } from './ConfigurationTab/ConfigurationStep';
-import { ErrorHandler, ErrorHandlerStep } from './ConfigurationTab/ErrorHandlerStep';
+import {
+  ErrorHandler,
+  ErrorHandlerStep,
+} from './ConfigurationTab/ErrorHandlerStep';
 
 export type ConfigurationTabProps = {
   onSave: () => void;
@@ -168,7 +171,8 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
       ...(commonConfiguration.name !== connectorData.name && {
         updatedName: commonConfiguration.name,
       }),
-      ...(commonConfiguration.service_account !== connectorData.service_account && {
+      ...(commonConfiguration.service_account !==
+        connectorData.service_account && {
         updatedServiceAccount: commonConfiguration.service_account,
       }),
     })(onSuccess, onError);

@@ -741,7 +741,7 @@ export const updateConnector = ({
   connectorUpdate,
   connectorId,
   updatedName,
-  updatedServiceAccount
+  updatedServiceAccount,
 }: ConnectorEditProps): FetchCallbacks<undefined> => {
   const connectorsAPI = new ConnectorsApi(
     new Configuration({
@@ -762,7 +762,9 @@ export const updateConnector = ({
               ...connectorUpdate,
             },
           }),
-          ...(updatedServiceAccount && {service_account: updatedServiceAccount})
+          ...(updatedServiceAccount && {
+            service_account: updatedServiceAccount,
+          }),
         },
         {
           cancelToken: source.token,
