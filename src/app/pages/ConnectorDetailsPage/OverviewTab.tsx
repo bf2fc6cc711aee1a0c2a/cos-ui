@@ -19,11 +19,11 @@ import { ClockIcon } from '@patternfly/react-icons';
 import { useAlert } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
-export interface OverviewPageProps {
+export interface OverviewTabProps {
   connectorData: Connector;
 }
 
-export const OverviewPage: FC<OverviewPageProps> = ({ connectorData }) => {
+export const OverviewTab: FC<OverviewTabProps> = ({ connectorData }) => {
   const [namespaceData, setNamespaceData] = useState<ConnectorNamespace>();
 
   const { connectorsApiBasePath, getToken } = useCos();

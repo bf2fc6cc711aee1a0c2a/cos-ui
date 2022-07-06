@@ -48,7 +48,8 @@ type EvalNamespaceApiProps = {
 type ConnectorEditProps = {
   connectorUpdate: { [key: string]: any };
   connectorId: string;
-  updatedName?: string;
+  updatedName?: string | undefined;
+  updatedServiceAccount?: ServiceAccount | undefined;
 } & CommonApiProps;
 
 type ConnectorDetailProps = {
@@ -740,6 +741,7 @@ export const updateConnector = ({
   connectorUpdate,
   connectorId,
   updatedName,
+  updatedServiceAccount,
 }: ConnectorEditProps): FetchCallbacks<undefined> => {
   const connectorsAPI = new ConnectorsApi(
     new Configuration({
@@ -759,6 +761,9 @@ export const updateConnector = ({
             connector: {
               ...connectorUpdate,
             },
+          }),
+          ...(updatedServiceAccount && {
+            service_account: updatedServiceAccount,
           }),
         },
         {
