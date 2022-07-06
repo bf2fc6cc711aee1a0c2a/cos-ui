@@ -171,7 +171,7 @@ export const CommonStep: FC<CommonStepProp> = ({
                 type={passwordHidden ? 'password' : 'text'}
                 validated={
                   configuration?.service_account?.client_secret
-                    ? 'success'
+                    ? 'default'
                     : 'error'
                 }
                 onChange={onSAChange}
