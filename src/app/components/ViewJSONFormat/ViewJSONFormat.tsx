@@ -57,7 +57,12 @@ export const ViewJSONFormat: FunctionComponent = () => {
       },
     },
     { namespace_id: namespace.id },
-    { service_account: userServiceAccount },
+    {
+      service_account: {
+        client_id: userServiceAccount.clientId,
+        client_secret: userServiceAccount.clientSecret,
+      },
+    },
     { connector: JSON.parse(configString) }
   );
 
