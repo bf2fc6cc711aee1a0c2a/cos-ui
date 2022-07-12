@@ -2,6 +2,8 @@ import React, { FunctionComponent } from 'react';
 
 import { Pagination as PFPagination } from '@patternfly/react-core';
 
+import './Pagination.css';
+
 export type PaginationEvent<OrderBy, Search> = {
   page: number;
   size: number;
@@ -49,6 +51,7 @@ export const Pagination: FunctionComponent<PaginationProps<object, object>> = ({
   ];
   return (
     <PFPagination
+      className={'cos-ui-pagination'}
       itemCount={itemCount}
       page={page}
       perPage={perPage}
