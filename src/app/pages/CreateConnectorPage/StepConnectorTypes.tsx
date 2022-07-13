@@ -204,12 +204,6 @@ export function ConnectorTypesGallery() {
                                     {(c as ConnectorTypeAllOf).version}
                                   </DescriptionListDescription>
                                 </DescriptionListGroup>
-                                <DescriptionListGroup>
-                                  <DescriptionListTerm>ID</DescriptionListTerm>
-                                  <DescriptionListDescription>
-                                    {(c as ObjectReference).id}
-                                  </DescriptionListDescription>
-                                </DescriptionListGroup>
                               </DescriptionList>
                             </CardBody>
                           </Card>
