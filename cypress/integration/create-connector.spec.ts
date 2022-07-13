@@ -84,7 +84,7 @@ const testMachine = Machine({
     selectNamespaceEmptyState: {
       meta: {
         noCoverage: true,
-        test: () => cy.findByText('No namespace').should('exist'),
+        test: () => cy.findByText('No namespaces').should('exist'),
       },
     },
     basicConfiguration: {
