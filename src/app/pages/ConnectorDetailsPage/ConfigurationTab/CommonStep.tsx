@@ -37,44 +37,59 @@ export const CommonStep: FC<CommonStepProp> = ({
 
   const [isSAUpdate, setIsSAUpdate] = React.useState(false);
   const [passwordHidden, setPasswordHidden] = React.useState<boolean>(true);
-
+  const [showEyeIcon, setShowEyeIcon] = React.useState<boolean>(false);
   const onNameChange = (val: any) => {
     onUpdateConfiguration('common', { ...configuration, name: val });
     val === '' ? changeIsValid(false) : changeIsValid(true);
   };
 
-  const onSAChange = (
-    val: string,
-    event: React.FormEvent<HTMLInputElement>
-  ) => {
-    if (event.currentTarget.id === 'connector-sa-id') {
-      onUpdateConfiguration('common', {
-        ...configuration,
-        service_account: {
-          client_id: val,
-          client_secret: configuration.service_account.client_secret,
-        },
+  const onSAChange = (clientId: string) => {
+    onUpdateConfiguration('common', {
+      ...configuration,
+      service_account: {
+        client_id: clientId,
+        client_secret: configuration.service_account.client_secret,
+      },
+    });
+    !isSAUpdate &&
+      setIsSAUpdate((prev) => {
+        if (!prev) {
+          changeIsValid(false);
+        }
+        return true;
       });
-      !isSAUpdate &&
-        setIsSAUpdate((prev) => {
-          if (!prev) {
-            changeIsValid(false);
-          }
-          return true;
-        });
-    } else {
-      onUpdateConfiguration('common', {
-        ...configuration,
-        service_account: {
-          client_id: configuration.service_account.client_id,
-          client_secret: val,
-        },
-      });
-    }
 
-    val === '' ? changeIsValid(false) : changeIsValid(true);
+    if (
+      configuration.service_account.client_secret.includes('*') ||
+      clientId === ''
+    ) {
+      setShowEyeIcon(false);
+      changeIsValid(false);
+    } else {
+      setShowEyeIcon(true);
+      changeIsValid(true);
+    }
   };
 
+  const onSASecretChange = (secret: string) => {
+    onUpdateConfiguration('common', {
+      ...configuration,
+      service_account: {
+        client_id: configuration.service_account.client_id,
+        client_secret: secret,
+      },
+    });
+    if (
+      configuration.service_account.client_secret.includes('*') ||
+      secret === ''
+    ) {
+      setShowEyeIcon(false);
+      changeIsValid(false);
+    } else {
+      setShowEyeIcon(true);
+      changeIsValid(true);
+    }
+  };
   return (
     <StepBodyLayout title={t('core')} description={t('basicStepDescription')}>
       <Form>
@@ -162,6 +177,7 @@ export const CommonStep: FC<CommonStepProp> = ({
                 ? 'default'
                 : 'error'
             }
+            helperText={t('credentialEditFieldHelpText')}
             helperTextInvalid={t('clientSecretRequired')}
             helperTextInvalidIcon={<ExclamationCircleIcon />}
             fieldId="clientSecret"
@@ -175,16 +191,20 @@ export const CommonStep: FC<CommonStepProp> = ({
                     ? 'default'
                     : 'error'
                 }
-                onChange={onSAChange}
+                onChange={onSASecretChange}
                 id="connector-sa-secret"
               />
-              <Button
-                variant="control"
-                onClick={() => setPasswordHidden(!passwordHidden)}
-                aria-label={passwordHidden ? 'Show password' : 'Hide password'}
-              >
-                {passwordHidden ? <EyeIcon /> : <EyeSlashIcon />}
-              </Button>
+              {showEyeIcon && (
+                <Button
+                  variant="control"
+                  onClick={() => setPasswordHidden(!passwordHidden)}
+                  aria-label={
+                    passwordHidden ? 'Show password' : 'Hide password'
+                  }
+                >
+                  {passwordHidden ? <EyeIcon /> : <EyeSlashIcon />}
+                </Button>
+              )}
             </InputGroup>
           </FormGroup>
         ) : (
