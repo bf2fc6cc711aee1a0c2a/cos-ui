@@ -27,6 +27,35 @@ export type CommonStepProp = {
   onUpdateConfiguration: (type: string, update: any) => void;
 };
 
+export type SecretPlaceholderProp = {
+  SAPlaceholder: string;
+  onSAPlaceholderChange: (
+    value: string,
+    event: React.FormEvent<HTMLInputElement>
+  ) => void;
+};
+export const SecretPlaceholder: FC<SecretPlaceholderProp> = ({
+  SAPlaceholder,
+  onSAPlaceholderChange,
+}) => {
+  const { t } = useTranslation();
+  return (
+    <FormGroup
+      label={t('clientSecret')}
+      helperText={t('credentialEditFieldHelpText')}
+      fieldId="clientSecretPlaceholder"
+    >
+      <InputGroup>
+        <TextInput
+          value={SAPlaceholder}
+          type="password"
+          onChange={onSAPlaceholderChange}
+          id="connector-sa-secret-placeholder"
+        />
+      </InputGroup>
+    </FormGroup>
+  );
+};
 export const CommonStep: FC<CommonStepProp> = ({
   editMode,
   configuration,
@@ -37,18 +66,24 @@ export const CommonStep: FC<CommonStepProp> = ({
 
   const [isSAUpdate, setIsSAUpdate] = React.useState(false);
   const [passwordHidden, setPasswordHidden] = React.useState<boolean>(true);
-  const [showEyeIcon, setShowEyeIcon] = React.useState<boolean>(false);
+  const [SAPlaceholder, setSAPlaceholder] = React.useState<string>('*****');
+  const configurationCopy = Object.assign({}, configuration);
+  const { service_account } = configurationCopy;
+
   const onNameChange = (val: any) => {
     onUpdateConfiguration('common', { ...configuration, name: val });
     val === '' ? changeIsValid(false) : changeIsValid(true);
   };
-
+  const onSAPlaceholderChange = (placeholder: string) => {
+    setSAPlaceholder(placeholder);
+    if (placeholder === '') changeIsValid(false);
+  };
   const onSAChange = (clientId: string) => {
     onUpdateConfiguration('common', {
-      ...configuration,
+      ...configurationCopy,
       service_account: {
         client_id: clientId,
-        client_secret: configuration.service_account.client_secret,
+        client_secret: service_account.client_secret,
       },
     });
     !isSAUpdate &&
@@ -59,34 +94,28 @@ export const CommonStep: FC<CommonStepProp> = ({
         return true;
       });
 
-    if (
-      configuration.service_account.client_secret.includes('*') ||
-      clientId === ''
-    ) {
-      setShowEyeIcon(false);
+    if (service_account.client_secret === '' || clientId === '') {
       changeIsValid(false);
     } else {
-      setShowEyeIcon(true);
       changeIsValid(true);
     }
   };
 
   const onSASecretChange = (secret: string) => {
     onUpdateConfiguration('common', {
-      ...configuration,
+      ...configurationCopy,
       service_account: {
-        client_id: configuration.service_account.client_id,
+        client_id: service_account.client_id,
         client_secret: secret,
       },
     });
     if (
-      configuration.service_account.client_secret.includes('*') ||
-      secret === ''
+      service_account.client_secret === '' ||
+      secret === '' ||
+      service_account.client_id === ''
     ) {
-      setShowEyeIcon(false);
       changeIsValid(false);
     } else {
-      setShowEyeIcon(true);
       changeIsValid(true);
     }
   };
@@ -146,37 +175,39 @@ export const CommonStep: FC<CommonStepProp> = ({
         <FormGroup
           label={t('clientId')}
           isRequired
-          validated={
-            configuration?.service_account?.client_id ? 'default' : 'error'
-          }
+          validated={service_account?.client_id ? 'default' : 'error'}
           helperTextInvalid={t('clientIdRequired')}
           helperTextInvalidIcon={<ExclamationCircleIcon />}
           fieldId="clientId"
         >
           {editMode ? (
             <TextInput
-              value={configuration?.service_account?.client_id}
-              validated={
-                configuration?.service_account?.client_id ? 'default' : 'error'
-              }
+              value={service_account?.client_id}
+              validated={service_account?.client_id ? 'default' : 'error'}
               onChange={onSAChange}
               id="connector-sa-id"
             />
           ) : (
             <ClipboardCopy isReadOnly hoverTip="copy" clickTip="Copied">
-              {configuration?.service_account?.client_id}
+              {service_account?.client_id}
             </ClipboardCopy>
           )}
         </FormGroup>
-        {isSAUpdate && editMode ? (
+        {editMode &&
+          isSAUpdate &&
+          service_account?.client_secret === '' &&
+          SAPlaceholder !== '' && (
+            <SecretPlaceholder
+              SAPlaceholder={SAPlaceholder}
+              onSAPlaceholderChange={onSAPlaceholderChange}
+            />
+          )}
+
+        {SAPlaceholder === '' && (
           <FormGroup
             label={t('clientSecret')}
             isRequired
-            validated={
-              configuration?.service_account?.client_secret
-                ? 'default'
-                : 'error'
-            }
+            validated={service_account?.client_secret ? 'default' : 'error'}
             helperText={t('credentialEditFieldHelpText')}
             helperTextInvalid={t('clientSecretRequired')}
             helperTextInvalidIcon={<ExclamationCircleIcon />}
@@ -184,31 +215,22 @@ export const CommonStep: FC<CommonStepProp> = ({
           >
             <InputGroup>
               <TextInput
-                value={configuration?.service_account?.client_secret}
+                value={service_account?.client_secret}
                 type={passwordHidden ? 'password' : 'text'}
-                validated={
-                  configuration?.service_account?.client_secret
-                    ? 'default'
-                    : 'error'
-                }
+                validated={service_account?.client_secret ? 'default' : 'error'}
                 onChange={onSASecretChange}
                 id="connector-sa-secret"
               />
-              {showEyeIcon && (
-                <Button
-                  variant="control"
-                  onClick={() => setPasswordHidden(!passwordHidden)}
-                  aria-label={
-                    passwordHidden ? 'Show password' : 'Hide password'
-                  }
-                >
-                  {passwordHidden ? <EyeIcon /> : <EyeSlashIcon />}
-                </Button>
-              )}
+
+              <Button
+                variant="control"
+                onClick={() => setPasswordHidden(!passwordHidden)}
+                aria-label={passwordHidden ? 'Show password' : 'Hide password'}
+              >
+                {passwordHidden ? <EyeIcon /> : <EyeSlashIcon />}
+              </Button>
             </InputGroup>
           </FormGroup>
-        ) : (
-          <></>
         )}
       </Form>
     </StepBodyLayout>

@@ -180,9 +180,6 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
 
   const initialize = () => {
     const { name, service_account } = connectorData;
-    service_account.client_secret === ''
-      ? (service_account.client_secret = '*****')
-      : service_account.client_secret;
     setCommonConfiguration({ name: name, service_account: service_account });
     setConnectorConfiguration(connectorData?.connector);
     setErrHandlerConfiguration(
