@@ -194,7 +194,6 @@ export const CommonStep: FC<CommonStepProp> = ({
           )}
         </FormGroup>
         {editMode &&
-          isSAUpdate &&
           service_account?.client_secret === '' &&
           SAPlaceholder !== '' && (
             <SecretPlaceholder
