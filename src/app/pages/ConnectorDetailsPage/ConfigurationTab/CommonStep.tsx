@@ -203,7 +203,7 @@ export const CommonStep: FC<CommonStepProp> = ({
             />
           )}
 
-        {SAPlaceholder === '' && (
+        {editMode && SAPlaceholder === '' && (
           <FormGroup
             label={t('clientSecret')}
             isRequired
