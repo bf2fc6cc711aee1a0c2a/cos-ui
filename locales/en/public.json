@@ -173,5 +173,6 @@
   "Connection": "Connection",
   "Connector": "Connector",
   "credentialsGenerated": "Credentials successfully generated",
-  "copiedClientidSecret": "I have copied the client ID and secret"
+  "copiedClientidSecret": "I have copied the client ID and secret",
+  "ConnectorHelpAndGuidances": "Help and guidances"
 }

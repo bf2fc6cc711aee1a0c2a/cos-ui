@@ -29,6 +29,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  CardActions,
   CardTitle,
   DescriptionList,
   DescriptionListDescription,
@@ -47,13 +48,23 @@ import {
   ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
+  Label,
+  Popover,
 } from '@patternfly/react-core';
-import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
+import {
+  FilterIcon,
+  BuildIcon,
+  BuilderImageIcon,
+  SearchIcon,
+  OutlinedQuestionCircleIcon,
+} from '@patternfly/react-icons';
 
 import {
   ConnectorTypeAllOf,
   ObjectReference,
 } from '@rhoas/connector-management-sdk';
+
+import './StepConnectorTypes.css';
 
 export function SelectConnectorType() {
   const isReady = useConnectorTypesMachineIsReady();
@@ -131,39 +142,55 @@ export function ConnectorTypesGallery() {
                             (connectorTypeDetails as ObjectReference).id
                           }
                         >
-                          <CardHeader>
-                            <CardTitle>
-                              {
-                                (connectorTypeDetails as ConnectorTypeAllOf)
-                                  .name
-                              }
-                            </CardTitle>
-                          </CardHeader>
-                          <CardBody>
-                            <DescriptionList>
-                              {/* <DescriptionListGroup>
-                                <DescriptionListDescription>
+                          {(
+                            connectorTypeDetails as ConnectorTypeAllOf
+                          ).labels?.includes('source') && (
+                            <CardHeader>
+                              <BuildIcon color="lightGrey" size="lg" />
+                              <CardActions>
+                                <Label color="blue">{t('source')}</Label>
+                              </CardActions>
+                            </CardHeader>
+                          )}
+                          {(
+                            connectorTypeDetails as ConnectorTypeAllOf
+                          ).labels?.includes('sink') && (
+                            <CardHeader>
+                              <BuilderImageIcon color="lightGrey" size="lg" />
+                              <CardActions>
+                                <Label color="green">{t('sink')}</Label>
+                              </CardActions>
+                            </CardHeader>
+                          )}
+                          <CardTitle>
+                            {(connectorTypeDetails as ConnectorTypeAllOf).name}{' '}
+                            <Popover
+                              position="right"
+                              aria-label={t('ConnectorHelpAndGuidances')}
+                              headerContent={t('ConnectorHelpAndGuidances')}
+                              bodyContent={
+                                <div>
                                   {
                                     (connectorTypeDetails as ConnectorTypeAllOf)
                                       .description
                                   }
-                                </DescriptionListDescription>
-                              </DescriptionListGroup> */}
+                                </div>
+                              }
+                            >
+                              <OutlinedQuestionCircleIcon color="grey" />
+                            </Popover>
+                          </CardTitle>
+                          <CardBody>
+                            <DescriptionList isHorizontal isFluid>
                               <DescriptionListGroup>
                                 <DescriptionListTerm>
-                                  {t('version')}
+                                  {t('version')}:
                                 </DescriptionListTerm>
                                 <DescriptionListDescription>
                                   {
                                     (connectorTypeDetails as ConnectorTypeAllOf)
                                       .version
                                   }
-                                </DescriptionListDescription>
-                              </DescriptionListGroup>
-                              <DescriptionListGroup>
-                                <DescriptionListTerm>ID</DescriptionListTerm>
-                                <DescriptionListDescription>
-                                  {(connectorTypeDetails as ObjectReference).id}
                                 </DescriptionListDescription>
                               </DescriptionListGroup>
                             </DescriptionList>
@@ -184,21 +211,46 @@ export function ConnectorTypesGallery() {
                             }
                             onClick={() => onSelect((c as ObjectReference).id!)}
                           >
-                            <CardHeader>
-                              <CardTitle>
-                                {(c as ConnectorTypeAllOf).name}
-                              </CardTitle>
-                            </CardHeader>
-                            <CardBody>
-                              <DescriptionList>
-                                {/* <DescriptionListGroup>
-                                  <DescriptionListDescription>
+                            {(c as ConnectorTypeAllOf).labels?.includes(
+                              'source'
+                            ) && (
+                              <CardHeader>
+                                <BuildIcon color="lightGrey" size="lg" />
+                                <CardActions>
+                                  <Label color="blue">{t('source')}</Label>
+                                </CardActions>
+                              </CardHeader>
+                            )}
+                            {(c as ConnectorTypeAllOf).labels?.includes(
+                              'sink'
+                            ) && (
+                              <CardHeader>
+                                <BuilderImageIcon color="lightGrey" size="lg" />
+                                <CardActions>
+                                  <Label color="green">{t('sink')}</Label>
+                                </CardActions>
+                              </CardHeader>
+                            )}
+                            <CardTitle>
+                              {(c as ConnectorTypeAllOf).name}{' '}
+                              <Popover
+                                position="right"
+                                aria-label={t('ConnectorHelpAndGuidances')}
+                                headerContent={t('ConnectorHelpAndGuidances')}
+                                bodyContent={
+                                  <div>
                                     {(c as ConnectorTypeAllOf).description}
-                                  </DescriptionListDescription>
-                                </DescriptionListGroup> */}
+                                  </div>
+                                }
+                              >
+                                <OutlinedQuestionCircleIcon color="grey" />
+                              </Popover>
+                            </CardTitle>
+                            <CardBody>
+                              <DescriptionList isHorizontal isFluid>
                                 <DescriptionListGroup>
                                   <DescriptionListTerm>
-                                    {t('version')}
+                                    {t('version')}:
                                   </DescriptionListTerm>
                                   <DescriptionListDescription>
                                     {(c as ConnectorTypeAllOf).version}
