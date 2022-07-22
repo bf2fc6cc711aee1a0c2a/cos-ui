@@ -4,7 +4,7 @@ import React from 'react';
 import { EmptyStateNoNamespace } from './EmptyStateNoNamespace';
 
 export default {
-  title: 'UI/Empty states/No Namespaces',
+  title: 'UI/Empty states/No Namespace',
   component: EmptyStateNoNamespace,
   args: {},
   parameters: {},
