@@ -4,17 +4,15 @@ import { useTranslation } from 'react-i18next';
 import {
   Bullseye,
   Button,
-  ButtonVariant,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
-  EmptyStateSecondaryActions,
   EmptyStateVariant,
   Title,
   TitleSizes,
   Tooltip,
 } from '@patternfly/react-core';
-import { ExternalLinkAltIcon, PlusCircleIcon } from '@patternfly/react-icons';
+import { PlusCircleIcon } from '@patternfly/react-icons';
 
 type EmptyStateNoNamespaceProps = {
   onModalToggle: () => void;
@@ -36,17 +34,6 @@ export const EmptyStateNoNamespace: FunctionComponent<EmptyStateNoNamespaceProps
               {t('createPreviewNamespace')}
             </Button>
           </Tooltip>
-          <EmptyStateSecondaryActions>
-            <Button
-              variant={ButtonVariant.link}
-              component={'a'}
-              target={'_blank'}
-              href={t('osdInstallationGuideLink')}
-              ouiaId={'empty-state-osd-guide-link'}
-            >
-              <ExternalLinkAltIcon /> {t('osdInstallationGuide')}
-            </Button>
-          </EmptyStateSecondaryActions>
         </EmptyState>
       </Bullseye>
     );
