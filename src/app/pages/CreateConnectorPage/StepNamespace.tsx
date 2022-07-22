@@ -19,11 +19,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import {
   Alert,
   Button,
+  ButtonVariant,
   Card,
   CardBody,
   CardHeader,
@@ -122,7 +123,26 @@ const ClustersGallery: FunctionComponent = () => {
   return (
     <StepBodyLayout
       title={t('namespace')}
-      description={t('namespaceStepDescription')}
+      description={
+        <Trans i18nKey={'namespaceStepDescription'}>
+          The selected namespace hosts your Connectors instance. Use a namespace
+          in an OpenShift Dedicated trial cluster, or have Red Hat create a
+          preview namespace for you. For instructions on adding a namespace to a
+          trial cluster, access the{' '}
+          <Button
+            variant={ButtonVariant.link}
+            isSmall
+            isInline
+            component={'a'}
+            href={t('osdInstallationGuideLink')}
+            target={'_blank'}
+            ouiaId={'description-osd-guide-link'}
+          >
+            guide
+          </Button>
+          .
+        </Trans>
+      }
     >
       {(() => {
         switch (true) {
