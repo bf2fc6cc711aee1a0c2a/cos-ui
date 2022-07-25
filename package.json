@@ -31,8 +31,8 @@
     "react-i18next": "11.14.3",
     "react-router-dom": "5.2.1",
     "short-uuid": "4.2.0",
-    "uniforms": "3.9.1",
-    "uniforms-bridge-json-schema": "3.9.1",
+    "uniforms": "3.10.0",
+    "uniforms-bridge-json-schema": "3.10.0",
     "uniforms-patternfly": "4.7.5",
     "xstate": "4.28.1"
   },
