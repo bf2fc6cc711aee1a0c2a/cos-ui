@@ -4,6 +4,7 @@ import _ from 'lodash';
 
 import { Sender } from 'xstate';
 
+import { KafkaInstance } from '@rhoas/app-services-ui-shared';
 import {
   Channel,
   Configuration,
@@ -521,6 +522,10 @@ type KafkaManagementApiProps = {
   kafkaManagementBasePath: string;
 };
 
+type KafkaInstanceDetailProps = {
+  KafkaInstanceId: string;
+} & KafkaManagementApiProps;
+
 export type KafkasSearch = {
   name?: string;
   owner?: string;
@@ -589,6 +594,40 @@ export const fetchKafkaInstances = ({
       .catch((error) => {
         if (!axios.isCancel(error)) {
           onError({ error: error.message, page: request.page });
+        }
+      });
+    return () => {
+      source.cancel('Operation canceled by the user.');
+    };
+  };
+};
+
+export const getKafkaInstanceById = ({
+  accessToken,
+  kafkaManagementBasePath,
+  KafkaInstanceId,
+}: KafkaInstanceDetailProps): FetchCallbacks<KafkaInstance> => {
+  const connectorsAPI = new DefaultApi(
+    new Configuration({
+      accessToken,
+      basePath: kafkaManagementBasePath,
+    })
+  );
+
+  return (onSuccess, onError) => {
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    connectorsAPI
+      .getKafkaById(KafkaInstanceId, {
+        cancelToken: source.token,
+      })
+      .then((response) => {
+        onSuccess(response.data);
+      })
+      .catch((error) => {
+        if (!axios.isCancel(error)) {
+          console.log('Error msg:' + error.response);
+          onError(error.response);
         }
       });
     return () => {

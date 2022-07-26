@@ -10,6 +10,7 @@ import '@patternfly/patternfly/utilities/Display/display.css';
 import '@patternfly/patternfly/utilities/Flex/flex.css';
 import '@patternfly/patternfly/utilities/Sizing/sizing.css';
 import '@patternfly/patternfly/utilities/Spacing/spacing.css';
+import '@patternfly/patternfly/utilities/Text/text.css';
 
 import { AppDemo } from './AppDemo';
 import { AppE2E } from './AppE2E';

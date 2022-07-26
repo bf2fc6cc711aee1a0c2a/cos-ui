@@ -94,6 +94,7 @@
   "gettingStartedQuickstart": "getting-started-connectors",
   "id": "id",
   "kafkaInstance": "Kafka Instance",
+  "KafkaInstanceExpired" : "Kafka instance no longer exists",
   "kafkaStepDescription": "The selected OpenShift Streams for Apache Kafka instance works with your Connectors instance. A source connector ingests data from another system into a Kafka instance. A sink connector propagates data from a Kafka instance into another system.",
   "leave": "Leave",
   "leaveCreateConnectorConfirmModalDescription": "Changes you have made will be lost and no connector will be created.",
