@@ -72,7 +72,7 @@ describe('Connectors page', () => {
     cy.findByText(
       'lb-cos--vgitqo-mk-imjg-eyqfbazqdiv.bf2.kafka.rhcloud.com:443'
     ).should('exist');
-    cy.findByLabelText('Close drawer panel').click();
+    cy.findByLabelText('Close drawer panel').click({force: true});
   });
 
   it('allows actions to be triggered', () => {
