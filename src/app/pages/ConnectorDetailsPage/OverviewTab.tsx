@@ -1,4 +1,4 @@
-import { getNamespace } from '@apis/api';
+import { getKafkaInstanceById, getNamespace } from '@apis/api';
 import { ConnectorInfoTextList } from '@app/components/ConnectorInfoTextList/ConnectorInfoTextList';
 import { useCos } from '@context/CosContext';
 import { getPendingTime, warningType } from '@utils/shared';
@@ -13,10 +13,11 @@ import {
   HintBody,
   PageSection,
   PageSectionVariants,
+  Spinner,
 } from '@patternfly/react-core';
 import { ClockIcon } from '@patternfly/react-icons';
 
-import { useAlert } from '@rhoas/app-services-ui-shared';
+import { KafkaInstance, useAlert } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 export interface OverviewTabProps {
@@ -25,14 +26,19 @@ export interface OverviewTabProps {
 
 export const OverviewTab: FC<OverviewTabProps> = ({ connectorData }) => {
   const [namespaceData, setNamespaceData] = useState<ConnectorNamespace>();
+  const [KIData, setKIData] = useState<KafkaInstance | string>();
 
-  const { connectorsApiBasePath, getToken } = useCos();
-
+  const { connectorsApiBasePath, kafkaManagementApiBasePath, getToken } =
+    useCos();
   const alert = useAlert();
   const { t } = useTranslation();
 
   const getNamespaceData = useCallback((data) => {
     setNamespaceData(data as ConnectorNamespace);
+  }, []);
+
+  const getKIData = useCallback((data) => {
+    setKIData(data as KafkaInstance);
   }, []);
 
   const onError = useCallback(
@@ -43,6 +49,22 @@ export const OverviewTab: FC<OverviewTabProps> = ({ connectorData }) => {
         title: t('somethingWentWrong'),
         description,
       });
+    },
+    [alert, t]
+  );
+
+  const onKIError = useCallback(
+    (response: any) => {
+      if (response.status === 404) {
+        setKIData(t('KafkaInstanceExpired'));
+      } else {
+        alert?.addAlert({
+          id: 'connector-drawer',
+          variant: AlertVariant.danger,
+          title: t('somethingWentWrong'),
+          description: response.data.reason,
+        });
+      }
     },
     [alert, t]
   );
@@ -69,8 +91,14 @@ export const OverviewTab: FC<OverviewTabProps> = ({ connectorData }) => {
       connectorsApiBasePath: connectorsApiBasePath,
       namespaceId: connectorData?.namespace_id!,
     })(getNamespaceData, onError);
+    getKafkaInstanceById({
+      accessToken: getToken,
+      kafkaManagementBasePath: kafkaManagementApiBasePath,
+      KafkaInstanceId: connectorData?.kafka?.id,
+    })(getKIData, onKIError);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connectorData]);
+
   return (
     <PageSection variant={PageSectionVariants.light}>
       {namespaceData?.expiration && (
@@ -107,10 +135,8 @@ export const OverviewTab: FC<OverviewTabProps> = ({ connectorData }) => {
         id={connectorData?.id!}
         type={connectorData?.connector_type_id}
         bootstrapServer={connectorData?.kafka?.url}
-        kafkaId={connectorData?.kafka?.id}
-        namespaceId={
-          namespaceData ? namespaceData.name : connectorData?.namespace_id!
-        }
+        kafkaId={KIData ? KIData! : <Spinner size="md" />}
+        namespaceId={namespaceData ? namespaceData.name : <Spinner size="md" />}
         namespaceMsg={
           namespaceData?.expiration &&
           getConnectorExpireInlineAlert(namespaceData?.expiration!)

@@ -61,7 +61,7 @@ describe('Connectors page', () => {
     cy.findByText(
       'view more'
     ).should('exist');
-    cy.findByLabelText('Close drawer panel').click();
+    cy.findByLabelText('Close drawer panel').click({force: true});
     cy.findByText('Connector name').should('not.exist');
 
     // should open the actions dropdown
@@ -72,7 +72,7 @@ describe('Connectors page', () => {
     cy.findByText(
       'lb-cos--vgitqo-mk-imjg-eyqfbazqdiv.bf2.kafka.rhcloud.com:443'
     ).should('exist');
-    cy.findByLabelText('Close drawer panel').click();
+    cy.findByLabelText('Close drawer panel').click({force: true});
   });
 
   it('allows actions to be triggered', () => {

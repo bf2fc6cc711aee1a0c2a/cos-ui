@@ -4,13 +4,17 @@ import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Button,
+  Text,
   TextContent,
   TextList,
   TextListItem,
   TextListItemVariants,
   TextListVariants,
+  TextVariants,
 } from '@patternfly/react-core';
 import { OutlinedClockIcon } from '@patternfly/react-icons';
+
+import { KafkaInstance } from '@rhoas/app-services-ui-shared';
 
 import './ConnectorInfoTextList.css';
 
@@ -21,9 +25,9 @@ export type ConnectorInfoTextListProps = {
   id: string;
   type?: string;
   bootstrapServer: string;
-  kafkaId: string;
+  kafkaId: string | KafkaInstance | ReactNode;
   owner: string;
-  namespaceId: string;
+  namespaceId: string | ReactNode;
   namespaceMsg?: string | undefined;
   namespaceMsgVariant: AlertType;
   createdAt: Date;
@@ -67,7 +71,10 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
       }
       return value;
     };
-    const textListItem = (title: string, value?: ReactNode) => (
+    const textListItem = (
+      title: string,
+      value?: string | KafkaInstance | ReactNode
+    ) => (
       <>
         {value && (
           <>
@@ -75,9 +82,39 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
               {title}
             </TextListItem>
             <TextListItem component={TextListItemVariants.dd}>
-              {title === t('failureReason')
-                ? getFailureReason(value as string)
-                : value}
+              {(() => {
+                switch (title) {
+                  case t('failureReason'):
+                    return getFailureReason(value as string);
+                  case t('kafkaInstance'):
+                    return (value as KafkaInstance)?.name ? (
+                      <Button
+                        className="Kafka-link-button"
+                        variant="link"
+                        onClick={() => {
+                          window.open(
+                            'https://console.redhat.com/application-services/streams/kafkas/' +
+                              (value as KafkaInstance).id,
+                            '_blank'
+                          );
+                        }}
+                      >
+                        {(value as KafkaInstance).name}
+                      </Button>
+                    ) : typeof value === 'string' ? (
+                      <Text
+                        component={TextVariants.p}
+                        className="pf-u-color-400"
+                      >
+                        {value}
+                      </Text>
+                    ) : (
+                      value
+                    );
+                  default:
+                    return value;
+                }
+              })()}
             </TextListItem>
           </>
         )}

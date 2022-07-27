@@ -1,4 +1,4 @@
-import { getNamespace } from '@apis/api';
+import { getKafkaInstanceById, getNamespace } from '@apis/api';
 import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus';
 import {
   ConnectorMachineActorRef,
@@ -31,6 +31,7 @@ import {
   FlexItem,
   Hint,
   HintBody,
+  Spinner,
   Tab,
   Tabs,
   TabTitleText,
@@ -42,7 +43,7 @@ import {
 } from '@patternfly/react-core';
 import { ClockIcon } from '@patternfly/react-icons';
 
-import { useAlert } from '@rhoas/app-services-ui-shared';
+import { KafkaInstance, useAlert } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 import { ConnectorActionsMenu } from '../ConnectorActions/ConnectorActionsMenu';
@@ -132,14 +133,21 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
     const { t } = useTranslation();
     const [activeTabKey, setActiveTabKey] = useState<string | number>(0);
 
-    const [namespaceData, setNamespaceData] = useState<ConnectorNamespace>();
+    const [namespaceData, setNamespaceData] =
+      useState<ConnectorNamespace | null>();
+    const [KIData, setKIData] = useState<KafkaInstance | string>();
 
-    const { connectorsApiBasePath, getToken } = useCos();
+    const { connectorsApiBasePath, kafkaManagementApiBasePath, getToken } =
+      useCos();
 
     const alert = useAlert();
 
     const getNamespaceData = useCallback((data) => {
       setNamespaceData(data as ConnectorNamespace);
+    }, []);
+
+    const getKIData = useCallback((data) => {
+      setKIData(data as KafkaInstance);
     }, []);
 
     const onError = useCallback(
@@ -154,7 +162,24 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
       [alert, t]
     );
 
+    const onKIError = useCallback(
+      (response: any) => {
+        if (response.status === 404) {
+          setKIData(t('KafkaInstanceExpired'));
+        } else {
+          alert?.addAlert({
+            id: 'connector-drawer',
+            variant: AlertVariant.danger,
+            title: t('somethingWentWrong'),
+            description: response?.data?.reason,
+          });
+        }
+      },
+      [alert, t]
+    );
+
     useEffect(() => {
+      setNamespaceData(null);
       getNamespace({
         accessToken: getToken,
         connectorsApiBasePath: connectorsApiBasePath,
@@ -162,6 +187,16 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
       })(getNamespaceData, onError);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [namespaceId]);
+
+    useEffect(() => {
+      setKIData('');
+      getKafkaInstanceById({
+        accessToken: getToken,
+        kafkaManagementBasePath: kafkaManagementApiBasePath,
+        KafkaInstanceId: kafkaId,
+      })(getKIData, onKIError);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [kafkaId]);
 
     const selectActiveKey = (_: MouseEvent, eventKey: string | number) => {
       setActiveTabKey(eventKey);
@@ -272,8 +307,10 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
                   name={name}
                   id={id}
                   bootstrapServer={bootstrapServer}
-                  kafkaId={kafkaId}
-                  namespaceId={namespaceData ? namespaceData.name : namespaceId}
+                  kafkaId={KIData ? KIData! : <Spinner size="md" />}
+                  namespaceId={
+                    namespaceData ? namespaceData.name : <Spinner size="md" />
+                  }
                   namespaceMsg={
                     namespaceData?.expiration &&
                     getConnectorExpireInlineAlert(namespaceData?.expiration!)
