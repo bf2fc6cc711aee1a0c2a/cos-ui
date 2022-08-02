@@ -1,15 +1,14 @@
 import { ConnectorDrawer } from '@app/components/ConnectorDrawer/ConnectorDrawer';
+import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus';
 import {
-  ConnectorsTable,
-  ConnectorsTableRow,
-} from '@app/components/ConnectorsTable/ConnectorsTable';
-import { ConnectorsToolbar } from '@app/components/ConnectorsToolbar/ConnectorsToolbar';
+  ConnectorsToolbar,
+  ConnectorsToolbarFilter,
+} from '@app/components/ConnectorsToolbar/ConnectorsToolbar';
 import { DialogDeleteConnector } from '@app/components/DialogDeleteConnector/DialogDeleteConnector';
 import { EmptyStateGenericError } from '@app/components/EmptyStateGenericError/EmptyStateGenericError';
 import { EmptyStateGettingStarted } from '@app/components/EmptyStateGettingStarted/EmptyStateGettingStarted';
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
 import { Loading } from '@app/components/Loading/Loading';
-import { Pagination } from '@app/components/Pagination/Pagination';
 import {
   ConnectorMachineActorRef,
   useConnector,
@@ -21,22 +20,38 @@ import React, {
   useContext,
   useState,
 } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import {
   QuickStartContext,
   QuickStartContextValues,
 } from '@patternfly/quickstarts';
-import { Card, PageSection, TextContent, Title } from '@patternfly/react-core';
+import {
+  Card,
+  ClipboardCopy,
+  PageSection,
+  Text,
+  TextContent,
+  TextVariants,
+  Title,
+} from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
+import {
+  ActionsColumn as ActionsColumnType,
+  IActions,
+  Td as TdType,
+} from '@patternfly/react-table';
 
+import { TableView } from '@rhoas/app-services-ui-components';
 import { AlertVariant, useAlert } from '@rhoas/app-services-ui-shared';
-import { Connector } from '@rhoas/connector-management-sdk';
 
 import {
   ConnectorsPageProvider,
   useConnectorsMachine,
   useConnectorsPageIsReady,
 } from './ConnectorsPageContext';
+
+const columns = ['name', 'connector_type_id', 'state'] as const;
 
 type ConnectedConnectorsPageProps = {
   onCreateConnector: () => void;
@@ -123,11 +138,14 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
     deselectConnector,
     runQuery,
   } = useConnectorsMachine();
-
   const currentConnectorRef = response?.items?.filter((ref) => {
     return ref.id == `connector-${selectedConnector?.id}`;
   })[0];
-
+  const columnLabels = {
+    name: t('name'),
+    connector_type_id: t('connector'),
+    state: t('status'),
+  } as { [key in typeof columns[number]]: string };
   switch (true) {
     case firstRequest:
       return <Loading />;
@@ -144,13 +162,17 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
             <ConnectorsPageTitle />
           </PageSection>
           <PageSection padding={{ default: 'noPadding' }} isFilled>
-            <Card>
-              <ConnectorsToolbar
-                itemCount={response?.total || 0}
-                page={request.page}
-                perPage={request.size}
-                onChange={runQuery}
-              />
+            <Card className={'pf-u-pb-xl'}>
+              <ConnectorsToolbar>
+                <ConnectorsToolbarFilter
+                  itemCount={response?.total || 0}
+                  page={request.page}
+                  perPage={request.size}
+                  search={request.search}
+                  orderBy={request.orderBy}
+                  onChange={runQuery}
+                />
+              </ConnectorsToolbar>
               <Loading />
             </Card>
           </PageSection>
@@ -169,6 +191,10 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
     case error:
       return <EmptyStateGenericError />;
     default:
+      // First pass is implementing a simple sort on the table
+      const [[activeSortColumn, activeSortDirection]] = Object.entries(
+        request.orderBy || { name: 'asc' }
+      );
       return (
         <ConnectorDrawer
           currentConnectorRef={currentConnectorRef as ConnectorMachineActorRef}
@@ -180,10 +206,90 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
             <ConnectorsPageTitle />
           </PageSection>
           <PageSection padding={{ default: 'noPadding' }} isFilled>
-            <ConnectedTable
-              onConnectorDetail={onConnectorDetail}
-              onDuplicateConnector={onDuplicateConnector}
-            />
+            <Card className={'pf-u-pb-xl'}>
+              <div className={'pf-u-p-md'}>
+                <TableView
+                  ariaLabel="Sortable Connectors Instance Table"
+                  columns={columns}
+                  data={response?.items!}
+                  renderHeader={({ column, Th, key }) => (
+                    <Th
+                      key={key}
+                      sort={{
+                        sortBy: {
+                          index:
+                            columns.indexOf(
+                              activeSortColumn as typeof columns[number]
+                            ) || 0,
+                          direction: (activeSortDirection as 'asc') || 'desc',
+                          defaultDirection: 'asc',
+                        },
+                        onSort: (_event, index, direction) =>
+                          runQuery({
+                            page: request.page,
+                            size: request.size,
+                            orderBy: { [columns[index]]: direction },
+                            search: request.search,
+                          }),
+                        columnIndex: columns.indexOf(column),
+                      }}
+                    >
+                      {columnLabels[column]}
+                    </Th>
+                  )}
+                  renderActions={({ row, ActionsColumn }) => (
+                    <ConnectorActions
+                      ActionsColumn={ActionsColumn}
+                      connectorRef={row as any}
+                      onConnectorDetail={onConnectorDetail}
+                      onDuplicateConnector={onDuplicateConnector}
+                    />
+                  )}
+                  renderCell={({ column, row, key, Td }) => (
+                    <ConnectorCell
+                      key={key}
+                      Td={Td}
+                      column={column}
+                      columnLabels={columnLabels}
+                      tdKey={key}
+                      connectorRef={row}
+                      onConnectorDetail={onConnectorDetail}
+                    />
+                  )}
+                  onRowClick={({ row }) => row.send('connector.select')}
+                  isRowSelected={({ row }) =>
+                    selectedConnector
+                      ? selectedConnector.id ===
+                        row.getSnapshot()?.context.connector.id
+                      : false
+                  }
+                  setActionCellOuiaId={({ row }) =>
+                    `actions-for-${row.getSnapshot()?.context.connector.id}`
+                  }
+                  toolbarContent={
+                    <ConnectorsToolbarFilter
+                      itemCount={response?.total || 0}
+                      page={request.page}
+                      perPage={request.size}
+                      search={request.search}
+                      orderBy={request.orderBy}
+                      onChange={runQuery}
+                    />
+                  }
+                  itemCount={response?.total || 0}
+                  page={request.page}
+                  perPage={request.size}
+                  onPageChange={(page, perPage) =>
+                    runQuery({
+                      page,
+                      size: perPage,
+                      orderBy: request.orderBy,
+                      search: request.search,
+                    })
+                  }
+                />
+              </div>
+            </Card>
           </PageSection>
         </ConnectorDrawer>
       );
@@ -198,69 +304,107 @@ const ConnectorsPageTitle: FunctionComponent = () => {
     </TextContent>
   );
 };
-export type ConnectorsTableProps = {
-  onConnectorDetail: (id: string, goToConnectorDetails: string) => void;
-  onDuplicateConnector: (id: string) => void;
-};
 
-export const ConnectedTable: FunctionComponent<ConnectorsTableProps> = ({
-  onConnectorDetail,
-  onDuplicateConnector,
-}) => {
-  const { request, response, selectedConnector, runQuery } =
-    useConnectorsMachine();
-  return (
-    <Card className={'pf-u-pb-xl'}>
-      <ConnectorsToolbar
-        itemCount={response?.total || 0}
-        page={request.page}
-        perPage={request.size}
-        search={request.search}
-        orderBy={request.orderBy}
-        onChange={runQuery}
-      />
-      <div className={'pf-u-p-md'}>
-        <ConnectorsTable>
-          {response?.items?.map((ref) => (
-            <ConnectedRow
-              connectorRef={ref}
-              key={ref.id}
-              selectedConnector={selectedConnector}
-              onConnectorDetail={onConnectorDetail}
-              onDuplicateConnector={onDuplicateConnector}
-            />
-          ))}
-        </ConnectorsTable>
-      </div>
-      <Pagination
-        itemCount={response?.total || 0}
-        page={request.page}
-        perPage={request.size}
-        onChange={(event) =>
-          runQuery({
-            ...event,
-            orderBy: request.orderBy,
-            search: request.search,
-          })
-        }
-        isCompact={false}
-      />
-    </Card>
-  );
-};
-
-type ConnectedRowProps = {
+type ConnectorCellProps = {
+  Td: typeof TdType;
+  column: typeof columns[number];
+  columnLabels: { [key in typeof columns[number]]: string };
   connectorRef: ConnectorMachineActorRef;
-  selectedConnector?: Connector;
+  tdKey: string;
+  onConnectorDetail: (id: string, goToConnectorDetails: string) => void;
+};
+const ConnectorCell: FunctionComponent<ConnectorCellProps> = ({
+  Td,
+  column,
+  columnLabels,
+  connectorRef,
+  tdKey,
+  onConnectorDetail,
+}) => {
+  const { t } = useTranslation();
+  const { connector } = useConnector(connectorRef);
+  const { connector_type_id, desired_state, id, name, status } = connector;
+  const { state } = status!;
+  switch (column) {
+    case 'name':
+      return (
+        <Td key={tdKey} dataLabel={columnLabels[column]}>
+          <Text
+            component={TextVariants.a}
+            isVisitedLink
+            onClick={() => onConnectorDetail(id!, 'overview')}
+          >
+            {name}
+          </Text>
+        </Td>
+      );
+    case 'connector_type_id':
+      return (
+        <Td key={tdKey} dataLabel={columnLabels[column]}>
+          {connector_type_id}
+        </Td>
+      );
+    case 'state':
+      return (
+        <Td key={tdKey} dataLabel={columnLabels[column]}>
+          {state?.toLowerCase() === 'failed' ? (
+            <ConnectorStatus
+              desiredState={desired_state}
+              name={name}
+              state={state}
+              clickable={true}
+              popoverBody={
+                <div>
+                  <p>{t('previewModeMsg')}</p>
+                  <Trans i18nKey={'supportEmailMsg'}>
+                    You can still get help by emailing us at
+                    <ClipboardCopy
+                      hoverTip="Copy"
+                      clickTip="Copied"
+                      variant="inline-compact"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      rhosak-eval-support@redhat.com
+                    </ClipboardCopy>
+                    . This mailing list is monitored by the Red Hat OpenShift
+                    Application Services team.
+                  </Trans>
+                </div>
+              }
+              popoverHeader={
+                <h1 className="connectors-failed_pop_over">
+                  <ExclamationCircleIcon /> {t('failed')}
+                </h1>
+              }
+            />
+          ) : (
+            <ConnectorStatus
+              desiredState={desired_state}
+              name={name}
+              state={state!}
+            />
+          )}
+        </Td>
+      );
+  }
+  throw `No way to render column ${column}`;
+};
+
+type ConnectorActionsProps = {
+  ActionsColumn: typeof ActionsColumnType;
+  connectorRef: ConnectorMachineActorRef;
   onConnectorDetail: (id: string, goToConnectorDetails: string) => void;
   onDuplicateConnector: (id: string) => void;
 };
-const ConnectedRow: FunctionComponent<ConnectedRowProps> = ({
+const ConnectorActions: FunctionComponent<ConnectorActionsProps> = ({
+  ActionsColumn,
   connectorRef,
-  selectedConnector,
   onConnectorDetail,
   onDuplicateConnector,
 }) => {
+  const { t } = useTranslation();
+  const [showDeleteConnectorConfirm, setShowDeleteConnectorConfirm] =
+    useState(false);
   const {
     connector,
     canStart,
@@ -271,13 +415,7 @@ const ConnectedRow: FunctionComponent<ConnectedRowProps> = ({
     onDelete,
     onSelect,
   } = useConnector(connectorRef);
-  const [showDeleteConnectorConfirm, setShowDeleteConnectorConfirm] =
-    useState(false);
-
-  const editConnector = (targetTab: string) => {
-    onConnectorDetail(connector.id!, targetTab);
-  };
-
+  const { id, name } = connector;
   const doCancelDeleteConnector = () => {
     setShowDeleteConnectorConfirm(false);
   };
@@ -287,31 +425,58 @@ const ConnectedRow: FunctionComponent<ConnectedRowProps> = ({
     onDelete();
   };
 
+  const actions: IActions = [
+    {
+      title: t('startInstance'),
+      onClick: onStart,
+      isDisabled: !canStart,
+    },
+    {
+      title: t('stopInstance'),
+      onClick: onStop,
+      isDisabled: !canStop,
+    },
+    {
+      isSeparator: true,
+    },
+    {
+      title: t('details'),
+      onClick: onSelect,
+    },
+    {
+      isSeparator: true,
+    },
+    {
+      title: t('editInstance'),
+      onClick: () => onConnectorDetail(id!, 'configuration'),
+      isDisabled: false,
+    },
+    {
+      title: t('duplicateInstance'),
+      onClick: () => onDuplicateConnector(id!),
+      isDisabled: false,
+    },
+    {
+      isSeparator: true,
+    },
+    {
+      title: t('deleteInstance'),
+      onClick: doDeleteConnector,
+      isDisabled: !canDelete,
+    },
+  ];
   return (
     <>
       <DialogDeleteConnector
-        connectorName={connector.name}
+        connectorName={name}
         showDialog={showDeleteConnectorConfirm}
         onCancel={doCancelDeleteConnector}
         onConfirm={doDeleteConnector}
       />
-      <ConnectorsTableRow
-        connectorId={connector.id!}
-        desiredState={connector.desired_state!}
-        name={connector.name!}
-        type={connector.connector_type_id!}
-        category={'TODO: MISSING'}
-        state={connector.status?.state!}
-        isSelected={selectedConnector?.id === connector.id}
-        canStart={canStart}
-        canStop={canStop}
-        canDelete={canDelete}
-        onStart={onStart}
-        onStop={onStop}
-        onSelect={onSelect}
-        openDetail={editConnector}
-        onDuplicateConnector={onDuplicateConnector}
-        onDelete={() => setShowDeleteConnectorConfirm(true)}
+      <ActionsColumn
+        items={actions}
+        rowData={{ actionProps: { menuAppendTo: document.body } }}
+        data-testid={`actions-for-${id!}`}
       />
     </>
   );

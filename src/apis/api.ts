@@ -272,7 +272,9 @@ export const getConnectorTypeDetail = ({
 };
 
 export type ConnectorsOrderBy = {
+  connector_type_id?: SortOrder;
   name?: SortOrder;
+  state?: SortOrder;
 };
 
 export type ConnectorsSearch = {
@@ -300,16 +302,20 @@ export const fetchConnectors = ({
   return (request, onSuccess, onError) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
-    const { page, size, search } = request;
+    const { page, size, orderBy, search } = request;
     const { name } = search || {};
     const nameSearch =
-      name && name.length > 0 ? ` name like '%${name}%'` : undefined;
+      name && name.length > 0 ? ` name ILIKE '%${name}%'` : undefined;
     const searchString: string = [nameSearch]
       .filter(Boolean)
       .map((s) => `(${s})`)
       .join(' AND ');
+    const orderByString = Object.entries(orderBy || {})
+      .filter((val) => val[0] !== undefined && val[1] !== undefined)
+      .map((val) => ` ${val[0]} ${val[1]}`)
+      .join(',');
     connectorsAPI
-      .listConnectors(`${page}`, `${size}`, '', searchString, {
+      .listConnectors(`${page}`, `${size}`, orderByString, searchString, {
         cancelToken: source.token,
       })
       .then((response) => {
@@ -425,7 +431,7 @@ export const fetchConnectorNamespaces = ({
     const { page, size, search } = request;
     const { name } = search || {};
     const nameSearch =
-      name && name.length > 0 ? ` name like '%${name}%'` : undefined;
+      name && name.length > 0 ? ` name ILIKE '%${name}%'` : undefined;
     const searchString: string = [nameSearch]
       .filter(Boolean)
       .map((s) => `(${s})`)
@@ -485,7 +491,7 @@ export const fetchConnectorTypes = ({
     const { page, size, search } = request;
     const { name, categories = [] } = search || {};
     const nameSearch =
-      name && name.length > 0 ? ` name like '%${name}%'` : undefined;
+      name && name.length > 0 ? ` name ILIKE '%${name}%'` : undefined;
     const labelSearch =
       categories && categories.length > 0
         ? categories.map((s) => `label = ${s}`).join(' OR ')
