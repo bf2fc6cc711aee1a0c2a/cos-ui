@@ -22,9 +22,13 @@ import { Connector, ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 export interface OverviewTabProps {
   connectorData: Connector;
+  onDuplicateConnector: (id: string) => void;
 }
 
-export const OverviewTab: FC<OverviewTabProps> = ({ connectorData }) => {
+export const OverviewTab: FC<OverviewTabProps> = ({
+  connectorData,
+  onDuplicateConnector,
+}) => {
   const [namespaceData, setNamespaceData] = useState<ConnectorNamespace>();
   const [KIData, setKIData] = useState<KafkaInstance | string>();
 
@@ -131,6 +135,7 @@ export const OverviewTab: FC<OverviewTabProps> = ({ connectorData }) => {
       )}
 
       <ConnectorInfoTextList
+        onDuplicateConnector={onDuplicateConnector}
         name={connectorData?.name}
         id={connectorData?.id!}
         type={connectorData?.connector_type_id}

@@ -33,6 +33,7 @@ export type ConnectorInfoTextListProps = {
   createdAt: Date;
   modifiedAt: Date;
   error?: string;
+  onDuplicateConnector: (id: string) => void;
 };
 
 export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps> =
@@ -49,6 +50,7 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
     createdAt,
     modifiedAt,
     error,
+    onDuplicateConnector,
   }) => {
     const { t } = useTranslation();
     const [failureReasonExpand, setFailureReasonExpand] = React.useState(false);
@@ -102,12 +104,21 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
                         {(value as KafkaInstance).name}
                       </Button>
                     ) : typeof value === 'string' ? (
-                      <Text
-                        component={TextVariants.p}
-                        className="pf-u-color-400"
-                      >
-                        {value}
-                      </Text>
+                      <>
+                        <Text
+                          component={TextVariants.p}
+                          className="pf-u-color-400"
+                        >
+                          {value}
+                        </Text>
+                        <Button
+                          className="Kafka-link-button"
+                          variant="link"
+                          onClick={() => onDuplicateConnector(id)}
+                        >
+                          {t('duplicateConnector')}
+                        </Button>
+                      </>
                     ) : (
                       value
                     );
