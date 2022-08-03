@@ -38,10 +38,12 @@ const getTab = (hash: string): string => {
 
 type ConnectorDetailsPageProps = {
   onSave: () => void;
+  onDuplicateConnector: (id: string) => void;
 };
 
 export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({
   onSave,
+  onDuplicateConnector,
 }) => {
   let { id } = useParams<ParamTypes>();
   let { hash } = useLocation();
@@ -148,7 +150,10 @@ export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({
                 eventKey={CONNECTOR_DETAILS_TABS.Overview}
                 title={<TabTitleText>{t('overview')}</TabTitleText>}
               >
-                <OverviewTab connectorData={connectorData} />
+                <OverviewTab
+                  connectorData={connectorData}
+                  onDuplicateConnector={onDuplicateConnector}
+                />
               </Tab>
               <Tab
                 eventKey={CONNECTOR_DETAILS_TABS.Configuration}

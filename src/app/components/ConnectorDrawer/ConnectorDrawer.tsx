@@ -304,6 +304,7 @@ export const ConnectorDrawerPanelContent: FunctionComponent<ConnectorDrawerPanel
 
               <div className="connector-drawer__tab-content">
                 <ConnectorInfoTextList
+                  onDuplicateConnector={onDuplicateConnector}
                   name={name}
                   id={id}
                   bootstrapServer={bootstrapServer}
