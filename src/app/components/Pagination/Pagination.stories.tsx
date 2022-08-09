@@ -4,7 +4,7 @@ import React from 'react';
 import { Pagination } from './Pagination';
 
 export default {
-  title: 'UI/Pagination',
+  title: 'UI/Connectors/Pagination',
   component: Pagination,
   args: {
     itemCount: 1567,

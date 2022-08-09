@@ -26,7 +26,7 @@ export enum ConnectorStatusValues {
 }
 
 export default {
-  title: 'UI/Connector/Statuses',
+  title: 'UI/Components/Statuses',
   component: ConnectorStatus,
   excludeStories: /ConnectorStatusValues/,
 } as ComponentMeta<typeof ConnectorStatus>;

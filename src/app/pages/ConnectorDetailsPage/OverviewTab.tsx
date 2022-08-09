@@ -81,20 +81,13 @@ export const OverviewTab: FC<OverviewTabProps> = ({
     return t('connectorExpire', { hours, min });
   };
 
-  const getConnectorExpireInlineAlert = (expiration: string): string => {
-    const { hours, min } = getPendingTime(new Date(expiration));
-    if (hours < 0 || min < 0) {
-      return t('connectorExpiredInline');
-    }
-    return t('connectorExpireInline', { hours, min });
-  };
-
   useEffect(() => {
     getNamespace({
       accessToken: getToken,
       connectorsApiBasePath: connectorsApiBasePath,
       namespaceId: connectorData?.namespace_id!,
     })(getNamespaceData, onError);
+
     getKafkaInstanceById({
       accessToken: getToken,
       kafkaManagementBasePath: kafkaManagementApiBasePath,
@@ -140,16 +133,9 @@ export const OverviewTab: FC<OverviewTabProps> = ({
         id={connectorData?.id!}
         type={connectorData?.connector_type_id}
         bootstrapServer={connectorData?.kafka?.url}
-        kafkaId={KIData ? KIData! : <Spinner size="md" />}
-        namespaceId={namespaceData ? namespaceData.name : <Spinner size="md" />}
-        namespaceMsg={
-          namespaceData?.expiration &&
-          getConnectorExpireInlineAlert(namespaceData?.expiration!)
-        }
-        namespaceMsgVariant={
-          namespaceData?.expiration
-            ? warningType(new Date(namespaceData?.expiration!))
-            : undefined
+        KIData={KIData ? KIData! : <Spinner size="md" />}
+        namespaceData={
+          namespaceData ? namespaceData.name : <Spinner size="md" />
         }
         owner={connectorData?.owner!}
         createdAt={new Date(connectorData?.created_at!)}
