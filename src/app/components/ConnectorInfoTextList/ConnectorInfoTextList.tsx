@@ -56,14 +56,6 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
     const { t } = useTranslation();
     const [failureReasonExpand, setFailureReasonExpand] = React.useState(false);
 
-    const getConnectorExpireAlert = (expiration: string): string => {
-      const { hours, min } = getPendingTime(new Date(expiration));
-      if (hours < 0 || min < 0) {
-        return t('connectorExpiredMsg');
-      }
-      return t('connectorExpire', { hours, min });
-    };
-
     const getConnectorExpireInlineAlert = (expiration: string): string => {
       const { hours, min } = getPendingTime(new Date(expiration));
       if (hours < 0 || min < 0) {
@@ -138,13 +130,8 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
                           {t('duplicateConnector')}
                         </Button>
                         <Popover
-                          aria-label="Basic popover"
-                          bodyContent={
-                            <div>
-                              Create an instance using the same connector
-                              configuration of an existing instance.
-                            </div>
-                          }
+                          aria-label="Duplicate button helper"
+                          bodyContent={<div>{t('duplicateButtonHelper')}</div>}
                         >
                           <Button variant="link" icon={<HelpIcon />}></Button>
                         </Popover>
@@ -172,7 +159,7 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
               new Date((namespaceData as ConnectorNamespace)?.expiration!)
             )}
             isInline
-            title={getConnectorExpireAlert(
+            title={getConnectorExpireInlineAlert(
               (namespaceData as ConnectorNamespace)?.expiration!
             )}
           />

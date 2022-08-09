@@ -277,10 +277,8 @@ export const ConnectorDrawerContent: FunctionComponent<ConnectorDrawerContentPro
                 name={name}
                 id={id}
                 bootstrapServer={bootstrapServer}
-                KIData={KIData ? KIData! : <Spinner size="md" />}
-                namespaceData={
-                  namespaceData ? namespaceData : <Spinner size="md" />
-                }
+                KIData={KIData || <Spinner size="md" />}
+                namespaceData={namespaceData || <Spinner size="md" />}
                 owner={owner}
                 createdAt={createdAt}
                 modifiedAt={modifiedAt}

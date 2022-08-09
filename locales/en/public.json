@@ -70,6 +70,7 @@
   "deploymentNamespace": "Deployment Namespace",
   "details": "Details",
   "duplicate": "Duplicate",
+  "duplicateButtonHelper": "Create an instance using the same connector configuration of an existing instance.",
   "duplicateAlertConnectorType": "The previously selected connector cannot be modified when duplicating a Connectors instance.",
   "duplicateAlertKafka": "The previously selected Kafka instance is no longer available. Select another Kafka instance to work with your Connectors instance.",
   "duplicateAlertNamespace": "The previously selected namespace is no longer available. Select another namespace to host your Connectors instance.",
