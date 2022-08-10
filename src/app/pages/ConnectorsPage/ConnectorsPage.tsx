@@ -172,7 +172,6 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
       return (
         <ConnectorDrawer
           currentConnectorRef={currentConnectorRef as ConnectorMachineActorRef}
-          connector={selectedConnector}
           onConnectorDetail={onConnectorDetail}
           onDuplicateConnector={onDuplicateConnector}
           onClose={deselectConnector}

@@ -1,12 +1,10 @@
 import { getKafkaInstanceById, getNamespace } from '@apis/api';
 import { ConnectorInfoTextList } from '@app/components/ConnectorInfoTextList/ConnectorInfoTextList';
 import { useCos } from '@context/CosContext';
-import { getPendingTime, warningType } from '@utils/shared';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import {
-  Alert,
   AlertVariant,
   ClipboardCopy,
   Hint,
@@ -15,7 +13,6 @@ import {
   PageSectionVariants,
   Spinner,
 } from '@patternfly/react-core';
-import { ClockIcon } from '@patternfly/react-icons';
 
 import { KafkaInstance, useAlert } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorNamespace } from '@rhoas/connector-management-sdk';
@@ -30,7 +27,9 @@ export const OverviewTab: FC<OverviewTabProps> = ({
   onDuplicateConnector,
 }) => {
   const [namespaceData, setNamespaceData] = useState<ConnectorNamespace>();
-  const [KIData, setKIData] = useState<KafkaInstance | string>();
+  const [kafkaInstanceData, setKafkaInstanceData] = useState<
+    KafkaInstance | string
+  >();
 
   const { connectorsApiBasePath, kafkaManagementApiBasePath, getToken } =
     useCos();
@@ -42,7 +41,7 @@ export const OverviewTab: FC<OverviewTabProps> = ({
   }, []);
 
   const getKIData = useCallback((data) => {
-    setKIData(data as KafkaInstance);
+    setKafkaInstanceData(data as KafkaInstance);
   }, []);
 
   const onError = useCallback(
@@ -60,7 +59,7 @@ export const OverviewTab: FC<OverviewTabProps> = ({
   const onKIError = useCallback(
     (response: any) => {
       if (response.status === 404) {
-        setKIData(t('KafkaInstanceExpired'));
+        setKafkaInstanceData(t('KafkaInstanceExpired'));
       } else {
         alert?.addAlert({
           id: 'connector-drawer',
@@ -73,28 +72,13 @@ export const OverviewTab: FC<OverviewTabProps> = ({
     [alert, t]
   );
 
-  const getConnectorExpireAlert = (expiration: string): string => {
-    const { hours, min } = getPendingTime(new Date(expiration));
-    if (hours < 0 || min < 0) {
-      return t('connectorExpiredMsg');
-    }
-    return t('connectorExpire', { hours, min });
-  };
-
-  const getConnectorExpireInlineAlert = (expiration: string): string => {
-    const { hours, min } = getPendingTime(new Date(expiration));
-    if (hours < 0 || min < 0) {
-      return t('connectorExpiredInline');
-    }
-    return t('connectorExpireInline', { hours, min });
-  };
-
   useEffect(() => {
     getNamespace({
       accessToken: getToken,
       connectorsApiBasePath: connectorsApiBasePath,
       namespaceId: connectorData?.namespace_id!,
     })(getNamespaceData, onError);
+
     getKafkaInstanceById({
       accessToken: getToken,
       kafkaManagementBasePath: kafkaManagementApiBasePath,
@@ -105,15 +89,6 @@ export const OverviewTab: FC<OverviewTabProps> = ({
 
   return (
     <PageSection variant={PageSectionVariants.light}>
-      {namespaceData?.expiration && (
-        <Alert
-          customIcon={<ClockIcon />}
-          className="pf-u-mb-md"
-          variant={warningType(new Date(namespaceData?.expiration!))}
-          isInline
-          title={getConnectorExpireAlert(namespaceData?.expiration!)}
-        />
-      )}
       {connectorData?.status?.state === 'failed' && (
         <Hint className="pf-u-mb-md">
           <HintBody>
@@ -140,17 +115,8 @@ export const OverviewTab: FC<OverviewTabProps> = ({
         id={connectorData?.id!}
         type={connectorData?.connector_type_id}
         bootstrapServer={connectorData?.kafka?.url}
-        kafkaId={KIData ? KIData! : <Spinner size="md" />}
-        namespaceId={namespaceData ? namespaceData.name : <Spinner size="md" />}
-        namespaceMsg={
-          namespaceData?.expiration &&
-          getConnectorExpireInlineAlert(namespaceData?.expiration!)
-        }
-        namespaceMsgVariant={
-          namespaceData?.expiration
-            ? warningType(new Date(namespaceData?.expiration!))
-            : undefined
-        }
+        kafkaInstanceData={kafkaInstanceData || <Spinner size="md" />}
+        namespaceData={namespaceData || <Spinner size="md" />}
         owner={connectorData?.owner!}
         createdAt={new Date(connectorData?.created_at!)}
         modifiedAt={new Date(connectorData?.modified_at!)}
