@@ -27,7 +27,9 @@ export const OverviewTab: FC<OverviewTabProps> = ({
   onDuplicateConnector,
 }) => {
   const [namespaceData, setNamespaceData] = useState<ConnectorNamespace>();
-  const [KIData, setKIData] = useState<KafkaInstance | string>();
+  const [kafkaInstanceData, setKafkaInstanceData] = useState<
+    KafkaInstance | string
+  >();
 
   const { connectorsApiBasePath, kafkaManagementApiBasePath, getToken } =
     useCos();
@@ -39,7 +41,7 @@ export const OverviewTab: FC<OverviewTabProps> = ({
   }, []);
 
   const getKIData = useCallback((data) => {
-    setKIData(data as KafkaInstance);
+    setKafkaInstanceData(data as KafkaInstance);
   }, []);
 
   const onError = useCallback(
@@ -57,7 +59,7 @@ export const OverviewTab: FC<OverviewTabProps> = ({
   const onKIError = useCallback(
     (response: any) => {
       if (response.status === 404) {
-        setKIData(t('KafkaInstanceExpired'));
+        setKafkaInstanceData(t('KafkaInstanceExpired'));
       } else {
         alert?.addAlert({
           id: 'connector-drawer',
@@ -113,7 +115,7 @@ export const OverviewTab: FC<OverviewTabProps> = ({
         id={connectorData?.id!}
         type={connectorData?.connector_type_id}
         bootstrapServer={connectorData?.kafka?.url}
-        KIData={KIData || <Spinner size="md" />}
+        kafkaInstanceData={kafkaInstanceData || <Spinner size="md" />}
         namespaceData={namespaceData || <Spinner size="md" />}
         owner={connectorData?.owner!}
         createdAt={new Date(connectorData?.created_at!)}

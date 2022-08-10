@@ -100,7 +100,7 @@ Default.args = {
   name: 'Test Connector',
   bootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
-  KIData: {
+  kafkaInstanceData: {
     name: 'ishukla-test-kafka',
     id: 'catidbdl8sff4d6vi11g',
   },
@@ -126,7 +126,7 @@ Loading.args = {
   name: 'Test Connector',
   bootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
-  KIData: <Spinner size="md" />,
+  kafkaInstanceData: <Spinner size="md" />,
   owner: 'John Doe',
   namespaceData: <Spinner size="md" />,
   createdAt: subDays(new Date(), 120),
@@ -149,7 +149,7 @@ FailedConnector.args = {
   name: 'Test Connector',
   bootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
-  KIData: {
+  kafkaInstanceData: {
     name: 'ishukla-test-kafka',
     id: 'catidbdl8sff4d6vi11g',
   },
@@ -176,7 +176,7 @@ WithLongFailedMsg.args = {
   name: 'Test Connector',
   bootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
-  KIData: {
+  kafkaInstanceData: {
     name: 'ishukla-test-kafka',
     id: 'catidbdl8sff4d6vi11g',
   },
@@ -203,7 +203,7 @@ WithExpiredKafkaInstance.args = {
   name: 'Test Connector',
   bootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
-  KIData: 'No longer exists',
+  kafkaInstanceData: 'No longer exists',
   owner: 'John Doe',
   namespaceData: namespace,
   createdAt: subDays(new Date(), 120),
@@ -225,7 +225,7 @@ WithPreviewNamespaceInfo.args = {
   name: 'Test Connector',
   bootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
-  KIData: {
+  kafkaInstanceData: {
     name: 'ishukla-test-kafka',
     id: 'catidbdl8sff4d6vi11g',
   },
@@ -251,7 +251,7 @@ WithPreviewNamespaceWarning.args = {
   name: 'Test Connector',
   bootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
-  KIData: {
+  kafkaInstanceData: {
     name: 'ishukla-test-kafka',
     id: 'catidbdl8sff4d6vi11g',
   },
@@ -278,7 +278,7 @@ WithPreviewNamespaceDanger.args = {
   name: 'Test Connector',
   bootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
-  KIData: {
+  kafkaInstanceData: {
     name: 'ishukla-test-kafka',
     id: 'catidbdl8sff4d6vi11g',
   },
@@ -304,7 +304,7 @@ ConnectorDeleting.args = {
   name: 'Test Connector',
   bootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
-  KIData: {
+  kafkaInstanceData: {
     name: 'ishukla-test-kafka',
     id: 'catidbdl8sff4d6vi11g',
   },
@@ -333,7 +333,7 @@ ConnectorDeleted.args = {
   name: 'Test Connector',
   bootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
-  KIData: 'No longer exists',
+  kafkaInstanceData: 'No longer exists',
   owner: 'John Doe',
   namespaceData: {
     ...PreviewNamespace,
@@ -361,7 +361,7 @@ FailedConnectorWithExpiredKafkaAndPreviewNamespace.args = {
   name: 'Test Connector',
   bootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
-  KIData: 'No longer exists',
+  kafkaInstanceData: 'No longer exists',
   owner: 'John Doe',
   namespaceData: { ...PreviewNamespace, expiration: subDays(new Date(), -2) },
   createdAt: subDays(new Date(), 120),

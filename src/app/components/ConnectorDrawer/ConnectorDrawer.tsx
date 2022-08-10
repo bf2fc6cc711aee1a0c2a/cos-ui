@@ -31,7 +31,7 @@ import {
 } from '@patternfly/react-core';
 
 import { KafkaInstance, useAlert } from '@rhoas/app-services-ui-shared';
-import { Connector, ConnectorNamespace } from '@rhoas/connector-management-sdk';
+import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 import { ConnectorActionsMenu } from '../ConnectorActions/ConnectorActionsMenu';
 import { ConnectorInfoTextList } from '../ConnectorInfoTextList/ConnectorInfoTextList';
@@ -41,7 +41,6 @@ import { DrawerHeader } from './DrawerHeader';
 export type ConnectorDrawerProps = {
   currentConnectorRef: ConnectorMachineActorRef;
   children: ReactNode;
-  connector?: Connector;
   onClose: () => void;
   onConnectorDetail: (id: string, goToConnectorDetails: string) => void;
   onDuplicateConnector: (id: string) => void;
@@ -50,19 +49,17 @@ export type ConnectorDrawerProps = {
 export const ConnectorDrawer: FunctionComponent<ConnectorDrawerProps> = ({
   currentConnectorRef,
   children,
-  connector,
   onClose,
   onConnectorDetail,
   onDuplicateConnector,
 }) => {
   return (
-    <Drawer isExpanded={connector !== undefined}>
+    <Drawer isExpanded={currentConnectorRef !== undefined}>
       <DrawerContent
         panelContent={
-          connector ? (
+          currentConnectorRef ? (
             <ConnectorDrawerComponent
               currentConnectorRef={currentConnectorRef}
-              connectorData={connector}
               onClose={onClose}
               onConnectorDetail={onConnectorDetail}
               onDuplicateConnector={onDuplicateConnector}
@@ -78,7 +75,6 @@ export const ConnectorDrawer: FunctionComponent<ConnectorDrawerProps> = ({
 
 type ConnectorDrawerComponent = {
   currentConnectorRef: ConnectorMachineActorRef;
-  connectorData: Connector;
   onClose: () => void;
   onConnectorDetail: (id: string, goToConnectorDetails: string) => void;
   onDuplicateConnector: (id: string) => void;
@@ -86,7 +82,6 @@ type ConnectorDrawerComponent = {
 export const ConnectorDrawerComponent: FunctionComponent<ConnectorDrawerComponent> =
   ({
     currentConnectorRef,
-    connectorData,
     onClose,
     onConnectorDetail,
     onDuplicateConnector,
@@ -94,19 +89,25 @@ export const ConnectorDrawerComponent: FunctionComponent<ConnectorDrawerComponen
     const { t } = useTranslation();
     const [namespaceData, setNamespaceData] =
       useState<ConnectorNamespace | null>(null);
-    const [KIData, setKIData] = useState<KafkaInstance | string>('');
+    const [kafkaInstanceData, setKafkaInstanceData] = useState<
+      KafkaInstance | string
+    >('');
 
     const { connectorsApiBasePath, kafkaManagementApiBasePath, getToken } =
       useCos();
 
     const alert = useAlert();
 
+    const { connector } = useConnector(
+      currentConnectorRef as ConnectorMachineActorRef
+    );
+
     const getNamespaceData = useCallback((data) => {
       setNamespaceData(data as ConnectorNamespace);
     }, []);
 
     const getKIData = useCallback((data) => {
-      setKIData(data as KafkaInstance);
+      setKafkaInstanceData(data as KafkaInstance);
     }, []);
 
     const onError = useCallback(
@@ -124,7 +125,7 @@ export const ConnectorDrawerComponent: FunctionComponent<ConnectorDrawerComponen
     const onKIError = useCallback(
       (response: any) => {
         if (response.status === 404) {
-          setKIData(t('KafkaInstanceExpired'));
+          setKafkaInstanceData(t('KafkaInstanceExpired'));
         } else {
           alert?.addAlert({
             id: 'connector-drawer',
@@ -142,21 +143,20 @@ export const ConnectorDrawerComponent: FunctionComponent<ConnectorDrawerComponen
       getNamespace({
         accessToken: getToken,
         connectorsApiBasePath: connectorsApiBasePath,
-        namespaceId: connectorData.namespace_id,
+        namespaceId: connector.namespace_id,
       })(getNamespaceData, onError);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [connector.namespace_id]);
 
-      setKIData('');
+    useEffect(() => {
+      setKafkaInstanceData('');
       getKafkaInstanceById({
         accessToken: getToken,
         kafkaManagementBasePath: kafkaManagementApiBasePath,
-        KafkaInstanceId: connectorData.kafka.id,
+        KafkaInstanceId: connector.kafka.id,
       })(getKIData, onKIError);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [connectorData]);
-
-    const { connector } = useConnector(
-      currentConnectorRef as ConnectorMachineActorRef
-    );
+    }, [connector.kafka.id]);
 
     React.useEffect(() => {
       if (connector.status?.state == 'deleted') {
@@ -166,23 +166,23 @@ export const ConnectorDrawerComponent: FunctionComponent<ConnectorDrawerComponen
 
     return (
       <ConnectorDrawerContent
-        name={connectorData.name}
-        id={connectorData.id!}
-        bootstrapServer={connectorData.kafka!.url!}
-        KIData={KIData}
-        owner={connectorData.owner!}
+        name={connector.name}
+        id={connector.id!}
+        bootstrapServer={connector.kafka!.url!}
+        kafkaInstanceData={kafkaInstanceData}
+        owner={connector.owner!}
         namespaceData={namespaceData}
-        createdAt={new Date(connectorData.created_at!)}
-        modifiedAt={new Date(connectorData.modified_at!)}
-        status={connectorData.status?.state!}
-        error={connectorData.status?.error}
+        createdAt={new Date(connector.created_at!)}
+        modifiedAt={new Date(connector.modified_at!)}
+        status={connector.status?.state!}
+        error={connector.status?.error}
         onClose={onClose}
         onConnectorDetail={onConnectorDetail}
         onDuplicateConnector={onDuplicateConnector}
         connectorStatus={
           <ConnectorStatus
             desiredState={connector.desired_state!}
-            name={connectorData.name}
+            name={connector.name}
             state={connector.status?.state!}
           />
         }
@@ -201,7 +201,7 @@ export type ConnectorDrawerContentProps = {
   name: string;
   id: string;
   bootstrapServer: string;
-  KIData: KafkaInstance | string;
+  kafkaInstanceData: KafkaInstance | string;
   owner: string;
   namespaceData: ConnectorNamespace | null;
   createdAt: Date;
@@ -220,7 +220,7 @@ export const ConnectorDrawerContent: FunctionComponent<ConnectorDrawerContentPro
     name,
     id,
     bootstrapServer,
-    KIData,
+    kafkaInstanceData,
     owner,
     namespaceData,
     createdAt,
@@ -277,7 +277,7 @@ export const ConnectorDrawerContent: FunctionComponent<ConnectorDrawerContentPro
                 name={name}
                 id={id}
                 bootstrapServer={bootstrapServer}
-                KIData={KIData || <Spinner size="md" />}
+                kafkaInstanceData={kafkaInstanceData || <Spinner size="md" />}
                 namespaceData={namespaceData || <Spinner size="md" />}
                 owner={owner}
                 createdAt={createdAt}

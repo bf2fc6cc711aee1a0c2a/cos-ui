@@ -30,7 +30,7 @@ export type ConnectorInfoTextListProps = {
   id: string;
   type?: string;
   bootstrapServer: string;
-  KIData: string | KafkaInstance | ReactNode;
+  kafkaInstanceData: string | KafkaInstance | ReactNode;
   owner: string;
   namespaceData: ConnectorNamespace | ReactNode;
   createdAt: Date;
@@ -45,7 +45,7 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
     id,
     type,
     bootstrapServer,
-    KIData,
+    kafkaInstanceData,
     owner,
     namespaceData,
     createdAt,
@@ -171,7 +171,7 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
               {textListItem(t('connectorId'), id)}
               {textListItem(t('connectorType'), type)}
               {textListItem(t('bootstrapServer'), bootstrapServer)}
-              {textListItem(t('kafkaInstance'), KIData)}
+              {textListItem(t('kafkaInstance'), kafkaInstanceData)}
               {textListItem(
                 t('namespace'),
                 (namespaceData as ConnectorNamespace).name

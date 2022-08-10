@@ -75,7 +75,7 @@ Default.args = {
   id: 'catidbdl8sff4d6vi11g',
   bootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
-  KIData: {
+  kafkaInstanceData: {
     name: 'ishukla-test-kafka',
     id: 'catidbdl8sff4d6vi11g',
   },
@@ -91,7 +91,7 @@ Loading.args = {
   id: 'catidbdl8sff4d6vi11g',
   bootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
-  KIData: <Spinner size="md" />,
+  kafkaInstanceData: <Spinner size="md" />,
   owner: 'openbridge_kafka_supporting',
   namespaceData: <Spinner size="md" />,
   createdAt: subDays(new Date(), 120),
@@ -104,7 +104,7 @@ WithExpiredKafkaInstance.args = {
   id: 'catidbdl8sff4d6vi11g',
   bootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
-  KIData: 'No longer exists',
+  kafkaInstanceData: 'No longer exists',
   owner: 'openbridge_kafka_supporting',
   namespaceData: namespace,
   createdAt: subDays(new Date(), 120),
@@ -117,7 +117,7 @@ WithPreviewNamespace.args = {
   id: 'catidbdl8sff4d6vi11g',
   bootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
-  KIData: {
+  kafkaInstanceData: {
     name: 'ishukla-test-kafka',
     id: 'catidbdl8sff4d6vi11g',
   },
