@@ -92,7 +92,9 @@ export const kafkasMachine = model.createMachine(
                   PlaceholderOrderBy,
                   KafkasSearch,
                   KafkaRequest
-                >(fetchKafkaInstances(context), (i) => i),
+                >(fetchKafkaInstances(context), (i) => i, {
+                  pollingEnabled: true,
+                }),
             },
             states: {
               idle: {
