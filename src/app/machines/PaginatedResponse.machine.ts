@@ -427,7 +427,7 @@ export const usePagination = <RawDataType, OrderBy, Search, DataType>(
           loading: state.hasTag('loading'),
           queryEmpty: state.hasTag('queryEmpty'),
           queryResults: state.hasTag('queryResults'),
-          noResults: state.hasTag('empty'),
+          noResults: state.context.response?.items?.length === 0,
           results: state.hasTag('results'),
           error: state.hasTag('error'),
           firstRequest: state.context.response === undefined,
