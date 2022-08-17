@@ -269,7 +269,7 @@ WithPreviewNamespaceWarning.args = {
   ),
   connectorActions: <div id="connector-action" />,
   error:
-    'Error: Authentication failed: credentials for user could not be verified',
+    'Error: ReplicaSet "mctr-cbtn9ke45ncr6gs6rfo0-f6574dd8" has timed out progressing.',
 };
 
 export const WithPreviewNamespaceDanger = Template.bind({});
@@ -376,5 +376,5 @@ FailedConnectorWithExpiredKafkaAndPreviewNamespace.args = {
   ),
   connectorActions: <div id="connector-action" />,
   error:
-    'Error: Authentication failed: credentials for user could not be verified',
+    'Error: ReplicaSet "mctr-cbtn9ke45ncr6gs6rfo0-f6574dd8" has timed out progressing.',
 };

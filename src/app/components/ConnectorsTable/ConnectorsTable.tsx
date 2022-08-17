@@ -76,26 +76,33 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
 
   const actions: IActions = [
     {
-      title: t('start'),
+      title: t('startInstance'),
       onClick: onStart,
       isDisabled: !canStart,
     },
     {
-      title: t('stop'),
+      title: t('stopInstance'),
       onClick: onStop,
       isDisabled: !canStop,
     },
     {
-      title: t('details'),
-      onClick: onSelect,
+      isSeparator: true,
     },
     {
-      title: t('edit'),
+      title: t('details'),
+      onClick: onSelect,
+      description: 'View instance information',
+    },
+    {
+      isSeparator: true,
+    },
+    {
+      title: t('editInstance'),
       onClick: () => openDetail('configuration'),
       isDisabled: false,
     },
     {
-      title: t('duplicate'),
+      title: t('duplicateInstance'),
       onClick: () => onDuplicateConnector(connectorId),
       isDisabled: false,
     },
@@ -103,7 +110,7 @@ export const ConnectorsTableRow: FunctionComponent<ConnectorsTableRowProps> = ({
       isSeparator: true,
     },
     {
-      title: t('delete'),
+      title: t('deleteInstance'),
       onClick: onDelete,
       isDisabled: !canDelete,
     },

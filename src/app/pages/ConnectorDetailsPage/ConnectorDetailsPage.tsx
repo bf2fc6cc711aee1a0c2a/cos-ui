@@ -1,22 +1,17 @@
 import { getConnector, getConnectorTypeDetail } from '@apis/api';
-import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus';
 import { Loading } from '@app/components/Loading/Loading';
 import { CONNECTOR_DETAILS_TABS } from '@constants/constants';
 import { useCos } from '@context/CosContext';
+import _ from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 
 import {
   PageSection,
-  Breadcrumb,
-  BreadcrumbItem,
-  Level,
   Tab,
   Tabs,
   TabTitleText,
-  LevelItem,
-  Title,
   PageSectionVariants,
   AlertVariant,
 } from '@patternfly/react-core';
@@ -25,6 +20,7 @@ import { useAlert } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorType } from '@rhoas/connector-management-sdk';
 
 import { ConfigurationTab } from './ConfigurationTab';
+import { ConnectorDetailsHeader } from './ConnectorDetailsHeader/ConnectorDetailsHeader';
 import { OverviewTab } from './OverviewTab';
 
 export interface ParamTypes {
@@ -63,21 +59,6 @@ export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({
   const [connectorTypeDetails, setConnectorTypeDetails] =
     useState<ConnectorType>();
 
-  const getConnectorData = useCallback((data) => {
-    setConnectorData(data as Connector);
-  }, []);
-
-  const getConnectorTypeInfo = useCallback((data) => {
-    setConnectorTypeDetails(data as ConnectorType);
-  }, []);
-
-  const updateEditMode = useCallback(
-    (editEnable: boolean) => {
-      setEditMode(editEnable);
-    },
-    [setEditMode]
-  );
-
   const onError = useCallback(
     (description: string) => {
       alert?.addAlert({
@@ -90,25 +71,42 @@ export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({
     [alert, t]
   );
 
-  useEffect(() => {
-    if (hash.includes(CONNECTOR_DETAILS_TABS.Configuration)) {
-      setEditMode(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const updateEditMode = useCallback(
+    (editEnable: boolean) => {
+      setEditMode(editEnable);
+    },
+    [setEditMode]
+  );
+
+  /**
+   * React callback to set connector data from fetch response
+   */
+  const getConnectorData = useCallback(
+    (data) => {
+      _.isEqual(data, connectorData) || setConnectorData(data);
+    },
+    [connectorData]
+  );
+
+  /**
+   * React callback to set connector type details from fetch response
+   */
+  const getConnectorTypeInfo = useCallback((data) => {
+    setConnectorTypeDetails(data as ConnectorType);
   }, []);
 
-  useEffect(() => {
-    getConnector({
+  const fetchConnector = useCallback(async () => {
+    await getConnector({
       accessToken: getToken,
       connectorsApiBasePath: connectorsApiBasePath,
       connectorId: id,
     })(getConnectorData, onError);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [getToken, connectorsApiBasePath, id, getConnectorData, onError]);
 
   useEffect(() => {
-    setActiveTabKey(getTab(hash));
-  }, [hash]);
+    const timer = setInterval(fetchConnector, 5000);
+    return () => clearInterval(timer);
+  }, [fetchConnector]);
 
   useEffect(() => {
     if (connectorData?.connector_type_id) {
@@ -118,10 +116,29 @@ export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({
         connectorTypeId: connectorData?.connector_type_id,
       })(getConnectorTypeInfo);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connectorData]);
+  }, [
+    connectorData?.connector_type_id,
+    connectorsApiBasePath,
+    getConnectorTypeInfo,
+    getToken,
+  ]);
 
-  // Toggle currently active tab
+  useEffect(() => {
+    if (hash.includes(CONNECTOR_DETAILS_TABS.Configuration)) {
+      setEditMode(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setActiveTabKey(getTab(hash));
+  }, [hash]);
+
+  /**
+   * Toggle currently active tab
+   * @param _event
+   * @param tabIndex
+   */
   const handleTabClick = (
     _event: React.MouseEvent<HTMLElement, MouseEvent>,
     tabIndex: string | number
@@ -132,20 +149,24 @@ export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({
 
   return (
     <>
-      {!connectorData && <Loading />}
-      {connectorData && (
+      {connectorData ? (
         <>
-          <ConnectorDetailsHeader connectorData={connectorData} />
+          <ConnectorDetailsHeader
+            connectorData={connectorData}
+            onDuplicateConnector={onDuplicateConnector}
+            accessToken={getToken}
+            connectorsApiBasePath={connectorsApiBasePath}
+            goToConnectorList={onSave}
+            setActiveTabKey={setActiveTabKey}
+            updateEditMode={updateEditMode}
+            editMode={editMode || false}
+          />
           <PageSection
             padding={{ default: 'noPadding' }}
             style={{ zIndex: 0 }}
             variant={PageSectionVariants.light}
           >
-            <Tabs
-              activeKey={activeTabKey}
-              onSelect={handleTabClick}
-              className="connector_detail-tabs"
-            >
+            <Tabs activeKey={activeTabKey} onSelect={handleTabClick}>
               <Tab
                 eventKey={CONNECTOR_DETAILS_TABS.Overview}
                 title={<TabTitleText>{t('overview')}</TabTitleText>}
@@ -174,87 +195,9 @@ export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({
             </Tabs>
           </PageSection>
         </>
+      ) : (
+        <Loading />
       )}
     </>
-  );
-};
-
-export type ConnectorDetailsHeaderProps = {
-  connectorData: Connector;
-};
-
-export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
-  connectorData,
-}) => {
-  const { t } = useTranslation();
-
-  // const [isOpen, setIsOpen] = useState<boolean>(false);
-
-  // const onToggle = (isOpen: boolean) => {
-  //   setIsOpen(isOpen);
-  // };
-  // const onSelect = (
-  //   _event?: SyntheticEvent<HTMLDivElement, Event> | undefined
-  // ) => {
-  //   setIsOpen(!isOpen);
-  //   onFocus();
-  // };
-  // const onFocus = () => {
-  //   const element = document.getElementById('connector-action');
-  //   element?.focus();
-  // };
-
-  // const dropdownItems = [
-  //   <DropdownItem key="start action" component="button" onClick={() => {}}>
-  //     {t('Start')}
-  //   </DropdownItem>,
-  //   <DropdownItem key="stop action" component="button" onClick={() => {}}>
-  //     {t('Stop')}
-  //   </DropdownItem>,
-  //   <DropdownItem
-  //     key="delete action"
-  //     component="button"
-  //     isDisabled
-  //     onClick={() => {}}
-  //   >
-  //     {t('Delete')}
-  //   </DropdownItem>,
-  // ];
-
-  return (
-    <PageSection variant={'light'}>
-      <Breadcrumb>
-        <BreadcrumbItem>
-          <Link to={'/'}>{t('connectorsInstances')}</Link>
-        </BreadcrumbItem>
-        <BreadcrumbItem isActive>{connectorData?.name}</BreadcrumbItem>
-      </Breadcrumb>
-      <Level className={'pf-u-pt-md pf-u-pb-md'}>
-        <LevelItem>
-          <Level>
-            <Title headingLevel="h1" className={'pf-u-pr-md'}>
-              {connectorData?.name}
-            </Title>
-            <ConnectorStatus
-              desiredState={connectorData?.desired_state!}
-              name={connectorData?.name!}
-              state={connectorData?.status?.state!}
-            />
-          </Level>
-        </LevelItem>
-        <LevelItem>
-          {/* 
-          @TODO: This will be brought back 
-          <Dropdown
-            onSelect={onSelect}
-            toggle={<KebabToggle onToggle={onToggle} id="connector-action" />}
-            isOpen={isOpen}
-            isPlain
-            dropdownItems={dropdownItems}
-            position={DropdownPosition.right}
-          /> */}
-        </LevelItem>
-      </Level>
-    </PageSection>
   );
 };
