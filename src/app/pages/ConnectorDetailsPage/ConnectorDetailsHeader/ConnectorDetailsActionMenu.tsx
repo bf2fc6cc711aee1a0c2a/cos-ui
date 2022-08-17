@@ -1,48 +1,47 @@
 import { DialogDeleteConnector } from '@app/components/DialogDeleteConnector/DialogDeleteConnector';
-import {
-  ConnectorMachineActorRef,
-  useConnector,
-} from '@app/machines/Connector.machine';
-import { useConnectorsMachine } from '@app/pages/ConnectorsPage/ConnectorsPageContext';
-import React, { FunctionComponent, SyntheticEvent, useState } from 'react';
+import React, { FunctionComponent, useState, SyntheticEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
-  DropdownItem,
   Dropdown,
-  KebabToggle,
+  DropdownItem,
   DropdownPosition,
   DropdownSeparator,
+  DropdownToggle,
 } from '@patternfly/react-core';
+import { CaretDownIcon } from '@patternfly/react-icons';
 
-type connectorActionsMenuProps = {
-  onClose: () => void;
-  onConnectorDetail: (id: string, goToConnectorDetails: string) => void;
+import { Connector } from '@rhoas/connector-management-sdk';
+
+export type ConnectorDetailsActionMenuProps = {
+  connector: Connector;
+  canStart: boolean;
+  canStop: boolean;
+  canDelete: boolean;
+  isDisabled: boolean;
+  onStart: () => void;
+  onStop: () => void;
+  onDelete: () => void;
+  onConnectorEdit: () => void;
   onDuplicateConnector: (id: string) => void;
 };
-
-export const ConnectorActionsMenu: FunctionComponent<connectorActionsMenuProps> =
-  ({ onConnectorDetail, onDuplicateConnector }) => {
-    const { response, selectedConnector } = useConnectorsMachine();
-
-    const currentConnectorRef = response?.items?.filter((ref: any) => {
-      return ref.id == `connector-${selectedConnector?.id}`;
-    })[0];
-
+export const ConnectorDetailsActionMenu: FunctionComponent<ConnectorDetailsActionMenuProps> =
+  ({
+    connector,
+    canStart,
+    canStop,
+    canDelete,
+    isDisabled,
+    onStart,
+    onStop,
+    onDelete,
+    onConnectorEdit,
+    onDuplicateConnector,
+  }) => {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [showDeleteConnectorConfirm, setShowDeleteConnectorConfirm] =
       useState(false);
-
-    const {
-      connector,
-      canStart,
-      canStop,
-      canDelete,
-      onStart,
-      onStop,
-      onDelete,
-    } = useConnector(currentConnectorRef as ConnectorMachineActorRef);
 
     const onToggle = (isOpen: boolean) => {
       setIsOpen(isOpen);
@@ -87,7 +86,7 @@ export const ConnectorActionsMenu: FunctionComponent<connectorActionsMenuProps> 
       <DropdownItem
         key="edit action"
         component="button"
-        onClick={() => onConnectorDetail(connector.id!, 'configuration')}
+        onClick={onConnectorEdit}
       >
         {t('editInstance')}
       </DropdownItem>,
@@ -108,6 +107,7 @@ export const ConnectorActionsMenu: FunctionComponent<connectorActionsMenuProps> 
         {t('deleteInstance')}
       </DropdownItem>,
     ];
+
     return (
       <>
         <DialogDeleteConnector
@@ -118,9 +118,19 @@ export const ConnectorActionsMenu: FunctionComponent<connectorActionsMenuProps> 
         />
         <Dropdown
           onSelect={onSelect}
-          toggle={<KebabToggle onToggle={onToggle} id="connector-action" />}
+          toggle={
+            <DropdownToggle
+              onToggle={onToggle}
+              id="connector-action"
+              toggleIndicator={CaretDownIcon}
+              toggleVariant="secondary"
+              isPrimary
+              isDisabled={isDisabled}
+            >
+              {t('actions')}
+            </DropdownToggle>
+          }
           isOpen={isOpen}
-          isPlain
           dropdownItems={dropdownItems}
           position={DropdownPosition.right}
         />
