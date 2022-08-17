@@ -84,9 +84,9 @@ describe('Connectors page', () => {
 
     // should open the actions dropdown
     cy.findByTestId('actions-for-1vLK2A3Gl34hHjAxMj93Ma8Ajh8').click();
-    cy.findByText('Start').should('exist');
-    cy.findByText('Stop').should('exist');
-    cy.findByText('Delete').should('exist');
+    cy.findByText('Start Instance').should('exist');
+    cy.findByText('Stop instance').should('exist');
+    cy.findByText('Delete instance').should('exist');
 
     // assert that the PATCH calls gets fired with the right payload
     cy.fixture('connectorsPolling.json').then((response) => {
@@ -106,15 +106,15 @@ describe('Connectors page', () => {
       ).as('startPatch');
     });
 
-    cy.findByText('Start').should('have.attr', 'aria-disabled', 'true');
-    cy.findByText('Stop').click();
+    cy.findByText('Start Instance').should('have.attr', 'aria-disabled', 'true');
+    cy.findByText('Stop instance').click();
     cy.wait('@stopPatch')
       .its('request.body')
       .should('deep.equal', { desired_state: 'stopped' });
 
     cy.findByTestId('actions-for-1vJTP1djNdu9Gl3hZjWl8nofYtk').click();
-    cy.findByText('Stop').should('have.attr', 'aria-disabled', 'true');
-    cy.findByText('Start').click();
+    cy.findByText('Stop instance').should('have.attr', 'aria-disabled', 'true');
+    cy.findByText('Start Instance').click();
     cy.wait('@startPatch')
       .its('request.body')
       .should('deep.equal', { desired_state: 'ready' });
