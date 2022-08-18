@@ -15,13 +15,17 @@ import {
 import logo from './Patternfly-Logo.svg';
 
 interface IAppLayout {
+  headerTools?: ReactNode;
   children: ReactNode;
 }
 
 /**
  * Mocks the chrome of an app running on consoles.redhat.com
  */
-export const AppLayout: FunctionComponent<IAppLayout> = ({ children }) => {
+export const AppLayout: FunctionComponent<IAppLayout> = ({
+  headerTools,
+  children,
+}) => {
   const [isNavOpen, setIsNavOpen] = useState(true);
   const [isMobileView, setIsMobileView] = useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = useState(false);
@@ -38,7 +42,9 @@ export const AppLayout: FunctionComponent<IAppLayout> = ({ children }) => {
     setIsMobileView(props.mobileView);
   };
 
-  const HeaderTools = <PageHeaderTools>{'email'}</PageHeaderTools>;
+  const HeaderTools = (
+    <PageHeaderTools>{headerTools ? headerTools : 'email'}</PageHeaderTools>
+  );
 
   const Header = (
     <PageHeader
