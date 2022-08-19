@@ -136,22 +136,18 @@ module.exports = (env, argv) => {
         shared: {
           ...dependencies,
           react: {
-            eager: true,
             singleton: true,
             requiredVersion: dependencies['react'],
           },
           'react-dom': {
-            eager: true,
             singleton: true,
             requiredVersion: dependencies['react-dom'],
           },
           'react-router-dom': {
-            singleton: true,
-            eager: true,
+            singleton: false, // consoledot needs this to be off to be able to upgrade the router to v6. We don't need this to be a singleton, so let's keep this off
             requiredVersion: dependencies['react-router-dom'],
           },
           '@rhoas/app-services-ui-shared': {
-            eager: true,
             singleton: true,
             requiredVersion: dependencies['@rhoas/app-services-ui-shared'],
           },
