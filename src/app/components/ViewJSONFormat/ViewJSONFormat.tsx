@@ -35,12 +35,14 @@ export const ViewJSONFormat: FunctionComponent = () => {
   const {
     name,
     userServiceAccount,
+    userErrorHandler,
+    topic,
     configString,
     kafka,
     namespace,
     connectorType,
   } = useReviewMachine();
-
+  const parsedConfigString = JSON.parse(configString);
   const schema: Record<string, any> = (connectorType as ConnectorTypeAllOf)
     .schema!;
   const connectorTypeConfig = connectorType as ConnectorTypeAllOf;
@@ -63,7 +65,15 @@ export const ViewJSONFormat: FunctionComponent = () => {
         client_secret: userServiceAccount.clientSecret,
       },
     },
-    { connector: JSON.parse(configString) }
+
+    {
+      connector: {
+        ...parsedConfigString,
+        ...{
+          error_handler: { [userErrorHandler]: topic ? { topic: topic } : {} },
+        },
+      },
+    }
   );
 
   const configPrettyString = dataToPrettyString(combinedConfig);
