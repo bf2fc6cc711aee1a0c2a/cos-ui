@@ -78,7 +78,10 @@ export const OverviewTab: FC<OverviewTabProps> = ({
       connectorsApiBasePath: connectorsApiBasePath,
       namespaceId: connectorData?.namespace_id!,
     })(getNamespaceData, onError);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connectorData]);
 
+  useEffect(() => {
     getKafkaInstanceById({
       accessToken: getToken,
       kafkaManagementBasePath: kafkaManagementApiBasePath,

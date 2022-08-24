@@ -54,6 +54,7 @@ const CreateConnectorWizardMachineService =
 type CreateConnectorWizardProviderProps = {
   accessToken: () => Promise<string>;
   connectorsApiBasePath: string;
+  kafkaManagementApiBasePath: string;
   fetchConfigurator: (
     connector: ConnectorType
   ) => Promise<ConnectorConfiguratorResponse>;
@@ -69,6 +70,7 @@ export const CreateConnectorWizardProvider: FunctionComponent<CreateConnectorWiz
     children,
     accessToken,
     connectorsApiBasePath,
+    kafkaManagementApiBasePath,
     fetchConfigurator,
     onSave,
     connectorData,
@@ -91,6 +93,7 @@ export const CreateConnectorWizardProvider: FunctionComponent<CreateConnectorWiz
       context: {
         accessToken,
         connectorsApiBasePath,
+        kafkaManagementApiBasePath,
         onSave,
         connectorId,
         connectorData,

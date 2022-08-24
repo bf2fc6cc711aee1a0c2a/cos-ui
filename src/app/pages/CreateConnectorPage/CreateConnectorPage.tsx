@@ -26,7 +26,8 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
   ({ onSave, onClose }) => {
     const { t } = useTranslation();
     const config = useConfig();
-    const { connectorsApiBasePath, getToken } = useCos();
+    const { connectorsApiBasePath, getToken, kafkaManagementApiBasePath } =
+      useCos();
     const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
     const openLeaveConfirm = () => setAskForLeaveConfirm(true);
     const closeLeaveConfirm = () => setAskForLeaveConfirm(false);
@@ -53,6 +54,7 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
           <CreateConnectorWizardProvider
             accessToken={getToken}
             connectorsApiBasePath={connectorsApiBasePath}
+            kafkaManagementApiBasePath={kafkaManagementApiBasePath}
             fetchConfigurator={(connector) =>
               fetchConfigurator(connector, config?.cos.configurators || {})
             }

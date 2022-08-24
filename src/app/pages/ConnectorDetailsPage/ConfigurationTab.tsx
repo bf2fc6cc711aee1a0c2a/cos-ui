@@ -7,7 +7,7 @@ import {
 } from '@app/machines/StepConfiguratorLoader.machine';
 import { useCos } from '@context/CosContext';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
-import { clearEmptyObjectValues, mapToObject } from '@utils/shared';
+import { clearEmptyObjectValues } from '@utils/shared';
 import _ from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -159,9 +159,7 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
       connectorUpdate: {
         ...getEditPayload(
           {
-            ...(connectorConfiguration instanceof Map
-              ? mapToObject(connectorConfiguration)
-              : (connectorConfiguration as object)),
+            ...(connectorConfiguration as object),
             error_handler: errHandlerConfiguration,
           },
           connectorData.connector
@@ -241,6 +239,7 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
                 <Tab
                   eventKey={0}
                   title={<TabTitleText>{t('core')}</TabTitleText>}
+                  data-testid={'tab-core'}
                 ></Tab>
                 {connectorData.connector_type_id.includes('debezium') &&
                   configurator &&
@@ -251,6 +250,10 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
                         key={step}
                         eventKey={index + 1}
                         title={<TabTitleText>{step}</TabTitleText>}
+                        data-testid={`tab-${step
+                          .toLowerCase()
+                          .split(' ')
+                          .join('-')}`}
                       ></Tab>
                     );
                   })}
@@ -261,10 +264,12 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
                       title={
                         <TabTitleText>{t('connectorSpecific')}</TabTitleText>
                       }
+                      data-testid={'tab-connector-specific'}
                     ></Tab>
                     <Tab
                       eventKey={2}
                       title={<TabTitleText>{t('errorHandling')}</TabTitleText>}
+                      data-testid={'tab-error-handling'}
                     ></Tab>
                   </>
                 )}

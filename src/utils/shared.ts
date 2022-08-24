@@ -121,7 +121,11 @@ export const clearEmptyObjectValues = (obj: any): any => {
   const answer: any = { ...obj };
   Object.keys(answer).map((key) => {
     const value = answer[key];
-    if (typeof value === 'object' && Object.keys(value).length === 0) {
+    if (
+      typeof value === 'object' &&
+      value !== null &&
+      Object.keys(value).length === 0
+    ) {
       answer[key] = '';
     }
   });

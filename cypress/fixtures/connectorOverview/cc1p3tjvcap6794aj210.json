@@ -1,0 +1,32 @@
+{
+  "id": "cc1p3tjvcap6794aj210",
+  "kind": "Connector",
+  "href": "/api/connector_mgmt/v1/kafka_connectors/cc1p3tjvcap6794aj210",
+  "owner": "stlewis_kafka_supporting",
+  "created_at": "2022-08-22T14:25:59.65854Z",
+  "modified_at": "2022-08-22T16:49:22.505238Z",
+  "name": "test",
+  "connector_type_id": "slack_source_0.1",
+  "namespace_id": "ca34tr1nnj5k851srhk0",
+  "channel": "stable",
+  "desired_state": "ready",
+  "resource_version": 13541,
+  "kafka": {
+    "id": "cc1k0lb1svndrpod5hcg",
+    "url": "lb-cos-cc-k-lb-svndrpod-hcg.bf2.kafka.rhcloud.com:443"
+  },
+  "service_account": { "client_id": "s", "client_secret": "" },
+  "schema_registry": { "id": "", "url": "" },
+  "connector": {
+    "data_shape": { "produces": { "format": "application/json" } },
+    "error_handler": { "stop": {} },
+    "kafka_topic": "blah2",
+    "slack_channel": "blah",
+    "slack_delay": "500s",
+    "slack_token": {}
+  },
+  "status": {
+    "state": "failed",
+    "error": "Error: ReplicaSet \"mctr-cc1p3trvcap6794aj22g-7d6d89b69f\" has timed out progressing."
+  }
+}

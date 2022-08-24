@@ -143,6 +143,7 @@ export const creationWizardMachine = model.createMachine(
             return {
               accessToken: context.accessToken,
               connectorsApiBasePath: context.connectorsApiBasePath,
+              kafkaManagementBasePath: context.kafkaManagementApiBasePath,
               selectedInstance: context.duplicateMode
                 ? context.connectorData?.kafka
                 : context.selectedKafkaInstance,
