@@ -91,7 +91,7 @@ const ConnectedRoutes = () => {
       getToken={async () => (await auth?.kas.getToken()) || ''}
       connectorsApiBasePath={config?.cos.apiBasePath || ''}
       // TODO: remove after demo
-      kafkaManagementApiBasePath={'https://api.openshift.com'}
+      kafkaManagementApiBasePath={'localhost'}
     />
   );
 };

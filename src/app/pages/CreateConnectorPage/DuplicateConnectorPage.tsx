@@ -41,7 +41,8 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
     const { t } = useTranslation();
     const alert = useAlert();
     const config = useConfig();
-    const { connectorsApiBasePath, getToken } = useCos();
+    const { connectorsApiBasePath, kafkaManagementApiBasePath, getToken } =
+      useCos();
     const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
     const openLeaveConfirm = () => setAskForLeaveConfirm(true);
     const closeLeaveConfirm = () => setAskForLeaveConfirm(false);
@@ -120,6 +121,7 @@ export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPagePro
             <CreateConnectorWizardProvider
               accessToken={getToken}
               connectorsApiBasePath={connectorsApiBasePath}
+              kafkaManagementApiBasePath={kafkaManagementApiBasePath}
               fetchConfigurator={(connector) =>
                 fetchConfigurator(connector, config?.cos.configurators || {})
               }

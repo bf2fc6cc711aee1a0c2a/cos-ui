@@ -27,6 +27,7 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
   ({ schema, configuration, duplicateMode, editMode, onChange }) => {
     const { t } = useTranslation();
     schema.type = schema.type || 'object';
+    const { required } = schema;
 
     const schemaValidator = createValidator(schema);
     const bridge = new CustomJsonSchemaBridge(
@@ -39,10 +40,35 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
 
     const onChangeModel = async (model: any) => {
       // schemaValidator returns null when there's no errors in the form
-      const errors = schemaValidator(model);
-      // handy for seeing form validation problems
-      // console.log("onChangeModel, form validation errors: ", errors);
-      onChange(model, errors === null);
+      const errors = (schemaValidator(model) || { details: [] }).details.filter(
+        ({ instancePath, /* schemaPath, keyword, params, */ message }) => {
+          // Deal with validation edge cases
+          switch (message) {
+            // these cases are valid when the property is
+            // not required, in this case the value is set
+            // to null
+            case 'must be string':
+            case 'must be number':
+              return (
+                ((required as string[]) || []).filter((req) =>
+                  instancePath.endsWith(req)
+                ).length > 0
+              );
+          }
+          return true;
+        }
+      );
+      if (errors.length > 0) {
+        console.log(
+          'form validation errors for model: ',
+          model,
+          ' errors: ',
+          errors,
+          ' required fields: ',
+          required
+        );
+      }
+      onChange(model, errors.length === 0);
     };
 
     // no need to create form elements for error_handler, processors or steps
@@ -69,8 +95,8 @@ function Auto(parent: any): any {
   class _ extends AutoForm.Auto(parent) {
     static Auto = Auto;
     onChange(key: string, value: unknown) {
-      if (value === '') return super.onChange(key, undefined);
-      super.onChange(key, value);
+      if (value === '') return super.onChange(key, null);
+      return super.onChange(key, value);
     }
   }
   return _;
