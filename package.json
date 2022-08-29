@@ -7,6 +7,7 @@
   "dependencies": {
     "@patternfly/patternfly": "4.202.1",
     "@patternfly/quickstarts": "1.2.2",
+    "@patternfly/react-charts": "6.77.1",
     "@patternfly/react-core": "4.231.8",
     "@patternfly/react-icons": "4.75.1",
     "@patternfly/react-styles": "4.11.16",
