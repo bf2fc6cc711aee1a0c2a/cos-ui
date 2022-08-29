@@ -148,12 +148,13 @@ export function makePaginatedApiMachine<RawDataType, OrderBy, Search, DataType>(
     };
   }, 'api.prevPage');
   const query = model.assign((context, event) => {
-    const { page, size, search: query } = event;
+    const { page, size, orderBy, search } = event;
     return {
       request: {
         page: page || context.request.page,
         size: size || context.request.size,
-        search: query,
+        orderBy,
+        search,
       },
     };
   }, 'api.query');

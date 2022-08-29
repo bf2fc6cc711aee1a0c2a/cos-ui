@@ -1,7 +1,10 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
 
-import { ConnectorsToolbar } from './ConnectorsToolbar';
+import {
+  ConnectorsToolbar,
+  ConnectorsToolbarFilter,
+} from './ConnectorsToolbar';
 
 export default {
   title: 'UI/Connectors/Toolbar',
@@ -15,7 +18,9 @@ export default {
 } as ComponentMeta<typeof ConnectorsToolbar>;
 
 const Template: ComponentStory<typeof ConnectorsToolbar> = (args) => (
-  <ConnectorsToolbar {...args} />
+  <ConnectorsToolbar {...args}>
+    <ConnectorsToolbarFilter {...args} />
+  </ConnectorsToolbar>
 );
 
 export const Toolbar = Template.bind({});

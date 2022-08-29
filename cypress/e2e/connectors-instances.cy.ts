@@ -14,12 +14,7 @@ describe('Connectors page', () => {
     cy.wait('@initialConnectors');
 
     cy.findByText('Managed connectors').should('exist');
-    cy.findByText('dbz-postgres-conn').should('exist');
-    cy.findAllByText(
-      (_, element) =>
-        element?.className === 'pf-c-pagination__total-items' &&
-        element?.textContent === '1 - 1 of 1 '
-    );
+    cy.findByText('dbz-postgres-conn').should('have.length', 1);
 
     // test polling, we should see a second connector
     cy.intercept(Cypress.env('connectorsApiPath'), {
@@ -28,17 +23,15 @@ describe('Connectors page', () => {
     cy.tick(5000);
     cy.wait('@polledConnectors');
 
-    cy.findByText('dbz-pg-lb').should('exist');
+    cy.findByText('dbz-postgres-conn').should('have.length', 1);
+    cy.findByText('dbz-pg-lb').should('have.length', 1);
 
     // further requests should not add more connectors
     cy.tick(5000);
     cy.wait('@polledConnectors');
 
-    cy.findAllByText(
-      (_, element) =>
-        element?.className === 'pf-c-pagination__total-items' &&
-        element?.textContent === '1 - 5 of 5 '
-    );
+    // 5 rows of data and 1 header row
+    cy.get('tr').should('have.length', 6);
 
     cy.findByText('Create Connectors instance').click();
   });
@@ -46,10 +39,10 @@ describe('Connectors page', () => {
   it('opens the details for a connector', () => {
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'connectorsPolling.json',
-    }).as('connectors');    
+    }).as('connectors');
     cy.visit(Cypress.env('homepage'));
     // should open the drawer with the details of the connector
-    cy.findByText('debezium-postgres-1.9.0.Alpha1').click();
+    cy.findByText('debezium-postgres-1.9.0.Alpha1').click({ force: true });
     cy.intercept(Cypress.env('namespaceApiPath'), {
       fixture: 'namespace.json',
     }).as('namespace');
@@ -58,10 +51,8 @@ describe('Connectors page', () => {
     cy.findByText(
       'lb-cos--vgitqo-mk-imjg-eyqfbazqdiv.bf2.kafka.rhcloud.com:443'
     ).should('exist');
-    cy.findByText(
-      'view more'
-    ).should('exist');
-    cy.findByLabelText('Close drawer panel').click({force: true});
+    cy.findByText('view more').should('exist');
+    cy.findByLabelText('Close drawer panel').click({ force: true });
     cy.findByText('Connector name').should('not.exist');
 
     // should open the actions dropdown
@@ -72,7 +63,7 @@ describe('Connectors page', () => {
     cy.findByText(
       'lb-cos--vgitqo-mk-imjg-eyqfbazqdiv.bf2.kafka.rhcloud.com:443'
     ).should('exist');
-    cy.findByLabelText('Close drawer panel').click({force: true});
+    cy.findByLabelText('Close drawer panel').click({ force: true });
   });
 
   it('allows actions to be triggered', () => {
