@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
 describe('Connectors page', () => {
-  it('should render a list of connectors and poll for updates, the call to action to create a connector works', () => {
+  it('should render a list of connectors as expected and poll for updates, the call to action to create a connector works', () => {
     cy.clock();
     // first load, we should see a single connector
     cy.intercept(Cypress.env('connectorsApiPath'), {
@@ -25,6 +25,9 @@ describe('Connectors page', () => {
 
     cy.findByText('dbz-postgres-conn').should('have.length', 1);
     cy.findByText('dbz-pg-lb').should('have.length', 1);
+
+    cy.contains('deleting-connector').invoke('prop', 'tagName').should('equal', 'P');
+    cy.contains('not-deleting').invoke('prop', 'tagName').should('equal', 'A');
 
     // further requests should not add more connectors
     cy.tick(5000);
@@ -66,7 +69,7 @@ describe('Connectors page', () => {
     cy.findByLabelText('Close drawer panel').click({ force: true });
   });
 
-  it('allows actions to be triggered', () => {
+  it('allows actions to be triggered and clicking delete should show a modal prompt', () => {
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'connectorsPolling.json',
     }).as('connectors');
@@ -95,6 +98,13 @@ describe('Connectors page', () => {
           (item: any) => item.id === '1vJTP1djNdu9Gl3hZjWl8nofYtk'
         )
       ).as('startPatch');
+      cy.intercept(
+        'DELETE',
+        `${Cypress.env('connectorsActionApiPath')}c9uc8g84k5n8rhm5r16g`,
+        response.items.find(
+          (item: any) => item.id === 'c9uc8g84k5n8rhm5r16g'
+        )
+      ).as('deletePatch');
     });
 
     cy.findByText('Start Instance').should('have.attr', 'aria-disabled', 'true');
@@ -109,6 +119,15 @@ describe('Connectors page', () => {
     cy.wait('@startPatch')
       .its('request.body')
       .should('deep.equal', { desired_state: 'ready' });
+
+    cy.findByTestId('actions-for-c9uc8g84k5n8rhm5r16g').click();
+    cy.findByText('Delete instance').click();
+    cy.findByText('Delete connector?').should('exist');
+    cy.findByTestId('delete-connector-instance-modal-input').type('ob-dev-prcs-0308c1e7-213c-45ce-8cfd-97b56c10d7c3');
+    cy.findByTestId('delete-connector-instance-modal-delete-button').click();
+    cy.wait('@deletePatch')
+      .its('request.body')
+      .should('deep.equal', '');
   });
 
   it('shows an empty state with no connectors, the call to action to create a connector works', () => {

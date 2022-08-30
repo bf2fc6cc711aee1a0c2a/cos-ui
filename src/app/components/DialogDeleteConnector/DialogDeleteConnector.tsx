@@ -45,6 +45,7 @@ export const DialogDeleteConnector: React.FunctionComponent<DialogDeleteConnecto
         onClose={onCancel}
         actions={[
           <Button
+            data-testid={'delete-connector-instance-modal-delete-button'}
             key="confirm"
             variant="danger"
             isDisabled={!canDelete}
@@ -52,7 +53,12 @@ export const DialogDeleteConnector: React.FunctionComponent<DialogDeleteConnecto
           >
             {t('delete')}
           </Button>,
-          <Button key="cancel" variant="link" onClick={onCancelDelete}>
+          <Button
+            key="cancel"
+            variant="link"
+            onClick={onCancelDelete}
+            data-testid={'delete-connector-instance-modal-cancel-button'}
+          >
             {t('cancel')}
           </Button>,
         ]}
@@ -74,6 +80,7 @@ export const DialogDeleteConnector: React.FunctionComponent<DialogDeleteConnecto
               type="text"
               onChange={setNameValue}
               aria-label="name input"
+              data-testid={'delete-connector-instance-modal-input'}
             />
           </StackItem>
         </Stack>
