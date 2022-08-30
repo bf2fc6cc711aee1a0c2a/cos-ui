@@ -10,7 +10,10 @@ import React from 'react';
 
 import { Drawer, DrawerContent, Spinner } from '@patternfly/react-core';
 
-import { Connector } from '@rhoas/connector-management-sdk';
+import {
+  Connector,
+  ConnectorDesiredState,
+} from '@rhoas/connector-management-sdk';
 
 import { ConnectorStatus } from '../ConnectorStatus/ConnectorStatus';
 import { ConnectorStatusValues } from '../ConnectorStatus/ConnectorStatus.stories';
@@ -318,7 +321,7 @@ ConnectorDeleting.args = {
   status: 'ready',
   connectorStatus: (
     <ConnectorStatus
-      desiredState={'deleted'}
+      desiredState={ConnectorDesiredState.Deleted}
       name={'Test Connector'}
       state={'deleting'}
     />
@@ -344,9 +347,9 @@ ConnectorDeleted.args = {
   status: 'ready',
   connectorStatus: (
     <ConnectorStatus
-      desiredState={'deleted'}
+      desiredState={ConnectorDesiredState.Deleted}
       name={'Test Connector'}
-      state={'deleted'}
+      state={ConnectorDesiredState.Deleted}
     />
   ),
   connectorActions: <div id="connector-action" />,

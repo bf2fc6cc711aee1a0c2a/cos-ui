@@ -44,6 +44,7 @@ import {
 
 import { TableView } from '@rhoas/app-services-ui-components';
 import { AlertVariant, useAlert } from '@rhoas/app-services-ui-shared';
+import { ConnectorDesiredState } from '@rhoas/connector-management-sdk';
 
 import {
   ConnectorsPageProvider,
@@ -329,13 +330,17 @@ const ConnectorCell: FunctionComponent<ConnectorCellProps> = ({
     case 'name':
       return (
         <Td key={tdKey} dataLabel={columnLabels[column]}>
-          <Text
-            component={TextVariants.a}
-            isVisitedLink
-            onClick={() => onConnectorDetail(id!, 'overview')}
-          >
-            {name}
-          </Text>
+          {desired_state === ConnectorDesiredState.Deleted ? (
+            <Text component={TextVariants.p}>{name}</Text>
+          ) : (
+            <Text
+              component={TextVariants.a}
+              isVisitedLink
+              onClick={() => onConnectorDetail(id!, 'overview')}
+            >
+              {name}
+            </Text>
+          )}
         </Td>
       );
     case 'connector_type_id':

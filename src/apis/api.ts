@@ -188,7 +188,7 @@ export const deleteConnector = ({
           connector: {
             ...connector,
             status: 'deleting',
-            desired_state: 'deleted',
+            desired_state: ConnectorDesiredState.Deleted,
           },
         });
       })
