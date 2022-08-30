@@ -28,17 +28,12 @@ export function Review() {
   const [toggleMaskView, setToggleMaskView] = useState<{
     [key: string]: boolean;
   }>({
-    clientId: true,
     clientSecret: true,
   });
 
   const updateMaskView = (ele: any) => {
     let updatedState = { ...toggleMaskView };
     switch (ele.currentTarget.id) {
-      case 'clientId':
-        updatedState.clientId = !toggleMaskView.clientId;
-        setToggleMaskView(updatedState);
-        break;
       case 'clientSecret':
         updatedState.clientSecret = !toggleMaskView.clientSecret;
         setToggleMaskView(updatedState);
@@ -159,14 +154,8 @@ export function Review() {
                 </GridItem>
                 <GridItem span={8}>
                   <Flex>
-                    <FlexItem>
-                      {toggleMaskView.clientId
-                        ? maskValue(userServiceAccount?.clientId)
-                        : userServiceAccount?.clientId}
-                      {}
-                    </FlexItem>
-                    <FlexItem onClick={updateMaskView} id="clientId">
-                      {toggleMaskView.clientId ? <EyeIcon /> : <EyeSlashIcon />}
+                    <FlexItem id="clientId">
+                      {userServiceAccount?.clientId}
                     </FlexItem>
                   </Flex>
                 </GridItem>
