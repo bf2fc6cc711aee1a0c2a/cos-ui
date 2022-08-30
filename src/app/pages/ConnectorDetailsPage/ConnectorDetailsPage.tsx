@@ -104,6 +104,7 @@ export const ConnectorDetailsPage: FC<ConnectorDetailsPageProps> = ({
   }, [getToken, connectorsApiBasePath, id, getConnectorData, onError]);
 
   useEffect(() => {
+    fetchConnector();
     const timer = setInterval(fetchConnector, 5000);
     return () => clearInterval(timer);
   }, [fetchConnector]);
