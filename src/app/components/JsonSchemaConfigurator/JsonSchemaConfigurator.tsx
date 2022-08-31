@@ -58,16 +58,6 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
           return true;
         }
       );
-      if (errors.length > 0) {
-        console.log(
-          'form validation errors for model: ',
-          model,
-          ' errors: ',
-          errors,
-          ' required fields: ',
-          required
-        );
-      }
       onChange(model, errors.length === 0);
     };
 

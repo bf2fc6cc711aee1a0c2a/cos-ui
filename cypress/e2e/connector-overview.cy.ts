@@ -19,6 +19,7 @@ describe(
   () => {
     beforeEach(() => {
       cy.intercept(Cypress.env('overviewApiPath'), {
+        method: 'GET',
         fixture: 'connectorOverview/cc1p3tjvcap6794aj210.json',
       }).as('slack-connector');
       cy.intercept(Cypress.env('overviewKafkaApiPath'), {
@@ -33,10 +34,10 @@ describe(
     });
 
     const waitForData = () => {
-      cy.wait('@slack-connector', { timeout: 6000 });
-      cy.wait('@slack-connector-definition', { timeout: 6000 });
-      cy.wait('@slack-connector-kafka', { timeout: 6000 });
-      cy.wait('@slack-connector-kafka-namespace', { timeout: 6000 });
+      cy.wait('@slack-connector');
+      cy.wait('@slack-connector-definition');
+      cy.wait('@slack-connector-kafka');
+      cy.wait('@slack-connector-kafka-namespace');
     };
 
     it('should show the overview for a connector with the appropriate kafka and namespace', () => {
@@ -51,17 +52,15 @@ describe(
       cy.visit(Cypress.env('overview'));
       waitForData();
       cy.findByText('Configuration').click();
-      // findAllByTestId seems like a work around
       cy.findAllByTestId('tab-connector-specific').first().click();
-      
-      // temporary work around, this element shouldn't show up
-      // cy.findByText('Cancel').click();
-
       cy.findByText('Edit Properties').click();
-
       cy.findByLabelText('Delay').clear();
+      cy.intercept(Cypress.env('overviewApiPath'), {
+        method: 'PATCH',
+        fixture: 'connectorOverview/cc1p3tjvcap6794aj210.json',
+      }).as('handlePatch');
       cy.findByText('Save').click();
-      cy.wait('@slack-connector')
+      cy.wait('@handlePatch')
         .its('request.body')
         .should('deep.equal', {
           connector: {
