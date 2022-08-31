@@ -466,7 +466,7 @@ const ConnectorActions: FunctionComponent<ConnectorActionsProps> = ({
     },
     {
       title: t('deleteInstance'),
-      onClick: doDeleteConnector,
+      onClick: () => setShowDeleteConnectorConfirm(true),
       isDisabled: !canDelete,
     },
   ];
