@@ -62,7 +62,6 @@ function useBasicStep() {
           creationWizardMachine.transition(state, 'jumpToBasicConfiguration')
             .changed || state.matches('basicConfiguration'),
         enableNext: creationWizardMachine.transition(state, 'next').changed,
-        activeStep: state.context.activeConfigurationStep,
       }),
       [service]
     )
@@ -190,34 +189,33 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
     };
 
     const loadSubSteps = () => {
-      let finalSteps: any = [basicStep];
-      if (hasCustomConfigurator && configureSteps !== undefined) {
-        configureSteps
-          ? configureSteps.map((step, idx) => {
-              finalSteps.push({
-                name: step,
-                isActive:
-                  state.matches('configureConnector') && activeStep === idx,
-                component: (
-                  <StepErrorBoundary>
-                    <ConfiguratorStep />
-                  </StepErrorBoundary>
-                ),
-                canJumpTo: canJumpToStep(idx + 1),
-                enableNext: creationWizardMachine.transition(state, 'next')
-                  .changed,
-              });
-            })
-          : undefined;
-      }
       if (
-        (!hasCustomConfigurator && configureSteps === undefined) ||
-        configureSteps === false
+        hasCustomConfigurator &&
+        configureSteps &&
+        typeof configureSteps !== 'undefined'
       ) {
-        finalSteps.push(connectorSpecificStep);
-        finalSteps.push(errorHandlingStep);
+        return [
+          basicStep,
+          ...(configureSteps as string[]).map((step, idx) => {
+            const isActive =
+              state.matches('configureConnector') && activeStep === idx;
+            return {
+              name: step,
+              isActive,
+              component: (
+                <StepErrorBoundary>
+                  <ConfiguratorStep />
+                </StepErrorBoundary>
+              ),
+              canJumpTo: canJumpToStep(idx + 1),
+              enableNext: creationWizardMachine.transition(state, 'next')
+                .changed,
+            };
+          }),
+        ];
+      } else {
+        return [basicStep, connectorSpecificStep, errorHandlingStep];
       }
-      return finalSteps;
     };
 
     const steps = [
@@ -276,12 +274,11 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
     const flattenedSteps = getFlattenedSteps(steps) as Array<
       WizardStep & { isActive: boolean }
     >;
+
     const currentStep =
-      flattenedSteps.reduceRight<number>(
-        (idx, s, currentIdx) =>
-          s.isActive && currentIdx > idx ? currentIdx : idx,
-        -1
-      ) + 1;
+      flattenedSteps.reduceRight<number>((idx, s, currentIdx) => {
+        return s.isActive && currentIdx > idx ? currentIdx : idx;
+      }, -1) + 1;
 
     const onNext = () => send('next');
     const onBack = () => send('prev');
@@ -299,18 +296,23 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
         case 4:
           send('jumpToBasicConfiguration');
           break;
-        case 5:
-          send('jumpToConfigureConnector');
-          break;
-        case 6:
-          send('jumpToErrorConfiguration');
-          break;
         case flattenedSteps.length:
           send('jumpToReviewConfiguration');
           break;
         default:
+          // this combo represents the error handling step
+          if (
+            !hasCustomConfigurator &&
+            stepIndex === flattenedSteps.length - 1
+          ) {
+            send('jumpToErrorConfiguration');
+            return;
+          }
+          // if it's not the error handling step, it's some
+          // sub-step of configuration
+          const subStep = stepIndex - loadSubSteps().length - 1;
           if (stepIndex < flattenedSteps.length) {
-            send({ type: 'jumpToConfigureConnector', subStep: stepIndex - 6 });
+            send({ type: 'jumpToConfigureConnector', subStep });
           }
       }
     };
