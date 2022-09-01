@@ -24,7 +24,7 @@ import sqlserver_source from '../../../../cypress/fixtures/connectors/sqlserver_
 import { JsonSchemaConfigurator } from './JsonSchemaConfigurator';
 
 export default {
-  title: 'Wizard/JsonSchemaConfigurator',
+  title: 'Wizard/4.2 Connector specific Step',
   component: JsonSchemaConfigurator,
   args: {
     configuration: {},

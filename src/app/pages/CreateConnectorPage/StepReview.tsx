@@ -1,3 +1,4 @@
+import { UserProvidedServiceAccount } from '@apis/api';
 import { useReviewMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { ViewJSONFormat } from '@app/components/ViewJSONFormat/ViewJSONFormat';
@@ -20,9 +21,63 @@ import {
 } from '@patternfly/react-core';
 import { EyeIcon, EyeSlashIcon } from '@patternfly/react-icons';
 
-import { ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
+import {
+  ConnectorNamespace,
+  ConnectorType,
+  ConnectorTypeAllOf,
+} from '@rhoas/connector-management-sdk';
+import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
 export function Review() {
+  const {
+    kafka,
+    namespace,
+    connectorType,
+    name,
+    topic,
+    userErrorHandler,
+    userServiceAccount,
+    configString,
+    savingError,
+  } = useReviewMachine();
+  return (
+    <StepReviewComponent
+      kafka={kafka}
+      namespace={namespace}
+      connectorType={connectorType}
+      name={name}
+      topic={topic}
+      userErrorHandler={userErrorHandler}
+      userServiceAccount={userServiceAccount}
+      configString={configString}
+      savingError={savingError}
+    ></StepReviewComponent>
+  );
+}
+
+type StepReviewComponentProps = {
+  kafka: KafkaRequest;
+  namespace: ConnectorNamespace;
+  connectorType: ConnectorType;
+  name: string;
+  topic: string;
+  userErrorHandler: string;
+  userServiceAccount: UserProvidedServiceAccount;
+  configString: string;
+  savingError: string | undefined;
+};
+
+export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
+  kafka,
+  namespace,
+  connectorType,
+  name,
+  topic,
+  userErrorHandler,
+  userServiceAccount,
+  configString,
+  savingError,
+}) => {
   const { t } = useTranslation();
   const [toggleView, setToggleView] = useState(false);
   const [toggleMaskView, setToggleMaskView] = useState<{
@@ -40,17 +95,6 @@ export function Review() {
         break;
     }
   };
-  const {
-    kafka,
-    namespace,
-    connectorType,
-    name,
-    topic,
-    userErrorHandler,
-    userServiceAccount,
-    configString,
-    savingError,
-  } = useReviewMachine();
 
   const onToggleJSONView = useCallback(
     () => setToggleView((prev) => !prev),
@@ -104,7 +148,16 @@ export function Review() {
           </FormAlert>
         )}
         {toggleView ? (
-          <ViewJSONFormat />
+          <ViewJSONFormat
+            kafka={kafka}
+            namespace={namespace}
+            connectorType={connectorType}
+            name={name}
+            topic={topic}
+            userErrorHandler={userErrorHandler}
+            userServiceAccount={userServiceAccount}
+            configString={configString}
+          />
         ) : (
           <>
             <Grid>
@@ -267,7 +320,7 @@ export function Review() {
       </Form>
     </StepBodyLayout>
   );
-}
+};
 
 type DataShape = {
   data: any;

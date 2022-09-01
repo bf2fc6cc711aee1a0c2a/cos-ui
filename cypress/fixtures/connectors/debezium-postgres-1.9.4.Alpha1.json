@@ -1,0 +1,268 @@
+{
+    "id": "debezium-postgres-1.9.4.Final",
+    "kind": "ConnectorType",
+    "href": "/api/connector_mgmt/v1/kafka_connector_types/debezium-postgres-1.9.4.Final",
+    "name": "Debezium PostgreSQL Connector",
+    "version": "1.9.4.Final",
+    "channels": [
+      "stable"
+    ],
+    "icon_href": "http://example.com/images/debezium-postgres-1.9.4.Final.png",
+    "labels": [
+      "1.9.4.Final",
+      "debezium",
+      "postgres",
+      "source"
+    ],
+    "capabilities": [
+      "data_shape"
+    ],
+    "schema": {
+      "$defs": {
+        "serializer": {
+          "default": "JSON",
+          "enum": [
+            "JSON",
+            "JSON without schema"
+          ],
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "properties": {
+        "column.exclude.list": {
+          "description": "Regular expressions matching columns to exclude from change events",
+          "format": "list,regex",
+          "title": "Exclude Columns",
+          "type": "string",
+          "x-category": "FILTERS",
+          "x-name": "column.exclude.list"
+        },
+        "column.include.list": {
+          "description": "Regular expressions matching columns to include in change events",
+          "format": "list,regex",
+          "title": "Include Columns",
+          "type": "string",
+          "x-category": "FILTERS",
+          "x-name": "column.include.list"
+        },
+        "data_shape": {
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "$ref": "#/$defs/serializer",
+              "description": "The serialization format for the Kafka message key.",
+              "title": "Kafka Message Key Format",
+              "x-category": "CONNECTOR",
+              "x-name": "data_shape.key"
+            },
+            "value": {
+              "$ref": "#/$defs/serializer",
+              "description": "The serialization format for the Kafka message value.",
+              "title": "Kafka Message Value Format",
+              "x-category": "CONNECTOR",
+              "x-name": "data_shape.value"
+            }
+          },
+          "type": "object"
+        },
+        "database.dbname": {
+          "description": "The name of the database from which the connector should capture changes",
+          "nullable": false,
+          "title": "Database",
+          "type": "string",
+          "x-category": "CONNECTION",
+          "x-name": "database.dbname"
+        },
+        "database.hostname": {
+          "description": "Resolvable hostname or IP address of the database server.",
+          "nullable": false,
+          "title": "Hostname",
+          "type": "string",
+          "x-category": "CONNECTION",
+          "x-name": "database.hostname"
+        },
+        "database.password": {
+          "description": "Password of the database user to be used when connecting to the database.",
+          "oneOf": [
+            {
+              "description": "Password of the database user to be used when connecting to the database.",
+              "format": "password",
+              "type": "string"
+            },
+            {
+              "additionalProperties": true,
+              "description": "An opaque reference to the password.",
+              "properties": {
+                
+              },
+              "type": "object"
+            }
+          ],
+          "title": "Password",
+          "x-category": "CONNECTION",
+          "x-name": "database.password"
+        },
+        "database.port": {
+          "default": 5432,
+          "description": "Port of the database server.",
+          "format": "int32",
+          "title": "Port",
+          "type": "integer",
+          "x-category": "CONNECTION",
+          "x-name": "database.port"
+        },
+        "database.server.name": {
+          "description": "Unique name that identifies the database server and all recorded offsets, and that is used as a prefix for all schemas and topics. Each distinct installation should have a separate namespace and be monitored by at most one Debezium connector.",
+          "nullable": false,
+          "title": "Namespace",
+          "type": "string",
+          "x-category": "CONNECTION",
+          "x-name": "database.server.name"
+        },
+        "database.user": {
+          "description": "Name of the database user to be used when connecting to the database.",
+          "nullable": false,
+          "title": "User",
+          "type": "string",
+          "x-category": "CONNECTION",
+          "x-name": "database.user"
+        },
+        "decimal.handling.mode": {
+          "default": "precise",
+          "description": "Specify how DECIMAL and NUMERIC columns should be represented in change events, including:'precise' (the default) uses java.math.BigDecimal to represent values, which are encoded in the change events using a binary representation and Kafka Connect's 'org.apache.kafka.connect.data.Decimal' type; 'string' uses string to represent values; 'double' represents values using Java's 'double', which may not offer the precision but will be far easier to use in consumers.",
+          "enum": [
+            "string",
+            "double",
+            "precise"
+          ],
+          "title": "Decimal Handling",
+          "type": "string",
+          "x-category": "CONNECTOR",
+          "x-name": "decimal.handling.mode"
+        },
+        "max.batch.size": {
+          "default": 2048,
+          "description": "Maximum size of each batch of source records. Defaults to 2048.",
+          "format": "int32",
+          "title": "Change event batch size",
+          "type": "integer",
+          "x-category": "ADVANCED",
+          "x-name": "max.batch.size"
+        },
+        "max.queue.size": {
+          "default": 8192,
+          "description": "Maximum size of the queue for change events read from the database log but not yet recorded or forwarded. Defaults to 8192, and should always be larger than the maximum batch size.",
+          "format": "int32",
+          "title": "Change event buffer size",
+          "type": "integer",
+          "x-category": "ADVANCED",
+          "x-name": "max.queue.size"
+        },
+        "message.key.columns": {
+          "description": "A semicolon-separated list of expressions that match fully-qualified tables and column(s) to be used as message key. Each expression must match the pattern '\u003cfully-qualified table name\u003e:\u003ckey columns\u003e',where the table names could be defined as (DB_NAME.TABLE_NAME) or (SCHEMA_NAME.TABLE_NAME), depending on the specific connector,and the key columns are a comma-separated list of columns representing the custom key. For any table without an explicit key configuration the table's primary key column(s) will be used as message key.Example: dbserver1.inventory.orderlines:orderId,orderLineId;dbserver1.inventory.orders:id",
+          "title": "Columns PK mapping",
+          "type": "string",
+          "x-category": "CONNECTOR_ADVANCED",
+          "x-name": "message.key.columns"
+        },
+        "publication.autocreate.mode": {
+          "default": "all_tables",
+          "description": "Applies only when streaming changes using pgoutput.Determine how creation of a publication should work, the default is all_tables.DISABLED - The connector will not attempt to create a publication at all. The expectation is that the user has created the publication up-front. If the publication isn't found to exist upon startup, the connector will throw an exception and stop.ALL_TABLES - If no publication exists, the connector will create a new publication for all tables. Note this requires that the configured user has access. If the publication already exists, it will be used. i.e CREATE PUBLICATION \u003cpublication_name\u003e FOR ALL TABLES;FILTERED - If no publication exists, the connector will create a new publication for all those tables matchingthe current filter configuration (see table/database include/exclude list properties). If the publication already exists, it will be used. i.e CREATE PUBLICATION \u003cpublication_name\u003e FOR TABLE \u003ctbl1, tbl2, etc\u003e",
+          "enum": [
+            "filtered",
+            "disabled",
+            "all_tables"
+          ],
+          "title": "Publication Auto Create Mode",
+          "type": "string",
+          "x-category": "CONNECTION_ADVANCED_REPLICATION",
+          "x-name": "publication.autocreate.mode"
+        },
+        "publication.name": {
+          "default": "dbz_publication",
+          "description": "The name of the Postgres 10+ publication used for streaming changes from a plugin.Defaults to 'dbz_publication'",
+          "title": "Publication",
+          "type": "string",
+          "x-category": "CONNECTION_ADVANCED_REPLICATION",
+          "x-name": "publication.name"
+        },
+        "query.fetch.size": {
+          "default": 0,
+          "description": "The maximum number of records that should be loaded into memory while streaming.  A value of `0` uses the default JDBC fetch size.",
+          "format": "int32",
+          "title": "Query fetch size",
+          "type": "integer",
+          "x-category": "ADVANCED",
+          "x-name": "query.fetch.size"
+        },
+        "schema.exclude.list": {
+          "description": "The schemas for which events must not be captured",
+          "format": "list,regex",
+          "title": "Exclude Schemas",
+          "type": "string",
+          "x-category": "FILTERS",
+          "x-name": "schema.exclude.list"
+        },
+        "schema.include.list": {
+          "description": "The schemas for which events should be captured",
+          "format": "list,regex",
+          "title": "Include Schemas",
+          "type": "string",
+          "x-category": "FILTERS",
+          "x-name": "schema.include.list"
+        },
+        "slot.name": {
+          "default": "debezium",
+          "description": "The name of the Postgres logical decoding slot created for streaming changes from a plugin.Defaults to 'debezium",
+          "title": "Slot",
+          "type": "string",
+          "x-category": "CONNECTION_ADVANCED_REPLICATION",
+          "x-name": "slot.name"
+        },
+        "snapshot.mode": {
+          "default": "initial",
+          "description": "The criteria for running a snapshot upon startup of the connector. Options include: 'always' to specify that the connector run a snapshot each time it starts up; 'initial' (the default) to specify the connector can run a snapshot only when no offsets are available for the logical server name; 'initial_only' same as 'initial' except the connector should stop after completing the snapshot and before it would normally start emitting changes;'never' to specify the connector should never run a snapshot and that upon first startup the connector should read from the last position (LSN) recorded by the server; and'exported' deprecated, use 'initial' instead; 'custom' to specify a custom class with 'snapshot.custom_class' which will be loaded and used to determine the snapshot, see docs for more details.",
+          "enum": [
+            "always",
+            "exported",
+            "never",
+            "initial_only",
+            "initial",
+            "custom"
+          ],
+          "title": "Snapshot mode",
+          "type": "string",
+          "x-category": "CONNECTOR_SNAPSHOT",
+          "x-name": "snapshot.mode"
+        },
+        "table.exclude.list": {
+          "description": "A comma-separated list of regular expressions that match the fully-qualified names of tables to be excluded from monitoring",
+          "format": "list,regex",
+          "title": "Exclude Tables",
+          "type": "string",
+          "x-category": "FILTERS",
+          "x-name": "table.exclude.list"
+        },
+        "table.include.list": {
+          "description": "The tables for which changes are to be captured",
+          "format": "list,regex",
+          "title": "Include Tables",
+          "type": "string",
+          "x-category": "FILTERS",
+          "x-name": "table.include.list"
+        }
+      },
+      "required": [
+        "database.server.name",
+        "database.hostname",
+        "database.user",
+        "database.dbname"
+      ],
+      "title": "Debezium PostgreSQL Connector",
+      "type": "object",
+      "x-className": "io.debezium.connector.postgresql.PostgresConnector",
+      "x-connector-id": "postgres",
+      "x-version": "1.9.4.Final"
+    }
+  }
