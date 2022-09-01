@@ -1,200 +1,246 @@
 {
-  "channels" : {
-    "stable" : {
-      "shard_metadata" : {
-        "annotations" : {
-          "trait.camel.apache.org/container.request-cpu" : "0.20",
-          "trait.camel.apache.org/container.request-memory" : "128m",
-          "trait.camel.apache.org/deployment.progress-deadline-seconds" : "30"
-        },
-        "connector_image" : "quay.io/rhoas/cos-connector-aws-s3:0.1.29",
-        "connector_revision" : "29",
-        "connector_type" : "sink",
-        "consumes" : "application/octet-stream",
-        "error_handler_strategy" : "stop",
-        "kamelets" : {
-          "adapter" : {
-            "name" : "aws-s3-sink",
-            "prefix" : "aws"
+  "id": "aws_s3_sink_0.1",
+  "kind": "ConnectorType",
+  "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_s3_sink_0.1",
+  "name": "Amazon S3 sink",
+  "version": "0.1",
+  "channels": [
+    "stable"
+  ],
+  "description": "Send data to an Amazon S3 bucket.",
+  "icon_href": "TODO",
+  "labels": [
+    "sink"
+  ],
+  "capabilities": [
+    "data_shape",
+    "error_handler",
+    "processors"
+  ],
+  "schema": {
+    "$defs": {
+      "data_shape": {
+        "consumes": {
+          "additionalProperties": false,
+          "properties": {
+            "format": {
+              "default": "application/octet-stream",
+              "description": "The format of the data that the source connector sends to Kafka.",
+              "enum": [
+                "application/octet-stream"
+              ],
+              "type": "string"
+            }
           },
-          "kafka" : {
-            "name" : "cos-kafka-source",
-            "prefix" : "kafka"
-          }
-        },
-        "operators" : [ {
-          "type" : "camel-connector-operator",
-          "version" : "[1.0.0,2.0.0)"
-        } ],
-        "produces" : "application/octet-stream"
-      }
-    }
-  },
-  "connector_type" : {
-    "capabilities" : [ "data_shape", "error_handler", "processors" ],
-    "channels" : [ "stable" ],
-    "description" : "Amazon S3 sink",
-    "icon_href" : "TODO",
-    "id" : "aws_s3_sink_0.1",
-    "kind" : "ConnectorType",
-    "labels" : [ "sink" ],
-    "name" : "Amazon S3 sink",
-    "schema" : {
-      "type" : "object",
-      "additionalProperties" : false,
-      "required" : [ "aws_bucket_name_or_arn", "aws_region", "kafka_topic", "aws_access_key", "aws_secret_key" ],
-      "properties" : {
-        "aws_bucket_name_or_arn" : {
-          "title" : "Bucket Name",
-          "description" : "The S3 Bucket name or ARN.",
-          "type" : "string"
-        },
-        "aws_access_key" : {
-          "title" : "Access Key",
-          "x-group" : "credentials",
-          "oneOf" : [ {
-            "title" : "Access Key",
-            "description" : "The access key obtained from AWS.",
-            "type" : "string",
-            "format" : "password"
-          }, {
-            "description" : "An opaque reference to the aws_access_key",
-            "type" : "object",
-            "properties" : { }
-          } ]
-        },
-        "aws_secret_key" : {
-          "title" : "Secret Key",
-          "x-group" : "credentials",
-          "oneOf" : [ {
-            "title" : "Secret Key",
-            "description" : "The secret key obtained from AWS.",
-            "type" : "string",
-            "format" : "password"
-          }, {
-            "description" : "An opaque reference to the aws_secret_key",
-            "type" : "object",
-            "properties" : { }
-          } ]
-        },
-        "aws_region" : {
-          "title" : "AWS Region",
-          "description" : "The AWS region to connect to.",
-          "type" : "string",
-          "example" : "eu-west-1",
-          "enum" : [ "af-south-1", "ap-east-1", "ap-northeast-1", "ap-northeast-2", "ap-northeast-3", "ap-south-1", "ap-southeast-1", "ap-southeast-2", "ap-southeast-3", "ca-central-1", "eu-central-1", "eu-north-1", "eu-south-1", "eu-west-1", "eu-west-2", "eu-west-3", "fips-us-east-1", "fips-us-east-2", "fips-us-west-1", "fips-us-west-2", "me-south-1", "sa-east-1", "us-east-1", "us-east-2", "us-west-1", "us-west-2", "cn-north-1", "cn-northwest-1", "us-gov-east-1", "us-gov-west-1", "us-iso-east-1", "us-iso-west-1", "us-isob-east-1" ]
-        },
-        "aws_auto_create_bucket" : {
-          "title" : "Autocreate Bucket",
-          "description" : "Setting the autocreation of the S3 bucket bucketName.",
-          "type" : "boolean",
-          "default" : false
-        },
-        "aws_uri_endpoint_override" : {
-          "title" : "Overwrite Endpoint URI",
-          "description" : "Set the overriding endpoint URI. This option needs to be used in combination with overrideEndpoint option.",
-          "type" : "string"
-        },
-        "aws_override_endpoint" : {
-          "title" : "Endpoint Overwrite",
-          "description" : "Set the need for overiding the endpoint URI. This option needs to be used in combination with uriEndpointOverride setting.",
-          "type" : "boolean",
-          "default" : false
-        },
-        "aws_key_name" : {
-          "title" : "Key Name",
-          "description" : "The key name for saving an element in the bucket.",
-          "type" : "string"
-        },
-        "kafka_topic" : {
-          "title" : "Topic Names",
-          "description" : "Comma separated list of Kafka topic names",
-          "type" : "string"
-        },
-        "data_shape" : {
-          "type" : "object",
-          "additionalProperties" : false,
-          "properties" : {
-            "consumes" : {
-              "$ref" : "#/$defs/data_shape/consumes"
-            }
-          }
-        },
-        "error_handler" : {
-          "type" : "object",
-          "oneOf" : [ {
-            "type" : "object",
-            "additionalProperties" : false,
-            "required" : [ "log" ],
-            "properties" : {
-              "log" : {
-                "$ref" : "#/$defs/error_handler/log"
-              }
-            }
-          }, {
-            "type" : "object",
-            "additionalProperties" : false,
-            "required" : [ "stop" ],
-            "properties" : {
-              "stop" : {
-                "$ref" : "#/$defs/error_handler/stop"
-              }
-            }
-          }, {
-            "type" : "object",
-            "additionalProperties" : false,
-            "required" : [ "dead_letter_queue" ],
-            "properties" : {
-              "dead_letter_queue" : {
-                "$ref" : "#/$defs/error_handler/dead_letter_queue"
-              }
-            }
-          } ],
-          "default" : {
-            "stop" : { }
-          }
-        },
-        "processors" : { }
+          "required": [
+            "format"
+          ],
+          "type": "object"
+        }
       },
-      "$defs" : {
-        "data_shape" : {
-          "consumes" : {
-            "type" : "object",
-            "additionalProperties" : false,
-            "required" : [ "format" ],
-            "properties" : {
-              "format" : {
-                "type" : "string",
-                "default" : "application/octet-stream",
-                "enum" : [ "application/octet-stream" ]
-              }
+      "error_handler": {
+        "dead_letter_queue": {
+          "additionalProperties": false,
+          "properties": {
+            "topic": {
+              "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+              "title": "Dead Letter Topic Name",
+              "type": "string"
             }
-          }
+          },
+          "required": [
+            "topic"
+          ],
+          "type": "object"
         },
-        "error_handler" : {
-          "log" : {
-            "type" : "object",
-            "additionalProperties" : false
-          },
-          "stop" : {
-            "type" : "object",
-            "additionalProperties" : false
-          },
-          "dead_letter_queue" : {
-            "type" : "object",
-            "additionalProperties" : false,
-            "required" : [ "topic" ],
-            "properties" : {
-              "topic" : {
-                "type" : "string",
-                "title" : "Dead Letter Topic Name",
-                "description" : "The name of the Kafka topic used as dead letter queue"
-              }
-            }
-          }
+        "log": {
+          "additionalProperties": false,
+          "type": "object"
+        },
+        "stop": {
+          "additionalProperties": false,
+          "type": "object"
         }
       }
     },
-    "version" : "0.1"
+    "additionalProperties": false,
+    "properties": {
+      "aws_access_key": {
+        "oneOf": [
+          {
+            "description": "The access key obtained from AWS.",
+            "format": "password",
+            "title": "Access Key",
+            "type": "string"
+          },
+          {
+            "description": "An opaque reference to the aws_access_key",
+            "properties": {
+              
+            },
+            "type": "object"
+          }
+        ],
+        "title": "Access Key",
+        "x-group": "credentials"
+      },
+      "aws_auto_create_bucket": {
+        "default": false,
+        "description": "Specifies to automatically create the S3 bucket.",
+        "title": "Autocreate Bucket",
+        "type": "boolean"
+      },
+      "aws_bucket_name_or_arn": {
+        "description": "The S3 Bucket name or Amazon Resource Name (ARN).",
+        "title": "Bucket Name",
+        "type": "string"
+      },
+      "aws_key_name": {
+        "description": "The key name for saving an element in the bucket.",
+        "title": "Key Name",
+        "type": "string"
+      },
+      "aws_override_endpoint": {
+        "default": false,
+        "description": "Select this option to override the endpoint URI. To use this option, you must also provide a URI for the `uriEndpointOverride` option.",
+        "title": "Endpoint Overwrite",
+        "type": "boolean"
+      },
+      "aws_region": {
+        "description": "The AWS region to access.",
+        "enum": [
+          "af-south-1",
+          "ap-east-1",
+          "ap-northeast-1",
+          "ap-northeast-2",
+          "ap-northeast-3",
+          "ap-south-1",
+          "ap-southeast-1",
+          "ap-southeast-2",
+          "ap-southeast-3",
+          "ca-central-1",
+          "eu-central-1",
+          "eu-north-1",
+          "eu-south-1",
+          "eu-west-1",
+          "eu-west-2",
+          "eu-west-3",
+          "fips-us-east-1",
+          "fips-us-east-2",
+          "fips-us-west-1",
+          "fips-us-west-2",
+          "me-south-1",
+          "sa-east-1",
+          "us-east-1",
+          "us-east-2",
+          "us-west-1",
+          "us-west-2",
+          "cn-north-1",
+          "cn-northwest-1",
+          "us-gov-east-1",
+          "us-gov-west-1",
+          "us-iso-east-1",
+          "us-iso-west-1",
+          "us-isob-east-1"
+        ],
+        "title": "AWS Region",
+        "type": "string"
+      },
+      "aws_secret_key": {
+        "oneOf": [
+          {
+            "description": "The secret key obtained from AWS.",
+            "format": "password",
+            "title": "Secret Key",
+            "type": "string"
+          },
+          {
+            "description": "An opaque reference to the aws_secret_key",
+            "properties": {
+              
+            },
+            "type": "object"
+          }
+        ],
+        "title": "Secret Key",
+        "x-group": "credentials"
+      },
+      "aws_uri_endpoint_override": {
+        "description": "The overriding endpoint URI. To use this option, you must also select the `overrideEndpoint` option.",
+        "title": "Overwrite Endpoint URI",
+        "type": "string"
+      },
+      "data_shape": {
+        "additionalProperties": false,
+        "properties": {
+          "consumes": {
+            "$ref": "#/$defs/data_shape/consumes"
+          }
+        },
+        "type": "object"
+      },
+      "error_handler": {
+        "default": {
+          "stop": {
+            
+          }
+        },
+        "oneOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "log": {
+                "$ref": "#/$defs/error_handler/log"
+              }
+            },
+            "required": [
+              "log"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "stop": {
+                "$ref": "#/$defs/error_handler/stop"
+              }
+            },
+            "required": [
+              "stop"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "dead_letter_queue": {
+                "$ref": "#/$defs/error_handler/dead_letter_queue"
+              }
+            },
+            "required": [
+              "dead_letter_queue"
+            ],
+            "type": "object"
+          }
+        ],
+        "type": "object"
+      },
+      "kafka_topic": {
+        "description": "A comma-separated list of Kafka topic names.",
+        "title": "Topic Names",
+        "type": "string"
+      },
+      "processors": {
+        
+      }
+    },
+    "required": [
+      "aws_bucket_name_or_arn",
+      "aws_region",
+      "kafka_topic",
+      "aws_access_key",
+      "aws_secret_key"
+    ],
+    "type": "object"
   }
 }

@@ -1,209 +1,227 @@
 {
-  "channels" : {
-    "stable" : {
-      "shard_metadata" : {
-        "annotations" : {
-          "trait.camel.apache.org/container.request-cpu" : "0.20",
-          "trait.camel.apache.org/container.request-memory" : "128m",
-          "trait.camel.apache.org/deployment.progress-deadline-seconds" : "30"
-        },
-        "connector_image" : "quay.io/rhoas/cos-connector-aws-kinesis:0.1.29",
-        "connector_revision" : "29",
-        "connector_type" : "source",
-        "consumes" : "application/octet-stream",
-        "error_handler_strategy" : "stop",
-        "kamelets" : {
-          "adapter" : {
-            "name" : "cos-aws-kinesis-source",
-            "prefix" : "aws"
+  "id": "aws_kinesis_source_0.1",
+  "kind": "ConnectorType",
+  "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_kinesis_source_0.1",
+  "name": "Amazon Kinesis source",
+  "version": "0.1",
+  "channels": [
+    "stable"
+  ],
+  "description": "Receive data from Amazon Kinesis.",
+  "icon_href": "TODO",
+  "labels": [
+    "source"
+  ],
+  "capabilities": [
+    "data_shape",
+    "error_handler",
+    "processors"
+  ],
+  "schema": {
+    "$defs": {
+      "data_shape": {
+        "consumes": {
+          "additionalProperties": false,
+          "properties": {
+            "format": {
+              "default": "application/octet-stream",
+              "description": "The format of the data that the source connector sends to Kafka.",
+              "enum": [
+                "application/octet-stream"
+              ],
+              "type": "string"
+            }
           },
-          "kafka" : {
-            "name" : "cos-kafka-sink",
-            "prefix" : "kafka"
-          }
+          "required": [
+            "format"
+          ],
+          "type": "object"
         },
-        "operators" : [ {
-          "type" : "camel-connector-operator",
-          "version" : "[1.0.0,2.0.0)"
-        } ],
-        "produces" : "application/octet-stream"
-      }
-    }
-  },
-  "connector_type" : {
-    "capabilities" : [ "data_shape", "error_handler", "processors" ],
-    "channels" : [ "stable" ],
-    "description" : "Amazon Kinesis source",
-    "icon_href" : "TODO",
-    "id" : "aws_kinesis_source_0.1",
-    "kind" : "ConnectorType",
-    "labels" : [ "source" ],
-    "name" : "Amazon Kinesis source",
-    "schema" : {
-      "type" : "object",
-      "additionalProperties" : false,
-      "required" : [ "aws_stream", "aws_region", "kafka_topic", "aws_access_key", "aws_secret_key" ],
-      "properties" : {
-        "aws_stream" : {
-          "title" : "Stream Name",
-          "description" : "The Kinesis stream that you want to access (needs to be created in advance)",
-          "type" : "string"
-        },
-        "aws_access_key" : {
-          "title" : "Access Key",
-          "x-group" : "credentials",
-          "oneOf" : [ {
-            "title" : "Access Key",
-            "description" : "The access key obtained from AWS",
-            "type" : "string",
-            "format" : "password"
-          }, {
-            "description" : "An opaque reference to the aws_access_key",
-            "type" : "object",
-            "properties" : { }
-          } ]
-        },
-        "aws_secret_key" : {
-          "title" : "Secret Key",
-          "x-group" : "credentials",
-          "oneOf" : [ {
-            "title" : "Secret Key",
-            "description" : "The secret key obtained from AWS",
-            "type" : "string",
-            "format" : "password"
-          }, {
-            "description" : "An opaque reference to the aws_secret_key",
-            "type" : "object",
-            "properties" : { }
-          } ]
-        },
-        "aws_region" : {
-          "title" : "AWS Region",
-          "description" : "The AWS region to connect to",
-          "type" : "string",
-          "example" : "eu-west-1"
-        },
-        "aws_uri_endpoint_override" : {
-          "title" : "Overwrite Endpoint URI",
-          "description" : "Set the overriding endpoint URI. This option needs to be used in combination with overrideEndpoint option.",
-          "type" : "string"
-        },
-        "aws_override_endpoint" : {
-          "title" : "Endpoint Overwrite",
-          "description" : "Set the need for overiding the endpoint URI. This option needs to be used in combination with uriEndpointOverride setting.",
-          "type" : "boolean",
-          "default" : false
-        },
-        "aws_delay" : {
-          "title" : "Delay",
-          "description" : "Milliseconds before the next poll of the selected stream",
-          "type" : "integer",
-          "default" : 500
-        },
-        "kafka_topic" : {
-          "title" : "Topic Names",
-          "description" : "Comma separated list of Kafka topic names",
-          "type" : "string"
-        },
-        "data_shape" : {
-          "type" : "object",
-          "additionalProperties" : false,
-          "properties" : {
-            "consumes" : {
-              "$ref" : "#/$defs/data_shape/consumes"
-            },
-            "produces" : {
-              "$ref" : "#/$defs/data_shape/produces"
+        "produces": {
+          "additionalProperties": false,
+          "properties": {
+            "format": {
+              "default": "application/octet-stream",
+              "description": "The format of the data that the source connector sends to Kafka.",
+              "enum": [
+                "application/octet-stream"
+              ],
+              "type": "string"
             }
-          }
-        },
-        "error_handler" : {
-          "type" : "object",
-          "oneOf" : [ {
-            "type" : "object",
-            "additionalProperties" : false,
-            "required" : [ "log" ],
-            "properties" : {
-              "log" : {
-                "$ref" : "#/$defs/error_handler/log"
-              }
-            }
-          }, {
-            "type" : "object",
-            "additionalProperties" : false,
-            "required" : [ "stop" ],
-            "properties" : {
-              "stop" : {
-                "$ref" : "#/$defs/error_handler/stop"
-              }
-            }
-          }, {
-            "type" : "object",
-            "additionalProperties" : false,
-            "required" : [ "dead_letter_queue" ],
-            "properties" : {
-              "dead_letter_queue" : {
-                "$ref" : "#/$defs/error_handler/dead_letter_queue"
-              }
-            }
-          } ],
-          "default" : {
-            "stop" : { }
-          }
-        },
-        "processors" : { }
+          },
+          "required": [
+            "format"
+          ],
+          "type": "object"
+        }
       },
-      "$defs" : {
-        "data_shape" : {
-          "consumes" : {
-            "type" : "object",
-            "additionalProperties" : false,
-            "required" : [ "format" ],
-            "properties" : {
-              "format" : {
-                "type" : "string",
-                "default" : "application/octet-stream",
-                "enum" : [ "application/octet-stream" ]
-              }
+      "error_handler": {
+        "dead_letter_queue": {
+          "additionalProperties": false,
+          "properties": {
+            "topic": {
+              "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+              "title": "Dead Letter Topic Name",
+              "type": "string"
             }
           },
-          "produces" : {
-            "type" : "object",
-            "additionalProperties" : false,
-            "required" : [ "format" ],
-            "properties" : {
-              "format" : {
-                "type" : "string",
-                "default" : "application/octet-stream",
-                "enum" : [ "application/octet-stream" ]
-              }
-            }
-          }
+          "required": [
+            "topic"
+          ],
+          "type": "object"
         },
-        "error_handler" : {
-          "log" : {
-            "type" : "object",
-            "additionalProperties" : false
-          },
-          "stop" : {
-            "type" : "object",
-            "additionalProperties" : false
-          },
-          "dead_letter_queue" : {
-            "type" : "object",
-            "additionalProperties" : false,
-            "required" : [ "topic" ],
-            "properties" : {
-              "topic" : {
-                "type" : "string",
-                "title" : "Dead Letter Topic Name",
-                "description" : "The name of the Kafka topic used as dead letter queue"
-              }
-            }
-          }
+        "log": {
+          "additionalProperties": false,
+          "type": "object"
+        },
+        "stop": {
+          "additionalProperties": false,
+          "type": "object"
         }
       }
     },
-    "version" : "0.1"
+    "additionalProperties": false,
+    "properties": {
+      "aws_access_key": {
+        "oneOf": [
+          {
+            "description": "The access key obtained from AWS.",
+            "format": "password",
+            "title": "Access Key",
+            "type": "string"
+          },
+          {
+            "description": "An opaque reference to the aws_access_key",
+            "properties": {
+              
+            },
+            "type": "object"
+          }
+        ],
+        "title": "Access Key",
+        "x-group": "credentials"
+      },
+      "aws_delay": {
+        "default": 500,
+        "description": "The number of milliseconds before the next poll of the selected stream.",
+        "title": "Delay",
+        "type": "integer"
+      },
+      "aws_override_endpoint": {
+        "default": false,
+        "description": "Select this option to override the endpoint URI. To use this option, you must also provide a URI for the `uriEndpointOverride` option.",
+        "title": "Endpoint Overwrite",
+        "type": "boolean"
+      },
+      "aws_region": {
+        "description": "The AWS region to access.",
+        "example": "eu-west-1",
+        "title": "AWS Region",
+        "type": "string"
+      },
+      "aws_secret_key": {
+        "oneOf": [
+          {
+            "description": "The secret key obtained from AWS.",
+            "format": "password",
+            "title": "Secret Key",
+            "type": "string"
+          },
+          {
+            "description": "An opaque reference to the aws_secret_key",
+            "properties": {
+              
+            },
+            "type": "object"
+          }
+        ],
+        "title": "Secret Key",
+        "x-group": "credentials"
+      },
+      "aws_stream": {
+        "description": "The Kinesis stream that you want to access. The Kinesis stream that you specify must already exist.",
+        "title": "Stream Name",
+        "type": "string"
+      },
+      "aws_uri_endpoint_override": {
+        "description": "The overriding endpoint URI. To use this option, you must also select the `overrideEndpoint` option.",
+        "title": "Overwrite Endpoint URI",
+        "type": "string"
+      },
+      "data_shape": {
+        "additionalProperties": false,
+        "properties": {
+          "consumes": {
+            "$ref": "#/$defs/data_shape/consumes"
+          },
+          "produces": {
+            "$ref": "#/$defs/data_shape/produces"
+          }
+        },
+        "type": "object"
+      },
+      "error_handler": {
+        "default": {
+          "stop": {
+            
+          }
+        },
+        "oneOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "log": {
+                "$ref": "#/$defs/error_handler/log"
+              }
+            },
+            "required": [
+              "log"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "stop": {
+                "$ref": "#/$defs/error_handler/stop"
+              }
+            },
+            "required": [
+              "stop"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "dead_letter_queue": {
+                "$ref": "#/$defs/error_handler/dead_letter_queue"
+              }
+            },
+            "required": [
+              "dead_letter_queue"
+            ],
+            "type": "object"
+          }
+        ],
+        "type": "object"
+      },
+      "kafka_topic": {
+        "description": "The name of the Kafka Topic to use.",
+        "title": "Topic Name",
+        "type": "string"
+      },
+      "processors": {
+        
+      }
+    },
+    "required": [
+      "aws_stream",
+      "aws_region",
+      "kafka_topic",
+      "aws_access_key",
+      "aws_secret_key"
+    ],
+    "type": "object"
   }
 }

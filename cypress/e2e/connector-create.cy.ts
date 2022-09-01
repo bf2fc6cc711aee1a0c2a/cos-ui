@@ -28,7 +28,7 @@ const testMachine = Machine({
         CLICK_CONNECTOR: 'loadingKafka',
       },
       meta: {
-        test: () => cy.findByText('telegram-source-source').should('exist'),
+        test: () => cy.findByText('Telegram source').should('exist'),
       },
     },
     selectConnectorEmptyState: {
@@ -57,8 +57,7 @@ const testMachine = Machine({
     selectKafkaEmptyState: {
       meta: {
         noCoverage: true,
-        test: () =>
-          cy.findByText('No Kafka instances').should('exist'),
+        test: () => cy.findByText('No Kafka instances').should('exist'),
       },
     },
     loadingNamespace: {
@@ -78,7 +77,8 @@ const testMachine = Machine({
         CLICK_NAMESPACE: 'basicConfiguration',
       },
       meta: {
-        test: () => cy.findByText('default-connector-namespace').should('exist'),
+        test: () =>
+          cy.findByText('default-connector-namespace').should('exist'),
       },
     },
     selectNamespaceEmptyState: {
@@ -103,7 +103,10 @@ const testMachine = Machine({
     },
     errorConfiguration: {
       on: {
-        CONFIGURE_ERROR_HANDLER: 'configureConnector',
+        CONFIGURE_ERROR_HANDLER: 'review',
+      },
+      meta: {
+        test: () => cy.findByText('Error handling method').should('exist'),
       },
     },
     review: {
@@ -111,12 +114,12 @@ const testMachine = Machine({
         SAVE_CONNECTOR: 'saved',
       },
       meta: {
-        TEST: () => {
-          cy.findByText('Please review the configuration data.').should(
-            'exist'
-          );
-          cy.findByDisplayValue(
-            '{ "authorizationToken": "some-token" }'
+        test: () => {
+          cy.findByText(
+            'Review the configuration properties for your connector instance.'
+          ).should('exist');
+          cy.findByText(
+            '*************'
           ).should('exist');
         },
       },
@@ -124,8 +127,8 @@ const testMachine = Machine({
     saved: {
       type: 'final',
       meta: {
-        TEST: () => {
-          cy.findByText('wuzard.creation-success').should('exist');
+        test: () => {
+          cy.findByText('Connectors instance ready').should('exist');
         },
       },
       on: {
@@ -135,7 +138,7 @@ const testMachine = Machine({
     closed: {
       type: 'final',
       meta: {
-        TEST: () => {},
+        test: () => {},
       },
     },
   },
@@ -186,7 +189,7 @@ describe('Connector creation', () => {
       },
       CLICK_CONNECTOR: () => {
         cy.findByLabelText('filter by connector name').type('telegram');
-        cy.findByText('telegram-source-source').click();
+        cy.findByText('Telegram source').click();
         cy.findByText('Next').click();
       },
       CLICK_KAFKA_INSTANCE: () => {
@@ -203,39 +206,47 @@ describe('Connector creation', () => {
         cy.findByLabelText('Client secret *').type('client-secret');
         cy.findByText('Next').should('be.enabled').click();
       },
-      CONFIGURE_ERROR_HANDLER: () => {
-        cy.findByText('Select Type').click();
-      },
+
       CONFIGURE: () => {
         cy.findByLabelText('Token *').type('some-token');
+        cy.findByLabelText('Topic Name *').type('some-topic');
+        cy.findByText('Next').should('be.enabled').click();
+      },
+      CONFIGURE_ERROR_HANDLER: () => {
         cy.findByText('Next').should('be.enabled').click();
       },
       SAVE_CONNECTOR: () => {
         cy.findByRole('button', { name: 'Create Connector' })
           .should('be.enabled')
           .click();
-        cy.wait('@serviceAccount')
-          .its('request.body.name')
-          .should('include', 'connector-telegram-source');
         cy.wait('@connectorCreation')
           .its('request.body')
           .should('deep.equal', {
             kind: 'Connector',
             name: 'my-connector',
             channel: 'stable',
-            namespace_id: "c928s834guu03nmd3r20",
+            namespace_id: 'c928s834guu03nmd3r20',
             desired_state: 'ready',
-            connector_type_id: 'telegram-source',
+            connector_type_id: 'telegram_source_0.1',
             kafka: {
               id: '1r9vAEfspruNoxIe4I9parl6dLo',
               url: 'demo',
             },
             service_account: {
-              client_id: 'lorem',
-              client_secret: 'dolor',
+              client_id: 'client-id',
+              client_secret: 'client-secret',
             },
             connector: {
-              authorizationToken: 'some-token',
+              data_shape: {
+                produces: {
+                  format: 'application/json',
+                },
+              },
+              kafka_topic: 'some-topic',
+              telegram_authorization_token: 'some-token',
+              error_handler: {
+                stop: {},
+              },
             },
           });
       },
@@ -286,7 +297,7 @@ describe('Connector creation', () => {
     ).withEvents({
       CLICK_CONNECTOR: () => {
         cy.findByLabelText('filter by connector name').type('telegram');
-        cy.findByText('telegram-source-source').click();
+        cy.findByText('Telegram source').click();
 
         cy.findByText('Next').click();
       },
@@ -319,7 +330,7 @@ describe('Connector creation', () => {
     ).withEvents({
       CLICK_CONNECTOR: () => {
         cy.findByLabelText('filter by connector name').type('telegram');
-        cy.findByText('telegram-source-source').click();
+        cy.findByText('Telegram source').click();
         cy.findByText('Next').click();
       },
       CLICK_KAFKA_INSTANCE: () => {

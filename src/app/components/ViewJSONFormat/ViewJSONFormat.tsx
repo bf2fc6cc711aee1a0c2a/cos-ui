@@ -1,7 +1,8 @@
-import { useReviewMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
+import { UserProvidedServiceAccount } from '@apis/api';
 import { dataToPrettyString, getPasswordType } from '@utils/shared';
 import _ from 'lodash';
 import React, { FunctionComponent } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Button,
@@ -21,27 +22,41 @@ import {
   ConnectorDesiredState,
   ObjectReference,
   ConnectorTypeAllOf,
+  ConnectorNamespace,
+  ConnectorType,
 } from '@rhoas/connector-management-sdk';
+import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
-export const ViewJSONFormat: FunctionComponent = () => {
+type ViewJSONFormatProps = {
+  kafka: KafkaRequest;
+  namespace: ConnectorNamespace;
+  connectorType: ConnectorType;
+  name: string;
+  topic: string;
+  userErrorHandler: string;
+  userServiceAccount: UserProvidedServiceAccount;
+  configString: string;
+};
+
+export const ViewJSONFormat: FunctionComponent<ViewJSONFormatProps> = ({
+  kafka,
+  namespace,
+  connectorType,
+  name,
+  topic,
+  userErrorHandler,
+  userServiceAccount,
+  configString,
+}) => {
+  const { t } = useTranslation();
   const [copied, setCopied] = React.useState<boolean>(false);
-  const [showServiceAccount, setShowServiceAccount] =
+  const [showSecretFields, setShowSecretFields] =
     React.useState<boolean>(false);
 
   const downloadTooltipRef = React.useRef();
   const showTooltipRef = React.useRef();
   let timer: any;
 
-  const {
-    name,
-    userServiceAccount,
-    userErrorHandler,
-    topic,
-    configString,
-    kafka,
-    namespace,
-    connectorType,
-  } = useReviewMachine();
   const parsedConfigString = JSON.parse(configString);
   const schema: Record<string, any> = (connectorType as ConnectorTypeAllOf)
     .schema!;
@@ -62,7 +77,9 @@ export const ViewJSONFormat: FunctionComponent = () => {
     {
       service_account: {
         client_id: userServiceAccount.clientId,
-        client_secret: userServiceAccount.clientSecret,
+        client_secret: showSecretFields
+          ? userServiceAccount.clientSecret
+          : '*'.repeat(userServiceAccount.clientSecret.length),
       },
     },
 
@@ -137,16 +154,14 @@ export const ViewJSONFormat: FunctionComponent = () => {
           variant="plain"
           ref={showTooltipRef}
           aria-label="show hidden fields icon"
-          onClick={() => setShowServiceAccount(!showServiceAccount)}
+          onClick={() => setShowSecretFields(!showSecretFields)}
         >
-          {showServiceAccount ? <EyeSlashIcon /> : <EyeIcon />}
+          {showSecretFields ? <EyeSlashIcon /> : <EyeIcon />}
         </Button>
         <Tooltip
           content={
             <div>
-              {showServiceAccount
-                ? 'Hide service account'
-                : 'Show service account'}
+              {showSecretFields ? t('hideSecretFields') : t('showSecretFields')}
             </div>
           }
           reference={showTooltipRef}
@@ -158,7 +173,7 @@ export const ViewJSONFormat: FunctionComponent = () => {
           textId="code-content"
           aria-label="Copy to clipboard"
           onClick={(e) =>
-            onClick(e, getJson(configPrettyString, showServiceAccount))
+            onClick(e, getJson(configPrettyString, showSecretFields))
           }
           exitDelay={600}
           maxWidth="110px"
@@ -173,7 +188,7 @@ export const ViewJSONFormat: FunctionComponent = () => {
           ref={downloadTooltipRef}
           aria-label="Download icon"
           onClick={(e) =>
-            downloadFile(e, getJson(configPrettyString, showServiceAccount))
+            downloadFile(e, getJson(configPrettyString, showSecretFields))
           }
         >
           <FileDownloadIcon />
@@ -188,7 +203,7 @@ export const ViewJSONFormat: FunctionComponent = () => {
   return (
     <CodeBlock actions={actions}>
       <CodeBlockCode id="code-content">
-        {getJson(configPrettyString, showServiceAccount)}
+        {getJson(configPrettyString, showSecretFields)}
       </CodeBlockCode>
     </CodeBlock>
   );
