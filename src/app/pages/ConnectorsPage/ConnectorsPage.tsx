@@ -282,7 +282,7 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
                   perPage={request.size}
                   onPageChange={(page, perPage) =>
                     runQuery({
-                      page,
+                      page: perPage !== request.size ? 1 : page,
                       size: perPage,
                       orderBy: request.orderBy,
                       search: request.search,
