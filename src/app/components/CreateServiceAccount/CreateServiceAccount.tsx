@@ -1,8 +1,8 @@
 import { createServiceAccount, UserProvidedServiceAccount } from '@apis/api';
 import { useCos } from '@context/CosContext';
-import { t } from 'i18next';
 import React, { FormEvent, useCallback, useState } from 'react';
 import { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Modal,
@@ -48,6 +48,7 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
   onSetServiceAccount,
   onSetSaCreated,
 }) => {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState<boolean>(false);
   const [sortDesc, setSortDesc] = useState<string>('');
   const [validated, setValidated] = useState<Validate>('default');

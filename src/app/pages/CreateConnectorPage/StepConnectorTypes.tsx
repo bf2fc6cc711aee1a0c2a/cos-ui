@@ -1,4 +1,5 @@
 import { ConnectorTypesOrderBy, ConnectorTypesSearch } from '@apis/api';
+import { ConnectorTypeCard } from '@app/components/ConnectorTypeCard/ConnectorTypeCard';
 import {
   useConnectorTypesMachine,
   useConnectorTypesMachineIsReady,
@@ -26,15 +27,6 @@ import { useDebounce } from 'src/utils/useDebounce';
 import {
   Alert,
   Button,
-  Card,
-  CardBody,
-  CardHeader,
-  CardActions,
-  CardTitle,
-  DescriptionList,
-  DescriptionListDescription,
-  DescriptionListGroup,
-  DescriptionListTerm,
   Gallery,
   InputGroup,
   Select,
@@ -48,21 +40,8 @@ import {
   ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
-  Label,
-  Popover,
 } from '@patternfly/react-core';
-import {
-  FilterIcon,
-  BuildIcon,
-  BuilderImageIcon,
-  SearchIcon,
-  OutlinedQuestionCircleIcon,
-} from '@patternfly/react-icons';
-
-import {
-  ConnectorTypeAllOf,
-  ObjectReference,
-} from '@rhoas/connector-management-sdk';
+import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
 import './StepConnectorTypes.css';
 
@@ -134,131 +113,23 @@ export function ConnectorTypesGallery() {
                         title={t('duplicateAlertConnectorType')}
                       />
                       <Gallery hasGutter>
-                        <Card
-                          key={(connectorTypeDetails as ObjectReference).id}
-                          isSelectable
-                          isSelected={
-                            selectedId ===
-                            (connectorTypeDetails as ObjectReference).id
-                          }
-                        >
-                          {(
-                            connectorTypeDetails as ConnectorTypeAllOf
-                          ).labels?.includes('source') && (
-                            <CardHeader>
-                              <BuildIcon color="lightGrey" size="lg" />
-                              <CardActions>
-                                <Label color="blue">{t('source')}</Label>
-                              </CardActions>
-                            </CardHeader>
-                          )}
-                          {(
-                            connectorTypeDetails as ConnectorTypeAllOf
-                          ).labels?.includes('sink') && (
-                            <CardHeader>
-                              <BuilderImageIcon color="lightGrey" size="lg" />
-                              <CardActions>
-                                <Label color="green">{t('sink')}</Label>
-                              </CardActions>
-                            </CardHeader>
-                          )}
-                          <CardTitle>
-                            {(connectorTypeDetails as ConnectorTypeAllOf).name}{' '}
-                            <Popover
-                              position="right"
-                              aria-label={t('ConnectorHelpAndGuidances')}
-                              headerContent={t('ConnectorHelpAndGuidances')}
-                              bodyContent={
-                                <div>
-                                  {
-                                    (connectorTypeDetails as ConnectorTypeAllOf)
-                                      .description
-                                  }
-                                </div>
-                              }
-                            >
-                              <OutlinedQuestionCircleIcon color="grey" />
-                            </Popover>
-                          </CardTitle>
-                          <CardBody>
-                            <DescriptionList isHorizontal isFluid>
-                              <DescriptionListGroup>
-                                <DescriptionListTerm>
-                                  {t('version')}:
-                                </DescriptionListTerm>
-                                <DescriptionListDescription>
-                                  {
-                                    (connectorTypeDetails as ConnectorTypeAllOf)
-                                      .version
-                                  }
-                                </DescriptionListDescription>
-                              </DescriptionListGroup>
-                            </DescriptionList>
-                          </CardBody>
-                        </Card>
+                        <ConnectorTypeCard
+                          connector={connectorTypeDetails}
+                          selectedId={selectedId}
+                          onSelect={onSelect}
+                          isDuplicate={duplicateMode}
+                        />
                       </Gallery>
                     </>
                   ) : (
                     <Gallery hasGutter>
                       {response?.items?.map((c) => {
                         return (
-                          <Card
-                            isHoverable
-                            key={(c as ObjectReference).id}
-                            isSelectable
-                            isSelected={
-                              selectedId === (c as ObjectReference).id
-                            }
-                            onClick={() => onSelect((c as ObjectReference).id!)}
-                          >
-                            {(c as ConnectorTypeAllOf).labels?.includes(
-                              'source'
-                            ) && (
-                              <CardHeader>
-                                <BuildIcon color="lightGrey" size="lg" />
-                                <CardActions>
-                                  <Label color="blue">{t('source')}</Label>
-                                </CardActions>
-                              </CardHeader>
-                            )}
-                            {(c as ConnectorTypeAllOf).labels?.includes(
-                              'sink'
-                            ) && (
-                              <CardHeader>
-                                <BuilderImageIcon color="lightGrey" size="lg" />
-                                <CardActions>
-                                  <Label color="green">{t('sink')}</Label>
-                                </CardActions>
-                              </CardHeader>
-                            )}
-                            <CardTitle>
-                              {(c as ConnectorTypeAllOf).name}{' '}
-                              <Popover
-                                position="right"
-                                aria-label={t('ConnectorHelpAndGuidances')}
-                                headerContent={t('ConnectorHelpAndGuidances')}
-                                bodyContent={
-                                  <div>
-                                    {(c as ConnectorTypeAllOf).description}
-                                  </div>
-                                }
-                              >
-                                <OutlinedQuestionCircleIcon color="grey" />
-                              </Popover>
-                            </CardTitle>
-                            <CardBody>
-                              <DescriptionList isHorizontal isFluid>
-                                <DescriptionListGroup>
-                                  <DescriptionListTerm>
-                                    {t('version')}:
-                                  </DescriptionListTerm>
-                                  <DescriptionListDescription>
-                                    {(c as ConnectorTypeAllOf).version}
-                                  </DescriptionListDescription>
-                                </DescriptionListGroup>
-                              </DescriptionList>
-                            </CardBody>
-                          </Card>
+                          <ConnectorTypeCard
+                            connector={c}
+                            selectedId={selectedId}
+                            onSelect={onSelect}
+                          />
                         );
                       })}
                     </Gallery>
