@@ -1,0 +1,3622 @@
+{
+  "kind": "ConnectorTypeList",
+  "page": 1,
+  "size": 20,
+  "total": 68,
+  "items": [
+    {
+      "id": "aws_cloudwatch_sink_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_cloudwatch_sink_0.1",
+      "name": "Amazon CloudWatch Metrics sink",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Send data to Amazon CloudWatch metrics.",
+      "icon_href": "TODO",
+      "labels": ["sink"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "consumes": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/octet-stream",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/octet-stream"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "aws_access_key": {
+            "oneOf": [
+              {
+                "description": "The access key obtained from AWS.",
+                "format": "password",
+                "title": "Access Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_access_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Access Key",
+            "x-group": "credentials"
+          },
+          "aws_cw_namespace": {
+            "description": "The CloudWatch metric namespace.",
+            "title": "Cloud Watch Namespace",
+            "type": "string"
+          },
+          "aws_override_endpoint": {
+            "default": false,
+            "description": "Select this option to override the endpoint URI. To use this option, you must also provide a URI for the `uriEndpointOverride` option.",
+            "title": "Endpoint Overwrite",
+            "type": "boolean"
+          },
+          "aws_region": {
+            "description": "The AWS region to access.",
+            "enum": [
+              "af-south-1",
+              "ap-east-1",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ca-central-1",
+              "eu-central-1",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "fips-us-east-1",
+              "fips-us-east-2",
+              "fips-us-west-1",
+              "fips-us-west-2",
+              "me-south-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2",
+              "cn-north-1",
+              "cn-northwest-1",
+              "us-gov-east-1",
+              "us-gov-west-1",
+              "us-iso-east-1",
+              "us-iso-west-1",
+              "us-isob-east-1"
+            ],
+            "title": "AWS Region",
+            "type": "string"
+          },
+          "aws_secret_key": {
+            "oneOf": [
+              {
+                "description": "The secret key obtained from AWS.",
+                "format": "password",
+                "title": "Secret Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_secret_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Secret Key",
+            "x-group": "credentials"
+          },
+          "aws_uri_endpoint_override": {
+            "description": "The overriding endpoint URI. To use this option, you must also select the `overrideEndpoint` option.",
+            "title": "Overwrite Endpoint URI",
+            "type": "string"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "consumes": { "$ref": "#/$defs/data_shape/consumes" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "A comma-separated list of Kafka topic names.",
+            "title": "Topic Names",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "aws_cw_namespace",
+          "aws_region",
+          "kafka_topic",
+          "aws_access_key",
+          "aws_secret_key"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "aws_ddb_sink_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_ddb_sink_0.1",
+      "name": "Amazon DynamoDB sink",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Send data to Amazon DynamoDB NoSQL database service. The sent data inserts, updates, or deletes an item in the specified Amazon DynamoDB table.",
+      "icon_href": "TODO",
+      "labels": ["sink"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "consumes": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/json",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/json"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "aws_access_key": {
+            "oneOf": [
+              {
+                "description": "The access key obtained from AWS.",
+                "format": "password",
+                "title": "Access Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_access_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Access Key",
+            "x-group": "credentials"
+          },
+          "aws_operation": {
+            "default": "PutItem",
+            "description": "The operation to perform. The options are PutItem, UpdateItem, or DeleteItem.",
+            "example": "PutItem",
+            "title": "Operation",
+            "type": "string"
+          },
+          "aws_override_endpoint": {
+            "default": false,
+            "description": "Select this option to override the endpoint URI. To use this option, you must also provide a URI for the `uriEndpointOverride` option.",
+            "title": "Endpoint Overwrite",
+            "type": "boolean"
+          },
+          "aws_region": {
+            "description": "The AWS region to access.",
+            "enum": [
+              "af-south-1",
+              "ap-east-1",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ca-central-1",
+              "eu-central-1",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "fips-us-east-1",
+              "fips-us-east-2",
+              "fips-us-west-1",
+              "fips-us-west-2",
+              "me-south-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2",
+              "cn-north-1",
+              "cn-northwest-1",
+              "us-gov-east-1",
+              "us-gov-west-1",
+              "us-iso-east-1",
+              "us-iso-west-1",
+              "us-isob-east-1"
+            ],
+            "title": "AWS Region",
+            "type": "string"
+          },
+          "aws_secret_key": {
+            "oneOf": [
+              {
+                "description": "The secret key obtained from AWS.",
+                "format": "password",
+                "title": "Secret Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_secret_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Secret Key",
+            "x-group": "credentials"
+          },
+          "aws_table": {
+            "description": "The name of the DynamoDB table.",
+            "title": "Table",
+            "type": "string"
+          },
+          "aws_uri_endpoint_override": {
+            "description": "The overriding endpoint URI. To use this option, you must also select the `overrideEndpoint` option.",
+            "title": "Overwrite Endpoint URI",
+            "type": "string"
+          },
+          "aws_write_capacity": {
+            "default": 1,
+            "description": "The provisioned throughput to reserve for writing resources to your table.",
+            "title": "Write Capacity",
+            "type": "integer"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "consumes": { "$ref": "#/$defs/data_shape/consumes" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "A comma-separated list of Kafka topic names.",
+            "title": "Topic Names",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "aws_table",
+          "aws_region",
+          "kafka_topic",
+          "aws_access_key",
+          "aws_secret_key"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "aws_ddb_streams_source_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_ddb_streams_source_0.1",
+      "name": "Amazon DynamoDB Stream source",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Receive data from Amazon DynamoDB Streams.",
+      "icon_href": "TODO",
+      "labels": ["source"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "produces": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/json",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/json"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "aws_access_key": {
+            "oneOf": [
+              {
+                "description": "The access key obtained from AWS.",
+                "format": "password",
+                "title": "Access Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_access_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Access Key",
+            "x-group": "credentials"
+          },
+          "aws_delay": {
+            "default": 500,
+            "description": "The number of milliseconds before the next poll from the database.",
+            "title": "Delay",
+            "type": "integer"
+          },
+          "aws_override_endpoint": {
+            "default": false,
+            "description": "Select this option to override the endpoint URI. To use this option, you must also provide a URI for the `uriEndpointOverride` option.",
+            "title": "Endpoint Overwrite",
+            "type": "boolean"
+          },
+          "aws_region": {
+            "description": "The AWS region to access.",
+            "enum": [
+              "af-south-1",
+              "ap-east-1",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ca-central-1",
+              "eu-central-1",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "fips-us-east-1",
+              "fips-us-east-2",
+              "fips-us-west-1",
+              "fips-us-west-2",
+              "me-south-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2",
+              "cn-north-1",
+              "cn-northwest-1",
+              "us-gov-east-1",
+              "us-gov-west-1",
+              "us-iso-east-1",
+              "us-iso-west-1",
+              "us-isob-east-1"
+            ],
+            "title": "AWS Region",
+            "type": "string"
+          },
+          "aws_secret_key": {
+            "oneOf": [
+              {
+                "description": "The secret key obtained from AWS.",
+                "format": "password",
+                "title": "Secret Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_secret_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Secret Key",
+            "x-group": "credentials"
+          },
+          "aws_stream_iterator_type": {
+            "default": "FROM_LATEST",
+            "description": "Defines where in the DynamoDB stream to start getting records. There are two enums and the value can be one of FROM_LATEST and FROM_START. Note that using FROM_START can cause a significant delay before the stream has caught up to real-time.",
+            "title": "Stream Iterator Type",
+            "type": "string"
+          },
+          "aws_table": {
+            "description": "The name of the DynamoDB table.",
+            "title": "Table",
+            "type": "string"
+          },
+          "aws_uri_endpoint_override": {
+            "description": "The overriding endpoint URI. To use this option, you must also select the `overrideEndpoint` option.",
+            "title": "Overwrite Endpoint URI",
+            "type": "string"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "produces": { "$ref": "#/$defs/data_shape/produces" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "The name of the Kafka Topic to use.",
+            "title": "Topic Name",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "aws_table",
+          "aws_region",
+          "kafka_topic",
+          "aws_access_key",
+          "aws_secret_key"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "aws_kinesis_sink_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_kinesis_sink_0.1",
+      "name": "Amazon Kinesis sink",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Send data to Amazon Kinesis.",
+      "icon_href": "TODO",
+      "labels": ["sink"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "consumes": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/octet-stream",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/octet-stream"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            },
+            "produces": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/octet-stream",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/octet-stream"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "aws_access_key": {
+            "oneOf": [
+              {
+                "description": "The access key obtained from AWS.",
+                "format": "password",
+                "title": "Access Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_access_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Access Key",
+            "x-group": "credentials"
+          },
+          "aws_override_endpoint": {
+            "default": false,
+            "description": "Select this option to override the endpoint URI. To use this option, you must also provide a URI for the `uriEndpointOverride` option.",
+            "title": "Endpoint Overwrite",
+            "type": "boolean"
+          },
+          "aws_region": {
+            "description": "The AWS region to access.",
+            "enum": [
+              "af-south-1",
+              "ap-east-1",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ca-central-1",
+              "eu-central-1",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "fips-us-east-1",
+              "fips-us-east-2",
+              "fips-us-west-1",
+              "fips-us-west-2",
+              "me-south-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2",
+              "cn-north-1",
+              "cn-northwest-1",
+              "us-gov-east-1",
+              "us-gov-west-1",
+              "us-iso-east-1",
+              "us-iso-west-1",
+              "us-isob-east-1"
+            ],
+            "title": "AWS Region",
+            "type": "string"
+          },
+          "aws_secret_key": {
+            "oneOf": [
+              {
+                "description": "The secret key obtained from AWS.",
+                "format": "password",
+                "title": "Secret Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_secret_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Secret Key",
+            "x-group": "credentials"
+          },
+          "aws_stream": {
+            "description": "The Kinesis stream that you want to access. The Kinesis stream that you specify must already exist.",
+            "title": "Stream Name",
+            "type": "string"
+          },
+          "aws_uri_endpoint_override": {
+            "description": "The overriding endpoint URI. To use this option, you must also select the `overrideEndpoint` option.",
+            "title": "Overwrite Endpoint URI",
+            "type": "string"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "consumes": { "$ref": "#/$defs/data_shape/consumes" },
+              "produces": { "$ref": "#/$defs/data_shape/produces" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "A comma-separated list of Kafka topic names.",
+            "title": "Topic Names",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "aws_stream",
+          "aws_region",
+          "kafka_topic",
+          "aws_access_key",
+          "aws_secret_key"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "aws_kinesis_source_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_kinesis_source_0.1",
+      "name": "Amazon Kinesis source",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Receive data from Amazon Kinesis.",
+      "icon_href": "TODO",
+      "labels": ["source"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "consumes": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/octet-stream",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/octet-stream"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            },
+            "produces": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/octet-stream",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/octet-stream"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "aws_access_key": {
+            "oneOf": [
+              {
+                "description": "The access key obtained from AWS.",
+                "format": "password",
+                "title": "Access Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_access_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Access Key",
+            "x-group": "credentials"
+          },
+          "aws_delay": {
+            "default": 500,
+            "description": "The number of milliseconds before the next poll of the selected stream.",
+            "title": "Delay",
+            "type": "integer"
+          },
+          "aws_override_endpoint": {
+            "default": false,
+            "description": "Select this option to override the endpoint URI. To use this option, you must also provide a URI for the `uriEndpointOverride` option.",
+            "title": "Endpoint Overwrite",
+            "type": "boolean"
+          },
+          "aws_region": {
+            "description": "The AWS region to access.",
+            "example": "eu-west-1",
+            "title": "AWS Region",
+            "type": "string"
+          },
+          "aws_secret_key": {
+            "oneOf": [
+              {
+                "description": "The secret key obtained from AWS.",
+                "format": "password",
+                "title": "Secret Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_secret_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Secret Key",
+            "x-group": "credentials"
+          },
+          "aws_stream": {
+            "description": "The Kinesis stream that you want to access. The Kinesis stream that you specify must already exist.",
+            "title": "Stream Name",
+            "type": "string"
+          },
+          "aws_uri_endpoint_override": {
+            "description": "The overriding endpoint URI. To use this option, you must also select the `overrideEndpoint` option.",
+            "title": "Overwrite Endpoint URI",
+            "type": "string"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "consumes": { "$ref": "#/$defs/data_shape/consumes" },
+              "produces": { "$ref": "#/$defs/data_shape/produces" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "The name of the Kafka Topic to use.",
+            "title": "Topic Name",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "aws_stream",
+          "aws_region",
+          "kafka_topic",
+          "aws_access_key",
+          "aws_secret_key"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "aws_lambda_sink_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_lambda_sink_0.1",
+      "name": "Amazon Lambda sink",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Send data to an Amazon Lambda function.",
+      "icon_href": "TODO",
+      "labels": ["sink"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "consumes": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/octet-stream",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/octet-stream"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "aws_access_key": {
+            "oneOf": [
+              {
+                "description": "The access key obtained from AWS.",
+                "format": "password",
+                "title": "Access Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_access_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Access Key",
+            "x-group": "credentials"
+          },
+          "aws_function": {
+            "description": "The Lambda Function name.",
+            "title": "Function Name",
+            "type": "string"
+          },
+          "aws_region": {
+            "description": "The AWS region to access.",
+            "enum": [
+              "af-south-1",
+              "ap-east-1",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ca-central-1",
+              "eu-central-1",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "fips-us-east-1",
+              "fips-us-east-2",
+              "fips-us-west-1",
+              "fips-us-west-2",
+              "me-south-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2",
+              "cn-north-1",
+              "cn-northwest-1",
+              "us-gov-east-1",
+              "us-gov-west-1",
+              "us-iso-east-1",
+              "us-iso-west-1",
+              "us-isob-east-1"
+            ],
+            "title": "AWS Region",
+            "type": "string"
+          },
+          "aws_secret_key": {
+            "oneOf": [
+              {
+                "description": "The secret key obtained from AWS.",
+                "format": "password",
+                "title": "Secret Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_secret_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Secret Key",
+            "x-group": "credentials"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "consumes": { "$ref": "#/$defs/data_shape/consumes" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "A comma-separated list of Kafka topic names.",
+            "title": "Topic Names",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "aws_function",
+          "aws_region",
+          "kafka_topic",
+          "aws_access_key",
+          "aws_secret_key"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "aws_redshift_sink_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_redshift_sink_0.1",
+      "name": "Amazon Redshift sink",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Send data to an Amazon Redshift Database.",
+      "icon_href": "TODO",
+      "labels": ["sink"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "consumes": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/json",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/json"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "consumes": { "$ref": "#/$defs/data_shape/consumes" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "A comma-separated list of Kafka topic names.",
+            "title": "Topic Names",
+            "type": "string"
+          },
+          "processors": {},
+          "sql_database_name": {
+            "description": "The name of the AWS RedShift Database.",
+            "title": "Database Name",
+            "type": "string"
+          },
+          "sql_password": {
+            "oneOf": [
+              {
+                "description": "The password to access a secured AWS Redshift Database.",
+                "format": "password",
+                "title": "Password",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the sql_password",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Password",
+            "x-group": "credentials"
+          },
+          "sql_query": {
+            "description": "The query to execute against the AWS Redshift Database.",
+            "example": "INSERT INTO accounts (username,city) VALUES (:#username,:#city)",
+            "title": "Query",
+            "type": "string"
+          },
+          "sql_server_name": {
+            "description": "The server name for the data source.",
+            "example": "localhost",
+            "title": "Server Name",
+            "type": "string"
+          },
+          "sql_server_port": {
+            "default": 5439,
+            "description": "The server port for the AWS RedShi data source.",
+            "title": "Server Port",
+            "type": "string"
+          },
+          "sql_username": {
+            "description": "The username to access a secured AWS Redshift Database.",
+            "title": "Username",
+            "type": "string",
+            "x-group": "credentials"
+          }
+        },
+        "required": [
+          "sql_server_name",
+          "sql_username",
+          "sql_password",
+          "sql_query",
+          "sql_database_name",
+          "kafka_topic"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "aws_redshift_source_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_redshift_source_0.1",
+      "name": "Amazon Redshift source",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Query data from an Amazon Redshift Database.",
+      "icon_href": "TODO",
+      "labels": ["source"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "produces": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/json",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/json"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "produces": { "$ref": "#/$defs/data_shape/produces" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "The name of the Kafka Topic to use.",
+            "title": "Topic Name",
+            "type": "string"
+          },
+          "processors": {},
+          "sql_consumed_query": {
+            "description": "A query to run on a tuple consumed.",
+            "example": "DELETE FROM accounts where user_id = :#user_id",
+            "title": "Consumed Query",
+            "type": "string"
+          },
+          "sql_database_name": {
+            "description": "The name of the AWS RedShift Database.",
+            "title": "Database Name",
+            "type": "string"
+          },
+          "sql_delay": {
+            "default": 500,
+            "description": "The number of milliseconds before the next poll from the AWS RedShift database.",
+            "title": "Delay",
+            "type": "integer"
+          },
+          "sql_password": {
+            "oneOf": [
+              {
+                "description": "The password to access a secured AWS RedShift Database.",
+                "format": "password",
+                "title": "Password",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the sql_password",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Password",
+            "x-group": "credentials"
+          },
+          "sql_query": {
+            "description": "The query to execute against the AWS RedShift Database.",
+            "example": "INSERT INTO accounts (username,city) VALUES (:#username,:#city)",
+            "title": "Query",
+            "type": "string"
+          },
+          "sql_server_name": {
+            "description": "The server name for the data source.",
+            "example": "localhost",
+            "title": "Server Name",
+            "type": "string"
+          },
+          "sql_server_port": {
+            "default": 5439,
+            "description": "The server port for the data source.",
+            "title": "Server Port",
+            "type": "string"
+          },
+          "sql_username": {
+            "description": "The username to access a secured AWS RedShift Database.",
+            "title": "Username",
+            "type": "string",
+            "x-group": "credentials"
+          }
+        },
+        "required": [
+          "sql_server_name",
+          "sql_username",
+          "sql_password",
+          "sql_query",
+          "sql_database_name",
+          "kafka_topic"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "aws_s3_sink_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_s3_sink_0.1",
+      "name": "Amazon S3 sink",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Send data to an Amazon S3 bucket.",
+      "icon_href": "TODO",
+      "labels": ["sink"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "consumes": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/octet-stream",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/octet-stream"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "aws_access_key": {
+            "oneOf": [
+              {
+                "description": "The access key obtained from AWS.",
+                "format": "password",
+                "title": "Access Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_access_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Access Key",
+            "x-group": "credentials"
+          },
+          "aws_auto_create_bucket": {
+            "default": false,
+            "description": "Specifies to automatically create the S3 bucket.",
+            "title": "Autocreate Bucket",
+            "type": "boolean"
+          },
+          "aws_bucket_name_or_arn": {
+            "description": "The S3 Bucket name or Amazon Resource Name (ARN).",
+            "title": "Bucket Name",
+            "type": "string"
+          },
+          "aws_key_name": {
+            "description": "The key name for saving an element in the bucket.",
+            "title": "Key Name",
+            "type": "string"
+          },
+          "aws_override_endpoint": {
+            "default": false,
+            "description": "Select this option to override the endpoint URI. To use this option, you must also provide a URI for the `uriEndpointOverride` option.",
+            "title": "Endpoint Overwrite",
+            "type": "boolean"
+          },
+          "aws_region": {
+            "description": "The AWS region to access.",
+            "enum": [
+              "af-south-1",
+              "ap-east-1",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ca-central-1",
+              "eu-central-1",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "fips-us-east-1",
+              "fips-us-east-2",
+              "fips-us-west-1",
+              "fips-us-west-2",
+              "me-south-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2",
+              "cn-north-1",
+              "cn-northwest-1",
+              "us-gov-east-1",
+              "us-gov-west-1",
+              "us-iso-east-1",
+              "us-iso-west-1",
+              "us-isob-east-1"
+            ],
+            "title": "AWS Region",
+            "type": "string"
+          },
+          "aws_secret_key": {
+            "oneOf": [
+              {
+                "description": "The secret key obtained from AWS.",
+                "format": "password",
+                "title": "Secret Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_secret_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Secret Key",
+            "x-group": "credentials"
+          },
+          "aws_uri_endpoint_override": {
+            "description": "The overriding endpoint URI. To use this option, you must also select the `overrideEndpoint` option.",
+            "title": "Overwrite Endpoint URI",
+            "type": "string"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "consumes": { "$ref": "#/$defs/data_shape/consumes" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "A comma-separated list of Kafka topic names.",
+            "title": "Topic Names",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "aws_bucket_name_or_arn",
+          "aws_region",
+          "kafka_topic",
+          "aws_access_key",
+          "aws_secret_key"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "aws_s3_source_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_s3_source_0.1",
+      "name": "Amazon S3 source",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Receive data from an Amazon S3 bucket.",
+      "icon_href": "TODO",
+      "labels": ["source"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "produces": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/octet-stream",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/octet-stream"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "aws_access_key": {
+            "oneOf": [
+              {
+                "description": "The access key obtained from AWS.",
+                "format": "password",
+                "title": "Access Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_access_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Access Key",
+            "x-group": "credentials"
+          },
+          "aws_auto_create_bucket": {
+            "default": false,
+            "description": "Specifies to automatically create the S3 bucket.",
+            "title": "Autocreate Bucket",
+            "type": "boolean"
+          },
+          "aws_bucket_name_or_arn": {
+            "description": "The S3 Bucket name or Amazon Resource Name (ARN).",
+            "title": "Bucket Name",
+            "type": "string"
+          },
+          "aws_delay": {
+            "default": 500,
+            "description": "The number of milliseconds before the next poll of the selected bucket.",
+            "title": "Delay",
+            "type": "integer"
+          },
+          "aws_delete_after_read": {
+            "default": true,
+            "description": "Specifies to delete objects after consuming them.",
+            "title": "Auto-delete Objects",
+            "type": "boolean"
+          },
+          "aws_ignore_body": {
+            "default": false,
+            "description": "If true, the S3 Object body is ignored. Setting this to true overrides any behavior defined by the `includeBody` option. If false, the S3 object is put in the body.",
+            "title": "Ignore Body",
+            "type": "boolean"
+          },
+          "aws_include_body": {
+            "default": true,
+            "description": "If true, the exchange is consumed and put into the body and closed. If false, the S3Object stream is put raw into the body and the headers are set with the S3 object metadata.",
+            "title": "Include Body",
+            "type": "boolean"
+          },
+          "aws_override_endpoint": {
+            "default": false,
+            "description": "Select this option to override the endpoint URI. To use this option, you must also provide a URI for the `uriEndpointOverride` option.",
+            "title": "Endpoint Overwrite",
+            "type": "boolean"
+          },
+          "aws_prefix": {
+            "description": "The AWS S3 bucket prefix to consider while searching.",
+            "example": "folder/",
+            "title": "Prefix",
+            "type": "string"
+          },
+          "aws_region": {
+            "description": "The AWS region to access.",
+            "enum": [
+              "af-south-1",
+              "ap-east-1",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ca-central-1",
+              "eu-central-1",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "fips-us-east-1",
+              "fips-us-east-2",
+              "fips-us-west-1",
+              "fips-us-west-2",
+              "me-south-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2",
+              "cn-north-1",
+              "cn-northwest-1",
+              "us-gov-east-1",
+              "us-gov-west-1",
+              "us-iso-east-1",
+              "us-iso-west-1",
+              "us-isob-east-1"
+            ],
+            "title": "AWS Region",
+            "type": "string"
+          },
+          "aws_secret_key": {
+            "oneOf": [
+              {
+                "description": "The secret key obtained from AWS.",
+                "format": "password",
+                "title": "Secret Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_secret_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Secret Key",
+            "x-group": "credentials"
+          },
+          "aws_uri_endpoint_override": {
+            "description": "The overriding endpoint URI. To use this option, you must also select the `overrideEndpoint` option.",
+            "title": "Overwrite Endpoint URI",
+            "type": "string"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "produces": { "$ref": "#/$defs/data_shape/produces" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "The name of the Kafka Topic to use.",
+            "title": "Topic Name",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "aws_bucket_name_or_arn",
+          "aws_region",
+          "kafka_topic",
+          "aws_access_key",
+          "aws_secret_key"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "aws_ses_sink_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_ses_sink_0.1",
+      "name": "Amazon Simple Email Service sink",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Send email through the Amazon Simple Email Service (SES).",
+      "icon_href": "TODO",
+      "labels": ["sink"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "consumes": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/octet-stream",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/octet-stream"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "aws_access_key": {
+            "oneOf": [
+              {
+                "description": "The access key obtained from AWS.",
+                "format": "password",
+                "title": "Access Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_access_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Access Key",
+            "x-group": "credentials"
+          },
+          "aws_from": {
+            "description": "From address",
+            "example": "user@example.com",
+            "title": "From",
+            "type": "string"
+          },
+          "aws_region": {
+            "description": "The AWS region to access.",
+            "enum": [
+              "af-south-1",
+              "ap-east-1",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ca-central-1",
+              "eu-central-1",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "fips-us-east-1",
+              "fips-us-east-2",
+              "fips-us-west-1",
+              "fips-us-west-2",
+              "me-south-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2",
+              "cn-north-1",
+              "cn-northwest-1",
+              "us-gov-east-1",
+              "us-gov-west-1",
+              "us-iso-east-1",
+              "us-iso-west-1",
+              "us-isob-east-1"
+            ],
+            "title": "AWS Region",
+            "type": "string"
+          },
+          "aws_secret_key": {
+            "oneOf": [
+              {
+                "description": "The secret key obtained from AWS.",
+                "format": "password",
+                "title": "Secret Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_secret_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Secret Key",
+            "x-group": "credentials"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "consumes": { "$ref": "#/$defs/data_shape/consumes" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "A comma-separated list of Kafka topic names.",
+            "title": "Topic Names",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "aws_from",
+          "aws_region",
+          "kafka_topic",
+          "aws_access_key",
+          "aws_secret_key"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "aws_sns_sink_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_sns_sink_0.1",
+      "name": "Amazon Simple Notification Service sink",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Send data to an Amazon Simple Notification Service (SNS) topic.",
+      "icon_href": "TODO",
+      "labels": ["sink"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "consumes": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/octet-stream",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/octet-stream"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "aws_access_key": {
+            "oneOf": [
+              {
+                "description": "The access key obtained from AWS.",
+                "format": "password",
+                "title": "Access Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_access_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Access Key",
+            "x-group": "credentials"
+          },
+          "aws_auto_create_topic": {
+            "default": false,
+            "description": "Setting the autocreation of the SNS topic.",
+            "title": "Autocreate Topic",
+            "type": "boolean"
+          },
+          "aws_override_endpoint": {
+            "default": false,
+            "description": "Select this option to override the endpoint URI. To use this option, you must also provide a URI for the `uriEndpointOverride` option.",
+            "title": "Endpoint Overwrite",
+            "type": "boolean"
+          },
+          "aws_region": {
+            "description": "The AWS region to access.",
+            "enum": [
+              "af-south-1",
+              "ap-east-1",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ca-central-1",
+              "eu-central-1",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "fips-us-east-1",
+              "fips-us-east-2",
+              "fips-us-west-1",
+              "fips-us-west-2",
+              "me-south-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2",
+              "cn-north-1",
+              "cn-northwest-1",
+              "us-gov-east-1",
+              "us-gov-west-1",
+              "us-iso-east-1",
+              "us-iso-west-1",
+              "us-isob-east-1"
+            ],
+            "title": "AWS Region",
+            "type": "string"
+          },
+          "aws_secret_key": {
+            "oneOf": [
+              {
+                "description": "The secret key obtained from AWS.",
+                "format": "password",
+                "title": "Secret Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_secret_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Secret Key",
+            "x-group": "credentials"
+          },
+          "aws_topic_name_or_arn": {
+            "description": "The SNS topic name name or Amazon Resource Name (ARN).",
+            "title": "Topic Name",
+            "type": "string"
+          },
+          "aws_uri_endpoint_override": {
+            "description": "The overriding endpoint URI. To use this option, you must also select the `overrideEndpoint` option.",
+            "title": "Overwrite Endpoint URI",
+            "type": "string"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "consumes": { "$ref": "#/$defs/data_shape/consumes" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "A comma-separated list of Kafka topic names.",
+            "title": "Topic Names",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "aws_topic_name_or_arn",
+          "aws_region",
+          "kafka_topic",
+          "aws_access_key",
+          "aws_secret_key"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "aws_sqs_sink_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_sqs_sink_0.1",
+      "name": "Amazon Simple Queue Service sink",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Send data to Amazon Simple Queue Service (SQS).",
+      "icon_href": "TODO",
+      "labels": ["sink"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "consumes": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/octet-stream",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/octet-stream"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "aws_access_key": {
+            "oneOf": [
+              {
+                "description": "The access key obtained from AWS.",
+                "format": "password",
+                "title": "Access Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_access_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Access Key",
+            "x-group": "credentials"
+          },
+          "aws_amazon_a_w_s_host": {
+            "default": "amazonaws.com",
+            "description": "The hostname of the Amazon AWS cloud.",
+            "title": "AWS Host",
+            "type": "string"
+          },
+          "aws_auto_create_queue": {
+            "default": false,
+            "description": "Automatically create the SQS queue.",
+            "title": "Autocreate Queue",
+            "type": "boolean"
+          },
+          "aws_override_endpoint": {
+            "default": false,
+            "description": "Select this option to override the endpoint URI. To use this option, you must also provide a URI for the `uriEndpointOverride` option.",
+            "title": "Endpoint Overwrite",
+            "type": "boolean"
+          },
+          "aws_protocol": {
+            "default": "https",
+            "description": "The underlying protocol used to communicate with SQS.",
+            "example": "http or https",
+            "title": "Protocol",
+            "type": "string"
+          },
+          "aws_queue_name_or_arn": {
+            "description": "The SQS Queue name or or Amazon Resource Name (ARN).",
+            "title": "Queue Name",
+            "type": "string"
+          },
+          "aws_region": {
+            "description": "The AWS region to access.",
+            "enum": [
+              "af-south-1",
+              "ap-east-1",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ca-central-1",
+              "eu-central-1",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "fips-us-east-1",
+              "fips-us-east-2",
+              "fips-us-west-1",
+              "fips-us-west-2",
+              "me-south-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2",
+              "cn-north-1",
+              "cn-northwest-1",
+              "us-gov-east-1",
+              "us-gov-west-1",
+              "us-iso-east-1",
+              "us-iso-west-1",
+              "us-isob-east-1"
+            ],
+            "title": "AWS Region",
+            "type": "string"
+          },
+          "aws_secret_key": {
+            "oneOf": [
+              {
+                "description": "The secret key obtained from AWS.",
+                "format": "password",
+                "title": "Secret Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_secret_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Secret Key",
+            "x-group": "credentials"
+          },
+          "aws_uri_endpoint_override": {
+            "description": "The overriding endpoint URI. To use this option, you must also select the `overrideEndpoint` option.",
+            "title": "Overwrite Endpoint URI",
+            "type": "string"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "consumes": { "$ref": "#/$defs/data_shape/consumes" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "A comma-separated list of Kafka topic names.",
+            "title": "Topic Names",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "aws_queue_name_or_arn",
+          "aws_region",
+          "kafka_topic",
+          "aws_access_key",
+          "aws_secret_key"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "aws_sqs_source_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/aws_sqs_source_0.1",
+      "name": "Amazon Simple Queue Service source",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Receive data from Amazon Simple Queue Service (SQS).",
+      "icon_href": "TODO",
+      "labels": ["source"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "produces": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/octet-stream",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/octet-stream"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "aws_access_key": {
+            "oneOf": [
+              {
+                "description": "The access key obtained from AWS.",
+                "format": "password",
+                "title": "Access Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_access_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Access Key",
+            "x-group": "credentials"
+          },
+          "aws_amazon_a_w_s_host": {
+            "default": "amazonaws.com",
+            "description": "The hostname of the Amazon AWS cloud.",
+            "title": "AWS Host",
+            "type": "string"
+          },
+          "aws_auto_create_queue": {
+            "default": false,
+            "description": "Setting the autocreation of the SQS queue.",
+            "title": "Autocreate Queue",
+            "type": "boolean"
+          },
+          "aws_delay": {
+            "default": 500,
+            "description": "The number of milliseconds before the next poll of the selected stream",
+            "title": "Delay",
+            "type": "integer"
+          },
+          "aws_delete_after_read": {
+            "default": true,
+            "description": "Delete messages after consuming them",
+            "title": "Auto-delete Messages",
+            "type": "boolean"
+          },
+          "aws_override_endpoint": {
+            "default": false,
+            "description": "Select this option to override the endpoint URI. To use this option, you must also provide a URI for the `uriEndpointOverride` option.",
+            "title": "Endpoint Overwrite",
+            "type": "boolean"
+          },
+          "aws_protocol": {
+            "default": "https",
+            "description": "The underlying protocol used to communicate with SQS",
+            "example": "http or https",
+            "title": "Protocol",
+            "type": "string"
+          },
+          "aws_queue_name_or_arn": {
+            "description": "The SQS Queue Name or ARN",
+            "title": "Queue Name",
+            "type": "string"
+          },
+          "aws_queue_u_r_l": {
+            "description": "The full SQS Queue URL (required if using KEDA)",
+            "title": "Queue URL",
+            "type": "string"
+          },
+          "aws_region": {
+            "description": "The AWS region to access.",
+            "enum": [
+              "af-south-1",
+              "ap-east-1",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ca-central-1",
+              "eu-central-1",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "fips-us-east-1",
+              "fips-us-east-2",
+              "fips-us-west-1",
+              "fips-us-west-2",
+              "me-south-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2",
+              "cn-north-1",
+              "cn-northwest-1",
+              "us-gov-east-1",
+              "us-gov-west-1",
+              "us-iso-east-1",
+              "us-iso-west-1",
+              "us-isob-east-1"
+            ],
+            "title": "AWS Region",
+            "type": "string"
+          },
+          "aws_secret_key": {
+            "oneOf": [
+              {
+                "description": "The secret key obtained from AWS.",
+                "format": "password",
+                "title": "Secret Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the aws_secret_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Secret Key",
+            "x-group": "credentials"
+          },
+          "aws_uri_endpoint_override": {
+            "description": "The overriding endpoint URI. To use this option, you must also select the `overrideEndpoint` option.",
+            "title": "Overwrite Endpoint URI",
+            "type": "string"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "produces": { "$ref": "#/$defs/data_shape/produces" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "The name of the Kafka Topic to use.",
+            "title": "Topic Name",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "aws_queue_name_or_arn",
+          "aws_region",
+          "kafka_topic",
+          "aws_access_key",
+          "aws_secret_key"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "ansible_tower_job_template_launch_sink_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/ansible_tower_job_template_launch_sink_0.1",
+      "name": "Ansible Tower sink",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Ansible Tower source",
+      "icon_href": "TODO",
+      "labels": ["sink"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "consumes": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/json",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/json"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "ansible_tower_basic_auth_password": {
+            "oneOf": [
+              {
+                "description": "Basic Authentication Password",
+                "format": "password",
+                "title": "Basic Authentication Password",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the ansible_tower_basic_auth_password",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Basic Authentication Password",
+            "x-group": "credentials"
+          },
+          "ansible_tower_basic_auth_username": {
+            "description": "Authentication Username",
+            "title": "Basic Authentication Username",
+            "type": "string",
+            "x-group": "credentials"
+          },
+          "ansible_tower_host": {
+            "description": "The Ansible Tower Host",
+            "title": "Ansible Tower Host",
+            "type": "string"
+          },
+          "ansible_tower_host_insecure": {
+            "default": false,
+            "description": "Set whether all server certificates should be trusted",
+            "title": "Set whether all server certificates should be trusted",
+            "type": "boolean"
+          },
+          "ansible_tower_host_verify": {
+            "default": true,
+            "description": "Set whether hostname verification is enabled",
+            "title": "Set whether hostname verification is enabled",
+            "type": "boolean"
+          },
+          "ansible_tower_job_template_id": {
+            "description": "The Job Template ID",
+            "title": "The Job Template ID",
+            "type": "string"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "consumes": { "$ref": "#/$defs/data_shape/consumes" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "The name of the Kafka Topic to use.",
+            "title": "Topic Name",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "ansible_tower_host",
+          "ansible_tower_basic_auth_username",
+          "ansible_tower_basic_auth_password",
+          "ansible_tower_job_template_id",
+          "kafka_topic"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "cassandra_sink_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/cassandra_sink_0.1",
+      "name": "Apache Cassandra sink",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Send data to an Apache Cassandra cluster.",
+      "icon_href": "TODO",
+      "labels": ["sink"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "consumes": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/json",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/json"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "cassandra_connection_host": {
+            "description": "The hostname(s) for the Cassandra server(s). Use a comma to separate multiple hostnames.",
+            "example": "localhost",
+            "title": "Connection Host",
+            "type": "string"
+          },
+          "cassandra_connection_port": {
+            "description": "The port number(s) of the cassandra server(s). Use a comma to separate multiple port numbers.",
+            "example": 9042,
+            "title": "Connection Port",
+            "type": "string"
+          },
+          "cassandra_consistency_level": {
+            "default": "ANY",
+            "description": "The consistency level to use. Set the value to one of these options - ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, or LOCAL_ONE.",
+            "title": "Consistency Level",
+            "type": "string"
+          },
+          "cassandra_keyspace": {
+            "description": "The keyspace to use.",
+            "example": "customers",
+            "title": "Keyspace",
+            "type": "string"
+          },
+          "cassandra_password": {
+            "oneOf": [
+              {
+                "description": "The password for accessing a secured Cassandra cluster.",
+                "format": "password",
+                "title": "Password",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the cassandra_password",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Password",
+            "x-group": "credentials"
+          },
+          "cassandra_prepare_statements": {
+            "default": true,
+            "description": "If true, specifies to use PreparedStatements as the query. If false, specifies to use regular Statements as the query.",
+            "title": "Prepare Statements",
+            "type": "boolean"
+          },
+          "cassandra_query": {
+            "description": "The query to execute against the Cassandra cluster table.",
+            "title": "Query",
+            "type": "string"
+          },
+          "cassandra_username": {
+            "description": "The username for accessing a secured Cassandra cluster.",
+            "title": "Username",
+            "type": "string",
+            "x-group": "credentials"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "consumes": { "$ref": "#/$defs/data_shape/consumes" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "A comma-separated list of Kafka topic names.",
+            "title": "Topic Names",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "cassandra_connection_host",
+          "cassandra_connection_port",
+          "cassandra_keyspace",
+          "cassandra_query",
+          "kafka_topic"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "cassandra_source_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/cassandra_source_0.1",
+      "name": "Apache Cassandra source",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Retrieve data by sending a query to an Apache Cassandra cluster table.",
+      "icon_href": "TODO",
+      "labels": ["source"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "produces": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/json",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/json"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "cassandra_connection_host": {
+            "description": "The hostname(s) for the Cassandra server(s). Use a comma to separate multiple hostnames.",
+            "example": "localhost",
+            "title": "Connection Host",
+            "type": "string"
+          },
+          "cassandra_connection_port": {
+            "description": "The port number(s) of the cassandra server(s). Use a comma to separate multiple port numbers.",
+            "example": 9042,
+            "title": "Connection Port",
+            "type": "string"
+          },
+          "cassandra_consistency_level": {
+            "default": "QUORUM",
+            "description": "The consistency level to use. Possible values are ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, or LOCAL_ONE.",
+            "title": "Consistency Level",
+            "type": "string"
+          },
+          "cassandra_keyspace": {
+            "description": "The keyspace to use.",
+            "example": "customers",
+            "title": "Keyspace",
+            "type": "string"
+          },
+          "cassandra_password": {
+            "oneOf": [
+              {
+                "description": "The password for accessing a secured Cassandra cluster.",
+                "format": "password",
+                "title": "Password",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the cassandra_password",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Password",
+            "x-group": "credentials"
+          },
+          "cassandra_query": {
+            "description": "The query to execute against the Cassandra cluster table.",
+            "title": "Query",
+            "type": "string"
+          },
+          "cassandra_result_strategy": {
+            "default": "ALL",
+            "description": "The strategy to convert the result set of the query. Possible values are ALL, ONE, LIMIT_10, or LIMIT_100.",
+            "title": "Result Strategy",
+            "type": "string"
+          },
+          "cassandra_username": {
+            "description": "The username for accessing a secured Cassandra cluster.",
+            "title": "Username",
+            "type": "string",
+            "x-group": "credentials"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "produces": { "$ref": "#/$defs/data_shape/produces" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "The name of the Kafka Topic to use.",
+            "title": "Topic Name",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "cassandra_connection_host",
+          "cassandra_connection_port",
+          "cassandra_keyspace",
+          "cassandra_query",
+          "kafka_topic"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "azure_storage_blob_changefeed_source_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/azure_storage_blob_changefeed_source_0.1",
+      "name": "Azure Blob Storage change feed source",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Receive data from Azure Blob storage change feed.",
+      "icon_href": "TODO",
+      "labels": ["source"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "produces": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/octet-stream",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/octet-stream"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "azure_access_key": {
+            "oneOf": [
+              {
+                "description": "The Azure Storage Blob access Key.",
+                "format": "password",
+                "title": "Access Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the azure_access_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Access Key",
+            "x-group": "credentials"
+          },
+          "azure_account_name": {
+            "description": "The Azure Storage Blob account name.",
+            "title": "Account Name",
+            "type": "string",
+            "x-group": "credentials"
+          },
+          "azure_period": {
+            "default": 10000,
+            "description": "The interval (in milliseconds) between fetches to the Azure Storage change feed.",
+            "title": "Period between Polls",
+            "type": "integer"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "produces": { "$ref": "#/$defs/data_shape/produces" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "The name of the Kafka Topic to use.",
+            "title": "Topic Name",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "azure_period",
+          "azure_account_name",
+          "azure_access_key",
+          "kafka_topic"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "azure_storage_blob_sink_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/azure_storage_blob_sink_0.1",
+      "name": "Azure Blob Storage sink",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Send data to Azure Blob storage.",
+      "icon_href": "TODO",
+      "labels": ["sink"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "consumes": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/octet-stream",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/octet-stream"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "azure_access_key": {
+            "oneOf": [
+              {
+                "description": "The Azure Storage Blob access key.",
+                "format": "password",
+                "title": "Access Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the azure_access_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Access Key",
+            "x-group": "credentials"
+          },
+          "azure_account_name": {
+            "description": "The Azure Storage Blob account name.",
+            "title": "Account Name",
+            "type": "string",
+            "x-group": "credentials"
+          },
+          "azure_container_name": {
+            "description": "The Azure Storage Blob container name.",
+            "title": "Container Name",
+            "type": "string"
+          },
+          "azure_operation": {
+            "default": "uploadBlockBlob",
+            "description": "The operation to perform.",
+            "title": "Operation name",
+            "type": "string"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "consumes": { "$ref": "#/$defs/data_shape/consumes" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "A comma-separated list of Kafka topic names.",
+            "title": "Topic Names",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "azure_account_name",
+          "azure_container_name",
+          "azure_access_key",
+          "kafka_topic"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "id": "azure_storage_blob_source_0.1",
+      "kind": "ConnectorType",
+      "href": "/api/connector_mgmt/v1/kafka_connector_types/azure_storage_blob_source_0.1",
+      "name": "Azure Blob Storage source",
+      "version": "0.1",
+      "channels": ["stable"],
+      "description": "Receive data from Azure Blob storage.",
+      "icon_href": "TODO",
+      "labels": ["source"],
+      "capabilities": ["data_shape", "error_handler", "processors"],
+      "schema": {
+        "$defs": {
+          "data_shape": {
+            "produces": {
+              "additionalProperties": false,
+              "properties": {
+                "format": {
+                  "default": "application/octet-stream",
+                  "description": "The format of the data that the source connector sends to Kafka.",
+                  "enum": ["application/octet-stream"],
+                  "type": "string"
+                }
+              },
+              "required": ["format"],
+              "type": "object"
+            }
+          },
+          "error_handler": {
+            "dead_letter_queue": {
+              "additionalProperties": false,
+              "properties": {
+                "topic": {
+                  "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                  "title": "Dead Letter Topic Name",
+                  "type": "string"
+                }
+              },
+              "required": ["topic"],
+              "type": "object"
+            },
+            "log": { "additionalProperties": false, "type": "object" },
+            "stop": { "additionalProperties": false, "type": "object" }
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "azure_access_key": {
+            "oneOf": [
+              {
+                "description": "The Azure Storage Blob access key.",
+                "format": "password",
+                "title": "Access Key",
+                "type": "string"
+              },
+              {
+                "description": "An opaque reference to the azure_access_key",
+                "properties": {},
+                "type": "object"
+              }
+            ],
+            "title": "Access Key",
+            "x-group": "credentials"
+          },
+          "azure_account_name": {
+            "description": "The Azure Storage Blob account name.",
+            "title": "Account Name",
+            "type": "string",
+            "x-group": "credentials"
+          },
+          "azure_container_name": {
+            "description": "The Azure Storage Blob container name.",
+            "title": "Container Name",
+            "type": "string"
+          },
+          "azure_period": {
+            "default": 10000,
+            "description": "The interval (in milliseconds) between fetches to the Azure Storage Container.",
+            "title": "Period between Polls",
+            "type": "integer"
+          },
+          "data_shape": {
+            "additionalProperties": false,
+            "properties": {
+              "produces": { "$ref": "#/$defs/data_shape/produces" }
+            },
+            "type": "object"
+          },
+          "error_handler": {
+            "default": { "stop": {} },
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "log": { "$ref": "#/$defs/error_handler/log" }
+                },
+                "required": ["log"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "stop": { "$ref": "#/$defs/error_handler/stop" }
+                },
+                "required": ["stop"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "dead_letter_queue": {
+                    "$ref": "#/$defs/error_handler/dead_letter_queue"
+                  }
+                },
+                "required": ["dead_letter_queue"],
+                "type": "object"
+              }
+            ],
+            "type": "object"
+          },
+          "kafka_topic": {
+            "description": "The name of the Kafka Topic to use.",
+            "title": "Topic Name",
+            "type": "string"
+          },
+          "processors": {}
+        },
+        "required": [
+          "azure_period",
+          "azure_account_name",
+          "azure_container_name",
+          "azure_access_key",
+          "kafka_topic"
+        ],
+        "type": "object"
+      }
+    }
+  ]
+}

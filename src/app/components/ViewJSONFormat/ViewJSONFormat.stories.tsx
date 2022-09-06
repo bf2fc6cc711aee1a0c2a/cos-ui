@@ -74,7 +74,7 @@ const namespace_test = {
 };
 
 export default {
-  title: 'Wizard/5 Review Step',
+  title: 'Wizard step 5/Json view',
   component: ViewJSONFormat,
   decorators: [(Story) => <Story />],
   args: {},
