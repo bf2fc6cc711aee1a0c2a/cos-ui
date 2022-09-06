@@ -8,7 +8,7 @@ import { ConnectorsPage } from './ConnectorsPage';
 import { ConnectorsPageProvider } from './ConnectorsPageContext';
 
 export default {
-  title: 'Pages/Connectors',
+  title: 'Connector Page/Connectors',
   component: ConnectorsPage,
   decorators: [
     (Story) => (

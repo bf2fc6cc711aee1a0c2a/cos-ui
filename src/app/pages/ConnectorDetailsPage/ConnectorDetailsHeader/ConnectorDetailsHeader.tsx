@@ -34,18 +34,18 @@ export type ConnectorDetailsHeaderProps = {
   updateEditMode: (editMode: boolean) => void;
 };
 
-const initialState = { canStop: true, canStart: false, canDelete: true };
+const initialState = { canStop: true, canStart: true, canDelete: true };
 
 function reducer(state: any, action: any) {
   switch (action.type) {
     case 'stop':
-      return { ...state, canStop: false };
+      return { ...state, canStop: false, canStart: true };
     case 'start':
-      return { ...state, canStart: false };
+      return { ...state, canStop: true, canStart: false };
     case 'delete':
       return { canStop: false, canStart: false, canDelete: false };
     default:
-      return { ...state, canStart: false };
+      return { ...state };
   }
 }
 

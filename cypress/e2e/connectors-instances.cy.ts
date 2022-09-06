@@ -26,6 +26,14 @@ describe('Connectors page', () => {
     cy.findByText('dbz-postgres-conn').should('have.length', 1);
     cy.findByText('dbz-pg-lb').should('have.length', 1);
 
+    // connector in deleting should have action not clickable
+    cy.findByTestId('actions-for-c9v7a91rrl5s1sq2t9ag').click();
+    cy.findByText('Start Instance').should("not.exist");
+
+    cy.findByTestId('actions-for-1vLK2A3Gl34hHjAxMj93Ma8Ajh8').click();
+    cy.findByText('Start Instance').should('exist');
+
+    // connector name should not be clickable for deleting state
     cy.contains('deleting-connector').invoke('prop', 'tagName').should('equal', 'P');
     cy.contains('not-deleting').invoke('prop', 'tagName').should('equal', 'A');
 
@@ -33,8 +41,8 @@ describe('Connectors page', () => {
     cy.tick(5000);
     cy.wait('@polledConnectors');
 
-    // 5 rows of data and 1 header row
-    cy.get('tr').should('have.length', 6);
+    // 6 rows of data and 1 header row
+    cy.get('tr').should('have.length', 7);
 
     cy.findByText('Create Connectors instance').click();
   });

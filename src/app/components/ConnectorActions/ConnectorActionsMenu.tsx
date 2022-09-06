@@ -15,6 +15,8 @@ import {
   DropdownSeparator,
 } from '@patternfly/react-core';
 
+import { ConnectorDesiredState } from '@rhoas/connector-management-sdk';
+
 type connectorActionsMenuProps = {
   onClose: () => void;
   onConnectorDetail: (id: string, goToConnectorDetails: string) => void;
@@ -118,7 +120,15 @@ export const ConnectorActionsMenu: FunctionComponent<connectorActionsMenuProps> 
         />
         <Dropdown
           onSelect={onSelect}
-          toggle={<KebabToggle onToggle={onToggle} id="connector-action" />}
+          toggle={
+            <KebabToggle
+              onToggle={onToggle}
+              isDisabled={
+                connector.desired_state === ConnectorDesiredState.Deleted
+              }
+              id="connector-action"
+            />
+          }
           isOpen={isOpen}
           isPlain
           dropdownItems={dropdownItems}
