@@ -9,9 +9,6 @@ import {
 } from '@rhoas/connector-management-sdk';
 
 import connectorTypeData from '../../../../cypress/fixtures/connectorTypes2.json';
-import aws_kinesis_source from '../../../../cypress/fixtures/connectors/aws_kinesis_source_0.1.json';
-import aws_s3_sink from '../../../../cypress/fixtures/connectors/aws_s3_sink_0.1.json';
-import debezium_postgres from '../../../../cypress/fixtures/connectors/debezium-postgres-1.9.4.Alpha1.json';
 import { ConnectorTypeCard } from './ConnectorTypeCard';
 
 export default {
