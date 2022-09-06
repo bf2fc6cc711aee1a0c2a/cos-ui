@@ -21,20 +21,23 @@ import {
   OutlinedQuestionCircleIcon,
 } from '@patternfly/react-icons';
 
-import {
-  ObjectReference,
-  ConnectorTypeAllOf,
-} from '@rhoas/connector-management-sdk';
-
 export type ConnectorTypeCardProps = {
-  connector: ObjectReference | ConnectorTypeAllOf;
+  id: string;
+  labels: string[];
+  name: string;
+  description: string;
+  version: string;
   selectedId: string | undefined;
   onSelect: (id: string) => void;
   isDuplicate?: boolean;
 };
 
 export const ConnectorTypeCard: FunctionComponent<ConnectorTypeCardProps> = ({
-  connector,
+  id,
+  labels,
+  name,
+  description,
+  version,
   selectedId,
   onSelect,
   isDuplicate,
@@ -43,16 +46,12 @@ export const ConnectorTypeCard: FunctionComponent<ConnectorTypeCardProps> = ({
   return (
     <Card
       isHoverable={!isDuplicate}
-      key={(connector as ObjectReference).id}
+      key={id}
       isSelectable
-      isSelected={selectedId === (connector as ObjectReference).id}
-      onClick={
-        isDuplicate
-          ? () => {}
-          : () => onSelect((connector as ObjectReference).id!)
-      }
+      isSelected={selectedId === id}
+      onClick={isDuplicate ? () => {} : () => onSelect(id)}
     >
-      {(connector as ConnectorTypeAllOf).labels?.includes('source') && (
+      {labels?.includes('source') && (
         <CardHeader>
           <BuildIcon color="lightGrey" size="lg" />
           <CardActions>
@@ -60,7 +59,7 @@ export const ConnectorTypeCard: FunctionComponent<ConnectorTypeCardProps> = ({
           </CardActions>
         </CardHeader>
       )}
-      {(connector as ConnectorTypeAllOf).labels?.includes('sink') && (
+      {labels?.includes('sink') && (
         <CardHeader>
           <BuilderImageIcon color="lightGrey" size="lg" />
           <CardActions>
@@ -69,14 +68,12 @@ export const ConnectorTypeCard: FunctionComponent<ConnectorTypeCardProps> = ({
         </CardHeader>
       )}
       <CardTitle>
-        {(connector as ConnectorTypeAllOf).name}{' '}
+        {name}{' '}
         <Popover
           position="right"
           aria-label={t('ConnectorHelpAndGuidances')}
           headerContent={t('ConnectorHelpAndGuidances')}
-          bodyContent={
-            <div>{(connector as ConnectorTypeAllOf).description}</div>
-          }
+          bodyContent={<div>{description}</div>}
         >
           <OutlinedQuestionCircleIcon color="grey" />
         </Popover>
@@ -85,9 +82,7 @@ export const ConnectorTypeCard: FunctionComponent<ConnectorTypeCardProps> = ({
         <DescriptionList isHorizontal isFluid>
           <DescriptionListGroup>
             <DescriptionListTerm>{t('version')}:</DescriptionListTerm>
-            <DescriptionListDescription>
-              {(connector as ConnectorTypeAllOf).version}
-            </DescriptionListDescription>
+            <DescriptionListDescription>{version}</DescriptionListDescription>
           </DescriptionListGroup>
         </DescriptionList>
       </CardBody>

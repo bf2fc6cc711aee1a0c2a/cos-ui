@@ -43,6 +43,11 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
+import {
+  ConnectorTypeAllOf,
+  ObjectReference,
+} from '@rhoas/connector-management-sdk';
+
 import './StepConnectorTypes.css';
 
 export function SelectConnectorType() {
@@ -114,7 +119,21 @@ export function ConnectorTypesGallery() {
                       />
                       <Gallery hasGutter>
                         <ConnectorTypeCard
-                          connector={connectorTypeDetails}
+                          id={(connectorTypeDetails as ObjectReference).id!}
+                          labels={
+                            (connectorTypeDetails as ConnectorTypeAllOf).labels!
+                          }
+                          name={
+                            (connectorTypeDetails as ConnectorTypeAllOf).name!
+                          }
+                          description={
+                            (connectorTypeDetails as ConnectorTypeAllOf)
+                              .description!
+                          }
+                          version={
+                            (connectorTypeDetails as ConnectorTypeAllOf)
+                              .version!
+                          }
                           selectedId={selectedId}
                           onSelect={onSelect}
                           isDuplicate={duplicateMode}
@@ -126,7 +145,11 @@ export function ConnectorTypesGallery() {
                       {response?.items?.map((c) => {
                         return (
                           <ConnectorTypeCard
-                            connector={c}
+                            id={(c as ObjectReference).id!}
+                            labels={(c as ConnectorTypeAllOf).labels!}
+                            name={(c as ConnectorTypeAllOf).name!}
+                            description={(c as ConnectorTypeAllOf).description!}
+                            version={(c as ConnectorTypeAllOf).version!}
                             selectedId={selectedId}
                             onSelect={onSelect}
                           />
