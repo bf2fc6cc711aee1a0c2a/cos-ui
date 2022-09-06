@@ -7,7 +7,7 @@ import {
 } from './ConnectorsToolbar';
 
 export default {
-  title: 'UI/Connectors/Toolbar',
+  title: 'Connector Page/Components/Toolbar',
   component: ConnectorsToolbar,
   args: {
     itemCount: 1567,

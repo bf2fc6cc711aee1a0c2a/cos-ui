@@ -4,7 +4,7 @@ import React from 'react';
 import { DialogDeleteConnector } from './DialogDeleteConnector';
 
 export default {
-  title: 'UI/Connectors/DeleteConnector',
+  title: 'Connector Page/Components/DeleteConnector',
   component: DialogDeleteConnector,
   args: {
     connectorName: 'Example',

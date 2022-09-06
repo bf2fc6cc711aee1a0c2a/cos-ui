@@ -145,6 +145,7 @@ export function ConnectorTypesGallery() {
                       {response?.items?.map((c) => {
                         return (
                           <ConnectorTypeCard
+                            key={(c as ObjectReference).id!}
                             id={(c as ObjectReference).id!}
                             labels={(c as ConnectorTypeAllOf).labels!}
                             name={(c as ConnectorTypeAllOf).name!}
