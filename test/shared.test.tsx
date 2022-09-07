@@ -2,6 +2,7 @@ import {
   clearEmptyObjectValues,
   createDefaultFromSchema,
   resolveReference,
+  toHtmlSafeId,
 } from '../src/utils/shared';
 
 const testObj1 = {
@@ -162,6 +163,22 @@ describe('resolveReference', () => {
         required: ['format'],
         type: 'object',
       })
+    );
+  });
+});
+
+describe('toHtmlSafeId', () => {
+  it('should work without a prefix or suffix, converting characters as needed', () => {
+    expect(toHtmlSafeId('Cheese Sticks!')).toEqual('cheese-sticks-');
+  });
+  it('should work with a prefix', () => {
+    expect(toHtmlSafeId('Cheese Sticks!', 'delicious-')).toEqual(
+      'delicious-cheese-sticks-'
+    );
+  });
+  it('should work with a suffix', () => {
+    expect(toHtmlSafeId('Cheese Sticks!', 'delicious-', 'things')).toEqual(
+      'delicious-cheese-sticks-things'
     );
   });
 });

@@ -262,7 +262,10 @@ export const getConnectorTypeDetail = ({
       })
       .catch((error) => {
         if (!axios.isCancel(error)) {
-          console.log('Error:', error.response.data.reason);
+          console.log(
+            'error response fetching connector type:',
+            error.response.data.reason
+          );
         }
       });
     return () => {
@@ -632,7 +635,10 @@ export const getKafkaInstanceById = ({
       })
       .catch((error) => {
         if (!axios.isCancel(error)) {
-          console.log('Error msg:' + error.response);
+          console.log(
+            'error response fetching kafka: ',
+            error.response.data.reason
+          );
           onError(error.response);
         }
       });
