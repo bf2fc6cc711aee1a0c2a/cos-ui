@@ -246,13 +246,19 @@ export const creationWizardMachine = model.createMachine(
               connectorType: context.selectedConnector,
               initialConfiguration: context.connectorConfiguration,
               name: context.duplicateMode
-                ? context.connectorData?.name
+                ? context.name !== undefined
+                  ? context.name
+                  : context.connectorData?.name
                 : context.name,
+
               userServiceAccount: context.duplicateMode
-                ? {
-                    clientId: context.connectorData?.service_account.client_id,
-                    clientSecret: '',
-                  }
+                ? context.userServiceAccount !== undefined
+                  ? context.userServiceAccount
+                  : {
+                      clientId:
+                        context.connectorData?.service_account.client_id,
+                      clientSecret: '',
+                    }
                 : context.userServiceAccount,
               topic: context.topic,
               userErrorHandler: context.userErrorHandler,
@@ -334,7 +340,9 @@ export const creationWizardMachine = model.createMachine(
                     ? context.connectorTypeDetails
                     : context.selectedConnector,
                   configuration: context.duplicateMode
-                    ? context.connectorData?.connector
+                    ? context.connectorConfiguration
+                      ? context.connectorConfiguration
+                      : context.connectorData?.connector
                     : context.connectorConfiguration,
                   name: context.name,
                   steps: context.configurationSteps || ['single step'],
@@ -425,7 +433,10 @@ export const creationWizardMachine = model.createMachine(
               name: context.name,
               duplicateMode: context.duplicateMode,
               userErrorHandler: context.duplicateMode
-                ? (context.connectorData?.connector as connector)?.error_handler
+                ? context.userErrorHandler
+                  ? context.userErrorHandler
+                  : (context.connectorData?.connector as connector)
+                      ?.error_handler
                 : context.userErrorHandler,
             };
           },
