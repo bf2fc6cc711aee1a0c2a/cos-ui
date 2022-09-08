@@ -69,5 +69,31 @@ describe(
           },
         });
     });
+
+    it('should change the error handler from stop to log with the correct request', () => {
+      cy.visit(Cypress.env('overview'));
+      waitForData();
+      cy.findByText('Configuration').click();
+      cy.findAllByTestId('tab-error-handling').first().click();
+      cy.findByText('Edit Properties').click();
+      // workaround - select doesn't seem to use data-testid
+      cy.get('[data-ouia-component-id="select-error-handler"]').click();
+      cy.findByTestId('option-log').click();
+      cy.intercept(Cypress.env('overviewApiPath'), {
+        method: 'PATCH',
+        fixture: 'connectorOverview/cc1p3tjvcap6794aj210.json',
+      }).as('handlePatch');
+      cy.findByText('Save').click();
+      cy.wait('@handlePatch')
+        .its('request.body')
+        .should('deep.equal', {
+          connector: {
+            error_handler: {
+              log: {},
+              stop: null,
+            },
+          },
+        });
+    });
   }
 );

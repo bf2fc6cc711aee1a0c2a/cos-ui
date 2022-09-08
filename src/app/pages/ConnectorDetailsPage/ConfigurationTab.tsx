@@ -7,7 +7,7 @@ import {
 } from '@app/machines/StepConfiguratorLoader.machine';
 import { useCos } from '@context/CosContext';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
-import { clearEmptyObjectValues } from '@utils/shared';
+import { clearEmptyObjectValues, toHtmlSafeId } from '@utils/shared';
 import _ from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -38,6 +38,7 @@ import './ConfigurationTab.css';
 import { CommonStep } from './ConfigurationTab/CommonStep';
 import { ConfigurationStep } from './ConfigurationTab/ConfigurationStep';
 import {
+  ConnectorWithErrorHandler,
   ErrorHandler,
   ErrorHandlerStep,
 } from './ConfigurationTab/ErrorHandlerStep';
@@ -55,21 +56,45 @@ export type connector = {
   processors: object;
 };
 
-const diff = (newConfig: any, oldConfig: any) => {
-  let r: string[] = [];
-  _.each(newConfig, (val, key) => {
-    if (oldConfig === undefined || oldConfig[key] === val) return;
-    if (oldConfig[key] === {} || val === '') return;
-    r.push(key);
+const diff = (
+  newConfig: ConnectorWithErrorHandler,
+  oldConfig: ConnectorWithErrorHandler
+) => {
+  return Object.keys(newConfig).filter((key) => {
+    if (oldConfig === undefined || oldConfig[key] === newConfig[key])
+      return false;
+    if (oldConfig[key] === {} || newConfig[key] === '') return false;
+    return true;
   });
-  return r;
 };
 
-const getEditPayload = (newConfiguration: any, oldConfiguration: any) => {
+const getEditPayload = (
+  newConfiguration: ConnectorWithErrorHandler,
+  oldConfiguration: ConnectorWithErrorHandler
+) => {
   const diffKeys = diff(newConfiguration, oldConfiguration);
   return diffKeys.reduce((acc, key) => {
-    return { ...acc, [key]: newConfiguration[key] };
-  }, {});
+    switch (key) {
+      // error handler is a union type and since a merge patch is sent
+      // the old key must be explicitly set to null so the new value
+      // validates properly server-side
+      case 'error_handler':
+        const { error_handler: errorHandler } = newConfiguration;
+        const { error_handler: oldErrorHandler } = oldConfiguration;
+        return {
+          ...acc,
+          error_handler: {
+            ...Object.keys(oldErrorHandler).reduce(
+              (a: ErrorHandler, key: string) => ({ ...a, [key]: null }),
+              {} as ErrorHandler
+            ),
+            ...errorHandler,
+          },
+        };
+      default:
+        return { ...acc, [key]: newConfiguration[key] };
+    }
+  }, {} as ConnectorWithErrorHandler);
 };
 
 export const ConfigurationTab: FC<ConfigurationTabProps> = ({
@@ -95,9 +120,8 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
   }>({});
   const [connectorConfiguration, setConnectorConfiguration] =
     useState<unknown>();
-  const [errHandlerConfiguration, setErrHandlerConfiguration] = useState<{
-    [key: string]: any;
-  }>({});
+  const [errHandlerConfiguration, setErrHandlerConfiguration] =
+    useState<ErrorHandler>({} as ErrorHandler);
 
   const [configurator, setConfigurator] = useState<any>();
   const [isEditValid, setIsEditValid] = useState<boolean>(true);
@@ -159,10 +183,10 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
       connectorUpdate: {
         ...getEditPayload(
           {
-            ...(connectorConfiguration as object),
+            ...(connectorConfiguration as ConnectorWithErrorHandler),
             error_handler: errHandlerConfiguration,
           },
-          connectorData.connector
+          connectorData.connector as ConnectorWithErrorHandler
         ),
       },
       connectorId: connectorData.id!,
@@ -250,10 +274,7 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
                         key={step}
                         eventKey={index + 1}
                         title={<TabTitleText>{step}</TabTitleText>}
-                        data-testid={`tab-${step
-                          .toLowerCase()
-                          .split(' ')
-                          .join('-')}`}
+                        data-testid={toHtmlSafeId(step, 'tab-')}
                       ></Tab>
                     );
                   })}

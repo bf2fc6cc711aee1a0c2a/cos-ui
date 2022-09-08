@@ -1,10 +1,7 @@
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
-import { createValidator } from '@utils/createValidator';
-import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
-import { FC } from 'react';
+import { toHtmlSafeId } from '@utils/shared';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { JSONSchemaBridge } from 'uniforms-bridge-json-schema';
 
 import {
   Form,
@@ -12,6 +9,7 @@ import {
   Popover,
   Select,
   SelectOption,
+  SelectOptionObject,
   SelectVariant,
   Text,
   TextInput,
@@ -19,8 +17,31 @@ import {
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 
-export type ErrorHandler = {
-  [key: string]: any;
+import { Connector } from '@rhoas/connector-management-sdk';
+
+// error_handler does not yet seem to be available in the SDK
+export type LogErrorHandler = {
+  log: object;
+};
+
+export type StopErrorHandler = {
+  stop: object;
+};
+
+export type DLQErrorHandlerTopic = {
+  topic: string;
+};
+
+export type DLQErrorHandler = {
+  dead_letter_queue: DLQErrorHandlerTopic;
+};
+
+export type ErrorHandler = LogErrorHandler | StopErrorHandler | DLQErrorHandler;
+
+// Create an extended connector type that includes this missing attribute
+export type ConnectorWithErrorHandler = Connector & {
+  error_handler: ErrorHandler;
+  [key: string]: any; // workaround to allow indexing by key for now
 };
 
 export type ErrorHandlerStepProps = {
@@ -41,12 +62,8 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
   const [topic, setTopic] = useState<string>();
   const [errorHandler, setErrorHandler] = useState<any>();
   const { t } = useTranslation();
-
-  const schemaValidator = createValidator(schema);
-  const bridge = new JSONSchemaBridge(schema, schemaValidator);
-  const { error_handler } = bridge.schema?.properties;
+  const { error_handler } = schema.properties;
   const oneOf = error_handler['oneOf'];
-
   const onToggle = () => setOpen((isOpen) => !isOpen);
 
   const checkValidity = (value: string) => {
@@ -59,10 +76,15 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
     }
   };
 
-  const onSelect = (_: any, selection: any, isPlaceholder: any) => {
+  const onSelect = (
+    _: any,
+    value: string | SelectOptionObject,
+    isPlaceholder: boolean | undefined
+  ) => {
     if (isPlaceholder) {
       clearSelection();
     } else {
+      const selection = typeof value === 'string' ? value : value.toString();
       setOpen(false);
       setTopic('');
       setErrorHandler(selection);
@@ -83,14 +105,11 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
     );
     if (
       configuration &&
-      Object.keys(configuration)[0] === 'dead_letter_queue' &&
-      !_.isEmpty(configuration.dead_letter_queue)
+      typeof (configuration as DLQErrorHandler).dead_letter_queue === 'object'
     ) {
-      setTopic(
-        configuration.dead_letter_queue[
-          Object.keys(configuration.dead_letter_queue)[0]
-        ]
-      );
+      const { dead_letter_queue: deadLetterQueue } =
+        configuration as DLQErrorHandler;
+      setTopic(deadLetterQueue.topic);
     }
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -104,7 +123,13 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
 
   const dropdownItems = oneOf.map((item: any) => {
     const keys = Object.keys(item.properties);
-    return <SelectOption key={keys[0]} value={keys[0]} />;
+    return (
+      <SelectOption
+        data-testid={toHtmlSafeId(keys[0], 'option-')}
+        key={keys[0]}
+        value={keys[0]}
+      />
+    );
   });
   return (
     <StepBodyLayout
@@ -126,6 +151,8 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
               selections={errorHandler}
               isOpen={isOpen}
               placeholderText="Select type"
+              data-testid={'select-error-handler'}
+              ouiaId={'select-error-handler'}
             >
               {dropdownItems}
             </Select>

@@ -1,5 +1,22 @@
 import _ from 'lodash';
 
+/**
+ * Creates a string suitable as an ID for HTML, OUIA or as a data-testid
+ * @param subject
+ * @param prefix
+ * @param suffix
+ * @returns
+ */
+export const toHtmlSafeId = (
+  subject: string,
+  prefix?: string,
+  suffix?: string
+) => {
+  return `${prefix ? prefix : ''}${subject
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .toLowerCase()}${suffix ? suffix : ''}`;
+};
+
 export const mapToObject = (inputMap: Map<string, unknown>): object => {
   const obj = {} as { [key: string]: unknown };
   inputMap.forEach((value, key) => {
