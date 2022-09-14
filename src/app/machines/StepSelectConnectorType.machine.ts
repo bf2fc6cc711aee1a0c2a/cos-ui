@@ -1,25 +1,30 @@
-import { fetchConnectorNamespaces } from '@apis/api';
+import {
+  ConnectorTypesOrderBy,
+  ConnectorTypesSearch,
+  fetchConnectorTypes,
+} from '@apis/api';
 import { PAGINATED_MACHINE_ID } from '@constants/constants';
 
 import { ActorRefFrom, send, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
-import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
+import { ConnectorType } from '@rhoas/connector-management-sdk';
 
 import {
   ApiSuccessResponse,
   getPaginatedApiMachineEvents,
   makePaginatedApiMachine,
-  PlaceholderOrderBy,
-  PlaceholderSearch,
 } from './PaginatedResponse.machine';
+
+export const DEFAULT_CONNECTOR_TYPES_PAGE_SIZE = 20;
 
 type Context = {
   accessToken: () => Promise<string>;
   connectorsApiBasePath: string;
-  response?: ApiSuccessResponse<ConnectorNamespace>;
-  selectedNamespace?: ConnectorNamespace;
+  response?: ApiSuccessResponse<ConnectorType>;
+  selectedConnector?: ConnectorType;
   error?: Object;
+  connectorTypeDetails: ConnectorType;
   duplicateMode?: boolean | undefined;
 };
 
@@ -27,21 +32,22 @@ const model = createModel(
   {
     accessToken: () => Promise.resolve(''),
     connectorsApiBasePath: '',
-    selectedNamespace: undefined,
+    response: undefined,
+    selectedConnector: undefined,
     error: undefined,
   } as Context,
   {
     events: {
-      selectNamespace: (payload: { selectedNamespace: string }) => ({
+      selectConnector: (payload: { selectedConnector: string }) => ({
         ...payload,
       }),
-      deselectNamespace: () => ({}),
+      deselectConnector: () => ({}),
       confirm: () => ({}),
       ...getPaginatedApiMachineEvents<
-        ConnectorNamespace,
-        PlaceholderOrderBy,
-        PlaceholderSearch,
-        ConnectorNamespace
+        ConnectorType,
+        ConnectorTypesOrderBy,
+        ConnectorTypesSearch,
+        ConnectorType
       >(),
     },
   }
@@ -53,28 +59,25 @@ const success = model.assign((_context, event) => {
     response,
   };
 }, 'api.success');
-const selectNamespace = model.assign(
+const selectConnector = model.assign(
   {
-    selectedNamespace: (context, event) => {
-      return context.response?.items?.find(
-        (i) => i.id === event.selectedNamespace
-      );
-    },
+    selectedConnector: ({ response }, { selectedConnector }) =>
+      response!.items.find((connector) => connector.id === selectedConnector),
   },
-  'selectNamespace'
+  'selectConnector'
 );
-const deselectNamespace = model.assign(
+const reset = model.assign(
   {
-    selectedNamespace: undefined,
+    selectedConnector: undefined,
   },
-  'deselectNamespace'
+  'deselectConnector'
 );
 
-export const namespacesMachine = model.createMachine(
+export const selectConnectorTypeMachine = model.createMachine(
   {
-    id: 'namespaces',
-    initial: 'root',
     context: model.initialContext,
+    id: 'selectConnectorType',
+    initial: 'root',
     states: {
       root: {
         type: 'parallel',
@@ -85,17 +88,23 @@ export const namespacesMachine = model.createMachine(
               id: PAGINATED_MACHINE_ID,
               src: (context) =>
                 makePaginatedApiMachine<
-                  ConnectorNamespace,
-                  PlaceholderOrderBy,
-                  PlaceholderSearch,
-                  ConnectorNamespace
-                >(fetchConnectorNamespaces(context), (i) => i, {
-                  pollingEnabled: true,
+                  ConnectorType,
+                  ConnectorTypesOrderBy,
+                  ConnectorTypesSearch,
+                  ConnectorType
+                >(fetchConnectorTypes(context), (i) => i, {
+                  initialPageSize: DEFAULT_CONNECTOR_TYPES_PAGE_SIZE,
                 }),
             },
             states: {
               idle: {
-                entry: send('api.query', { to: PAGINATED_MACHINE_ID }),
+                entry: send(
+                  {
+                    type: 'api.query',
+                    query: { categories: ['sink', 'source'] },
+                  },
+                  { to: PAGINATED_MACHINE_ID }
+                ),
                 on: {
                   'api.ready': 'ready',
                 },
@@ -124,34 +133,34 @@ export const namespacesMachine = model.createMachine(
             states: {
               verify: {
                 always: [
-                  { target: 'selecting', cond: 'noNamespaceSelected' },
-                  { target: 'valid', cond: 'namespaceSelected' },
+                  { target: 'selecting', cond: 'noConnectorSelected' },
+                  { target: 'valid', cond: 'connectorSelected' },
                 ],
               },
               selecting: {
                 entry: sendParent('isInvalid'),
                 on: {
-                  selectNamespace: {
+                  selectConnector: {
                     target: 'valid',
-                    actions: selectNamespace,
+                    actions: selectConnector,
+                    cond: (_, event) => event.selectedConnector !== undefined,
                   },
                 },
               },
               valid: {
                 entry: sendParent('isValid'),
                 on: {
-                  selectNamespace: {
+                  selectConnector: {
                     target: 'verify',
-                    actions: selectNamespace,
-                    cond: (_, event) => event.selectedNamespace !== undefined,
+                    actions: selectConnector,
                   },
-                  deselectNamespace: {
+                  deselectConnector: {
                     target: 'verify',
-                    actions: deselectNamespace,
+                    actions: reset,
                   },
                   confirm: {
                     target: '#done',
-                    cond: 'namespaceSelected',
+                    cond: 'connectorSelected',
                   },
                 },
               },
@@ -163,18 +172,22 @@ export const namespacesMachine = model.createMachine(
         id: 'done',
         type: 'final',
         data: {
-          selectedNamespace: (context: Context) => context.selectedNamespace,
+          selectedConnector: (context: Context) => context.selectedConnector,
           duplicateMode: (context: Context) => context.duplicateMode,
+          connectorTypeDetails: (context: Context) =>
+            context.connectorTypeDetails,
         },
       },
     },
   },
   {
     guards: {
-      namespaceSelected: (context) => context.selectedNamespace !== undefined,
-      noNamespaceSelected: (context) => context.selectedNamespace === undefined,
+      connectorSelected: (context) => context.selectedConnector !== undefined,
+      noConnectorSelected: (context) => context.selectedConnector === undefined,
     },
   }
 );
 
-export type NamespaceMachineActorRef = ActorRefFrom<typeof namespacesMachine>;
+export type ConnectorTypesMachineActorRef = ActorRefFrom<
+  typeof selectConnectorTypeMachine
+>;

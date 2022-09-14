@@ -73,9 +73,9 @@ const deselectInstance = model.assign(
   'deselectInstance'
 );
 
-export const kafkasMachine = model.createMachine(
+export const selectKafkaMachine = model.createMachine(
   {
-    id: 'kafkas',
+    id: 'selectKafka',
     initial: 'root',
     context: model.initialContext,
     states: {
@@ -180,4 +180,4 @@ export const kafkasMachine = model.createMachine(
   }
 );
 
-export type KafkaMachineActorRef = ActorRefFrom<typeof kafkasMachine>;
+export type KafkaMachineActorRef = ActorRefFrom<typeof selectKafkaMachine>;

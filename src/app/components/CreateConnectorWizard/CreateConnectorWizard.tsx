@@ -13,6 +13,15 @@ import { StepErrorHandling } from '@app/pages/CreateConnectorPage/StepErrorHandl
 import { SelectKafkaInstance } from '@app/pages/CreateConnectorPage/StepKafkas';
 import { SelectNamespace } from '@app/pages/CreateConnectorPage/StepNamespace';
 import { Review } from '@app/pages/CreateConnectorPage/StepReview';
+import {
+  CONNECTOR_SPECIFIC,
+  CORE_CONFIGURATION,
+  ERROR_HANDLING,
+  REVIEW_CONFIGURATION,
+  SELECT_CONNECTOR_TYPE,
+  SELECT_KAFKA_INSTANCE,
+  SELECT_NAMESPACE,
+} from '@constants/constants';
 import React, { FunctionComponent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -57,10 +66,10 @@ function useBasicStep() {
     service,
     useCallback(
       (state: typeof service.state) => ({
-        isActive: state.matches('basicConfiguration'),
+        isActive: state.matches('coreConfiguration'),
         canJumpTo:
-          creationWizardMachine.transition(state, 'jumpToBasicConfiguration')
-            .changed || state.matches('basicConfiguration'),
+          creationWizardMachine.transition(state, 'jumpToCoreConfiguration')
+            .changed || state.matches('coreConfiguration'),
         enableNext: creationWizardMachine.transition(state, 'next').changed,
       }),
       [service]
@@ -148,7 +157,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
     const service = useCreateConnectorWizardService();
     const [state, send] = useActor(service);
 
-    let { hasCustomConfigurator, activeStep, configureSteps } = useSelector(
+    const { hasCustomConfigurator, activeStep, configureSteps } = useSelector(
       service,
       useCallback(
         (state: typeof service.state) => {
@@ -176,11 +185,33 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
       )
     );
     const kafkaInstanceStep = useKafkaInstanceStep();
-    const basicStep = useBasicStep();
+    const coreConfigurationStep = useBasicStep();
     const connectorSpecificStep = useConnectorSpecificStep();
     const errorHandlingStep = useErrorHandlingStep();
 
     if (state.value === 'saved') return null;
+
+    const determineStepNameFromState = () => {
+      switch (true) {
+        case state.hasTag(SELECT_CONNECTOR_TYPE):
+          return SELECT_CONNECTOR_TYPE;
+        case state.hasTag(SELECT_KAFKA_INSTANCE):
+          return SELECT_KAFKA_INSTANCE;
+        case state.hasTag(SELECT_NAMESPACE):
+          return SELECT_NAMESPACE;
+        case state.hasTag(CORE_CONFIGURATION):
+          return CORE_CONFIGURATION;
+        case state.hasTag(CONNECTOR_SPECIFIC):
+          return CONNECTOR_SPECIFIC;
+        case state.hasTag(ERROR_HANDLING):
+          return ERROR_HANDLING;
+        case state.hasTag(REVIEW_CONFIGURATION):
+          return REVIEW_CONFIGURATION;
+        default:
+          throw `Can't figure out the current step name from current state tags: ${state.tags} `;
+      }
+    };
+
     const canJumpToStep = (idx: number) => {
       return creationWizardMachine.transition(state, {
         type: 'jumpToConfigureConnector',
@@ -195,9 +226,9 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
         typeof configureSteps !== 'undefined'
       ) {
         return [
-          basicStep,
+          coreConfigurationStep,
           ...(configureSteps as string[]).map((step, idx) => {
-            const isActive =
+            const isActive: boolean =
               state.matches('configureConnector') && activeStep === idx;
             return {
               name: step,
@@ -214,7 +245,11 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
           }),
         ];
       } else {
-        return [basicStep, connectorSpecificStep, errorHandlingStep];
+        return [
+          coreConfigurationStep,
+          connectorSpecificStep,
+          errorHandlingStep,
+        ];
       }
     };
 
@@ -248,10 +283,10 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
       },
       {
         name: t('configuration'),
-        isActive: state.matches('basicConfiguration'),
+        isActive: state.matches('coreConfiguration'),
         canJumpTo:
-          creationWizardMachine.transition(state, 'jumpToBasicConfiguration')
-            .changed || state.matches('basicConfiguration'),
+          creationWizardMachine.transition(state, 'jumpToCoreConfiguration')
+            .changed || state.matches('coreConfiguration'),
 
         steps: loadSubSteps(),
       },
@@ -283,21 +318,22 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
     const onNext = () => send('next');
     const onBack = () => send('prev');
     const goToStep = (stepIndex: number) => {
+      const fromStep = determineStepNameFromState();
       switch (stepIndex) {
         case 1:
-          send('jumpToSelectConnector');
+          send({ type: 'jumpToSelectConnector', fromStep });
           break;
         case 2:
-          send('jumpToSelectKafka');
+          send({ type: 'jumpToSelectKafka', fromStep });
           break;
         case 3:
-          send('jumpToSelectNamespace');
+          send({ type: 'jumpToSelectNamespace', fromStep });
           break;
         case 4:
-          send('jumpToBasicConfiguration');
+          send({ type: 'jumpToCoreConfiguration', fromStep });
           break;
         case flattenedSteps.length:
-          send('jumpToReviewConfiguration');
+          send({ type: 'jumpToReviewConfiguration', fromStep });
           break;
         default:
           // this combo represents the error handling step
@@ -305,14 +341,19 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
             !hasCustomConfigurator &&
             stepIndex === flattenedSteps.length - 1
           ) {
-            send('jumpToErrorConfiguration');
+            send({ type: 'jumpToErrorConfiguration', fromStep });
             return;
           }
           // if it's not the error handling step, it's some
           // sub-step of configuration
           const subStep = stepIndex - loadSubSteps().length - 1;
+          const currentSubStep = currentStep - loadSubSteps().length - 1;
           if (stepIndex < flattenedSteps.length) {
-            send({ type: 'jumpToConfigureConnector', subStep });
+            send({
+              type: 'jumpToConfigureConnector',
+              fromStep: `${fromStep} page ${currentSubStep}`,
+              subStep,
+            });
           }
       }
     };

@@ -109,7 +109,9 @@ export const configuratorMachine = model.createMachine(
           },
           lastStep: {
             on: {
-              next: '#configurator.configured',
+              next: {
+                target: '#configurator.configured',
+              },
             },
           },
         },

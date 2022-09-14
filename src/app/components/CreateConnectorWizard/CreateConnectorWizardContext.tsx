@@ -15,16 +15,16 @@ import {
   PlaceholderOrderBy,
   PlaceholderSearch,
 } from '@app/machines/PaginatedResponse.machine';
-import { BasicMachineActorRef } from '@app/machines/StepCommon.machine';
 import {
   ConnectorConfiguratorResponse,
   configuratorLoaderMachine,
 } from '@app/machines/StepConfiguratorLoader.machine';
-import { ConnectorTypesMachineActorRef } from '@app/machines/StepConnectorTypes.machine';
+import { BasicMachineActorRef } from '@app/machines/StepCoreConfiguration.machine';
 import { ErrorHandlingMachineActorRef } from '@app/machines/StepErrorHandling.machine';
-import { KafkaMachineActorRef } from '@app/machines/StepKafkas.machine';
-import { NamespaceMachineActorRef } from '@app/machines/StepNamespace.machine';
 import { ReviewMachineActorRef } from '@app/machines/StepReview.machine';
+import { ConnectorTypesMachineActorRef } from '@app/machines/StepSelectConnectorType.machine';
+import { KafkaMachineActorRef } from '@app/machines/StepSelectKafka.machine';
+import { NamespaceMachineActorRef } from '@app/machines/StepSelectNamespace.machine';
 import { PAGINATED_MACHINE_ID } from '@constants/constants';
 import React, {
   createContext,
@@ -237,6 +237,7 @@ export const useConnectorTypesMachineIsReady = () => {
 
 export const useConnectorTypesMachine = () => {
   const { connectorTypeRef } = useCreateConnectorWizard();
+
   const api = usePagination<
     ConnectorType,
     ConnectorTypesOrderBy,

@@ -49,14 +49,14 @@ const setServiceAccount = model.assign(
   'setServiceAccount'
 );
 
-export const basicMachine = model.createMachine(
+export const coreConfigurationMachine = model.createMachine(
   {
-    id: 'configureBasic',
+    id: 'coreConfiguration',
     initial: 'verify',
     states: {
       verify: {
         always: [
-          { target: 'valid', cond: 'isBasicConfigured' },
+          { target: 'valid', cond: 'isCoreConfigurationConfigured' },
           { target: 'typing' },
         ],
       },
@@ -95,7 +95,7 @@ export const basicMachine = model.createMachine(
           },
           confirm: {
             target: '#done',
-            cond: 'isBasicConfigured',
+            cond: 'isCoreConfigurationConfigured',
           },
         },
       },
@@ -113,7 +113,7 @@ export const basicMachine = model.createMachine(
   },
   {
     guards: {
-      isBasicConfigured: (context) => {
+      isCoreConfigurationConfigured: (context) => {
         return (
           context.name !== undefined &&
           context.name.length > 0 &&
@@ -126,4 +126,6 @@ export const basicMachine = model.createMachine(
   }
 );
 
-export type BasicMachineActorRef = ActorRefFrom<typeof basicMachine>;
+export type BasicMachineActorRef = ActorRefFrom<
+  typeof coreConfigurationMachine
+>;

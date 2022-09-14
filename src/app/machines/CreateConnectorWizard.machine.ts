@@ -1,15 +1,24 @@
 import { UserProvidedServiceAccount } from '@apis/api';
-import { basicMachine } from '@app/machines/StepCommon.machine';
 import { configuratorMachine } from '@app/machines/StepConfigurator.machine';
 import {
   configuratorLoaderMachine,
   ConnectorConfiguratorType,
 } from '@app/machines/StepConfiguratorLoader.machine';
-import { connectorTypesMachine } from '@app/machines/StepConnectorTypes.machine';
+import { coreConfigurationMachine } from '@app/machines/StepCoreConfiguration.machine';
 import { errorHandlingMachine } from '@app/machines/StepErrorHandling.machine';
-import { kafkasMachine } from '@app/machines/StepKafkas.machine';
-import { namespacesMachine } from '@app/machines/StepNamespace.machine';
 import { reviewMachine } from '@app/machines/StepReview.machine';
+import { selectConnectorTypeMachine } from '@app/machines/StepSelectConnectorType.machine';
+import { selectKafkaMachine } from '@app/machines/StepSelectKafka.machine';
+import { selectNamespaceMachine } from '@app/machines/StepSelectNamespace.machine';
+import {
+  SELECT_CONNECTOR_TYPE,
+  SELECT_KAFKA_INSTANCE,
+  SELECT_NAMESPACE,
+  CORE_CONFIGURATION,
+  CONNECTOR_SPECIFIC,
+  ERROR_HANDLING,
+  REVIEW_CONFIGURATION,
+} from '@constants/constants';
 
 import { assign, InterpreterFrom, send } from 'xstate';
 import { createModel } from 'xstate/lib/model';
@@ -21,15 +30,7 @@ import {
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
-type ErrorHandler = {
-  [key: string]: any;
-};
-
-type connector = {
-  data_shape: object;
-  error_handler: ErrorHandler;
-  processors: object;
-};
+import { ConnectorWithErrorHandler } from './../pages/ConnectorDetailsPage/ConfigurationTab/ErrorHandlerStep';
 
 type Context = {
   accessToken: () => Promise<string>;
@@ -55,6 +56,10 @@ type Context = {
   duplicateMode?: boolean;
 };
 
+type JumpEvent = {
+  fromStep?: string;
+};
+
 const model = createModel({} as Context, {
   events: {
     isValid: () => ({}),
@@ -62,15 +67,16 @@ const model = createModel({} as Context, {
     prev: () => ({}),
     next: () => ({}),
     changedStep: ({ step }: { step: number }) => ({ step }),
-    jumpToSelectKafka: () => ({}),
-    jumpToSelectNamespace: () => ({}),
-    jumpToSelectConnector: () => ({}),
-    jumpToConfigureConnector: ({ subStep }: { subStep?: number }) => ({
-      subStep,
-    }),
-    jumpToBasicConfiguration: () => ({}),
-    jumpToErrorConfiguration: () => ({}),
-    jumpToReviewConfiguration: () => ({}),
+    jumpToSelectKafka: () => ({} as JumpEvent),
+    jumpToSelectNamespace: () => ({} as JumpEvent),
+    jumpToSelectConnector: () => ({} as JumpEvent),
+    jumpToConfigureConnector: ({ subStep }: { subStep?: number }) =>
+      ({
+        subStep,
+      } as JumpEvent & { subStep?: number }),
+    jumpToCoreConfiguration: () => ({} as JumpEvent),
+    jumpToErrorConfiguration: () => ({} as JumpEvent),
+    jumpToReviewConfiguration: () => ({} as JumpEvent),
   },
   actions: {
     notifySave: () => ({}),
@@ -85,9 +91,10 @@ export const creationWizardMachine = model.createMachine(
     states: {
       selectConnector: {
         initial: 'selecting',
+        tags: [SELECT_CONNECTOR_TYPE],
         invoke: {
           id: 'selectConnectorRef',
-          src: connectorTypesMachine,
+          src: selectConnectorTypeMachine,
           data: (context) => {
             return {
               accessToken: context.accessToken,
@@ -136,9 +143,10 @@ export const creationWizardMachine = model.createMachine(
       },
       selectKafka: {
         initial: 'selecting',
+        tags: [SELECT_KAFKA_INSTANCE],
         invoke: {
           id: 'selectKafkaInstanceRef',
-          src: kafkasMachine,
+          src: selectKafkaMachine,
           data: (context) => {
             return {
               accessToken: context.accessToken,
@@ -181,14 +189,17 @@ export const creationWizardMachine = model.createMachine(
           },
         },
         on: {
-          prev: 'selectConnector',
+          prev: {
+            target: 'selectConnector',
+          },
         },
       },
       selectNamespace: {
         initial: 'selecting',
+        tags: [SELECT_NAMESPACE],
         invoke: {
           id: 'selectNamespaceRef',
-          src: namespacesMachine,
+          src: selectNamespaceMachine,
           data: (context) => ({
             accessToken: context.accessToken,
             connectorsApiBasePath: context.connectorsApiBasePath,
@@ -202,7 +213,7 @@ export const creationWizardMachine = model.createMachine(
             duplicateMode: context.duplicateMode,
           }),
           onDone: {
-            target: 'basicConfiguration',
+            target: 'coreConfiguration',
             actions: assign({
               selectedNamespace: (_, event) => event.data.selectedNamespace,
             }),
@@ -226,16 +237,18 @@ export const creationWizardMachine = model.createMachine(
           },
         },
         on: {
-          prev: 'selectKafka',
+          prev: {
+            target: 'selectKafka',
+          },
         },
       },
-
-      basicConfiguration: {
-        id: 'configureBasic',
+      coreConfiguration: {
+        id: 'coreConfiguration',
         initial: 'submittable',
+        tags: [CORE_CONFIGURATION],
         invoke: {
           id: 'basicRef',
-          src: basicMachine,
+          src: coreConfigurationMachine,
           data: (context) => {
             return {
               accessToken: context.accessToken,
@@ -268,14 +281,12 @@ export const creationWizardMachine = model.createMachine(
           },
           onDone: {
             target: 'configureConnector',
-            actions: [
-              assign((context, event) => ({
-                name: event.data.name,
-                sACreated: event.data.sACreated,
-                userServiceAccount: event.data.userServiceAccount,
-                duplicateMode: context.duplicateMode,
-              })),
-            ],
+            actions: assign((context, event) => ({
+              name: event.data.name,
+              sACreated: event.data.sACreated,
+              userServiceAccount: event.data.userServiceAccount,
+              duplicateMode: context.duplicateMode,
+            })),
           },
           onError: {
             actions: (_context, event) => console.error(event.data.message),
@@ -297,11 +308,14 @@ export const creationWizardMachine = model.createMachine(
           },
         },
         on: {
-          prev: 'selectNamespace',
+          prev: {
+            target: 'selectNamespace',
+          },
         },
       },
       configureConnector: {
         initial: 'loadConfigurator',
+        tags: [CONNECTOR_SPECIFIC],
         states: {
           loadConfigurator: {
             invoke: {
@@ -402,7 +416,9 @@ export const creationWizardMachine = model.createMachine(
                   actions: send('prev', { to: 'configuratorRef' }),
                   cond: 'areThereSubsteps',
                 },
-                { target: '#creationWizard.basicConfiguration' },
+                {
+                  target: '#creationWizard.coreConfiguration',
+                },
               ],
               changedStep: {
                 actions: assign({
@@ -416,6 +432,7 @@ export const creationWizardMachine = model.createMachine(
       errorConfiguration: {
         id: 'configureErrorHandler',
         initial: 'submittable',
+        tags: [ERROR_HANDLING],
         invoke: {
           id: 'errorRef',
           src: errorHandlingMachine,
@@ -435,21 +452,21 @@ export const creationWizardMachine = model.createMachine(
               userErrorHandler: context.duplicateMode
                 ? context.userErrorHandler
                   ? context.userErrorHandler
-                  : (context.connectorData?.connector as connector)
-                      ?.error_handler
+                  : (
+                      context.connectorData
+                        ?.connector as ConnectorWithErrorHandler
+                    )?.error_handler
                 : context.userErrorHandler,
             };
           },
           onDone: {
             target: 'reviewConfiguration',
-            actions: [
-              assign((context, event) => ({
-                topic: event.data.topic,
-                userErrorHandler: event.data.userErrorHandler,
-                duplicateMode: context.duplicateMode,
-                name: context.name,
-              })),
-            ],
+            actions: assign((context, event) => ({
+              topic: event.data.topic,
+              userErrorHandler: event.data.userErrorHandler,
+              duplicateMode: context.duplicateMode,
+              name: context.name,
+            })),
           },
           onError: {
             actions: (_context, event) => console.error(event.data.message),
@@ -471,12 +488,15 @@ export const creationWizardMachine = model.createMachine(
           },
         },
         on: {
-          prev: 'configureConnector',
+          prev: {
+            target: 'configureConnector',
+          },
         },
       },
       reviewConfiguration: {
         id: 'review',
         initial: 'reviewing',
+        tags: [REVIEW_CONFIGURATION],
         invoke: {
           id: 'reviewRef',
           src: reviewMachine,
@@ -526,7 +546,6 @@ export const creationWizardMachine = model.createMachine(
             },
           },
         },
-
         on: {
           prev: [
             {
@@ -539,7 +558,9 @@ export const creationWizardMachine = model.createMachine(
                 }
               },
             },
-            { target: '#creationWizard.errorConfiguration' },
+            {
+              target: '#creationWizard.errorConfiguration',
+            },
           ],
         },
       },
@@ -560,20 +581,20 @@ export const creationWizardMachine = model.createMachine(
         target: 'selectNamespace',
         cond: 'isKafkaInstanceSelected',
       },
-      jumpToBasicConfiguration: {
-        target: 'basicConfiguration',
+      jumpToCoreConfiguration: {
+        target: 'coreConfiguration',
         cond: 'isNamespaceSelected',
       },
       jumpToConfigureConnector: {
         target: 'configureConnector',
-        cond: 'isBasicConfigured',
+        cond: 'isCoreConfigurationConfigured',
         actions: assign((_, event) => ({
           activeConfigurationStep: event.subStep || 0,
         })),
       },
       jumpToErrorConfiguration: {
         target: 'errorConfiguration',
-        cond: 'isConnectorConfigured',
+        cond: 'isErrorHandlerConfigured',
       },
       jumpToReviewConfiguration: {
         target: 'reviewConfiguration',
@@ -612,7 +633,7 @@ export const creationWizardMachine = model.createMachine(
             context.isConfigurationValid === true)
         );
       },
-      isBasicConfigured: (context) => {
+      isCoreConfigurationConfigured: (context) => {
         return (
           context.name !== undefined &&
           context.name.length > 0 &&
