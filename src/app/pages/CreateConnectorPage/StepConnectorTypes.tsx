@@ -12,7 +12,7 @@ import {
   PaginationEvent,
 } from '@app/components/Pagination/Pagination';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
-import { DEFAULT_CONNECTOR_TYPES_PAGE_SIZE } from '@app/machines/StepConnectorTypes.machine';
+import { DEFAULT_CONNECTOR_TYPES_PAGE_SIZE } from '@app/machines/StepSelectConnectorType.machine';
 import React, {
   FunctionComponent,
   useCallback,

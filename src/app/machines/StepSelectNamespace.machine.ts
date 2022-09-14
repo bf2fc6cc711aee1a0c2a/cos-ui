@@ -1,50 +1,47 @@
-import { KafkasSearch, fetchKafkaInstances } from '@apis/api';
-import { PAGINATED_MACHINE_ID } from '@constants/constants';
+import { fetchConnectorNamespaces } from '@apis/api';
+import { PAGINATED_MACHINE_ID, SELECT_NAMESPACE } from '@constants/constants';
 
-import { ActorRefFrom, send } from 'xstate';
-import { sendParent } from 'xstate/lib/actions';
+import { ActorRefFrom, send, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
-import { Connector } from '@rhoas/connector-management-sdk';
-import { KafkaRequest } from '@rhoas/kafka-management-sdk';
+import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 import {
+  ApiSuccessResponse,
   getPaginatedApiMachineEvents,
   makePaginatedApiMachine,
-  PaginatedApiResponse,
   PlaceholderOrderBy,
+  PlaceholderSearch,
 } from './PaginatedResponse.machine';
 
 type Context = {
   accessToken: () => Promise<string>;
-  kafkaManagementBasePath: string;
-  response?: PaginatedApiResponse<KafkaRequest>;
-  selectedInstance?: KafkaRequest;
+  connectorsApiBasePath: string;
+  response?: ApiSuccessResponse<ConnectorNamespace>;
+  selectedNamespace?: ConnectorNamespace;
   error?: Object;
-  connectorData?: Connector;
   duplicateMode?: boolean | undefined;
 };
 
 const model = createModel(
   {
     accessToken: () => Promise.resolve(''),
-    kafkaManagementBasePath: '',
-    instances: undefined,
-    selectedInstance: undefined,
+    connectorsApiBasePath: '',
+    selectedNamespace: undefined,
     error: undefined,
   } as Context,
   {
     events: {
-      selectInstance: (payload: { selectedInstance: string }) => ({
+      selectNamespace: (payload: { selectedNamespace: string }) => ({
         ...payload,
       }),
-      deselectInstance: () => ({}),
+      deselectNamespace: () => ({}),
       confirm: () => ({}),
       ...getPaginatedApiMachineEvents<
-        KafkaRequest,
+        ConnectorNamespace,
         PlaceholderOrderBy,
-        KafkasSearch,
-        KafkaRequest
+        PlaceholderSearch,
+        ConnectorNamespace
       >(),
     },
   }
@@ -56,26 +53,26 @@ const success = model.assign((_context, event) => {
     response,
   };
 }, 'api.success');
-const selectInstance = model.assign(
+const selectNamespace = model.assign(
   {
-    selectedInstance: (context, event) => {
+    selectedNamespace: (context, event) => {
       return context.response?.items?.find(
-        (i) => i.id === event.selectedInstance
+        (i) => i.id === event.selectedNamespace
       );
     },
   },
-  'selectInstance'
+  'selectNamespace'
 );
-const deselectInstance = model.assign(
+const deselectNamespace = model.assign(
   {
-    selectedInstance: undefined,
+    selectedNamespace: undefined,
   },
-  'deselectInstance'
+  'deselectNamespace'
 );
 
-export const kafkasMachine = model.createMachine(
+export const selectNamespaceMachine = model.createMachine(
   {
-    id: 'kafkas',
+    id: 'selectNamespace',
     initial: 'root',
     context: model.initialContext,
     states: {
@@ -88,11 +85,11 @@ export const kafkasMachine = model.createMachine(
               id: PAGINATED_MACHINE_ID,
               src: (context) =>
                 makePaginatedApiMachine<
-                  KafkaRequest,
+                  ConnectorNamespace,
                   PlaceholderOrderBy,
-                  KafkasSearch,
-                  KafkaRequest
-                >(fetchKafkaInstances(context), (i) => i, {
+                  PlaceholderSearch,
+                  ConnectorNamespace
+                >(fetchConnectorNamespaces(context), (i) => i, {
                   pollingEnabled: true,
                 }),
             },
@@ -127,34 +124,48 @@ export const kafkasMachine = model.createMachine(
             states: {
               verify: {
                 always: [
-                  { target: 'selecting', cond: 'noInstanceSelected' },
-                  { target: 'valid', cond: 'instanceSelected' },
+                  { target: 'selecting', cond: 'noNamespaceSelected' },
+                  { target: 'valid', cond: 'namespaceSelected' },
                 ],
               },
               selecting: {
                 entry: sendParent('isInvalid'),
                 on: {
-                  selectInstance: {
+                  selectNamespace: {
                     target: 'valid',
-                    actions: selectInstance,
+                    actions: selectNamespace,
                   },
                 },
               },
               valid: {
-                entry: sendParent('isValid'),
+                entry: [
+                  sendParent('isValid'),
+                  sendParent(({ selectedNamespace }) => ({
+                    analyticsEventName: `${SELECT_NAMESPACE} selection`,
+                    namespaceCreatedAt: selectedNamespace?.created_at,
+                    namespaceExpiration: selectedNamespace?.expiration,
+                    type: 'sendAnalytics',
+                  })),
+                ],
                 on: {
-                  selectInstance: {
+                  selectNamespace: {
                     target: 'verify',
-                    actions: selectInstance,
-                    cond: (_, event) => event.selectedInstance !== undefined,
+                    actions: selectNamespace,
+                    cond: (_, event) => event.selectedNamespace !== undefined,
                   },
-                  deselectInstance: {
+                  deselectNamespace: {
                     target: 'verify',
-                    actions: deselectInstance,
+                    actions: deselectNamespace,
                   },
                   confirm: {
                     target: '#done',
-                    cond: 'instanceSelected',
+                    actions: sendParent(({ selectedNamespace }) => ({
+                      analyticsEventName: `${SELECT_NAMESPACE} next`,
+                      namespaceCreatedAt: selectedNamespace?.created_at,
+                      namespaceExpiration: selectedNamespace?.expiration,
+                      type: 'sendAnalytics',
+                    })),
+                    cond: 'namespaceSelected',
                   },
                 },
               },
@@ -166,7 +177,7 @@ export const kafkasMachine = model.createMachine(
         id: 'done',
         type: 'final',
         data: {
-          selectedInstance: (context: Context) => context.selectedInstance,
+          selectedNamespace: (context: Context) => context.selectedNamespace,
           duplicateMode: (context: Context) => context.duplicateMode,
         },
       },
@@ -174,10 +185,12 @@ export const kafkasMachine = model.createMachine(
   },
   {
     guards: {
-      instanceSelected: (context) => context.selectedInstance !== undefined,
-      noInstanceSelected: (context) => context.selectedInstance === undefined,
+      namespaceSelected: (context) => context.selectedNamespace !== undefined,
+      noNamespaceSelected: (context) => context.selectedNamespace === undefined,
     },
   }
 );
 
-export type KafkaMachineActorRef = ActorRefFrom<typeof kafkasMachine>;
+export type NamespaceMachineActorRef = ActorRefFrom<
+  typeof selectNamespaceMachine
+>;

@@ -1,15 +1,24 @@
 import { UserProvidedServiceAccount } from '@apis/api';
-import { basicMachine } from '@app/machines/StepCommon.machine';
 import { configuratorMachine } from '@app/machines/StepConfigurator.machine';
 import {
   configuratorLoaderMachine,
   ConnectorConfiguratorType,
 } from '@app/machines/StepConfiguratorLoader.machine';
-import { connectorTypesMachine } from '@app/machines/StepConnectorTypes.machine';
+import { coreConfigurationMachine } from '@app/machines/StepCoreConfiguration.machine';
 import { errorHandlingMachine } from '@app/machines/StepErrorHandling.machine';
-import { kafkasMachine } from '@app/machines/StepKafkas.machine';
-import { namespacesMachine } from '@app/machines/StepNamespace.machine';
 import { reviewMachine } from '@app/machines/StepReview.machine';
+import { selectConnectorTypeMachine } from '@app/machines/StepSelectConnectorType.machine';
+import { selectKafkaMachine } from '@app/machines/StepSelectKafka.machine';
+import { selectNamespaceMachine } from '@app/machines/StepSelectNamespace.machine';
+import {
+  SELECT_CONNECTOR_TYPE,
+  SELECT_KAFKA_INSTANCE,
+  SELECT_NAMESPACE,
+  CORE_CONFIGURATION,
+  CONNECTOR_SPECIFIC,
+  ERROR_HANDLING,
+  REVIEW_CONFIGURATION,
+} from '@constants/constants';
 
 import { assign, InterpreterFrom, send } from 'xstate';
 import { createModel } from 'xstate/lib/model';
@@ -21,15 +30,7 @@ import {
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
-type ErrorHandler = {
-  [key: string]: any;
-};
-
-type connector = {
-  data_shape: object;
-  error_handler: ErrorHandler;
-  processors: object;
-};
+import { ConnectorWithErrorHandler } from './../pages/ConnectorDetailsPage/ConfigurationTab/ErrorHandlerStep';
 
 type Context = {
   accessToken: () => Promise<string>;
@@ -55,6 +56,15 @@ type Context = {
   duplicateMode?: boolean;
 };
 
+type JumpEvent = {
+  fromStep?: string;
+};
+
+type AnalyticsEvent = {
+  analyticsEventName: string;
+  [key: string]: unknown;
+};
+
 const model = createModel({} as Context, {
   events: {
     isValid: () => ({}),
@@ -62,18 +72,21 @@ const model = createModel({} as Context, {
     prev: () => ({}),
     next: () => ({}),
     changedStep: ({ step }: { step: number }) => ({ step }),
-    jumpToSelectKafka: () => ({}),
-    jumpToSelectNamespace: () => ({}),
-    jumpToSelectConnector: () => ({}),
-    jumpToConfigureConnector: ({ subStep }: { subStep?: number }) => ({
-      subStep,
-    }),
-    jumpToBasicConfiguration: () => ({}),
-    jumpToErrorConfiguration: () => ({}),
-    jumpToReviewConfiguration: () => ({}),
+    jumpToSelectKafka: () => ({} as JumpEvent),
+    jumpToSelectNamespace: () => ({} as JumpEvent),
+    jumpToSelectConnector: () => ({} as JumpEvent),
+    jumpToConfigureConnector: ({ subStep }: { subStep?: number }) =>
+      ({
+        subStep,
+      } as JumpEvent & { subStep?: number }),
+    jumpToCoreConfiguration: () => ({} as JumpEvent),
+    jumpToErrorConfiguration: () => ({} as JumpEvent),
+    jumpToReviewConfiguration: () => ({} as JumpEvent),
+    sendAnalytics: () => ({} as AnalyticsEvent),
   },
   actions: {
     notifySave: () => ({}),
+    sendAnalytics: () => ({}),
   },
 });
 
@@ -85,9 +98,10 @@ export const creationWizardMachine = model.createMachine(
     states: {
       selectConnector: {
         initial: 'selecting',
+        tags: [SELECT_CONNECTOR_TYPE],
         invoke: {
           id: 'selectConnectorRef',
-          src: connectorTypesMachine,
+          src: selectConnectorTypeMachine,
           data: (context) => {
             return {
               accessToken: context.accessToken,
@@ -130,15 +144,19 @@ export const creationWizardMachine = model.createMachine(
               next: {
                 actions: send('confirm', { to: 'selectConnectorRef' }),
               },
+              sendAnalytics: {
+                actions: 'sendAnalytics',
+              },
             },
           },
         },
       },
       selectKafka: {
         initial: 'selecting',
+        tags: [SELECT_KAFKA_INSTANCE],
         invoke: {
           id: 'selectKafkaInstanceRef',
-          src: kafkasMachine,
+          src: selectKafkaMachine,
           data: (context) => {
             return {
               accessToken: context.accessToken,
@@ -177,18 +195,31 @@ export const creationWizardMachine = model.createMachine(
               next: {
                 actions: send('confirm', { to: 'selectKafkaInstanceRef' }),
               },
+              sendAnalytics: {
+                actions: 'sendAnalytics',
+              },
             },
           },
         },
         on: {
-          prev: 'selectConnector',
+          prev: {
+            target: 'selectConnector',
+            actions: send({
+              analyticsEventName: `${SELECT_KAFKA_INSTANCE} back`,
+              type: 'sendAnalytics',
+            }),
+          },
+          sendAnalytics: {
+            actions: 'sendAnalytics',
+          },
         },
       },
       selectNamespace: {
         initial: 'selecting',
+        tags: [SELECT_NAMESPACE],
         invoke: {
           id: 'selectNamespaceRef',
-          src: namespacesMachine,
+          src: selectNamespaceMachine,
           data: (context) => ({
             accessToken: context.accessToken,
             connectorsApiBasePath: context.connectorsApiBasePath,
@@ -202,7 +233,7 @@ export const creationWizardMachine = model.createMachine(
             duplicateMode: context.duplicateMode,
           }),
           onDone: {
-            target: 'basicConfiguration',
+            target: 'coreConfiguration',
             actions: assign({
               selectedNamespace: (_, event) => event.data.selectedNamespace,
             }),
@@ -222,20 +253,32 @@ export const creationWizardMachine = model.createMachine(
               next: {
                 actions: send('confirm', { to: 'selectNamespaceRef' }),
               },
+              sendAnalytics: {
+                actions: 'sendAnalytics',
+              },
             },
           },
         },
         on: {
-          prev: 'selectKafka',
+          prev: {
+            target: 'selectKafka',
+            actions: send({
+              analyticsEventName: `${SELECT_NAMESPACE} back`,
+              type: 'sendAnalytics',
+            }),
+          },
+          sendAnalytics: {
+            actions: 'sendAnalytics',
+          },
         },
       },
-
-      basicConfiguration: {
-        id: 'configureBasic',
+      coreConfiguration: {
+        id: 'coreConfiguration',
         initial: 'submittable',
+        tags: [CORE_CONFIGURATION],
         invoke: {
           id: 'basicRef',
-          src: basicMachine,
+          src: coreConfigurationMachine,
           data: (context) => {
             return {
               accessToken: context.accessToken,
@@ -268,14 +311,12 @@ export const creationWizardMachine = model.createMachine(
           },
           onDone: {
             target: 'configureConnector',
-            actions: [
-              assign((context, event) => ({
-                name: event.data.name,
-                sACreated: event.data.sACreated,
-                userServiceAccount: event.data.userServiceAccount,
-                duplicateMode: context.duplicateMode,
-              })),
-            ],
+            actions: assign((context, event) => ({
+              name: event.data.name,
+              sACreated: event.data.sACreated,
+              userServiceAccount: event.data.userServiceAccount,
+              duplicateMode: context.duplicateMode,
+            })),
           },
           onError: {
             actions: (_context, event) => console.error(event.data.message),
@@ -288,6 +329,9 @@ export const creationWizardMachine = model.createMachine(
               next: {
                 actions: send('confirm', { to: 'basicRef' }),
               },
+              sendAnalytics: {
+                actions: 'sendAnalytics',
+              },
             },
           },
           invalid: {
@@ -297,11 +341,21 @@ export const creationWizardMachine = model.createMachine(
           },
         },
         on: {
-          prev: 'selectNamespace',
+          prev: {
+            target: 'selectNamespace',
+            actions: send({
+              analyticsEventName: `${CORE_CONFIGURATION} back`,
+              type: 'sendAnalytics',
+            }),
+          },
+          sendAnalytics: {
+            actions: 'sendAnalytics',
+          },
         },
       },
       configureConnector: {
         initial: 'loadConfigurator',
+        tags: [CONNECTOR_SPECIFIC],
         states: {
           loadConfigurator: {
             invoke: {
@@ -388,6 +442,9 @@ export const creationWizardMachine = model.createMachine(
                   next: {
                     actions: send('next', { to: 'configuratorRef' }),
                   },
+                  sendAnalytics: {
+                    actions: 'sendAnalytics',
+                  },
                 },
               },
               invalid: {
@@ -399,15 +456,24 @@ export const creationWizardMachine = model.createMachine(
             on: {
               prev: [
                 {
-                  actions: send('prev', { to: 'configuratorRef' }),
+                  actions: [send('prev', { to: 'configuratorRef' })],
                   cond: 'areThereSubsteps',
                 },
-                { target: '#creationWizard.basicConfiguration' },
+                {
+                  target: '#creationWizard.coreConfiguration',
+                  actions: send({
+                    analyticsEventName: `${CONNECTOR_SPECIFIC} back`,
+                    type: 'sendAnalytics',
+                  }),
+                },
               ],
               changedStep: {
                 actions: assign({
                   activeConfigurationStep: (_, event) => event.step,
                 }),
+              },
+              sendAnalytics: {
+                actions: 'sendAnalytics',
               },
             },
           },
@@ -416,6 +482,7 @@ export const creationWizardMachine = model.createMachine(
       errorConfiguration: {
         id: 'configureErrorHandler',
         initial: 'submittable',
+        tags: [ERROR_HANDLING],
         invoke: {
           id: 'errorRef',
           src: errorHandlingMachine,
@@ -435,21 +502,21 @@ export const creationWizardMachine = model.createMachine(
               userErrorHandler: context.duplicateMode
                 ? context.userErrorHandler
                   ? context.userErrorHandler
-                  : (context.connectorData?.connector as connector)
-                      ?.error_handler
+                  : (
+                      context.connectorData
+                        ?.connector as ConnectorWithErrorHandler
+                    )?.error_handler
                 : context.userErrorHandler,
             };
           },
           onDone: {
             target: 'reviewConfiguration',
-            actions: [
-              assign((context, event) => ({
-                topic: event.data.topic,
-                userErrorHandler: event.data.userErrorHandler,
-                duplicateMode: context.duplicateMode,
-                name: context.name,
-              })),
-            ],
+            actions: assign((context, event) => ({
+              topic: event.data.topic,
+              userErrorHandler: event.data.userErrorHandler,
+              duplicateMode: context.duplicateMode,
+              name: context.name,
+            })),
           },
           onError: {
             actions: (_context, event) => console.error(event.data.message),
@@ -462,6 +529,9 @@ export const creationWizardMachine = model.createMachine(
               next: {
                 actions: send('confirm', { to: 'errorRef' }),
               },
+              sendAnalytics: {
+                actions: 'sendAnalytics',
+              },
             },
           },
           invalid: {
@@ -471,12 +541,22 @@ export const creationWizardMachine = model.createMachine(
           },
         },
         on: {
-          prev: 'configureConnector',
+          prev: {
+            target: 'configureConnector',
+            actions: send({
+              analyticsEventName: `${ERROR_HANDLING} back`,
+              type: 'sendAnalytics',
+            }),
+          },
+          sendAnalytics: {
+            actions: 'sendAnalytics',
+          },
         },
       },
       reviewConfiguration: {
         id: 'review',
         initial: 'reviewing',
+        tags: [REVIEW_CONFIGURATION],
         invoke: {
           id: 'reviewRef',
           src: reviewMachine,
@@ -523,10 +603,12 @@ export const creationWizardMachine = model.createMachine(
               next: {
                 actions: send('save', { to: 'reviewRef' }),
               },
+              sendAnalytics: {
+                actions: 'sendAnalytics',
+              },
             },
           },
         },
-
         on: {
           prev: [
             {
@@ -538,9 +620,22 @@ export const creationWizardMachine = model.createMachine(
                   return false;
                 }
               },
+              actions: send({
+                analyticsEventName: `${REVIEW_CONFIGURATION} back`,
+                type: 'sendAnalytics',
+              }),
             },
-            { target: '#creationWizard.errorConfiguration' },
+            {
+              target: '#creationWizard.errorConfiguration',
+              actions: send({
+                analyticsEventName: `${REVIEW_CONFIGURATION} back`,
+                type: 'sendAnalytics',
+              }),
+            },
           ],
+          sendAnalytics: {
+            actions: 'sendAnalytics',
+          },
         },
       },
       saved: {
@@ -551,33 +646,80 @@ export const creationWizardMachine = model.createMachine(
     on: {
       jumpToSelectConnector: {
         target: 'selectConnector',
+        actions: send((_context, { fromStep }) => ({
+          analyticsEventName: 'navigate',
+          fromStep,
+          toStep: SELECT_CONNECTOR_TYPE,
+          type: 'sendAnalytics',
+        })),
       },
       jumpToSelectKafka: {
         target: 'selectKafka',
+        actions: send((_context, { fromStep }) => ({
+          analyticsEventName: 'navigate',
+          fromStep,
+          toStep: SELECT_KAFKA_INSTANCE,
+          type: 'sendAnalytics',
+        })),
         cond: 'isConnectorSelected',
       },
       jumpToSelectNamespace: {
         target: 'selectNamespace',
+        actions: send((_context, { fromStep }) => ({
+          analyticsEventName: 'navigate',
+          fromStep,
+          toStep: SELECT_NAMESPACE,
+          type: 'sendAnalytics',
+        })),
         cond: 'isKafkaInstanceSelected',
       },
-      jumpToBasicConfiguration: {
-        target: 'basicConfiguration',
+      jumpToCoreConfiguration: {
+        target: 'coreConfiguration',
+        actions: send((_context, { fromStep }) => ({
+          analyticsEventName: 'navigate',
+          fromStep,
+          toStep: CORE_CONFIGURATION,
+          type: 'sendAnalytics',
+        })),
         cond: 'isNamespaceSelected',
       },
       jumpToConfigureConnector: {
         target: 'configureConnector',
-        cond: 'isBasicConfigured',
-        actions: assign((_, event) => ({
-          activeConfigurationStep: event.subStep || 0,
-        })),
+        cond: 'isCoreConfigurationConfigured',
+        actions: [
+          assign((_, event) => ({
+            activeConfigurationStep: event.subStep || 0,
+          })),
+          send((_context, { subStep, fromStep }) => ({
+            analyticsEventName: 'navigate',
+            fromStep,
+            toStep: `CONNECTOR_SPECIFIC page ${subStep || 0}`,
+            type: 'sendAnalytics',
+          })),
+        ],
       },
       jumpToErrorConfiguration: {
         target: 'errorConfiguration',
-        cond: 'isConnectorConfigured',
+        actions: send((_context, { fromStep }) => ({
+          analyticsEventName: 'navigate',
+          fromStep,
+          toStep: ERROR_HANDLING,
+          type: 'sendAnalytics',
+        })),
+        cond: 'isErrorHandlerConfigured',
       },
       jumpToReviewConfiguration: {
         target: 'reviewConfiguration',
+        actions: send((_context, { fromStep }) => ({
+          analyticsEventName: 'navigate',
+          fromStep,
+          toStep: REVIEW_CONFIGURATION,
+          type: 'sendAnalytics',
+        })),
         cond: 'isConnectorConfigured',
+      },
+      sendAnalytics: {
+        actions: 'sendAnalytics',
       },
     },
   },
@@ -612,7 +754,7 @@ export const creationWizardMachine = model.createMachine(
             context.isConfigurationValid === true)
         );
       },
-      isBasicConfigured: (context) => {
+      isCoreConfigurationConfigured: (context) => {
         return (
           context.name !== undefined &&
           context.name.length > 0 &&
@@ -635,6 +777,27 @@ export const creationWizardMachine = model.createMachine(
         if (context.onSave) {
           context.onSave(context.name);
         }
+      },
+      sendAnalytics: (context, event, actionMeta) => {
+        const { duplicateMode } = context;
+        const { type: eventType, ...data } = event as AnalyticsEvent;
+        const mode = duplicateMode ? 'duplicate' : 'create';
+        console.log(
+          `sendAnalytics, mode: ${mode} event: \n${JSON.stringify(
+            data,
+            undefined,
+            2
+          )}`
+        );
+        console.debug(
+          'sendAnalytics, ',
+          '" context: ',
+          context,
+          ' event: ',
+          event,
+          ' actionMeta: ',
+          actionMeta
+        );
       },
     },
     services: {

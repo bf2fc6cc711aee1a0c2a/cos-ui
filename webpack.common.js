@@ -18,7 +18,8 @@ const isPatternflyStyles = (stylesheet) =>
 module.exports = (env, argv) => {
   const isProduction = argv && argv.mode === 'production';
   const isDevelopment = argv && argv.mode === 'development';
-  const entryName = process.env.DEMO_APP === 'true' ? federatedModuleName : 'app';
+  const entryName =
+    process.env.DEMO_APP === 'true' ? federatedModuleName : 'app';
   return {
     entry: {
       [entryName]: path.resolve(__dirname, 'src', 'index.tsx'),
@@ -151,6 +152,7 @@ module.exports = (env, argv) => {
             singleton: true,
             requiredVersion: dependencies['@rhoas/app-services-ui-shared'],
           },
+          '@scalprum/react-core': { requiredVersion: '*', singleton: true },
           '@patternfly/quickstarts': {
             singleton: true,
             requiredVersion: '*',

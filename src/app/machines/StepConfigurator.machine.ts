@@ -1,3 +1,5 @@
+import { CONNECTOR_SPECIFIC } from '@constants/constants';
+
 import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
@@ -103,13 +105,30 @@ export const configuratorMachine = model.createMachine(
             on: {
               next: {
                 target: '#configurator.configuring',
-                actions: [nextStep, 'changedStep'],
+                actions: [
+                  nextStep,
+                  'changedStep',
+                  sendParent(({ steps, activeStep }) => ({
+                    activeStep,
+                    analyticsEventName: `${CONNECTOR_SPECIFIC} page ${activeStep} next`,
+                    steps,
+                    type: 'sendAnalytics',
+                  })),
+                ],
               },
             },
           },
           lastStep: {
             on: {
-              next: '#configurator.configured',
+              next: {
+                target: '#configurator.configured',
+                actions: sendParent(({ steps, activeStep }) => ({
+                  activeStep,
+                  analyticsEventName: `${CONNECTOR_SPECIFIC} page ${activeStep} next`,
+                  steps,
+                  type: 'sendAnalytics',
+                })),
+              },
             },
           },
         },
@@ -126,7 +145,16 @@ export const configuratorMachine = model.createMachine(
       },
       prev: {
         target: 'configuring',
-        actions: [prevStep, 'changedStep'],
+        actions: [
+          prevStep,
+          'changedStep',
+          sendParent(({ steps, activeStep }) => ({
+            activeStep,
+            analyticsEventName: `${CONNECTOR_SPECIFIC} page ${activeStep} back`,
+            steps,
+            type: 'sendAnalytics',
+          })),
+        ],
       },
     },
   },

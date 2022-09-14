@@ -1,3 +1,5 @@
+import { ERROR_HANDLING } from '@constants/constants';
+
 import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
@@ -64,7 +66,14 @@ export const errorHandlingMachine = model.createMachine(
       },
       valid: {
         id: 'valid',
-        entry: sendParent('isValid'),
+        entry: [
+          sendParent('isValid'),
+          sendParent(({ userErrorHandler }) => ({
+            analyticsEventName: `${ERROR_HANDLING} selection`,
+            errorHandler: userErrorHandler,
+            type: 'sendAnalytics',
+          })),
+        ],
         on: {
           setTopic: {
             target: 'verify',
@@ -76,6 +85,11 @@ export const errorHandlingMachine = model.createMachine(
           },
           confirm: {
             target: '#done',
+            actions: sendParent(({ userErrorHandler }) => ({
+              analyticsEventName: `${ERROR_HANDLING} next`,
+              errorHandler: userErrorHandler,
+              type: 'sendAnalytics',
+            })),
             cond: 'isErrorHandlerConfigured',
           },
         },

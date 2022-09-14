@@ -74,7 +74,7 @@ const testMachine = Machine({
     },
     selectNamespace: {
       on: {
-        CLICK_NAMESPACE: 'basicConfiguration',
+        CLICK_NAMESPACE: 'coreConfiguration',
       },
       meta: {
         test: () =>
@@ -87,7 +87,7 @@ const testMachine = Machine({
         test: () => cy.findByText('No namespaces').should('exist'),
       },
     },
-    basicConfiguration: {
+    coreConfiguration: {
       on: {
         CONFIGURE_BASIC: 'configureConnector',
       },

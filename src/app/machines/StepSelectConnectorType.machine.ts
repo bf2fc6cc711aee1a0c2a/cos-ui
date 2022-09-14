@@ -3,15 +3,15 @@ import {
   ConnectorTypesSearch,
   fetchConnectorTypes,
 } from '@apis/api';
-import { PAGINATED_MACHINE_ID } from '@constants/constants';
+import {
+  PAGINATED_MACHINE_ID,
+  SELECT_CONNECTOR_TYPE,
+} from '@constants/constants';
 
 import { ActorRefFrom, send, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
-import {
-  ConnectorType,
-  ObjectReference,
-} from '@rhoas/connector-management-sdk';
+import { ConnectorType } from '@rhoas/connector-management-sdk';
 
 import {
   ApiSuccessResponse,
@@ -64,11 +64,8 @@ const success = model.assign((_context, event) => {
 }, 'api.success');
 const selectConnector = model.assign(
   {
-    selectedConnector: (context, event) => {
-      return context.response?.items?.find(
-        (i) => (i as ObjectReference).id === event.selectedConnector
-      );
-    },
+    selectedConnector: ({ response }, { selectedConnector }) =>
+      response!.items.find((connector) => connector.id === selectedConnector),
   },
   'selectConnector'
 );
@@ -79,10 +76,10 @@ const reset = model.assign(
   'deselectConnector'
 );
 
-export const connectorTypesMachine = model.createMachine(
+export const selectConnectorTypeMachine = model.createMachine(
   {
     context: model.initialContext,
-    id: 'connectors',
+    id: 'selectConnectorType',
     initial: 'root',
     states: {
       root: {
@@ -154,7 +151,21 @@ export const connectorTypesMachine = model.createMachine(
                 },
               },
               valid: {
-                entry: sendParent('isValid'),
+                entry: [
+                  sendParent('isValid'),
+                  sendParent(({ selectedConnector }) => ({
+                    analyticsEventName: `${SELECT_CONNECTOR_TYPE} selection`,
+                    selectedConnectorTypeId: selectedConnector!.id,
+                    selectedConnectorTypeName: selectedConnector!.name,
+                    selectedConnectorTypeDirection:
+                      (selectedConnector!.labels || []).find(
+                        (label) => label === 'source'
+                      ) !== undefined
+                        ? 'source'
+                        : 'sink',
+                    type: 'sendAnalytics',
+                  })),
+                ],
                 on: {
                   selectConnector: {
                     target: 'verify',
@@ -166,6 +177,18 @@ export const connectorTypesMachine = model.createMachine(
                   },
                   confirm: {
                     target: '#done',
+                    actions: sendParent(({ selectedConnector }) => ({
+                      analyticsEventName: `${SELECT_CONNECTOR_TYPE} next`,
+                      selectedConnectorTypeId: selectedConnector?.id,
+                      selectedConnectorTypeName: selectedConnector?.name,
+                      selectedConnectorTypeDirection:
+                        (selectedConnector!.labels || []).find(
+                          (label) => label === 'source'
+                        ) !== undefined
+                          ? 'source'
+                          : 'sink',
+                      type: 'sendAnalytics',
+                    })),
                     cond: 'connectorSelected',
                   },
                 },
@@ -195,5 +218,5 @@ export const connectorTypesMachine = model.createMachine(
 );
 
 export type ConnectorTypesMachineActorRef = ActorRefFrom<
-  typeof connectorTypesMachine
+  typeof selectConnectorTypeMachine
 >;

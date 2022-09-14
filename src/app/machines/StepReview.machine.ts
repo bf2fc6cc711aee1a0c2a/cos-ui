@@ -1,4 +1,5 @@
 import { saveConnector, UserProvidedServiceAccount } from '@apis/api';
+import { REVIEW_CONFIGURATION } from '@constants/constants';
 import { dataToPrettyString } from '@utils/shared';
 
 import { ActorRefFrom, sendParent } from 'xstate';
@@ -84,7 +85,13 @@ export const reviewMachine = model.createMachine(
         id: 'valid',
         entry: sendParent('isValid'),
         on: {
-          save: 'saving',
+          save: {
+            target: 'saving',
+            actions: sendParent(() => ({
+              type: 'sendAnalytics',
+              analyticsEventName: 'save',
+            })),
+          },
         },
       },
       saving: {
@@ -107,7 +114,14 @@ export const reviewMachine = model.createMachine(
           success: 'saved',
           failure: {
             target: 'valid',
-            actions: setSavingError,
+            actions: [
+              setSavingError,
+              sendParent((_context, { message }) => ({
+                analyticsEventName: `${REVIEW_CONFIGURATION} error saving`,
+                errorMessage: message,
+                type: 'sendAnalytics',
+              })),
+            ],
           },
         },
         tags: ['saving'],

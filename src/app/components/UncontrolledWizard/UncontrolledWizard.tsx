@@ -237,9 +237,7 @@ export class UncontrolledWizard extends Component<WizardProps, WizardState> {
 
   render() {
     const {
-      /* eslint-disable @typescript-eslint/no-unused-vars */
       width,
-
       height,
       title,
       description,
@@ -270,7 +268,6 @@ export class UncontrolledWizard extends Component<WizardProps, WizardState> {
       titleId,
       descriptionId,
       ...rest
-      /* eslint-enable @typescript-eslint/no-unused-vars */
     } = this.props;
     const flattenedSteps = this.getFlattenedSteps();
     const adjustedStep =
