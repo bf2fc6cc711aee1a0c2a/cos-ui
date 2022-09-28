@@ -84,7 +84,9 @@ export const reviewMachine = model.createMachine(
         id: 'valid',
         entry: sendParent('isValid'),
         on: {
-          save: 'saving',
+          save: {
+            target: 'saving',
+          },
         },
       },
       saving: {
