@@ -702,7 +702,7 @@ export type SaveConnectorProps = {
   connectorType: ConnectorType;
 
   configuration: object;
-
+  configurationSteps?: string[] | false;
   name: string;
   userServiceAccount: UserProvidedServiceAccount;
 
@@ -721,6 +721,7 @@ export const saveConnector = ({
   userServiceAccount,
   userErrorHandler,
   topic,
+  configurationSteps,
 }: SaveConnectorProps) => {
   const connectorsAPI = new ConnectorsApi(
     new Configuration({
@@ -735,7 +736,7 @@ export const saveConnector = ({
     const async = true;
 
     let connectorConfiguration = {};
-    if (userErrorHandler) {
+    if (userErrorHandler && !configurationSteps) {
       connectorConfiguration = {
         ...configuration,
         ...{

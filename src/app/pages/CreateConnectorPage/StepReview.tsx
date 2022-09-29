@@ -38,6 +38,7 @@ export function Review() {
     userErrorHandler,
     userServiceAccount,
     configString,
+    configurationSteps,
     savingError,
   } = useReviewMachine();
   return (
@@ -51,6 +52,7 @@ export function Review() {
       userServiceAccount={userServiceAccount}
       configString={configString}
       savingError={savingError}
+      configurationSteps={configurationSteps}
     ></StepReviewComponent>
   );
 }
@@ -64,6 +66,7 @@ type StepReviewComponentProps = {
   userErrorHandler: string;
   userServiceAccount: UserProvidedServiceAccount;
   configString: string;
+  configurationSteps?: string[] | false;
   savingError: string | undefined;
 };
 
@@ -76,6 +79,7 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
   userErrorHandler,
   userServiceAccount,
   configString,
+  configurationSteps,
   savingError,
 }) => {
   const { t } = useTranslation();
@@ -157,6 +161,7 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
             userErrorHandler={userErrorHandler}
             userServiceAccount={userServiceAccount}
             configString={configString}
+            configurationSteps={configurationSteps}
           />
         ) : (
           <>
@@ -294,7 +299,7 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
                   </Grid>
                 );
               })}
-            {userErrorHandler && (
+            {userErrorHandler && !configurationSteps && (
               <>
                 <Title headingLevel="h3" size={TitleSizes['2xl']}>
                   {t('errorHandling')}

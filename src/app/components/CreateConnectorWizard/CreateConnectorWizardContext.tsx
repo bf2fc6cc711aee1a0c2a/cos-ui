@@ -416,6 +416,7 @@ export const useReviewMachine = () => {
     isSaving,
     savingError,
     duplicateMode,
+    configurationSteps,
   } = useSelector(
     reviewRef,
     useCallback(
@@ -431,6 +432,7 @@ export const useReviewMachine = () => {
         isSaving: state.hasTag('saving'),
         savingError: state.context.savingError,
         duplicateMode: state.context.duplicateMode,
+        configurationSteps: state.context.configurationSteps,
       }),
       []
     )
@@ -448,6 +450,7 @@ export const useReviewMachine = () => {
     isSaving,
     savingError,
     duplicateMode,
+    configurationSteps,
   };
 };
 
