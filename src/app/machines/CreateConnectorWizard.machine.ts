@@ -515,6 +515,7 @@ export const creationWizardMachine = model.createMachine(
               topic: context.topic,
               userErrorHandler: context.userErrorHandler,
               duplicateMode: context.duplicateMode,
+              configurationSteps: context.configurationSteps,
             };
           },
           onDone: {

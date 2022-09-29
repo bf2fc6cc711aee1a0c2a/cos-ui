@@ -31,6 +31,7 @@ type Context = {
   configStringWarnings?: string[];
   savingError?: string;
   duplicateMode: boolean | undefined;
+  configurationSteps?: string[] | false;
 };
 
 const model = createModel(
@@ -60,6 +61,7 @@ const initialize = model.assign((context) => ({
   userErrorHandler: context.userErrorHandler,
 
   configString: dataToPrettyString(context.initialConfiguration),
+  configurationSteps: context.configurationSteps,
 }));
 
 const setSavingError = model.assign(
@@ -103,6 +105,7 @@ export const reviewMachine = model.createMachine(
               userServiceAccount: context.userServiceAccount,
               topic: context.topic,
               userErrorHandler: context.userErrorHandler,
+              configurationSteps: context.configurationSteps,
             }),
         },
         on: {

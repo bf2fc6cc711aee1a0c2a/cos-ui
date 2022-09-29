@@ -36,6 +36,7 @@ type ViewJSONFormatProps = {
   userErrorHandler: string;
   userServiceAccount: UserProvidedServiceAccount;
   configString: string;
+  configurationSteps?: string[] | false;
 };
 
 export const ViewJSONFormat: FunctionComponent<ViewJSONFormatProps> = ({
@@ -47,6 +48,7 @@ export const ViewJSONFormat: FunctionComponent<ViewJSONFormatProps> = ({
   userErrorHandler,
   userServiceAccount,
   configString,
+  configurationSteps,
 }) => {
   const { t } = useTranslation();
   const [copied, setCopied] = React.useState<boolean>(false);
@@ -84,12 +86,18 @@ export const ViewJSONFormat: FunctionComponent<ViewJSONFormatProps> = ({
     },
 
     {
-      connector: {
-        ...parsedConfigString,
-        ...{
-          error_handler: { [userErrorHandler]: topic ? { topic: topic } : {} },
-        },
-      },
+      connector: configurationSteps
+        ? {
+            ...parsedConfigString,
+          }
+        : {
+            ...parsedConfigString,
+            ...{
+              error_handler: {
+                [userErrorHandler]: topic ? { topic: topic } : {},
+              },
+            },
+          },
     }
   );
 
