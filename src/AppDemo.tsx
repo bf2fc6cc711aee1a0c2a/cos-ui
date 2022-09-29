@@ -178,6 +178,15 @@ const ConnectedRoutes: FunctionComponent<{}> = () => {
       connectorsApiBasePath={config?.cos.apiBasePath || ''}
       // TODO: remove after demo
       kafkaManagementApiBasePath={'https://api.openshift.com'}
+      onActivity={(event, properties) =>
+        console.debug
+          ? console.debug(
+              'user activity, name: ',
+              event,
+              properties ? ` properties:  ${JSON.stringify(properties)}` : ''
+            )
+          : false
+      }
     />
   );
 };

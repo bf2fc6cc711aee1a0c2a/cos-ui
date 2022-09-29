@@ -1,5 +1,6 @@
 import { Loading } from '@app/components/Loading/Loading';
 import i18n from '@i18n/i18n';
+import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import React, { FunctionComponent } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 
@@ -21,6 +22,9 @@ export const AppFederated: FunctionComponent = () => {
   const config = useConfig();
   const auth = useAuth();
   const basename = useBasename();
+  const { analytics } = useChrome() as {
+    analytics: { track: (event: string, properties: unknown) => void };
+  };
   return (
     <I18nextProvider i18n={i18n}>
       <React.Suspense fallback={<Loading />}>
@@ -30,6 +34,9 @@ export const AppFederated: FunctionComponent = () => {
             connectorsApiBasePath={config?.cos.apiBasePath || ''}
             // TODO: remove after demo
             kafkaManagementApiBasePath={'https://api.openshift.com'}
+            onActivity={(event, properties) =>
+              analytics ? analytics.track(event, properties) : false
+            }
           />
         </Router>
       </React.Suspense>
