@@ -41,7 +41,7 @@
     "@changesets/changelog-github": "0.4.1",
     "@changesets/cli": "2.20.0",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.7",
-    "@redhat-cloud-services/frontend-components-config": "4.6.18",
+    "@redhat-cloud-services/frontend-components-config": "4.6.19",
     "@storybook/addon-actions": "6.5.10",
     "@storybook/addon-essentials": "6.5.10",
     "@storybook/addon-links": "6.5.10",
