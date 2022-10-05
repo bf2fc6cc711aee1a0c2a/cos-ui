@@ -2,7 +2,6 @@ import { createServiceAccount, UserProvidedServiceAccount } from '@apis/api';
 import { useCos } from '@context/CosContext';
 import React, { FormEvent, useCallback, useState } from 'react';
 import { FC } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   Modal,
@@ -28,6 +27,7 @@ import {
 } from '@patternfly/react-core';
 import { KeyIcon, HelpIcon } from '@patternfly/react-icons';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import { ServiceAccount, useAlert } from '@rhoas/app-services-ui-shared';
 
 type CreateServiceAccountProps = {

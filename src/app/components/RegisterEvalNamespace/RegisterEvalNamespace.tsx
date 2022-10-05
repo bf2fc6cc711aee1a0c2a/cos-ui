@@ -1,7 +1,6 @@
 import { registerEvalNamespace } from '@apis/api';
 import { useCos } from '@context/CosContext';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   Modal,
@@ -15,6 +14,7 @@ import {
   AlertVariant,
 } from '@patternfly/react-core';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import { useAlert } from '@rhoas/app-services-ui-shared';
 
 import { ModalAlerts } from './ModalAlerts';

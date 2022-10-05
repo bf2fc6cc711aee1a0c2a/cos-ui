@@ -11,7 +11,6 @@ import React, {
   useEffect,
   useCallback,
 } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 
 import {
@@ -25,6 +24,7 @@ import {
   Title,
 } from '@patternfly/react-core';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import {
   AlertVariant,
   useAlert,

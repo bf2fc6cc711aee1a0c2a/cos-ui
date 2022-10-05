@@ -10,7 +10,6 @@ import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
 import { clearEmptyObjectValues, toHtmlSafeId } from '@utils/shared';
 import _ from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   AlertVariant,
@@ -27,6 +26,7 @@ import {
   TitleSizes,
 } from '@patternfly/react-core';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import { useAlert, useConfig } from '@rhoas/app-services-ui-shared';
 import {
   Connector,

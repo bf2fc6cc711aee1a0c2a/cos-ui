@@ -3,7 +3,6 @@ import { CreateConnectorWizardProvider } from '@app/components/CreateConnectorWi
 import { useCos } from '@context/CosContext';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
 import React, { FunctionComponent, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import {
@@ -16,6 +15,7 @@ import {
   Title,
 } from '@patternfly/react-core';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import { useConfig } from '@rhoas/app-services-ui-shared';
 
 type CreateConnectorPageProps = {

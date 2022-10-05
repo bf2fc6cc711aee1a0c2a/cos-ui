@@ -1,7 +1,6 @@
 import { ConnectorsOrderBy, ConnectorsSearch } from '@apis/api';
 import { PaginationProps } from '@app/components/Pagination/Pagination';
 import React, { FunctionComponent, ReactNode, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 
 import {
@@ -15,6 +14,8 @@ import {
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
+
+import { useTranslation } from '@rhoas/app-services-ui-components';
 
 type ConnectorsToolbarProps = {
   children?: ReactNode;

@@ -1,9 +1,9 @@
 import { Loading } from '@app/components/Loading/Loading';
 import i18n from '@i18n/i18n';
 import React, { FunctionComponent } from 'react';
-import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter as Router } from 'react-router-dom';
 
+import { I18nextProvider } from '@rhoas/app-services-ui-components';
 import { useAuth, useBasename, useConfig } from '@rhoas/app-services-ui-shared';
 
 import { CosRoutes } from './CosRoutes';

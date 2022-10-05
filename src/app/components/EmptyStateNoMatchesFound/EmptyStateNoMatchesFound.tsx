@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
 
 import {
   EmptyState,
@@ -13,6 +12,8 @@ import {
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
+
+import { Trans, useTranslation } from '@rhoas/app-services-ui-components';
 
 type NoMatchFoundProps = {
   onClear: () => void;

@@ -22,6 +22,8 @@
     "ajv": "8.8.2",
     "axios": "0.24.0",
     "date-fns": "2.26.0",
+    "i18next": "21.8.14",
+    "i18next-http-backend": "1.4.1",
     "lodash.debounce": "4.0.8",
     "react": "17.0.2",
     "react-dom": "17.0.2",
@@ -118,13 +120,11 @@
     "typescript": "4.5.2",
     "url-loader": "4.1.1",
     "webpack": "5.64.3",
-    "webpack-cli": "4.9.1",
+    "webpack-cli": "4.10.0",
     "webpack-dev-server": "4.7.3"
   },
   "peerDependencies": {
-    "i18next": "^21.8.14",
-    "i18next-http-backend": "^1.4.1",
-    "react-i18next": "^11.18.1"
+    "react-i18next": "^11.14.3"
   },
   "scripts": {
     "build": "FEDERATE=1 webpack --mode production --config webpack.prod.js",

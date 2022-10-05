@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 
-jest.mock('react-i18next', () => ({
+jest.mock('@rhoas/app-services-ui-components', () => ({
   // this mock makes sure any components using the translate hook can use it without a warning being shown
   useTranslation: () => {
     return {

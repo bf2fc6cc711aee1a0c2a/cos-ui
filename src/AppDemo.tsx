@@ -10,7 +10,6 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import {
@@ -21,6 +20,7 @@ import {
   Spinner,
 } from '@patternfly/react-core';
 
+import { I18nextProvider } from '@rhoas/app-services-ui-components';
 import {
   BasenameContext,
   Config,

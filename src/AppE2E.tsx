@@ -3,9 +3,9 @@ import { AppLayout } from '@app/components/AppLayout/AppLayout';
 import { Loading } from '@app/components/Loading/Loading';
 import i18n from '@i18n/i18n';
 import React, { FunctionComponent, useCallback } from 'react';
-import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter as Router } from 'react-router-dom';
 
+import { I18nextProvider } from '@rhoas/app-services-ui-components';
 import {
   Auth,
   AuthContext,

@@ -2,7 +2,6 @@ import { useBasicMachine } from '@app/components/CreateConnectorWizard/CreateCon
 import { CreateServiceAccount } from '@app/components/CreateServiceAccount/CreateServiceAccount';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import React, { FC, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   Grid,
@@ -12,6 +11,8 @@ import {
   TextContent,
   Button,
 } from '@patternfly/react-core';
+
+import { useTranslation } from '@rhoas/app-services-ui-components';
 
 import './StepCommon.css';
 

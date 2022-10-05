@@ -1,6 +1,5 @@
 import { getPendingTime, warningType } from '@utils/shared';
 import React, { FunctionComponent, ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   Alert,
@@ -20,6 +19,7 @@ import {
   OutlinedClockIcon,
 } from '@patternfly/react-icons';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import { KafkaInstance } from '@rhoas/app-services-ui-shared';
 import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 

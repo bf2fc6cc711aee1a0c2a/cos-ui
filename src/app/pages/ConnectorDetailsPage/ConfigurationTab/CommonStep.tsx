@@ -1,6 +1,5 @@
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import React, { FC } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   Button,
@@ -19,6 +18,8 @@ import {
   EyeSlashIcon,
   HelpIcon,
 } from '@patternfly/react-icons';
+
+import { useTranslation } from '@rhoas/app-services-ui-components';
 
 export type CommonStepProp = {
   editMode: boolean;

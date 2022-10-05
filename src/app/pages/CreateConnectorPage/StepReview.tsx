@@ -5,7 +5,6 @@ import { ViewJSONFormat } from '@app/components/ViewJSONFormat/ViewJSONFormat';
 import { getPasswordType } from '@utils/shared';
 import _ from 'lodash';
 import React, { useState, useCallback, FC } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   Alert,
@@ -21,6 +20,7 @@ import {
 } from '@patternfly/react-core';
 import { EyeIcon, EyeSlashIcon } from '@patternfly/react-icons';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import {
   ConnectorNamespace,
   ConnectorType,

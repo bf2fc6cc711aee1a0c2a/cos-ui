@@ -1,6 +1,5 @@
 import { DialogDeleteConnector } from '@app/components/DialogDeleteConnector/DialogDeleteConnector';
 import React, { FunctionComponent, useState, SyntheticEvent } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   Dropdown,
@@ -11,6 +10,7 @@ import {
 } from '@patternfly/react-core';
 import { CaretDownIcon } from '@patternfly/react-icons';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import { Connector } from '@rhoas/connector-management-sdk';
 
 export type ConnectorDetailsActionMenuProps = {

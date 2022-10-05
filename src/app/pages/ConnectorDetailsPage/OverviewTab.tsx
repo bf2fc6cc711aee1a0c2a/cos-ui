@@ -2,7 +2,6 @@ import { getKafkaInstanceById, getNamespace } from '@apis/api';
 import { ConnectorInfoTextList } from '@app/components/ConnectorInfoTextList/ConnectorInfoTextList';
 import { useCos } from '@context/CosContext';
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
 
 import {
   AlertVariant,
@@ -14,6 +13,7 @@ import {
   Spinner,
 } from '@patternfly/react-core';
 
+import { Trans, useTranslation } from '@rhoas/app-services-ui-components';
 import { KafkaInstance, useAlert } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorNamespace } from '@rhoas/connector-management-sdk';
 

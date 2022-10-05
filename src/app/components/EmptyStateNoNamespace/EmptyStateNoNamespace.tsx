@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   Bullseye,
@@ -15,6 +14,8 @@ import {
   Tooltip,
 } from '@patternfly/react-core';
 import { ExternalLinkAltIcon, PlusCircleIcon } from '@patternfly/react-icons';
+
+import { useTranslation } from '@rhoas/app-services-ui-components';
 
 type EmptyStateNoNamespaceProps = {
   onModalToggle: () => void;

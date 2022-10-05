@@ -23,9 +23,10 @@ import {
   SELECT_NAMESPACE,
 } from '@constants/constants';
 import React, { FunctionComponent, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { useSelector, useActor } from '@xstate/react';
+
+import { useTranslation } from '@rhoas/app-services-ui-components';
 
 import './CreateConnectorWizard.css';
 import { useCreateConnectorWizardService } from './CreateConnectorWizardContext';
