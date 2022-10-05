@@ -4,7 +4,6 @@ import { CONNECTOR_DETAILS_TABS } from '@constants/constants';
 import { useCos } from '@context/CosContext';
 import _ from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 
 import {
@@ -16,6 +15,7 @@ import {
   AlertVariant,
 } from '@patternfly/react-core';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import { useAlert } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorType } from '@rhoas/connector-management-sdk';
 

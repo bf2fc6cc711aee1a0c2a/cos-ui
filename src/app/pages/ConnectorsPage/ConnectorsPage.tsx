@@ -20,7 +20,6 @@ import React, {
   useContext,
   useState,
 } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
 
 import {
   QuickStartContext,
@@ -42,6 +41,7 @@ import {
   Td as TdType,
 } from '@patternfly/react-table';
 
+import { Trans, useTranslation } from '@rhoas/app-services-ui-components';
 import { TableView } from '@rhoas/app-services-ui-components';
 import { AlertVariant, useAlert } from '@rhoas/app-services-ui-shared';
 import { ConnectorDesiredState } from '@rhoas/connector-management-sdk';

@@ -1,7 +1,8 @@
 import React, { VoidFunctionComponent } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { Alert, AlertVariant } from '@patternfly/react-core';
+
+import { useTranslation } from '@rhoas/app-services-ui-components';
 
 export const ModalAlerts: VoidFunctionComponent = () => {
   const { t } = useTranslation();

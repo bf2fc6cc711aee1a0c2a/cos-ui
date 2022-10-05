@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   Button,
@@ -12,6 +11,8 @@ import {
 } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
+
+import { useTranslation } from '@rhoas/app-services-ui-components';
 
 type EmptyStateNoKafkaInstancesProps = {
   onCreate: () => void;

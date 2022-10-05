@@ -2,7 +2,6 @@ import { UserProvidedServiceAccount } from '@apis/api';
 import { dataToPrettyString, getPasswordType } from '@utils/shared';
 import _ from 'lodash';
 import React, { FunctionComponent } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   Button,
@@ -18,6 +17,7 @@ import {
   FileDownloadIcon,
 } from '@patternfly/react-icons';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import {
   ConnectorDesiredState,
   ObjectReference,

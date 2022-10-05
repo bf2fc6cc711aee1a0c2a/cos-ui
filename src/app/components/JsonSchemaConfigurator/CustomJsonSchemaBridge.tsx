@@ -1,9 +1,10 @@
 import React from 'react';
-import { TFunction } from 'react-i18next';
 import JSONSchemaBridge from 'uniforms-bridge-json-schema';
 
 import { Popover } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
+
+import { TFunction } from '@rhoas/app-services-ui-components';
 
 /**
  * Returns an example string formatted (not localized) for the form or undefined if the field has no example text

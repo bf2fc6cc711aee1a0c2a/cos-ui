@@ -1,7 +1,6 @@
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { toHtmlSafeId } from '@utils/shared';
 import React, { FC, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   Form,
@@ -17,6 +16,7 @@ import {
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import { Connector } from '@rhoas/connector-management-sdk';
 
 // error_handler does not yet seem to be available in the SDK

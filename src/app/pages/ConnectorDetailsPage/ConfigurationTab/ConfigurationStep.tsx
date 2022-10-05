@@ -7,7 +7,6 @@ import {
 import _ from 'lodash';
 import React from 'react';
 import { FC } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   Form,
@@ -17,6 +16,8 @@ import {
   TextVariants,
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
+
+import { useTranslation } from '@rhoas/app-services-ui-components';
 
 import './ConfigurationStep.css';
 

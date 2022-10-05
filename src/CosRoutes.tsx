@@ -3,9 +3,9 @@ import { ConnectedConnectorsPage } from '@app/pages/ConnectorsPage/ConnectorsPag
 import { CreateConnectorPage } from '@app/pages/CreateConnectorPage/CreateConnectorPage';
 import { DuplicateConnectorPage } from '@app/pages/CreateConnectorPage/DuplicateConnectorPage';
 import React, { FunctionComponent, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Route, Switch, useHistory } from 'react-router-dom';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import { AlertVariant, useAlert } from '@rhoas/app-services-ui-shared';
 
 import { CosContextProvider } from './context/CosContext';

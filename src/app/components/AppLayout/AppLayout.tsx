@@ -1,5 +1,4 @@
 import React, { FunctionComponent, ReactNode, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { NavLink, useHistory } from 'react-router-dom';
 
 import {
@@ -11,6 +10,8 @@ import {
   PageHeaderTools,
   PageSidebar,
 } from '@patternfly/react-core';
+
+import { useTranslation } from '@rhoas/app-services-ui-components';
 
 import logo from './Patternfly-Logo.svg';
 

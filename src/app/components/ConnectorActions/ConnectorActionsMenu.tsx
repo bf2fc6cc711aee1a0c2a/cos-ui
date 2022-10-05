@@ -5,7 +5,6 @@ import {
 } from '@app/machines/Connector.machine';
 import { useConnectorsMachine } from '@app/pages/ConnectorsPage/ConnectorsPageContext';
 import React, { FunctionComponent, SyntheticEvent, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   DropdownItem,
@@ -15,6 +14,7 @@ import {
   DropdownSeparator,
 } from '@patternfly/react-core';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import { ConnectorDesiredState } from '@rhoas/connector-management-sdk';
 
 type connectorActionsMenuProps = {

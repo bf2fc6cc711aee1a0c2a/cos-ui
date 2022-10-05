@@ -2,7 +2,6 @@ import { deleteConnector, startConnector, stopConnector } from '@apis/api';
 import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus';
 import { CONNECTOR_DETAILS_TABS } from '@constants/constants';
 import React, { FC, useCallback, useEffect, useReducer } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
 
 import {
@@ -15,6 +14,7 @@ import {
   AlertVariant,
 } from '@patternfly/react-core';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import { useAlert } from '@rhoas/app-services-ui-shared';
 import {
   Connector,

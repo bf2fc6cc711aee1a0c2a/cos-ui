@@ -14,7 +14,6 @@ import {
 } from '@utils/shared';
 import _ from 'lodash';
 import React, { ComponentType, FunctionComponent, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { useSelector } from '@xstate/react';
 
@@ -26,6 +25,7 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import { ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
 
 const ConnectedCustomConfigurator: FunctionComponent<{

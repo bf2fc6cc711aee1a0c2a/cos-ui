@@ -13,7 +13,6 @@ import React, {
   useCallback,
   useEffect,
 } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
 
 import {
   AlertVariant,
@@ -30,6 +29,7 @@ import {
   TabTitleText,
 } from '@patternfly/react-core';
 
+import { Trans, useTranslation } from '@rhoas/app-services-ui-components';
 import { KafkaInstance, useAlert } from '@rhoas/app-services-ui-shared';
 import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 

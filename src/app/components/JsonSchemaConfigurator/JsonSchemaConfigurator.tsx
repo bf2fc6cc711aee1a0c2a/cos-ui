@@ -3,11 +3,12 @@ import { clearEmptyObjectValues } from '@utils/shared';
 import { ValidateFunction } from 'ajv';
 import _ from 'lodash';
 import React, { FunctionComponent } from 'react';
-import { useTranslation } from 'react-i18next';
 import { AutoForm, ValidatedQuickForm } from 'uniforms';
 import { AutoField } from 'uniforms-patternfly';
 
 import { Grid } from '@patternfly/react-core';
+
+import { useTranslation } from '@rhoas/app-services-ui-components';
 
 import { CustomJsonSchemaBridge } from './CustomJsonSchemaBridge';
 import './JsonSchemaConfigurator.css';

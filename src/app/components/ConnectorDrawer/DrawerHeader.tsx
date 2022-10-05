@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   DrawerActions,
@@ -13,6 +12,8 @@ import {
   Title,
   TitleSizes,
 } from '@patternfly/react-core';
+
+import { useTranslation } from '@rhoas/app-services-ui-components';
 
 export type DrawerHeaderProps = {
   drawerHeading: string;

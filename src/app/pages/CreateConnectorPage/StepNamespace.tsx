@@ -19,7 +19,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
 
 import {
   Alert,
@@ -48,6 +47,7 @@ import {
 } from '@patternfly/react-core';
 import { ClockIcon, FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
+import { Trans, useTranslation } from '@rhoas/app-services-ui-components';
 import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 import './StepNamespace.css';

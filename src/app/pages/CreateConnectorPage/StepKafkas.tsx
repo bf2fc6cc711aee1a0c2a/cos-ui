@@ -16,7 +16,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useTranslation } from 'react-i18next';
 import { stringToChip } from 'src/utils/stringToChip';
 import { useDebounce } from 'src/utils/useDebounce';
 
@@ -50,6 +49,8 @@ import {
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
+
+import { useTranslation } from '@rhoas/app-services-ui-components';
 
 export const SelectKafkaInstance: FunctionComponent = () => {
   const isReady = useKafkasMachineIsReady();

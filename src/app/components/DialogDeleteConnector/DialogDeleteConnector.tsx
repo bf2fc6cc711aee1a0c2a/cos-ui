@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
 
 import {
   Button,
@@ -9,6 +8,8 @@ import {
   StackItem,
   TextInput,
 } from '@patternfly/react-core';
+
+import { Trans, useTranslation } from '@rhoas/app-services-ui-components';
 
 export interface DialogDeleteConnectorProps {
   connectorName: string | undefined;

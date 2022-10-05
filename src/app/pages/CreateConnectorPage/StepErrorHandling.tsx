@@ -2,7 +2,6 @@ import { useErrorHandlingMachine } from '@app/components/CreateConnectorWizard/C
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { createValidator } from '@utils/createValidator';
 import React, { FunctionComponent, useCallback, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { JSONSchemaBridge } from 'uniforms-bridge-json-schema';
 
 import {
@@ -15,6 +14,7 @@ import {
   SelectVariant,
 } from '@patternfly/react-core';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import { ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
 
 export const StepErrorHandling: FunctionComponent = () => {

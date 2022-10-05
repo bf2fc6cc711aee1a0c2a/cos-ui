@@ -1,6 +1,5 @@
 import React from 'react';
 import { FunctionComponent } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   Card,
@@ -20,6 +19,8 @@ import {
   BuilderImageIcon,
   OutlinedQuestionCircleIcon,
 } from '@patternfly/react-icons';
+
+import { useTranslation } from '@rhoas/app-services-ui-components';
 
 export type ConnectorTypeCardProps = {
   id: string;
