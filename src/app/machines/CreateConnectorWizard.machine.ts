@@ -20,7 +20,7 @@ import {
   REVIEW_CONFIGURATION,
 } from '@constants/constants';
 
-import { assign, InterpreterFrom, send } from 'xstate';
+import { assign, Event, InterpreterFrom, send } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import {
@@ -32,15 +32,16 @@ import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
 import { ConnectorWithErrorHandler } from './../pages/ConnectorDetailsPage/ConfigurationTab/ErrorHandlerStep';
 
-type Context = {
-  accessToken: () => Promise<string>;
-  connectorsApiBasePath: string;
-  kafkaManagementApiBasePath: string;
+/**
+ * The data produced by the wizard
+ */
+export type CreateWizardContextData = {
+  connectorData?: Connector;
+  connectorTypeDetails?: ConnectorType;
+  connectorId?: string;
   selectedKafkaInstance?: KafkaRequest;
   selectedNamespace?: ConnectorNamespace;
   selectedConnector?: ConnectorType;
-  Configurator?: ConnectorConfiguratorType;
-  configurationSteps?: string[] | false;
   activeConfigurationStep?: number;
   isConfigurationValid?: boolean;
   connectorConfiguration?: unknown;
@@ -49,18 +50,36 @@ type Context = {
   topic: string;
   userServiceAccount: UserProvidedServiceAccount;
   userErrorHandler: string;
-  onSave?: (name: string) => void;
-  connectorData?: Connector;
-  connectorTypeDetails?: ConnectorType;
-  connectorId?: string;
-  duplicateMode?: boolean;
 };
+
+/**
+ * Data that's only used by an instance of a wizard
+ */
+export type CreateWizardContextInstanceData = {
+  Configurator?: ConnectorConfiguratorType;
+  configurationSteps?: string[] | false;
+};
+
+/**
+ * Data supplied to the wizard externally that's global to the wizard
+ */
+export type CreateWizardContext = {
+  accessToken: () => Promise<string>;
+  connectorsApiBasePath: string;
+  kafkaManagementApiBasePath: string;
+  onSave?: (name: string) => void;
+  duplicateMode?: boolean;
+} & CreateWizardContextInstanceData &
+  CreateWizardContextData;
 
 export type JumpEvent = {
   fromStep?: string;
 };
 
-const model = createModel({} as Context, {
+type WizardGuard = (context: CreateWizardContext, event: Event<any>) => boolean;
+
+// model
+const model = createModel({} as CreateWizardContext, {
   events: {
     isValid: () => ({}),
     isInvalid: () => ({}),
@@ -83,10 +102,87 @@ const model = createModel({} as Context, {
   },
 });
 
+// Guards
+const isConnectorSelected: WizardGuard = (context, event) => {
+  const subStep = (event as { subStep?: number }).subStep;
+  if (subStep) {
+    return (
+      context.selectedConnector !== undefined &&
+      (context.connectorConfiguration !== undefined ||
+        subStep <= context.activeConfigurationStep!)
+    );
+  }
+  return context.selectedConnector !== undefined;
+};
+
+const isKafkaInstanceSelected: WizardGuard = (context, _event) =>
+  context.selectedKafkaInstance !== undefined;
+
+const isNamespaceSelected: WizardGuard = (context, _event) =>
+  context.selectedNamespace !== undefined;
+
+const isConnectorConfigured: WizardGuard = (context, _event) => {
+  if (!context.configurationSteps) {
+    return (
+      context.connectorConfiguration !== undefined &&
+      context.connectorConfiguration !== false
+    );
+  }
+  return (
+    (context.connectorConfiguration !== undefined &&
+      context.connectorConfiguration !== false) ||
+    (context.activeConfigurationStep ===
+      context.configurationSteps.length - 1 &&
+      context.isConfigurationValid === true)
+  );
+};
+
+const isCoreConfigurationConfigured: WizardGuard = (context, _event) => {
+  return (
+    context.name !== undefined &&
+    context.name.length > 0 &&
+    context.userServiceAccount !== undefined &&
+    context.userServiceAccount.clientId.length > 0 &&
+    context.userServiceAccount.clientSecret.length > 0
+  );
+};
+
+const isErrorHandlerConfigured: WizardGuard = (context, _event) => {
+  // Currently the error_handler field is only for Camel based connectors, for
+  // now we'll short circuit this for Debezium based connectors
+  if (
+    context.selectedConnector &&
+    context.selectedConnector!.labels &&
+    context.selectedConnector!.labels!.find((val) =>
+      val.startsWith('debezium')
+    ) !== undefined
+  ) {
+    return true;
+  }
+  return context.userErrorHandler !== undefined &&
+    context.userErrorHandler === 'dead_letter_queue'
+    ? context.topic !== undefined && context.topic.length > 0
+    : (context.topic !== undefined && context.topic.length > 0) ||
+        context.userErrorHandler !== undefined;
+};
+
+const canConfigurationBeSaved: WizardGuard = (context, event) => {
+  return (
+    isConnectorSelected(context, event) &&
+    isKafkaInstanceSelected(context, event) &&
+    isNamespaceSelected(context, event) &&
+    isConnectorConfigured(context, event) &&
+    isCoreConfigurationConfigured(context, event) &&
+    isErrorHandlerConfigured(context, event)
+  );
+};
+
+// Machine
 export const creationWizardMachine = model.createMachine(
   {
     id: 'creationWizard',
     initial: 'selectConnector',
+    predictableActionArguments: true,
     context: model.initialContext,
     states: {
       selectConnector: {
@@ -247,7 +343,7 @@ export const creationWizardMachine = model.createMachine(
         initial: 'submittable',
         tags: [CORE_CONFIGURATION],
         invoke: {
-          id: 'basicRef',
+          id: 'coreConfigurationRef',
           src: coreConfigurationMachine,
           data: (context) => {
             return {
@@ -297,7 +393,7 @@ export const creationWizardMachine = model.createMachine(
             on: {
               isInvalid: 'invalid',
               next: {
-                actions: send('confirm', { to: 'basicRef' }),
+                actions: send('confirm', { to: 'coreConfigurationRef' }),
               },
             },
           },
@@ -534,9 +630,7 @@ export const creationWizardMachine = model.createMachine(
         },
         states: {
           reviewing: {
-            on: {
-              isValid: 'valid',
-            },
+            always: [{ target: 'valid', cond: 'canConfigurationBeSaved' }],
           },
           valid: {
             on: {
@@ -605,51 +699,13 @@ export const creationWizardMachine = model.createMachine(
   },
   {
     guards: {
-      isConnectorSelected: (context, event) => {
-        const subStep = (event as { subStep?: number }).subStep;
-        if (subStep) {
-          return (
-            context.selectedConnector !== undefined &&
-            (context.connectorConfiguration !== undefined ||
-              subStep <= context.activeConfigurationStep!)
-          );
-        }
-        return context.selectedConnector !== undefined;
-      },
-      isKafkaInstanceSelected: (context) =>
-        context.selectedKafkaInstance !== undefined,
-      isNamespaceSelected: (context) => context.selectedNamespace !== undefined,
-      isConnectorConfigured: (context) => {
-        if (!context.configurationSteps) {
-          return (
-            context.connectorConfiguration !== undefined &&
-            context.connectorConfiguration !== false
-          );
-        }
-        return (
-          (context.connectorConfiguration !== undefined &&
-            context.connectorConfiguration !== false) ||
-          (context.activeConfigurationStep ===
-            context.configurationSteps.length - 1 &&
-            context.isConfigurationValid === true)
-        );
-      },
-      isCoreConfigurationConfigured: (context) => {
-        return (
-          context.name !== undefined &&
-          context.name.length > 0 &&
-          context.userServiceAccount !== undefined &&
-          context.userServiceAccount.clientId.length > 0 &&
-          context.userServiceAccount.clientSecret.length > 0
-        );
-      },
-      isErrorHandlerConfigured: (context) =>
-        context.userErrorHandler !== undefined &&
-        context.userErrorHandler === 'dead_letter_queue'
-          ? context.topic !== undefined && context.topic.length > 0
-          : (context.topic !== undefined && context.topic.length > 0) ||
-            context.userErrorHandler !== undefined,
-
+      isConnectorSelected,
+      isKafkaInstanceSelected,
+      isNamespaceSelected,
+      isConnectorConfigured,
+      isCoreConfigurationConfigured,
+      isErrorHandlerConfigured,
+      canConfigurationBeSaved,
       areThereSubsteps: (context) => context.activeConfigurationStep! > 0,
     },
     actions: {

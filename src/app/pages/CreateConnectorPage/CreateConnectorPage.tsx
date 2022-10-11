@@ -62,7 +62,7 @@ export const CreateConnectorPage: FunctionComponent<CreateConnectorPageProps> =
           >
             <CreateConnectorWizard onClose={openLeaveConfirm} />
             <Modal
-              title={t('Leave page?')}
+              title={t('leaveCreateConnectorConfirmModalTitle')}
               variant={'small'}
               isOpen={askForLeaveConfirm}
               onClose={closeLeaveConfirm}

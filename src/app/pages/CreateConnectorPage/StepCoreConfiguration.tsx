@@ -1,7 +1,7 @@
-import { useBasicMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
+import { useCoreConfigurationMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { CreateServiceAccount } from '@app/components/CreateServiceAccount/CreateServiceAccount';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 
 import {
   Grid,
@@ -14,32 +14,23 @@ import {
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 
-import './StepCommon.css';
+import './StepCoreConfiguration.css';
 
-export const StepCommon: FC = () => {
+export const StepCoreConfiguration: FC = () => {
   const { t } = useTranslation();
-
   const {
-    name,
-    serviceAccount,
-    sACreated,
+    name = '',
+    serviceAccount = { clientId: '', clientSecret: '' },
+    sACreated = false,
     onSetSaCreated,
     onSetName,
     onSetServiceAccount,
     duplicateMode,
-  } = useBasicMachine();
-
+  } = useCoreConfigurationMachine();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
   const handleModalToggle = () => {
     setIsOpen(!isOpen);
   };
-
-  useEffect(() => {
-    serviceAccount ?? onSetServiceAccount({ clientId: '', clientSecret: '' });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <>
       <StepBodyLayout title={t('core')} description={t('basicStepDescription')}>

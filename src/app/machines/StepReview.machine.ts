@@ -49,20 +49,19 @@ const model = createModel(
   }
 );
 
-const initialize = model.assign((context) => ({
-  kafka: context.kafka,
-  namespace: context.namespace,
-  connectorType: context.connectorType,
-
-  name: context.name,
-  userServiceAccount: context.userServiceAccount,
-
-  topic: context.topic,
-  userErrorHandler: context.userErrorHandler,
-
-  configString: dataToPrettyString(context.initialConfiguration),
-  configurationSteps: context.configurationSteps,
-}));
+const initialize = model.assign((context) => {
+  return {
+    kafka: context.kafka,
+    namespace: context.namespace,
+    connectorType: context.connectorType,
+    name: context.name,
+    userServiceAccount: context.userServiceAccount,
+    topic: context.topic,
+    userErrorHandler: context.userErrorHandler,
+    configString: dataToPrettyString(context.initialConfiguration),
+    configurationSteps: context.configurationSteps,
+  };
+});
 
 const setSavingError = model.assign(
   (_, event) => ({
@@ -75,13 +74,13 @@ export const reviewMachine = model.createMachine(
   {
     id: 'review',
     initial: 'verify',
+    predictableActionArguments: true,
     context: model.initialContext,
     entry: initialize,
     states: {
       verify: {
         always: [{ target: 'valid', cond: 'isAllConfigured' }],
       },
-
       valid: {
         id: 'valid',
         entry: sendParent('isValid'),

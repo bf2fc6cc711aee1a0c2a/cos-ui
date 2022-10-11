@@ -56,6 +56,7 @@ export const configuratorLoaderMachine =
     schema: configuratorLoaderMachineSchema,
     id: 'configurator',
     initial: 'loading',
+    predictableActionArguments: true,
     context: configuratorLoaderMachineModel.initialContext,
     states: {
       loading: {

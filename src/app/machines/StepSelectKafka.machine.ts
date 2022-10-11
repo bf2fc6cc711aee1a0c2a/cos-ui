@@ -77,6 +77,7 @@ export const selectKafkaMachine = model.createMachine(
   {
     id: 'selectKafka',
     initial: 'root',
+    predictableActionArguments: true,
     context: model.initialContext,
     states: {
       root: {

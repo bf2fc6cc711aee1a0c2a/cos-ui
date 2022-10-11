@@ -71,6 +71,7 @@ export const configuratorMachine = model.createMachine(
   {
     id: 'configurator',
     initial: 'configuring',
+    predictableActionArguments: true,
     context: {
       connector: {
         id: 'something',

@@ -42,6 +42,7 @@ export const errorHandlingMachine = model.createMachine(
   {
     id: 'configureErrorHandler',
     initial: 'verify',
+    predictableActionArguments: true,
     states: {
       verify: {
         always: [

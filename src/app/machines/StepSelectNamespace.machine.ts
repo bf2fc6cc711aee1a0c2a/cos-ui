@@ -74,6 +74,7 @@ export const selectNamespaceMachine = model.createMachine(
   {
     id: 'selectNamespace',
     initial: 'root',
+    predictableActionArguments: true,
     context: model.initialContext,
     states: {
       root: {

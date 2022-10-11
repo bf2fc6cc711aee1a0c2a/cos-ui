@@ -104,6 +104,7 @@
   "kafkaStepDescription": "The selected OpenShift Streams for Apache Kafka instance works with your Connectors instance. A source connector ingests data from another system into a Kafka instance. A sink connector propagates data from a Kafka instance into another system.",
   "leave": "Leave",
   "leaveCreateConnectorConfirmModalDescription": "Changes you have made will be lost and no connector will be created.",
+  "leaveCreateConnectorConfirmModalTitle": "Leave page?",
   "leaveDuplicateConnectorConfirmModalDescription": "Changes you have made will be lost and no connector will be created.",
   "leaveDuplicateConnectorConfirmModalTitle": "Leave page?",
   "leaveEditConnectorConfirmModalDescription": "Changes you have made to the connector properties will not be saved.",

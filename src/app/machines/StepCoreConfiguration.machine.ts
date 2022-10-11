@@ -5,7 +5,6 @@ import { createModel } from 'xstate/lib/model';
 
 type Context = {
   name: string;
-
   sACreated: boolean;
   userServiceAccount?: UserProvidedServiceAccount;
   duplicateMode?: boolean | undefined;
@@ -53,6 +52,7 @@ export const coreConfigurationMachine = model.createMachine(
   {
     id: 'coreConfiguration',
     initial: 'verify',
+    predictableActionArguments: true,
     states: {
       verify: {
         always: [
@@ -114,18 +114,19 @@ export const coreConfigurationMachine = model.createMachine(
   {
     guards: {
       isCoreConfigurationConfigured: (context) => {
+        const { name, userServiceAccount } = context;
         return (
-          context.name !== undefined &&
-          context.name.length > 0 &&
-          context.userServiceAccount !== undefined &&
-          context.userServiceAccount.clientId.length > 0 &&
-          context.userServiceAccount.clientSecret.length > 0
+          name !== undefined &&
+          name.length > 0 &&
+          userServiceAccount !== undefined &&
+          userServiceAccount.clientId.length > 0 &&
+          userServiceAccount.clientSecret.length > 0
         );
       },
     },
   }
 );
 
-export type BasicMachineActorRef = ActorRefFrom<
+export type CoreConfigurationActorRef = ActorRefFrom<
   typeof coreConfigurationMachine
 >;

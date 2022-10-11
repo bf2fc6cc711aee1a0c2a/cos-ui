@@ -6,7 +6,8 @@ import { AlertsProvider } from '../Alerts/Alerts';
 import { CreateServiceAccount } from './CreateServiceAccount';
 
 export default {
-  title: 'Wizard Step 4.1/Core Step/CreateServiceAccountModal',
+  title:
+    'Wizard Step 4.1/Core Configuration Step/components/CreateServiceAccountModal',
   component: CreateServiceAccount,
   decorators: [
     (Story) => (
