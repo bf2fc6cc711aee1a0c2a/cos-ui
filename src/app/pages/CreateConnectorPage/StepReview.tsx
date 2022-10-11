@@ -2,7 +2,7 @@ import { UserProvidedServiceAccount } from '@apis/api';
 import { useReviewMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { ViewJSONFormat } from '@app/components/ViewJSONFormat/ViewJSONFormat';
-import { getPasswordType } from '@utils/shared';
+import { getPasswordType, maskValue } from '@utils/shared';
 import _ from 'lodash';
 import React, { useState, useCallback, FC } from 'react';
 
@@ -118,9 +118,6 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
     delete modifiedObject['error_handler'];
   } catch (e) {}
 
-  const maskValue = (value: any) => {
-    return '*'.repeat(value.length);
-  };
   return (
     <StepBodyLayout
       title={t('review')}
@@ -284,14 +281,16 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
                       <strong>{_.startCase(el)}</strong>
                     </GridItem>
                     <GridItem span={8}>
-                      {dataToHide.includes(el) ? (
-                        maskValue(modifiedObject[el])
-                      ) : typeof modifiedObject[el] === 'object' ? (
+                      {typeof modifiedObject[el] === 'object' ? (
                         el === 'data_shape' ? (
                           <DataShape data={modifiedObject[el]} />
                         ) : (
                           JSON.stringify(modifiedObject[el])
                         )
+                      ) : typeof modifiedObject[el] === 'boolean' ? (
+                        modifiedObject[el].toString()
+                      ) : dataToHide.includes(el) ? (
+                        maskValue(modifiedObject[el])
                       ) : (
                         modifiedObject[el]
                       )}
