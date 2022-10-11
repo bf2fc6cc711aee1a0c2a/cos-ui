@@ -57,6 +57,27 @@ export function Review() {
   );
 }
 
+const ConnectorProperties = (
+  property: string,
+  connectorProperties: { [key: string]: any },
+  dataToHide: string[]
+) => {
+  switch (typeof connectorProperties[property]) {
+    case 'object':
+      return property === 'data_shape' ? (
+        <DataShape data={connectorProperties[property]} />
+      ) : (
+        JSON.stringify(connectorProperties[property])
+      );
+    case 'boolean':
+      return connectorProperties[property].toString();
+    default:
+      return dataToHide.includes(property)
+        ? maskValue(connectorProperties[property])
+        : connectorProperties[property];
+  }
+};
+
 type StepReviewComponentProps = {
   kafka: KafkaRequest;
   namespace: ConnectorNamespace;
@@ -281,19 +302,7 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
                       <strong>{_.startCase(el)}</strong>
                     </GridItem>
                     <GridItem span={8}>
-                      {typeof modifiedObject[el] === 'object' ? (
-                        el === 'data_shape' ? (
-                          <DataShape data={modifiedObject[el]} />
-                        ) : (
-                          JSON.stringify(modifiedObject[el])
-                        )
-                      ) : typeof modifiedObject[el] === 'boolean' ? (
-                        modifiedObject[el].toString()
-                      ) : dataToHide.includes(el) ? (
-                        maskValue(modifiedObject[el])
-                      ) : (
-                        modifiedObject[el]
-                      )}
+                      {ConnectorProperties(el, modifiedObject, dataToHide)}
                     </GridItem>
                   </Grid>
                 );

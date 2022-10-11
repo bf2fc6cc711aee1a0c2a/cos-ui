@@ -150,11 +150,11 @@ export const clearEmptyObjectValues = (obj: any): any => {
 };
 
 /**
-* Returns a new value which contain equal length of * string
-* and leaves the passed in value untouched.
-* @param value
-* @returns
-*/
+ * Returns a new value which contain equal length of * string
+ * and leaves the passed in value untouched.
+ * @param value
+ * @returns
+ */
 export const maskValue = (value: string) => {
   return '*'.repeat(value.length);
 };
