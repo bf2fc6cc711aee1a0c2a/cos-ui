@@ -7,6 +7,7 @@ import {
 import {
   CreationWizardMachineInterpreterFromType,
   creationWizardMachine,
+  JumpEvent,
 } from '@app/machines/CreateConnectorWizard.machine';
 import {
   usePagination,
@@ -26,6 +27,7 @@ import { ConnectorTypesMachineActorRef } from '@app/machines/StepSelectConnector
 import { KafkaMachineActorRef } from '@app/machines/StepSelectKafka.machine';
 import { NamespaceMachineActorRef } from '@app/machines/StepSelectNamespace.machine';
 import { PAGINATED_MACHINE_ID } from '@constants/constants';
+import { useCos } from '@context/CosContext';
 import React, {
   createContext,
   FunctionComponent,
@@ -78,6 +80,7 @@ export const CreateConnectorWizardProvider: FunctionComponent<CreateConnectorWiz
     connectorId,
     duplicateMode,
   }) => {
+    const { onActivity } = useCos();
     const makeConfiguratorLoaderMachine = useCallback(
       () =>
         configuratorLoaderMachine.withConfig({
@@ -103,6 +106,118 @@ export const CreateConnectorWizardProvider: FunctionComponent<CreateConnectorWiz
       services: {
         makeConfiguratorLoaderMachine,
       },
+    });
+    const onUserActivity = (event: string, properties?: unknown) => {
+      onActivity(
+        `${duplicateMode ? 'Duplicate' : 'Create'}-${event}`,
+        properties
+      );
+    };
+    // Map state machine transitions to user activity events
+    service.onTransition((state) => {
+      const { selectConnectorRef, selectKafkaInstanceRef, selectNamespaceRef } =
+        state.children as {
+          selectConnectorRef: ConnectorTypesMachineActorRef;
+          selectKafkaInstanceRef: KafkaMachineActorRef;
+          selectNamespaceRef: NamespaceMachineActorRef;
+        };
+      const { type } = state.event;
+      // this actually also carries child events
+      switch (type as string) {
+        case 'isValid':
+          switch (true) {
+            case !!selectConnectorRef:
+              const { selectedConnector } =
+                selectConnectorRef.getSnapshot()!.context;
+              onUserActivity('Connector-Select-Connector-Selection', {
+                name: selectedConnector!.name,
+                id: selectedConnector!.id,
+                type:
+                  (selectedConnector!.labels || []).find(
+                    (label: string) => label === 'source'
+                  ) !== undefined
+                    ? 'source'
+                    : 'sink',
+              });
+              break;
+            case !!selectKafkaInstanceRef:
+              const { selectedInstance } =
+                selectKafkaInstanceRef.getSnapshot()!.context;
+              onUserActivity('Kafka-Select-Kafka-Selection', {
+                name: selectedInstance!.name,
+                createdAt: selectedInstance!.created_at,
+                expiresAt: selectedInstance!.expires_at,
+              });
+              break;
+            case !!selectNamespaceRef:
+              const { selectedNamespace } =
+                selectNamespaceRef.getSnapshot()!.context;
+              onUserActivity('Namespace-Select-Namespace-Selection', {
+                name: selectedNamespace?.name,
+                expiration: selectedNamespace!.expiration
+                  ? selectedNamespace!.expiration
+                  : 'No Expiration',
+              });
+              break;
+            default:
+              // nothing to do
+              break;
+          }
+          break;
+        case 'next':
+          onUserActivity('Connector-Next');
+          break;
+        case 'prev':
+          onUserActivity('Connector-Back');
+          break;
+        case 'done.invoke.basicRef': {
+          const { data } = state.event as {
+            type: string;
+            data: { name: string; sACreated: boolean };
+          };
+          onUserActivity('Connector-Core-Complete', {
+            name: data.name,
+            serviceAccountCreated: data.sACreated ? 'yes' : 'no',
+          });
+          break;
+        }
+        case 'done.invoke.configuratorRef':
+          onUserActivity('Connector-Specific-Complete');
+          break;
+        case 'done.invoke.errorRef': {
+          const { data } = state.event as {
+            type: string;
+            data: { userErrorHandler: string };
+          };
+          onUserActivity('Connector-Error-Handler-Complete', {
+            errorHandler: data.userErrorHandler,
+          });
+          break;
+        }
+        case 'done.invoke.reviewRef':
+          onUserActivity('Connector-Final');
+          break;
+        case 'jumpToSelectConnector':
+        case 'jumpToSelectKafka':
+        case 'jumpToSelectNamespace':
+        case 'jumpToCoreConfiguration':
+        case 'jumpToErrorConfiguration':
+        case 'jumpToReviewConfiguration': {
+          const { fromStep } = state.event as JumpEvent;
+          onUserActivity(type, { fromStep });
+          break;
+        }
+        case 'jumpToConfigureConnector': {
+          const { fromStep, subStep } = state.event as JumpEvent & {
+            subStep?: number;
+          };
+          onUserActivity(type, { fromStep, subStep });
+          break;
+        }
+        default:
+          // nothing to do
+          break;
+      }
     });
     return (
       <CreateConnectorWizardMachineService.Provider value={service}>
@@ -148,79 +263,6 @@ export const useCreateConnectorWizard = (): {
   );
 };
 
-export const useNamespaceMachineIsReady = () => {
-  const { namespaceRef } = useCreateConnectorWizard();
-  return useSelector(
-    namespaceRef,
-    useCallback(
-      (state: EmittedFrom<typeof namespaceRef>) => {
-        return state.matches({ root: { api: 'ready' } });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      },
-      [namespaceRef]
-    )
-  );
-};
-
-export const useNamespaceMachine = () => {
-  const { namespaceRef } = useCreateConnectorWizard();
-  const api = usePagination<
-    ConnectorNamespace,
-    PlaceholderOrderBy,
-    PlaceholderSearch,
-    ConnectorNamespace
-  >(
-    namespaceRef.getSnapshot()?.children[
-      PAGINATED_MACHINE_ID
-    ] as PaginatedApiActorType<
-      ConnectorNamespace,
-      PlaceholderOrderBy,
-      PlaceholderSearch,
-      ConnectorNamespace
-    >
-  );
-  const { selectedId, duplicateMode } = useSelector(
-    namespaceRef,
-    useCallback(
-      (state: EmittedFrom<typeof namespaceRef>) => ({
-        selectedId: state.context.selectedNamespace?.id,
-        duplicateMode: state.context.duplicateMode,
-      }),
-      []
-    )
-  );
-  const onSelect = useCallback(
-    (selectedNamespace: string) => {
-      namespaceRef.send({ type: 'selectNamespace', selectedNamespace });
-    },
-    [namespaceRef]
-  );
-
-  const onDeselect = useCallback(() => {
-    namespaceRef.send({ type: 'deselectNamespace' });
-  }, [namespaceRef]);
-
-  const runQuery = useCallback(
-    (request: PaginatedApiRequest<PlaceholderOrderBy, PlaceholderSearch>) => {
-      namespaceRef.send({ type: 'api.query', ...request });
-    },
-    [namespaceRef]
-  );
-
-  const onRefresh = useCallback(() => {
-    namespaceRef.send({ type: 'api.refresh' });
-  }, [namespaceRef]);
-  return {
-    ...api,
-    selectedId,
-    duplicateMode,
-    onSelect,
-    onDeselect,
-    onRefresh,
-    runQuery,
-  };
-};
-
 export const useConnectorTypesMachineIsReady = () => {
   const { connectorTypeRef } = useCreateConnectorWizard();
   return useSelector(
@@ -237,6 +279,7 @@ export const useConnectorTypesMachineIsReady = () => {
 
 export const useConnectorTypesMachine = () => {
   const { connectorTypeRef } = useCreateConnectorWizard();
+  const { onActivity } = useCos();
 
   const api = usePagination<
     ConnectorType,
@@ -275,6 +318,10 @@ export const useConnectorTypesMachine = () => {
     (
       request: PaginatedApiRequest<ConnectorTypesOrderBy, ConnectorTypesSearch>
     ) => {
+      onActivity(
+        `${duplicateMode ? 'Duplicate' : 'Create'}-Search-Connectors`,
+        request
+      );
       connectorTypeRef.send({ type: 'api.query', ...request });
     },
     [connectorTypeRef]
@@ -305,6 +352,7 @@ export const useKafkasMachineIsReady = () => {
 
 export const useKafkasMachine = () => {
   const { kafkaRef } = useCreateConnectorWizard();
+  const { onActivity } = useCos();
   const api = usePagination<
     KafkaRequest,
     PlaceholderOrderBy,
@@ -343,6 +391,10 @@ export const useKafkasMachine = () => {
 
   const runQuery = useCallback(
     (request: PaginatedApiRequest<PlaceholderOrderBy, KafkasSearch>) => {
+      onActivity(
+        `${duplicateMode ? 'Duplicate' : 'Create'}-Search-Kafkas`,
+        request
+      );
       kafkaRef.send({ type: 'api.query', ...request });
     },
     [kafkaRef]
@@ -353,6 +405,84 @@ export const useKafkasMachine = () => {
     duplicateMode,
     onSelect,
     onDeselect,
+    runQuery,
+  };
+};
+
+export const useNamespaceMachineIsReady = () => {
+  const { namespaceRef } = useCreateConnectorWizard();
+  return useSelector(
+    namespaceRef,
+    useCallback(
+      (state: EmittedFrom<typeof namespaceRef>) => {
+        return state.matches({ root: { api: 'ready' } });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      },
+      [namespaceRef]
+    )
+  );
+};
+
+export const useNamespaceMachine = () => {
+  const { namespaceRef } = useCreateConnectorWizard();
+  const { onActivity } = useCos();
+  const api = usePagination<
+    ConnectorNamespace,
+    PlaceholderOrderBy,
+    PlaceholderSearch,
+    ConnectorNamespace
+  >(
+    namespaceRef.getSnapshot()?.children[
+      PAGINATED_MACHINE_ID
+    ] as PaginatedApiActorType<
+      ConnectorNamespace,
+      PlaceholderOrderBy,
+      PlaceholderSearch,
+      ConnectorNamespace
+    >
+  );
+  const { selectedId, duplicateMode } = useSelector(
+    namespaceRef,
+    useCallback(
+      (state: EmittedFrom<typeof namespaceRef>) => ({
+        selectedId: state.context.selectedNamespace?.id,
+        duplicateMode: state.context.duplicateMode,
+      }),
+      []
+    )
+  );
+  const onSelect = useCallback(
+    (selectedNamespace: string) => {
+      namespaceRef.send({ type: 'selectNamespace', selectedNamespace });
+    },
+    [namespaceRef]
+  );
+
+  const onDeselect = useCallback(() => {
+    namespaceRef.send({ type: 'deselectNamespace' });
+  }, [namespaceRef]);
+
+  const runQuery = useCallback(
+    (request: PaginatedApiRequest<PlaceholderOrderBy, PlaceholderSearch>) => {
+      onActivity(
+        `${duplicateMode ? 'Duplicate' : 'Create'}-Search-Namespaces`,
+        request
+      );
+      namespaceRef.send({ type: 'api.query', ...request });
+    },
+    [namespaceRef]
+  );
+
+  const onRefresh = useCallback(() => {
+    namespaceRef.send({ type: 'api.refresh' });
+  }, [namespaceRef]);
+  return {
+    ...api,
+    selectedId,
+    duplicateMode,
+    onSelect,
+    onDeselect,
+    onRefresh,
     runQuery,
   };
 };

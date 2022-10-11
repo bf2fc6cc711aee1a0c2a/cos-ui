@@ -152,6 +152,7 @@ module.exports = (env, argv) => {
             singleton: true,
             requiredVersion: dependencies['@rhoas/app-services-ui-shared'],
           },
+          '@scalprum/react-core': { requiredVersion: '*', singleton: true },
           '@patternfly/quickstarts': {
             singleton: true,
             requiredVersion: '*',

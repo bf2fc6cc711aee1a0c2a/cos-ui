@@ -56,7 +56,7 @@ type Context = {
   duplicateMode?: boolean;
 };
 
-type JumpEvent = {
+export type JumpEvent = {
   fromStep?: string;
 };
 

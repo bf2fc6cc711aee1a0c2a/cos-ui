@@ -92,6 +92,15 @@ const ConnectedRoutes = () => {
       connectorsApiBasePath={config?.cos.apiBasePath || ''}
       // TODO: remove after demo
       kafkaManagementApiBasePath={'localhost'}
+      onActivity={(event, properties) =>
+        console.debug
+          ? console.debug(
+              'user activity, name: ',
+              event,
+              properties ? ` properties:  ${JSON.stringify(properties)}` : ''
+            )
+          : false
+      }
     />
   );
 };

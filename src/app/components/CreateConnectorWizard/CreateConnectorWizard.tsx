@@ -157,7 +157,6 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
     const { t } = useTranslation();
     const service = useCreateConnectorWizardService();
     const [state, send] = useActor(service);
-
     const { hasCustomConfigurator, activeStep, configureSteps } = useSelector(
       service,
       useCallback(
