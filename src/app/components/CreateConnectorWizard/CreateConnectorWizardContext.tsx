@@ -27,7 +27,7 @@ import { ConnectorTypesMachineActorRef } from '@app/machines/StepSelectConnector
 import { KafkaMachineActorRef } from '@app/machines/StepSelectKafka.machine';
 import { NamespaceMachineActorRef } from '@app/machines/StepSelectNamespace.machine';
 import { PAGINATED_MACHINE_ID } from '@constants/constants';
-import { useCos } from '@context/CosContext';
+import { useAnalytics } from '@hooks/useAnalytics';
 import React, {
   createContext,
   FunctionComponent,
@@ -80,7 +80,7 @@ export const CreateConnectorWizardProvider: FunctionComponent<CreateConnectorWiz
     connectorId,
     duplicateMode,
   }) => {
-    const { onActivity } = useCos();
+    const { onActivity } = useAnalytics();
     const makeConfiguratorLoaderMachine = useCallback(
       () =>
         configuratorLoaderMachine.withConfig({
@@ -279,7 +279,7 @@ export const useConnectorTypesMachineIsReady = () => {
 
 export const useConnectorTypesMachine = () => {
   const { connectorTypeRef } = useCreateConnectorWizard();
-  const { onActivity } = useCos();
+  const { onActivity } = useAnalytics();
 
   const api = usePagination<
     ConnectorType,
@@ -352,7 +352,7 @@ export const useKafkasMachineIsReady = () => {
 
 export const useKafkasMachine = () => {
   const { kafkaRef } = useCreateConnectorWizard();
-  const { onActivity } = useCos();
+  const { onActivity } = useAnalytics();
   const api = usePagination<
     KafkaRequest,
     PlaceholderOrderBy,
@@ -425,7 +425,7 @@ export const useNamespaceMachineIsReady = () => {
 
 export const useNamespaceMachine = () => {
   const { namespaceRef } = useCreateConnectorWizard();
-  const { onActivity } = useCos();
+  const { onActivity } = useAnalytics();
   const api = usePagination<
     ConnectorNamespace,
     PlaceholderOrderBy,

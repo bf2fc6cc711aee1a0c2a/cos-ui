@@ -1,5 +1,5 @@
 import { registerEvalNamespace } from '@apis/api';
-import { useCos } from '@context/CosContext';
+import { useCos } from '@hooks/useCos';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import {

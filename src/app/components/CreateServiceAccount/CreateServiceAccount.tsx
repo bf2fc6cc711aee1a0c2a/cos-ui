@@ -1,5 +1,5 @@
 import { createServiceAccount, UserProvidedServiceAccount } from '@apis/api';
-import { useCos } from '@context/CosContext';
+import { useCos } from '@hooks/useCos';
 import React, { FormEvent, useCallback, useState } from 'react';
 import { FC } from 'react';
 

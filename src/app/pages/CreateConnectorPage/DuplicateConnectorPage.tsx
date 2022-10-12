@@ -2,7 +2,7 @@ import { getConnector, getConnectorTypeDetail } from '@apis/api';
 import { CreateConnectorWizard } from '@app/components/CreateConnectorWizard/CreateConnectorWizard';
 import { CreateConnectorWizardProvider } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { Loading } from '@app/components/Loading/Loading';
-import { useCos } from '@context/CosContext';
+import { useCos } from '@hooks/useCos';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
 import _ from 'lodash';
 import React, {

@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import { CosContextProvider } from '../../../context/CosContext';
+import { CosContextProvider } from '../../../hooks/useCos';
 import { AlertsProvider } from '../Alerts/Alerts';
 import { CreateServiceAccount } from './CreateServiceAccount';
 

@@ -4,7 +4,7 @@ import {
   ConnectorMachineActorRef,
   useConnector,
 } from '@app/machines/Connector.machine';
-import { useCos } from '@context/CosContext';
+import { useCos } from '@hooks/useCos';
 import React, {
   FunctionComponent,
   ReactNode,

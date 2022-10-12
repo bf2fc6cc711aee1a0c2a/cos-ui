@@ -1,6 +1,6 @@
 import { CreateConnectorWizard } from '@app/components/CreateConnectorWizard/CreateConnectorWizard';
 import { CreateConnectorWizardProvider } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
-import { useCos } from '@context/CosContext';
+import { useCos } from '@hooks/useCos';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
 import React, { FunctionComponent, useState } from 'react';
 import { Link } from 'react-router-dom';

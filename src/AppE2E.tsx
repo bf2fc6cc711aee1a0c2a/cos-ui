@@ -1,6 +1,7 @@
 import { AlertsProvider } from '@app/components/Alerts/Alerts';
 import { AppLayout } from '@app/components/AppLayout/AppLayout';
 import { Loading } from '@app/components/Loading/Loading';
+import { AnalyticsProvider } from '@hooks/useAnalytics';
 import i18n from '@i18n/i18n';
 import React, { FunctionComponent, useCallback } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -67,13 +68,15 @@ export const AppE2E: FunctionComponent = () => {
         <ConfigContext.Provider value={config}>
           <I18nextProvider i18n={i18n}>
             <AlertsProvider>
-              <React.Suspense fallback={<Loading />}>
-                <Router>
-                  <AppLayout>
-                    <ConnectedRoutes />
-                  </AppLayout>
-                </Router>
-              </React.Suspense>
+              <AnalyticsProvider>
+                <React.Suspense fallback={<Loading />}>
+                  <Router>
+                    <AppLayout>
+                      <ConnectedRoutes />
+                    </AppLayout>
+                  </Router>
+                </React.Suspense>
+              </AnalyticsProvider>
             </AlertsProvider>
           </I18nextProvider>
         </ConfigContext.Provider>
@@ -92,15 +95,6 @@ const ConnectedRoutes = () => {
       connectorsApiBasePath={config?.cos.apiBasePath || ''}
       // TODO: remove after demo
       kafkaManagementApiBasePath={'localhost'}
-      onActivity={(event, properties) =>
-        console.debug
-          ? console.debug(
-              'user activity, name: ',
-              event,
-              properties ? ` properties:  ${JSON.stringify(properties)}` : ''
-            )
-          : false
-      }
     />
   );
 };
