@@ -158,7 +158,9 @@ export function ConnectorTypesGallery() {
                       })}
                     </Gallery>
                   )}
-                  <ConnectorTypesPagination onChange={runQuery} />
+                  {!duplicateMode && (
+                    <ConnectorTypesPagination onChange={runQuery} />
+                  )}
                 </div>
               </>
             );
