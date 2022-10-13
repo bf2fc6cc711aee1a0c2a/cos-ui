@@ -7,7 +7,11 @@ import {
 } from '@app/machines/StepConfiguratorLoader.machine';
 import { useCos } from '@hooks/useCos';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
-import { clearEmptyObjectValues, toHtmlSafeId } from '@utils/shared';
+import {
+  clearEmptyObjectValues,
+  mapToObject,
+  toHtmlSafeId,
+} from '@utils/shared';
 import _ from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 
@@ -183,7 +187,11 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
       connectorUpdate: {
         ...getEditPayload(
           {
-            ...(connectorConfiguration as ConnectorWithErrorHandler),
+            ...(connectorConfiguration instanceof Map
+              ? (mapToObject(
+                  connectorConfiguration
+                ) as ConnectorWithErrorHandler)
+              : (connectorConfiguration as ConnectorWithErrorHandler)),
             error_handler: errHandlerConfiguration,
           },
           connectorData.connector as ConnectorWithErrorHandler
