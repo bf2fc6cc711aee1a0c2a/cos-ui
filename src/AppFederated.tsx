@@ -1,4 +1,5 @@
 import { Loading } from '@app/components/Loading/Loading';
+import { AnalyticsProvider } from '@hooks/useAnalytics';
 import i18n from '@i18n/i18n';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import React, { FunctionComponent } from 'react';
@@ -27,19 +28,22 @@ export const AppFederated: FunctionComponent = () => {
   };
   return (
     <I18nextProvider i18n={i18n}>
-      <React.Suspense fallback={<Loading />}>
-        <Router basename={basename?.getBasename()}>
-          <CosRoutes
-            getToken={async () => (await auth?.kas.getToken()) || ''}
-            connectorsApiBasePath={config?.cos.apiBasePath || ''}
-            // TODO: remove after demo
-            kafkaManagementApiBasePath={'https://api.openshift.com'}
-            onActivity={(event, properties) =>
-              analytics ? analytics.track(event, properties) : false
-            }
-          />
-        </Router>
-      </React.Suspense>
+      <AnalyticsProvider
+        onActivity={(event, properties) =>
+          analytics ? analytics.track(event, properties) : false
+        }
+      >
+        <React.Suspense fallback={<Loading />}>
+          <Router basename={basename?.getBasename()}>
+            <CosRoutes
+              getToken={async () => (await auth?.kas.getToken()) || ''}
+              connectorsApiBasePath={config?.cos.apiBasePath || ''}
+              // TODO: remove after demo
+              kafkaManagementApiBasePath={'https://api.openshift.com'}
+            />
+          </Router>
+        </React.Suspense>
+      </AnalyticsProvider>
     </I18nextProvider>
   );
 };

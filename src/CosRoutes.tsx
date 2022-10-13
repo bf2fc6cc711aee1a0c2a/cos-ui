@@ -8,20 +8,18 @@ import { Route, Switch, useHistory } from 'react-router-dom';
 import { useTranslation } from '@rhoas/app-services-ui-components';
 import { AlertVariant, useAlert } from '@rhoas/app-services-ui-shared';
 
-import { CosContextProvider } from './context/CosContext';
+import { CosContextProvider } from './hooks/useCos';
 
 type CosRoutesProps = {
   getToken: () => Promise<string>;
   connectorsApiBasePath: string;
   kafkaManagementApiBasePath: string;
-  onActivity: (event: string, properties?: unknown) => void;
 };
 
 export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
   getToken,
   connectorsApiBasePath,
   kafkaManagementApiBasePath,
-  onActivity,
 }) => {
   const { t } = useTranslation();
   const alert = useAlert();
@@ -65,7 +63,6 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
       getToken={getToken}
       connectorsApiBasePath={connectorsApiBasePath}
       kafkaManagementApiBasePath={kafkaManagementApiBasePath}
-      onActivity={onActivity}
     >
       <Switch>
         <Route path={'/'} exact>

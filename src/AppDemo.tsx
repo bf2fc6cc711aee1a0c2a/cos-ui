@@ -1,6 +1,7 @@
 import { AlertsProvider } from '@app/components/Alerts/Alerts';
 import { AppLayout } from '@app/components/AppLayout/AppLayout';
 import { Loading } from '@app/components/Loading/Loading';
+import { AnalyticsProvider } from '@hooks/useAnalytics';
 import i18n from '@i18n/i18n';
 import Keycloak from 'keycloak-js';
 import React, {
@@ -157,13 +158,15 @@ const ConnectedAppDemo: FunctionComponent<ConnectedAppDemoProps> = ({
   >
     <I18nextProvider i18n={i18n}>
       <AlertsProvider>
-        <React.Suspense fallback={<Loading />}>
-          <Router>
-            <AppLayout headerTools={headerTools}>
-              {initialized ? <ConnectedRoutes /> : <Spinner />}
-            </AppLayout>
-          </Router>
-        </React.Suspense>
+        <AnalyticsProvider>
+          <React.Suspense fallback={<Loading />}>
+            <Router>
+              <AppLayout headerTools={headerTools}>
+                {initialized ? <ConnectedRoutes /> : <Spinner />}
+              </AppLayout>
+            </Router>
+          </React.Suspense>
+        </AnalyticsProvider>
       </AlertsProvider>
     </I18nextProvider>
   </ConfigContext.Provider>
@@ -178,15 +181,6 @@ const ConnectedRoutes: FunctionComponent<{}> = () => {
       connectorsApiBasePath={config?.cos.apiBasePath || ''}
       // TODO: remove after demo
       kafkaManagementApiBasePath={'https://api.openshift.com'}
-      onActivity={(event, properties) =>
-        console.debug
-          ? console.debug(
-              'user activity, name: ',
-              event,
-              properties ? ` properties:  ${JSON.stringify(properties)}` : ''
-            )
-          : false
-      }
     />
   );
 };

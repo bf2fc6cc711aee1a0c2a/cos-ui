@@ -14,7 +14,6 @@ type AppContextType = {
    */
   connectorsApiBasePath: string;
   kafkaManagementApiBasePath: string;
-  onActivity: (eventName: string, payload?: unknown) => void;
 };
 const CosContext = createContext<AppContextType | null>(null);
 
@@ -22,7 +21,6 @@ export const CosContextProvider: FunctionComponent<AppContextType> = ({
   getToken,
   connectorsApiBasePath,
   kafkaManagementApiBasePath,
-  onActivity,
   children,
 }) => (
   <CosContext.Provider
@@ -30,7 +28,6 @@ export const CosContextProvider: FunctionComponent<AppContextType> = ({
       getToken,
       connectorsApiBasePath,
       kafkaManagementApiBasePath,
-      onActivity,
     }}
   >
     {children}

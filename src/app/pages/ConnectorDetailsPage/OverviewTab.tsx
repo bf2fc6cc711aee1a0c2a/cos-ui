@@ -1,6 +1,6 @@
 import { getKafkaInstanceById, getNamespace } from '@apis/api';
 import { ConnectorInfoTextList } from '@app/components/ConnectorInfoTextList/ConnectorInfoTextList';
-import { useCos } from '@context/CosContext';
+import { useCos } from '@hooks/useCos';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 
 import {

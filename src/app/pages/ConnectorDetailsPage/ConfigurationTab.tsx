@@ -5,7 +5,7 @@ import {
   ConfigurationMode,
   ConnectorConfiguratorComponent,
 } from '@app/machines/StepConfiguratorLoader.machine';
-import { useCos } from '@context/CosContext';
+import { useCos } from '@hooks/useCos';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
 import { clearEmptyObjectValues, toHtmlSafeId } from '@utils/shared';
 import _ from 'lodash';

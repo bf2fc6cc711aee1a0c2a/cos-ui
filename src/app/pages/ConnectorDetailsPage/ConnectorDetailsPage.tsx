@@ -1,7 +1,7 @@
 import { getConnector, getConnectorTypeDetail } from '@apis/api';
 import { Loading } from '@app/components/Loading/Loading';
 import { CONNECTOR_DETAILS_TABS } from '@constants/constants';
-import { useCos } from '@context/CosContext';
+import { useCos } from '@hooks/useCos';
 import _ from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
