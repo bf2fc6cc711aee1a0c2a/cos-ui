@@ -152,9 +152,28 @@ export const ConnectorsPageBody: FunctionComponent<ConnectorsPageBodyProps> = ({
       return <Loading />;
     case queryEmpty:
       return (
-        <EmptyStateNoMatchesFound
-          onClear={() => runQuery({ page: 1, size: 10 })}
-        />
+        <>
+          <PageSection variant={'light'}>
+            <ConnectorsPageTitle />
+          </PageSection>
+          <PageSection padding={{ default: 'noPadding' }} isFilled>
+            <Card className={'pf-u-pb-xl'}>
+              <ConnectorsToolbar>
+                <ConnectorsToolbarFilter
+                  itemCount={response?.total || 0}
+                  page={request.page}
+                  perPage={request.size}
+                  search={request.search}
+                  orderBy={request.orderBy}
+                  onChange={runQuery}
+                />
+              </ConnectorsToolbar>
+              <EmptyStateNoMatchesFound
+                onClear={() => runQuery({ page: 1, size: 10 })}
+              />
+            </Card>
+          </PageSection>
+        </>
       );
     case loading:
       return (

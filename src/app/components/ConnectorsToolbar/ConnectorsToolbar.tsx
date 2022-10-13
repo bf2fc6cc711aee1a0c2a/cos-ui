@@ -25,11 +25,9 @@ export const ConnectorsToolbar: FunctionComponent<ConnectorsToolbarProps> = ({
   children,
 }) => (
   <div className="pf-u-p-md">
-    <div className="pf-c-scroll-outer-wrapper">
-      <Toolbar>
-        <ToolbarContent>{children}</ToolbarContent>
-      </Toolbar>
-    </div>
+    <Toolbar>
+      <ToolbarContent>{children}</ToolbarContent>
+    </Toolbar>
   </div>
 );
 
