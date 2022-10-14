@@ -66,6 +66,7 @@ export const connectorsPageMachine = model.createMachine(
   {
     id: 'connectors',
     initial: 'root',
+    predictableActionArguments: true,
     context: model.initialContext,
     states: {
       root: {

@@ -20,7 +20,7 @@ import {
   ConnectorConfiguratorResponse,
   configuratorLoaderMachine,
 } from '@app/machines/StepConfiguratorLoader.machine';
-import { BasicMachineActorRef } from '@app/machines/StepCoreConfiguration.machine';
+import { CoreConfigurationActorRef } from '@app/machines/StepCoreConfiguration.machine';
 import { ErrorHandlingMachineActorRef } from '@app/machines/StepErrorHandling.machine';
 import { ReviewMachineActorRef } from '@app/machines/StepReview.machine';
 import { ConnectorTypesMachineActorRef } from '@app/machines/StepSelectConnectorType.machine';
@@ -170,7 +170,7 @@ export const CreateConnectorWizardProvider: FunctionComponent<CreateConnectorWiz
         case 'prev':
           onUserActivity('Connector-Back');
           break;
-        case 'done.invoke.basicRef': {
+        case 'done.invoke.coreConfigurationRef': {
           const { data } = state.event as {
             type: string;
             data: { name: string; sACreated: boolean };
@@ -240,7 +240,7 @@ export const useCreateConnectorWizard = (): {
   connectorTypeRef: ConnectorTypesMachineActorRef;
   kafkaRef: KafkaMachineActorRef;
   namespaceRef: NamespaceMachineActorRef;
-  basicRef: BasicMachineActorRef;
+  coreConfigurationRef: CoreConfigurationActorRef;
   errorRef: ErrorHandlingMachineActorRef;
   reviewRef: ReviewMachineActorRef;
 } => {
@@ -254,7 +254,8 @@ export const useCreateConnectorWizard = (): {
         kafkaRef: state.children.selectKafkaInstanceRef as KafkaMachineActorRef,
         namespaceRef: state.children
           .selectNamespaceRef as NamespaceMachineActorRef,
-        basicRef: state.children.basicRef as BasicMachineActorRef,
+        coreConfigurationRef: state.children
+          .coreConfigurationRef as CoreConfigurationActorRef,
         errorRef: state.children.errorRef as ErrorHandlingMachineActorRef,
         reviewRef: state.children.reviewRef as ReviewMachineActorRef,
       }),
@@ -487,39 +488,39 @@ export const useNamespaceMachine = () => {
   };
 };
 
-export const useBasicMachine = () => {
-  const { basicRef } = useCreateConnectorWizard();
+export const useCoreConfigurationMachine = () => {
+  const { coreConfigurationRef: coreConfigurationRef } =
+    useCreateConnectorWizard();
   const { name, sACreated, serviceAccount, duplicateMode } = useSelector(
-    basicRef,
-    useCallback(
-      (state: EmittedFrom<typeof basicRef>) => ({
+    coreConfigurationRef,
+    useCallback((state: EmittedFrom<typeof coreConfigurationRef>) => {
+      return {
         name: state.context.name,
         sACreated: state.context.sACreated,
         serviceAccount: state.context.userServiceAccount,
         duplicateMode: state.context.duplicateMode,
-      }),
-      []
-    )
+      };
+    }, [])
   );
   const onSetName = useCallback(
     (name: string) => {
-      basicRef.send({ type: 'setName', name });
+      coreConfigurationRef.send({ type: 'setName', name });
     },
-    [basicRef]
+    [coreConfigurationRef]
   );
 
   const onSetSaCreated = useCallback(
     (sACreated: boolean) => {
-      basicRef.send({ type: 'setSaCreated', sACreated });
+      coreConfigurationRef.send({ type: 'setSaCreated', sACreated });
     },
-    [basicRef]
+    [coreConfigurationRef]
   );
 
   const onSetServiceAccount = useCallback(
     (serviceAccount: UserProvidedServiceAccount) => {
-      basicRef.send({ type: 'setServiceAccount', serviceAccount });
+      coreConfigurationRef.send({ type: 'setServiceAccount', serviceAccount });
     },
-    [basicRef]
+    [coreConfigurationRef]
   );
   return {
     serviceAccount,

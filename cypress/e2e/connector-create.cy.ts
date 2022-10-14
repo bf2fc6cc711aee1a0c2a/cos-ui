@@ -1,10 +1,11 @@
 /// <reference types="cypress" />
 import { createModel, TestModel } from '@xstate/test';
-import { Machine } from 'xstate';
+import { createMachine } from 'xstate';
 
-const testMachine = Machine({
+const testMachine = createMachine({
   id: 'test-machine',
   initial: 'loadingConnectors',
+  predictableActionArguments: true,
   context: {
     willKafkaApiFail: false,
     willNamespaceApiFail: false,

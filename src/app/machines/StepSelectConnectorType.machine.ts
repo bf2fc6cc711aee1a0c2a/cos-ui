@@ -77,6 +77,7 @@ export const selectConnectorTypeMachine = model.createMachine(
   {
     context: model.initialContext,
     id: 'selectConnectorType',
+    predictableActionArguments: true,
     initial: 'root',
     states: {
       root: {

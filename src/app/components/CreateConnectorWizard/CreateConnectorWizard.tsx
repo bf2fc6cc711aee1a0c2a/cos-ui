@@ -6,9 +6,9 @@ import {
 } from '@app/components/UncontrolledWizard/UncontrolledWizard';
 import { creationWizardMachine } from '@app/machines/CreateConnectorWizard.machine';
 import { ConfiguratorActorRef } from '@app/machines/StepConfigurator.machine';
-import { StepCommon } from '@app/pages/CreateConnectorPage/StepCommon';
 import { ConfiguratorStep } from '@app/pages/CreateConnectorPage/StepConfigurator';
 import { SelectConnectorType } from '@app/pages/CreateConnectorPage/StepConnectorTypes';
+import { StepCoreConfiguration } from '@app/pages/CreateConnectorPage/StepCoreConfiguration';
 import { StepErrorHandling } from '@app/pages/CreateConnectorPage/StepErrorHandling';
 import { SelectKafkaInstance } from '@app/pages/CreateConnectorPage/StepKafkas';
 import { SelectNamespace } from '@app/pages/CreateConnectorPage/StepNamespace';
@@ -60,7 +60,7 @@ function useKafkaInstanceStep() {
   };
 }
 
-function useBasicStep() {
+function useCoreConfigurationStep() {
   const { t } = useTranslation();
   const service = useCreateConnectorWizardService();
   const { isActive, canJumpTo, enableNext } = useSelector(
@@ -81,7 +81,7 @@ function useBasicStep() {
     isActive,
     component: (
       <StepErrorBoundary>
-        <StepCommon />
+        <StepCoreConfiguration />
       </StepErrorBoundary>
     ),
     canJumpTo,
@@ -185,7 +185,7 @@ export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps
       )
     );
     const kafkaInstanceStep = useKafkaInstanceStep();
-    const coreConfigurationStep = useBasicStep();
+    const coreConfigurationStep = useCoreConfigurationStep();
     const connectorSpecificStep = useConnectorSpecificStep();
     const errorHandlingStep = useErrorHandlingStep();
 

@@ -176,6 +176,7 @@ export function makePaginatedApiMachine<RawDataType, OrderBy, Search, DataType>(
   return model.createMachine(
     {
       id: 'paginatedApiMachine',
+      predictableActionArguments: true,
       context: model.initialContext,
       type: 'parallel',
       states: {

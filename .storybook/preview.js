@@ -9,7 +9,7 @@ import "@patternfly/patternfly/utilities/Spacing/spacing.css";
 import "@patternfly/patternfly/utilities/Text/text.css";
 
 import { addDecorator } from '@storybook/react'
-import { initializeWorker, mswDecorator } from 'msw-storybook-addon'
+import { initialize, mswDecorator } from 'msw-storybook-addon'
 
 import React from 'react';
 import { I18nextProvider } from '@rhoas/app-services-ui-components';
@@ -17,7 +17,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 
 import i18n from '@i18n/i18n';
 
-initializeWorker()
+initialize()
 addDecorator(mswDecorator)
 
 export const parameters = {

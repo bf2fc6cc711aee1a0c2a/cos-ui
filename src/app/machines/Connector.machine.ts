@@ -50,6 +50,7 @@ export const connectorMachine = model.createMachine(
   {
     id: 'connector',
     initial: 'verify',
+    predictableActionArguments: true,
     context: model.initialContext,
     states: {
       verify: {

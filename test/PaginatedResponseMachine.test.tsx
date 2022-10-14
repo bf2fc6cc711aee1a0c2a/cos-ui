@@ -95,6 +95,7 @@ describe('@cos-ui/machines', () => {
     const testMachine = testModel.createMachine({
       id: 'test-pagination',
       initial: 'testing',
+      predictableActionArguments: true,
       context: testModel.initialContext,
       states: {
         testing: {

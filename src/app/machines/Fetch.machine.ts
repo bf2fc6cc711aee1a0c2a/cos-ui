@@ -19,6 +19,7 @@ export function makeFetchMachine<T>() {
   return fetchMachineModel.createMachine({
     schema: fetchMachineSchema,
     id: 'fetchMachine',
+    predictableActionArguments: true,
     context: {},
     initial: 'loading',
     states: {
