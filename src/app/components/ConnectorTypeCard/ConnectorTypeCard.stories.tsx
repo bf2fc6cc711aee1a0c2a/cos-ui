@@ -12,7 +12,7 @@ import connectorTypeData from '../../../../cypress/fixtures/connectorTypes2.json
 import { ConnectorTypeCard } from './ConnectorTypeCard';
 
 export default {
-  title: 'Wizard Step 1/Connector cards',
+  title: 'Wizard Step 1/Components/Connector cards',
   component: ConnectorTypeCard,
   decorators: [(Story) => <Story />],
   args: {},
@@ -75,7 +75,7 @@ const TemplateList: ComponentStory<typeof ConnectorTypeCard> = (args) => (
           id={(c as ObjectReference).id!}
           labels={(c as ConnectorTypeAllOf).labels!}
           name={(c as ConnectorTypeAllOf).name!}
-          description={(c as ConnectorTypeAllOf)?.description}
+          description={(c as ConnectorTypeAllOf)?.description!}
           version={(c as ConnectorTypeAllOf).version!}
           selectedId={''}
           onSelect={() => {}}

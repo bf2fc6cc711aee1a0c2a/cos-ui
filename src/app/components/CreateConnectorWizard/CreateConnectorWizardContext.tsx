@@ -230,7 +230,7 @@ export const useCreateConnectorWizardService = () => {
   const service = useContext(CreateConnectorWizardMachineService);
   if (!service) {
     throw new Error(
-      `useCreationWizardMachineService() must be used in a child of <CreationWizardMachineProvider>`
+      `useCreateConnectorWizardService() must be used as a child of <CreateConnectorWizardProvider>`
     );
   }
   return service;
