@@ -230,7 +230,7 @@ export const getConnector = ({
       })
       .catch((error) => {
         if (!axios.isCancel(error)) {
-          onError(error.response.data.reason);
+          onError(error.response.data.reason || error.message);
         }
       });
     return () => {

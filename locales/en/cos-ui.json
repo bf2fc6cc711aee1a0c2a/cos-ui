@@ -91,6 +91,7 @@
   "evalNamespaceExpiredMsg": "The preview connectors instance and its namespace expired.",
   "failed": "Failed",
   "failureReason": "Failure Reason",
+  "fetchErrorBody": "There was a problem processing the request, the response from the server is \"{{message}}\"",
   "filterByCloudProvider": "Filter by cloud provider",
   "filterByRegion": "Filter by region",
   "filterByStatus": "Filter by status",

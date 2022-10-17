@@ -76,7 +76,7 @@ const PreviewNamespace = {
   },
 };
 export default {
-  title: 'Connector Page/ConnectorDrawer/Drawer',
+  title: 'Pages/Connector Instances Page/components/Drawer',
   component: ConnectorDrawerContent,
   decorators: [
     (Story) => (
