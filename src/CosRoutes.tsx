@@ -1,5 +1,5 @@
 import { ConnectorDetailsPage } from '@app/pages/ConnectorDetailsPage/ConnectorDetailsPage';
-import { ConnectedConnectorsPage } from '@app/pages/ConnectorsPage/ConnectorsPage';
+import { ConnectorsPage } from '@app/pages/ConnectorsPage/ConnectorsPage';
 import { CreateConnectorPage } from '@app/pages/CreateConnectorPage/CreateConnectorPage';
 import { DuplicateConnectorPage } from '@app/pages/CreateConnectorPage/DuplicateConnectorPage';
 import React, { FunctionComponent, useCallback } from 'react';
@@ -66,7 +66,7 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
     >
       <Switch>
         <Route path={'/'} exact>
-          <ConnectedConnectorsPage
+          <ConnectorsPage
             onCreateConnector={goToCreateConnector}
             onConnectorDetail={goToConnectorDetails}
             onDuplicateConnector={goToDuplicateConnector}

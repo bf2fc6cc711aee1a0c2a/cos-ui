@@ -20,6 +20,7 @@ import React, {
 
 import { useInterpret, useSelector } from '@xstate/react';
 
+import { Loading } from '@rhoas/app-services-ui-components';
 import { Connector } from '@rhoas/connector-management-sdk';
 
 const ConnectorsPageContext =
@@ -38,23 +39,30 @@ export const ConnectorsPageProvider: FunctionComponent<ConnectorsPageProviderPro
     });
     return (
       <ConnectorsPageContext.Provider value={service}>
-        {children}
+        <ConnectorsMachineInitializer>{children}</ConnectorsMachineInitializer>
       </ConnectorsPageContext.Provider>
     );
   };
 
-export const useConnectorsPageMachineService =
-  (): ConnectorsMachineInterpretType => {
-    const service = useContext(ConnectorsPageContext);
-    if (!service) {
-      throw new Error(
-        `useConnectorsMachineService() must be used in a child of <ConnectorsMachineProvider>`
-      );
-    }
-    return service;
-  };
+const ConnectorsMachineInitializer: FunctionComponent = ({ children }) => {
+  const isReady = useConnectorsPageIsReady();
+  if (!isReady) {
+    return <Loading />;
+  }
+  return <>{children}</>;
+};
 
-export const useConnectorsPageIsReady = () => {
+const useConnectorsPageMachineService = (): ConnectorsMachineInterpretType => {
+  const service = useContext(ConnectorsPageContext);
+  if (!service) {
+    throw new Error(
+      `useConnectorsMachineService() must be used in a child of <ConnectorsMachineProvider>`
+    );
+  }
+  return service;
+};
+
+const useConnectorsPageIsReady = () => {
   const service = useConnectorsPageMachineService();
   return useSelector(
     service,
@@ -73,6 +81,7 @@ type useConnectorsMachineReturnType = usePaginationReturnValue<
   ConnectorMachineActorRef
 > & {
   selectedConnector: Connector | undefined;
+  selectedConnectorRef: ConnectorMachineActorRef | undefined;
   deselectConnector: () => void;
   runQuery: (
     props: PaginatedApiRequest<ConnectorsOrderBy, ConnectorsSearch>
@@ -95,15 +104,28 @@ export const useConnectorsMachine = (): useConnectorsMachineReturnType => {
       ConnectorMachineActorRef
     >
   );
-  const { selectedConnector } = useSelector(
+  const { userSelectedConnector } = useSelector(
     service,
     useCallback(
-      (state: typeof service.state) => ({
-        selectedConnector: state.context.selectedConnector,
-      }),
+      (state: typeof service.state) => {
+        const userSelectedConnector = state.context.selectedConnector;
+        return {
+          userSelectedConnector,
+        };
+      },
       [service]
     )
   );
+
+  const selectedConnectorRef =
+    userSelectedConnector && apiData.response && apiData.response.items
+      ? apiData.response.items.filter(
+          (ref) => ref.id === `connector-${userSelectedConnector.id}`
+        )[0]
+      : undefined;
+  const selectedConnector = selectedConnectorRef
+    ? selectedConnectorRef?.getSnapshot()?.context.connector
+    : undefined;
 
   const deselectConnector = useCallback(() => {
     service.send({ type: 'deselectConnector' });
@@ -119,6 +141,7 @@ export const useConnectorsMachine = (): useConnectorsMachineReturnType => {
   return {
     ...apiData,
     selectedConnector,
+    selectedConnectorRef,
     deselectConnector,
     runQuery,
   };

@@ -36,7 +36,7 @@ i18n
     load: 'languageOnly',
     debug: true,
     // add any namespaces you're using here for loading purposes
-    ns: ['cos-ui'],
+    ns: ['cos-ui', 'common'],
     defaultNS: 'cos-ui',
     nsSeparator: ':',
     keySeparator: '.',

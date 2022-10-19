@@ -100,6 +100,7 @@
   "gettingStartedQuickstart": "getting-started-connectors",
   "hideSecretFields": "Hide secret fields",
   "id": "id",
+  "input_field_invalid_message": "Valid characters include lowercase letters from a to z, numbers from 0 to 9, and hyphens ( - ).",
   "kafkaInstance": "Kafka Instance",
   "KafkaInstanceExpired" : "No longer exists",
   "kafkaStepDescription": "The selected OpenShift Streams for Apache Kafka instance works with your Connectors instance. A source connector ingests data from another system into a Kafka instance. A sink connector propagates data from a Kafka instance into another system.",
