@@ -25,11 +25,7 @@ type connectorActionsMenuProps = {
 
 export const ConnectorActionsMenu: FunctionComponent<connectorActionsMenuProps> =
   ({ onConnectorDetail, onDuplicateConnector }) => {
-    const { response, selectedConnector } = useConnectorsMachine();
-
-    const currentConnectorRef = response?.items?.filter((ref: any) => {
-      return ref.id == `connector-${selectedConnector?.id}`;
-    })[0];
+    const { selectedConnectorRef } = useConnectorsMachine();
 
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -44,7 +40,7 @@ export const ConnectorActionsMenu: FunctionComponent<connectorActionsMenuProps> 
       onStart,
       onStop,
       onDelete,
-    } = useConnector(currentConnectorRef as ConnectorMachineActorRef);
+    } = useConnector(selectedConnectorRef as ConnectorMachineActorRef);
 
     const onToggle = (isOpen: boolean) => {
       setIsOpen(isOpen);

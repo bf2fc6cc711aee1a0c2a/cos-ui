@@ -5,7 +5,7 @@ import { ActorRef, ActorRefFrom, Sender, spawn } from 'xstate';
 import { pure, sendParent } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 
-export const DEFAULT_PAGE_SIZE = 10;
+export const DEFAULT_PAGE_SIZE = 20;
 
 export type ApiErrorResponse = { page: number; error: string };
 export type ApiSuccessResponse<RawDataType> = {

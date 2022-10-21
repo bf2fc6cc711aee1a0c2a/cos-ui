@@ -28,6 +28,7 @@ describe('Connectors page', () => {
 
     // connector in deleting should have action not clickable
     cy.findByTestId('actions-for-c9v7a91rrl5s1sq2t9ag').click();
+    cy.findByLabelText('Close drawer panel').click();
     cy.findByText('Start Instance').should("not.exist");
 
     cy.findByTestId('actions-for-1vLK2A3Gl34hHjAxMj93Ma8Ajh8').click();
@@ -63,7 +64,7 @@ describe('Connectors page', () => {
       'lb-cos--vgitqo-mk-imjg-eyqfbazqdiv.bf2.kafka.rhcloud.com:443'
     ).should('exist');
     cy.findByText('view more').should('exist');
-    cy.findByLabelText('Close drawer panel').click({ force: true });
+    cy.findByLabelText('Close drawer panel').click();
     cy.findByText('Connector name').should('not.exist');
 
     // should open the actions dropdown
@@ -74,7 +75,7 @@ describe('Connectors page', () => {
     cy.findByText(
       'lb-cos--vgitqo-mk-imjg-eyqfbazqdiv.bf2.kafka.rhcloud.com:443'
     ).should('exist');
-    cy.findByLabelText('Close drawer panel').click({ force: true });
+    cy.findByLabelText('Close drawer panel').click();
   });
 
   it('allows actions to be triggered and clicking delete should show a modal prompt', () => {

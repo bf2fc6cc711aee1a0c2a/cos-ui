@@ -1,3 +1,4 @@
+// Constants used across the app
 export const PAGINATED_MACHINE_ID = 'paginatedApi';
 export const FETCH_MACHINE_ID = 'fetchApi';
 

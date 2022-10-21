@@ -1,23 +1,12 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import {
-  startOfTomorrow,
-  startOfYesterday,
-  subDays,
-  subMinutes,
-} from 'date-fns';
+import { subDays, subMinutes } from 'date-fns';
 import { subHours } from 'date-fns/esm';
 import React from 'react';
 
 import { Drawer, DrawerContent, Spinner } from '@patternfly/react-core';
 
-import {
-  Connector,
-  ConnectorDesiredState,
-} from '@rhoas/connector-management-sdk';
-
-import { ConnectorStatus } from '../ConnectorStatus/ConnectorStatus';
-import { ConnectorStatusValues } from '../ConnectorStatus/ConnectorStatus.stories';
-import { ConnectorDrawerContent } from './ConnectorDrawer';
+import { ConnectorDrawerContent } from './ConnectorDrawerContent';
+import { DrawerHeader } from './DrawerHeader';
 
 const namespace = {
   id: 'c95j6h66ar2c9mtr5vjg',
@@ -76,32 +65,39 @@ const PreviewNamespace = {
   },
 };
 export default {
-  title: 'Pages/Connector Instances Page/components/Drawer',
+  title: 'Pages/Connector Instances Page/components/Drawer Content',
   component: ConnectorDrawerContent,
+  /*
   decorators: [
     (Story) => (
+
       <Drawer isExpanded={true}>
-        <DrawerContent panelContent={<Story />}></DrawerContent>
+        <DrawerContent panelContent={<Story />} />
       </Drawer>
     ),
   ],
-  argTypes: {
-    status: {
-      options: Object.values(ConnectorStatusValues),
-      control: 'radio',
-    },
-  },
+  */
 } as ComponentMeta<typeof ConnectorDrawerContent>;
 
 const Template: ComponentStory<typeof ConnectorDrawerContent> = (args) => (
-  <ConnectorDrawerContent {...args} />
+  <>
+    <DrawerHeader
+      drawerHeading={args.name}
+      status={<></>}
+      actionsMenu={<></>}
+      onClose={() => {
+        console.log('On close');
+      }}
+    />
+    <ConnectorDrawerContent {...args} />
+  </>
 );
 
 export const Default = Template.bind({});
 Default.args = {
   id: 'caup1ell8sff4d70r3pg',
   name: 'Test Connector',
-  bootstrapServer:
+  kafkaBootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
   kafkaInstanceData: {
     name: 'ishukla-test-kafka',
@@ -109,48 +105,34 @@ Default.args = {
   },
   owner: 'John Doe',
   namespaceData: namespace,
-  createdAt: subDays(new Date(), 120),
-  modifiedAt: subMinutes(new Date(), 28),
-  status: 'ready',
-  connectorStatus: (
-    <ConnectorStatus
-      desiredState={'ready'}
-      name={'Test Connector'}
-      state={'ready'}
-    />
-  ),
-  connectorActions: <div id="connector-action" />,
-  error: undefined,
+  createdAt: subDays(new Date(), 120).toISOString(),
+  modifiedAt: subMinutes(new Date(), 28).toISOString(),
+  currentState: 'ready',
+  errorStateMessage: undefined,
+  onDuplicateConnector: () => console.log('On duplicate connector'),
 };
 
 export const Loading = Template.bind({});
 Loading.args = {
   id: 'caup1ell8sff4d70r3pg',
   name: 'Test Connector',
-  bootstrapServer:
+  kafkaBootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
   kafkaInstanceData: <Spinner size="md" />,
   owner: 'John Doe',
   namespaceData: <Spinner size="md" />,
-  createdAt: subDays(new Date(), 120),
-  modifiedAt: subMinutes(new Date(), 28),
-  status: 'ready',
-  connectorStatus: (
-    <ConnectorStatus
-      desiredState={'ready'}
-      name={'Test Connector'}
-      state={'ready'}
-    />
-  ),
-  connectorActions: <div id="connector-action" />,
-  error: undefined,
+  createdAt: subDays(new Date(), 120).toISOString(),
+  modifiedAt: subMinutes(new Date(), 28).toISOString(),
+  currentState: 'ready',
+  errorStateMessage: undefined,
+  onDuplicateConnector: () => console.log('On duplicate connector'),
 };
 
 export const FailedConnector = Template.bind({});
 FailedConnector.args = {
   id: 'caup1ell8sff4d70r3pg',
   name: 'Test Connector',
-  bootstrapServer:
+  kafkaBootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
   kafkaInstanceData: {
     name: 'ishukla-test-kafka',
@@ -158,26 +140,19 @@ FailedConnector.args = {
   },
   owner: 'John Doe',
   namespaceData: namespace,
-  createdAt: subDays(new Date(), 120),
-  modifiedAt: subMinutes(new Date(), 28),
-  status: 'failed',
-  connectorStatus: (
-    <ConnectorStatus
-      desiredState={'failed'}
-      name={'Test Connector'}
-      state={'failed'}
-    />
-  ),
-  connectorActions: <div id="connector-action" />,
-  error:
+  createdAt: subDays(new Date(), 120).toISOString(),
+  modifiedAt: subMinutes(new Date(), 28).toISOString(),
+  currentState: 'failed',
+  errorStateMessage:
     'Error: Authentication failed: credentials for user could not be verified',
+  onDuplicateConnector: () => console.log('On duplicate connector'),
 };
 
 export const WithLongFailedMsg = Template.bind({});
 WithLongFailedMsg.args = {
   id: 'caup1ell8sff4d70r3pg',
   name: 'Test Connector',
-  bootstrapServer:
+  kafkaBootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
   kafkaInstanceData: {
     name: 'ishukla-test-kafka',
@@ -185,48 +160,34 @@ WithLongFailedMsg.args = {
   },
   owner: 'John Doe',
   namespaceData: namespace,
-  createdAt: subDays(new Date(), 120),
-  modifiedAt: subMinutes(new Date(), 28),
-  status: 'failed',
-  connectorStatus: (
-    <ConnectorStatus
-      desiredState={'failed'}
-      name={'Test Connector'}
-      state={'failed'}
-    />
-  ),
-  connectorActions: <div id="connector-action" />,
-  error:
+  createdAt: subDays(new Date(), 120).toISOString(),
+  modifiedAt: subMinutes(new Date(), 28).toISOString(),
+  currentState: 'failed',
+  errorStateMessage:
     'Error: Authentication failed: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+  onDuplicateConnector: () => console.log('On duplicate connector'),
 };
 
 export const WithExpiredKafkaInstance = Template.bind({});
 WithExpiredKafkaInstance.args = {
   id: 'caup1ell8sff4d70r3pg',
   name: 'Test Connector',
-  bootstrapServer:
+  kafkaBootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
   kafkaInstanceData: 'No longer exists',
   owner: 'John Doe',
   namespaceData: namespace,
-  createdAt: subDays(new Date(), 120),
-  modifiedAt: subMinutes(new Date(), 28),
-  status: 'ready',
-  connectorStatus: (
-    <ConnectorStatus
-      desiredState={'ready'}
-      name={'Test Connector'}
-      state={'ready'}
-    />
-  ),
-  connectorActions: <div id="connector-action" />,
+  createdAt: subDays(new Date(), 120).toISOString(),
+  modifiedAt: subMinutes(new Date(), 28).toISOString(),
+  currentState: 'ready',
+  onDuplicateConnector: () => console.log('On duplicate connector'),
 };
 
 export const WithPreviewNamespaceInfo = Template.bind({});
 WithPreviewNamespaceInfo.args = {
   id: 'caup1ell8sff4d70r3pg',
   name: 'Test Connector',
-  bootstrapServer:
+  kafkaBootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
   kafkaInstanceData: {
     name: 'ishukla-test-kafka',
@@ -234,25 +195,18 @@ WithPreviewNamespaceInfo.args = {
   },
   owner: 'John Doe',
   namespaceData: { ...PreviewNamespace, expiration: subDays(new Date(), -2) },
-  createdAt: subDays(new Date(), 120),
-  modifiedAt: subMinutes(new Date(), 28),
-  status: 'ready',
-  connectorStatus: (
-    <ConnectorStatus
-      desiredState={'ready'}
-      name={'Test Connector'}
-      state={'assigned'}
-    />
-  ),
-  connectorActions: <div id="connector-action" />,
-  error: undefined,
+  createdAt: subDays(new Date(), 120).toISOString(),
+  modifiedAt: subMinutes(new Date(), 28).toISOString(),
+  currentState: 'ready',
+  errorStateMessage: undefined,
+  onDuplicateConnector: () => console.log('On duplicate connector'),
 };
 
 export const WithPreviewNamespaceWarning = Template.bind({});
 WithPreviewNamespaceWarning.args = {
   id: 'caup1ell8sff4d70r3pg',
   name: 'Test Connector',
-  bootstrapServer:
+  kafkaBootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
   kafkaInstanceData: {
     name: 'ishukla-test-kafka',
@@ -260,26 +214,19 @@ WithPreviewNamespaceWarning.args = {
   },
   owner: 'John Doe',
   namespaceData: { ...PreviewNamespace, expiration: subHours(new Date(), -15) },
-  createdAt: subDays(new Date(), 120),
-  modifiedAt: subHours(new Date(), 24),
-  status: 'ready',
-  connectorStatus: (
-    <ConnectorStatus
-      desiredState={'ready'}
-      name={'Test Connector'}
-      state={'ready'}
-    />
-  ),
-  connectorActions: <div id="connector-action" />,
-  error:
+  createdAt: subDays(new Date(), 120).toISOString(),
+  modifiedAt: subHours(new Date(), 24).toISOString(),
+  currentState: 'ready',
+  errorStateMessage:
     'Error: ReplicaSet "mctr-cbtn9ke45ncr6gs6rfo0-f6574dd8" has timed out progressing.',
+  onDuplicateConnector: () => console.log('On duplicate connector'),
 };
 
 export const WithPreviewNamespaceDanger = Template.bind({});
 WithPreviewNamespaceDanger.args = {
   id: 'caup1ell8sff4d70r3pg',
   name: 'Test Connector',
-  bootstrapServer:
+  kafkaBootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
   kafkaInstanceData: {
     name: 'ishukla-test-kafka',
@@ -287,25 +234,18 @@ WithPreviewNamespaceDanger.args = {
   },
   owner: 'John Doe',
   namespaceData: { ...PreviewNamespace, expiration: subHours(new Date(), -1) },
-  createdAt: subDays(new Date(), 120),
-  modifiedAt: subMinutes(new Date(), 28),
-  status: 'ready',
-  connectorStatus: (
-    <ConnectorStatus
-      desiredState={'ready'}
-      name={'Test Connector'}
-      state={'assigned'}
-    />
-  ),
-  connectorActions: <div id="connector-action" />,
-  error: undefined,
+  createdAt: subDays(new Date(), 120).toISOString(),
+  modifiedAt: subMinutes(new Date(), 28).toISOString(),
+  currentState: 'ready',
+  errorStateMessage: undefined,
+  onDuplicateConnector: () => console.log('On duplicate connector'),
 };
 
 export const ConnectorDeleting = Template.bind({});
 ConnectorDeleting.args = {
   id: 'caup1ell8sff4d70r3pg',
   name: 'Test Connector',
-  bootstrapServer:
+  kafkaBootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
   kafkaInstanceData: {
     name: 'ishukla-test-kafka',
@@ -316,25 +256,18 @@ ConnectorDeleting.args = {
     ...PreviewNamespace,
     expiration: '2022-08-08T00:10:19.820885Z',
   },
-  createdAt: subDays(new Date(), 120),
-  modifiedAt: subMinutes(new Date(), 28),
-  status: 'ready',
-  connectorStatus: (
-    <ConnectorStatus
-      desiredState={ConnectorDesiredState.Deleted}
-      name={'Test Connector'}
-      state={'deleting'}
-    />
-  ),
-  connectorActions: <div id="connector-action" />,
-  error: undefined,
+  createdAt: subDays(new Date(), 120).toISOString(),
+  modifiedAt: subMinutes(new Date(), 28).toISOString(),
+  currentState: 'ready',
+  errorStateMessage: undefined,
+  onDuplicateConnector: () => console.log('On duplicate connector'),
 };
 
 export const ConnectorDeleted = Template.bind({});
 ConnectorDeleted.args = {
   id: 'caup1ell8sff4d70r3pg',
   name: 'Test Connector',
-  bootstrapServer:
+  kafkaBootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
   kafkaInstanceData: 'No longer exists',
   owner: 'John Doe',
@@ -342,18 +275,11 @@ ConnectorDeleted.args = {
     ...PreviewNamespace,
     expiration: '2022-08-08T00:10:19.820885Z',
   },
-  createdAt: subDays(new Date(), 120),
-  modifiedAt: subMinutes(new Date(), 28),
-  status: 'ready',
-  connectorStatus: (
-    <ConnectorStatus
-      desiredState={ConnectorDesiredState.Deleted}
-      name={'Test Connector'}
-      state={ConnectorDesiredState.Deleted}
-    />
-  ),
-  connectorActions: <div id="connector-action" />,
-  error: undefined,
+  createdAt: subDays(new Date(), 120).toISOString(),
+  modifiedAt: subMinutes(new Date(), 28).toISOString(),
+  currentState: 'ready',
+  errorStateMessage: undefined,
+  onDuplicateConnector: () => console.log('On duplicate connector'),
 };
 
 export const FailedConnectorWithExpiredKafkaAndPreviewNamespace = Template.bind(
@@ -362,22 +288,15 @@ export const FailedConnectorWithExpiredKafkaAndPreviewNamespace = Template.bind(
 FailedConnectorWithExpiredKafkaAndPreviewNamespace.args = {
   id: 'caup1ell8sff4d70r3pg',
   name: 'Test Connector',
-  bootstrapServer:
+  kafkaBootstrapServer:
     'https://openbridge-c--ajhf-ek--ri--ifea.bf2.kafka.rhcloud.com:443',
   kafkaInstanceData: 'No longer exists',
   owner: 'John Doe',
   namespaceData: { ...PreviewNamespace, expiration: subDays(new Date(), -2) },
-  createdAt: subDays(new Date(), 120),
-  modifiedAt: subMinutes(new Date(), 28),
-  status: 'failed',
-  connectorStatus: (
-    <ConnectorStatus
-      desiredState={'failed'}
-      name={'Test Connector'}
-      state={'failed'}
-    />
-  ),
-  connectorActions: <div id="connector-action" />,
-  error:
+  createdAt: subDays(new Date(), 120).toISOString(),
+  modifiedAt: subMinutes(new Date(), 28).toISOString(),
+  currentState: 'failed',
+  errorStateMessage:
     'Error: ReplicaSet "mctr-cbtn9ke45ncr6gs6rfo0-f6574dd8" has timed out progressing.',
+  onDuplicateConnector: () => console.log('On duplicate connector'),
 };

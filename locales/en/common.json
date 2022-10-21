@@ -1,0 +1,4 @@
+{
+  "search_button_label": "Search",
+  "search_hint": "Filter by {{label, lowercase}}"
+}
