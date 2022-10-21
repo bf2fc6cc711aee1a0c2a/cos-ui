@@ -30,7 +30,7 @@ import {
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
-import { ConnectorWithErrorHandler } from './../pages/ConnectorDetailsPage/ConfigurationTab/ErrorHandlerStep';
+import { ConnectorWithErrorHandler } from '../pages/ConnectorDetailsPage/components/ConfigurationTab/ErrorHandlerStep';
 
 /**
  * The data produced by the wizard

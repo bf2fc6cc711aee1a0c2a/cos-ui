@@ -38,14 +38,14 @@ import {
   ConnectorTypeAllOf,
 } from '@rhoas/connector-management-sdk';
 
+import { CommonStep } from './CommonStep';
+import { ConfigurationStep } from './ConfigurationStep';
 import './ConfigurationTab.css';
-import { CommonStep } from './ConfigurationTab/CommonStep';
-import { ConfigurationStep } from './ConfigurationTab/ConfigurationStep';
 import {
   ConnectorWithErrorHandler,
   ErrorHandler,
   ErrorHandlerStep,
-} from './ConfigurationTab/ErrorHandlerStep';
+} from './ErrorHandlerStep';
 
 export type ConfigurationTabProps = {
   onSave: () => void;
@@ -67,7 +67,8 @@ const diff = (
   return Object.keys(newConfig).filter((key) => {
     if (oldConfig === undefined || oldConfig[key] === newConfig[key])
       return false;
-    if (oldConfig[key] === {} || newConfig[key] === '') return false;
+    if (JSON.stringify(oldConfig[key]) === '{}' || newConfig[key] === '')
+      return false;
     return true;
   });
 };
