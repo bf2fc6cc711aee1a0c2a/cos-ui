@@ -15,13 +15,13 @@ import {
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 
-import { ConfigurationTab } from './ConfigurationTab';
-import { ConnectorDetailsHeader } from './ConnectorDetailsHeader/ConnectorDetailsHeader';
 import {
   ConnectorDetailsPageProvider,
   useConnectorDetails,
 } from './ConnectorDetailsPageContext';
-import { OverviewTab } from './OverviewTab';
+import { ConfigurationTab } from './components/ConfigurationTab/ConfigurationTab';
+import { ConnectorDetailsHeader } from './components/ConnectorDetailsHeader/ConnectorDetailsHeader';
+import { OverviewTab } from './components/OverviewTab/OverviewTab';
 
 type ConnectorDetailsPageProps = {
   onSave: () => void;
