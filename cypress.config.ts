@@ -11,7 +11,7 @@ export default defineConfig({
       connectorsActionApiPath:
         '/localhost/api/connector_mgmt/v1/kafka_connectors/',
       connectorTypesApiPath:
-        '/localhost/api/connector_mgmt/v1/kafka_connector_types?page=1&size=20&search=',
+        '/localhost/api/connector_mgmt/v1/kafka_connector_types?page=1&size=20&orderBy=&search=',
       kafkasApiPath:
         '/localhost/api/kafkas_mgmt/v1/kafkas?page=1&size=20&search=',
       namespaceApiPath:

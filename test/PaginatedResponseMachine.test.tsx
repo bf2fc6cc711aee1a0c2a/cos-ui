@@ -2,7 +2,7 @@ import { interpret, send } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import {
-  ApiCallback,
+  PaginatedApiCallback,
   getPaginatedApiMachineEvents,
   makePaginatedApiMachine,
 } from '../src/app/machines/PaginatedResponse.machine';
@@ -34,7 +34,7 @@ describe('@cos-ui/machines', () => {
       responsePayload = context;
     });
 
-    const testApi: ApiCallback<
+    const testApi: PaginatedApiCallback<
       TestResultType,
       TestOrderByType,
       TestSearchType

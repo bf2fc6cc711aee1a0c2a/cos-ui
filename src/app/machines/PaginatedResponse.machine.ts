@@ -7,17 +7,17 @@ import { createModel } from 'xstate/lib/model';
 
 export const DEFAULT_PAGE_SIZE = 20;
 
-export type ApiErrorResponse = { page: number; error: string };
-export type ApiSuccessResponse<RawDataType> = {
+export type PaginatedApiErrorResponse = { page: number; error: string };
+export type PaginatedApiSuccessResponse<RawDataType> = {
   items: Array<RawDataType>;
   page: number;
   size: number;
   total: number;
 };
-export type ApiCallback<RawDataType, OrderBy, Search> = (
+export type PaginatedApiCallback<RawDataType, OrderBy, Search> = (
   request: PaginatedApiRequest<OrderBy, Search>,
-  onSuccess: (payload: ApiSuccessResponse<RawDataType>) => void,
-  onError: (payload: ApiErrorResponse) => void
+  onSuccess: (payload: PaginatedApiSuccessResponse<RawDataType>) => void,
+  onError: (payload: PaginatedApiErrorResponse) => void
 ) => () => void;
 export type PlaceholderOrderBy = object;
 export type PlaceholderSearch = object;
@@ -55,18 +55,19 @@ export const getPaginatedApiMachineEvents = <
   'api.nextPage': () => ({}),
   'api.prevPage': () => ({}),
   'api.query': (payload: PaginatedApiRequest<OrderBy, Search>) => payload,
-  'api.setResponse': (payload: ApiSuccessResponse<RawDataType>) => payload,
-  'api.setError': (payload: ApiErrorResponse) => payload,
+  'api.setResponse': (payload: PaginatedApiSuccessResponse<RawDataType>) =>
+    payload,
+  'api.setError': (payload: PaginatedApiErrorResponse) => payload,
 
   // notifyParent
   'api.ready': () => ({}),
   'api.loading': (payload: PaginatedApiRequest<OrderBy, Search>) => payload,
-  'api.success': (payload: ApiSuccessResponse<DataType>) => payload,
+  'api.success': (payload: PaginatedApiSuccessResponse<DataType>) => payload,
   'api.error': (payload: { error: string }) => payload,
 });
 
 export function makePaginatedApiMachine<RawDataType, OrderBy, Search, DataType>(
-  service: ApiCallback<RawDataType, OrderBy, Search>,
+  service: PaginatedApiCallback<RawDataType, OrderBy, Search>,
   dataTransformer: (response: RawDataType) => DataType,
   options?: PaginatedMachineOptions<DataType>
 ) {
@@ -166,9 +167,9 @@ export function makePaginatedApiMachine<RawDataType, OrderBy, Search, DataType>(
     (callback: Sender<any>) => {
       return service(
         context.request!,
-        (payload: ApiSuccessResponse<RawDataType>) =>
+        (payload: PaginatedApiSuccessResponse<RawDataType>) =>
           callback(model.events['api.setResponse'](payload)),
-        (payload: ApiErrorResponse) =>
+        (payload: PaginatedApiErrorResponse) =>
           callback(model.events['api.setError'](payload))
       );
     };
@@ -386,7 +387,7 @@ export function makePaginatedApiMachine<RawDataType, OrderBy, Search, DataType>(
 // https://stackoverflow.com/questions/50321419/typescript-returntype-of-generic-function/64919133#64919133
 class Wrapper<RawDataType, OrderBy, Search, DataType> {
   wrapped(
-    service: ApiCallback<RawDataType, OrderBy, Search>,
+    service: PaginatedApiCallback<RawDataType, OrderBy, Search>,
     dataTransformer: (response: RawDataType) => DataType
   ) {
     return makePaginatedApiMachine<RawDataType, OrderBy, Search, DataType>(

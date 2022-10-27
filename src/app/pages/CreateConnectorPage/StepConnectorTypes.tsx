@@ -181,7 +181,7 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
   const nameInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnQuery = useDebounce(runQuery, 1000);
 
-  const { name, categories = [] } = request.search || {};
+  const { name, label = [] } = request.search || {};
 
   const clearAllFilters = useCallback(
     () => runQuery({ page: 1, size: request.size, search: undefined }),
@@ -208,7 +208,7 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
     _category: string | ToolbarChipGroup,
     value: string | ToolbarChip
   ) => {
-    onSelectFilter('categories', categories, (value as ToolbarChip).key);
+    onSelectFilter('label', label, (value as ToolbarChip).key);
   };
 
   const onDeleteQueryGroup = (category: string) =>
@@ -278,7 +278,7 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
 
       <ToolbarGroup variant="filter-group">
         <ToolbarFilter
-          chips={duplicateMode ? [] : categories.map((v) => stringToChip(v, t))}
+          chips={duplicateMode ? [] : label.map((v) => stringToChip(v, t))}
           deleteChip={onSelectCategory}
           deleteChipGroup={() => onDeleteQueryGroup('categories')}
           categoryName="Connector type"
@@ -290,7 +290,7 @@ const ConnectorTypesToolbar: FunctionComponent<ConnectorTypesToolbarProps> = ({
             onSelect={(_, v) =>
               onSelectCategory('', stringToChip(v as string, t))
             }
-            selections={duplicateMode ? '' : categories}
+            selections={duplicateMode ? '' : label}
             isOpen={categoriesToggled}
             placeholderText="Connector type"
             isDisabled={duplicateMode}

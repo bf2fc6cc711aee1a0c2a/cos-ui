@@ -7,7 +7,7 @@ import { createModel } from 'xstate/lib/model';
 import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 import {
-  ApiSuccessResponse,
+  PaginatedApiSuccessResponse,
   getPaginatedApiMachineEvents,
   makePaginatedApiMachine,
   PlaceholderOrderBy,
@@ -17,7 +17,7 @@ import {
 type Context = {
   accessToken: () => Promise<string>;
   connectorsApiBasePath: string;
-  response?: ApiSuccessResponse<ConnectorNamespace>;
+  response?: PaginatedApiSuccessResponse<ConnectorNamespace>;
   selectedNamespace?: ConnectorNamespace;
   error?: Object;
   duplicateMode?: boolean | undefined;

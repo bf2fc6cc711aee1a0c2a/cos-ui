@@ -42,7 +42,7 @@ export const InitialLoading = Template.bind({});
 InitialLoading.parameters = {
   msw: [
     rest.get(GET_CONNECTORS_API, (req, res, ctx) => {
-      return res(ctx.delay(80000), ctx.status(403));
+      return res(ctx.delay('infinite'));
     }),
   ],
 };
@@ -60,7 +60,7 @@ export const WithConnectors = Template.bind({});
 WithConnectors.parameters = {
   msw: [
     rest.get(GET_CONNECTORS_API, (req, res, ctx) => {
-      return res(ctx.delay(300), ctx.json(manyConnectorsData));
+      return res(ctx.delay(), ctx.json(manyConnectorsData));
     }),
   ],
 };
@@ -74,7 +74,7 @@ WithLotsOfConnectors.parameters = {
       const size = +(searchParams.get('size') || 20);
       const search = searchParams.get('search') || '';
       const response = generateStoryConnectorInstances(page, size, search, 200);
-      return res(ctx.delay(300), ctx.json(response));
+      return res(ctx.delay(), ctx.json(response));
     }),
   ],
 };
@@ -97,14 +97,14 @@ WithErrorAfterPolling.parameters = {
       if (count % 4 === 0) {
         sessionStorage.removeItem('count');
         console.log('Sending an error response');
-        return res(ctx.delay(300), ctx.status(403));
+        return res(ctx.status(403));
       }
       const searchParams = req.url.searchParams;
       const page = +(searchParams.get('page') || 1);
       const size = +(searchParams.get('size') || 20);
       const search = searchParams.get('search') || '';
       const response = generateStoryConnectorInstances(page, size, search, 200);
-      return res(ctx.delay(300), ctx.json(response));
+      return res(ctx.json(response));
     }),
   ],
 };
