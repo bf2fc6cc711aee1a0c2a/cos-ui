@@ -57,21 +57,23 @@ export const ConnectorTypesGalleryCard: FunctionComponent<ConnectorTypesGalleryC
         isSelected={selectedId === id}
         onClick={() => onSelect(id)}
       >
-        {labels.includes('source') ? (
-          <CardHeader>
-            <BuildIcon color="lightGrey" size="lg" />
-            <CardActions>
-              <Label color="blue">{t('Source')}</Label>
-            </CardActions>
-          </CardHeader>
-        ) : (
-          <CardHeader>
-            <BuilderImageIcon color="lightGrey" size="lg" />
-            <CardActions>
-              <Label color="green">{t('Sink')}</Label>
-            </CardActions>
-          </CardHeader>
-        )}
+        <CardHeader>
+          {labels.includes('source') ? (
+            <>
+              <BuildIcon color="lightGrey" size="lg" />
+              <CardActions>
+                <Label color="blue">{t('Source')}</Label>
+              </CardActions>
+            </>
+          ) : (
+            <>
+              <BuilderImageIcon color="lightGrey" size="lg" />
+              <CardActions>
+                <Label color="green">{t('Sink')}</Label>
+              </CardActions>
+            </>
+          )}
+        </CardHeader>
         <CardTitle>
           {name}&nbsp;&nbsp;
           <Popover
@@ -97,7 +99,7 @@ export const ConnectorTypesGalleryCard: FunctionComponent<ConnectorTypesGalleryC
             {featuredRank > 0 ? (
               <Label key="featured" isCompact isTruncated>
                 <OutlinedStarIcon />
-                &nbsp;Featured
+                &nbsp;{t('Featured')}
               </Label>
             ) : (
               <></>
@@ -109,7 +111,7 @@ export const ConnectorTypesGalleryCard: FunctionComponent<ConnectorTypesGalleryC
               )
               .map((label) => (
                 <Label key={label} isCompact isTruncated variant={'outline'}>
-                  {label}
+                  {t(label)}
                 </Label>
               ))}
           </LabelGroup>

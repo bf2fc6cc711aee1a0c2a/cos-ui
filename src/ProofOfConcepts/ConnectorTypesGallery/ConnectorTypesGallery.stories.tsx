@@ -50,8 +50,8 @@ const categories = [
   'Azure',
 ];
 
-const CONNECTOR_COUNT = 235;
-const FEATURED_COUNT = 5;
+const CONNECTOR_COUNT = 2350;
+const FEATURED_COUNT = 25;
 const CONNECTOR_TYPES_API = `${API_HOST}/api/connector_mgmt/v1/kafka_connector_types`;
 const CONNECTOR_LABELS_API = `${API_HOST}/api/connector_mgmt/v1/kafka_connector_types/labels`;
 

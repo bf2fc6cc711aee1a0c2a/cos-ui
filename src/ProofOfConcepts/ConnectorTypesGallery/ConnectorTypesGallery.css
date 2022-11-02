@@ -5,3 +5,11 @@
 .connector-types-gallery__search-input {
   margin-top: 1.25em;
 }
+
+.pf-c-window-scroller .ReactVirtualized__VirtualGrid {
+  overflow: visible !important;
+}
+
+.pf-c-window-scroller .ReactVirtualized__VirtualGrid__innerScrollContainer {
+  overflow: visible !important;
+}

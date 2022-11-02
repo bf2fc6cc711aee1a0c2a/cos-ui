@@ -17,6 +17,8 @@ import {
 } from '@patternfly/react-core';
 import { ArrowsAltVIcon } from '@patternfly/react-icons';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
+
 import { SortEntry } from './typeExtensions';
 
 export type ConnectorTypesGalleryToolbarProps = {
@@ -28,6 +30,7 @@ export type ConnectorTypesGalleryToolbarProps = {
 };
 export const ConnectorTypesGalleryToolbar: FunctionComponent<ConnectorTypesGalleryToolbarProps> =
   ({ currentSort, currentCategory, sortInputEntries, total, onChangeSort }) => {
+    const { t } = useTranslation();
     const [isSortOpen, setIsSortOpen] = useState(false);
     const primarySort = [
       Object.keys(currentSort || {})[0] || sortInputEntries[0].value,
@@ -37,7 +40,7 @@ export const ConnectorTypesGalleryToolbar: FunctionComponent<ConnectorTypesGalle
         <ToolbarGroup variant={'button-group'}>
           <ToolbarItem>
             <TextContent>
-              <Text component={TextVariants.h3}>{currentCategory}</Text>
+              <Text component={TextVariants.h3}>{t(currentCategory)}</Text>
             </TextContent>
           </ToolbarItem>
         </ToolbarGroup>
@@ -60,7 +63,7 @@ export const ConnectorTypesGalleryToolbar: FunctionComponent<ConnectorTypesGalle
             >
               {sortInputEntries.map(({ value, label }, index) => (
                 <SelectOption key={index} value={value}>
-                  {label}
+                  {t(label)}
                 </SelectOption>
               ))}
             </Select>
@@ -76,20 +79,14 @@ export const ConnectorTypesGalleryToolbar: FunctionComponent<ConnectorTypesGalle
         <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
           <TextContent>
             <Text component={TextVariants.p}>
-              <b>{total === 1 ? `${total} item` : `${total} items`}</b>
+              <b>{t('items', { count: total })}</b>
             </Text>
           </TextContent>
         </ToolbarItem>
       </>
     );
     return (
-      <Toolbar
-        id="toolbar-group-types"
-        collapseListedFiltersBreakpoint="xl"
-        clearAllFilters={() => {
-          console.log('clearAllFilters');
-        }}
-      >
+      <Toolbar id="toolbar-group-types" collapseListedFiltersBreakpoint="xl">
         <ToolbarContent className={'pf-m-no-padding'}>
           {toolbarItems}
         </ToolbarContent>

@@ -10,6 +10,7 @@ import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from '@rhoas/app-services-ui-components';
 
 import { ConnectorTypesGallery } from './ConnectorTypesGallery';
+import { ConnectorTypesGalleryCacheProvider } from './ConnectorTypesGalleryCache';
 import { fetchConnectorTypeLabels } from './apiExtensions';
 import {
   ConnectorTypeLabelCount,
@@ -109,6 +110,7 @@ export const ConnectorTypesGalleryWrapper: FC<ConnectorTypesGalleryWrapperProps>
 
     const doSetOrderBy = useCallback(
       (column: string) => {
+        setConnectorTypes(undefined);
         const primarySort = Object.keys(orderBy)[0] || 'featured_rank';
         switch (column) {
           case 'featured_rank':
@@ -142,6 +144,7 @@ export const ConnectorTypesGalleryWrapper: FC<ConnectorTypesGalleryWrapperProps>
 
     const doSetNameSearch = useCallback(
       (name: string) => {
+        setConnectorTypes(undefined);
         setSearch({ ...search, name });
       },
       [setSearch, search]
@@ -149,9 +152,10 @@ export const ConnectorTypesGalleryWrapper: FC<ConnectorTypesGalleryWrapperProps>
 
     const doSetLabelSearch = useCallback(
       (label: Array<string>) => {
+        setConnectorTypes(undefined);
         setSearch({ ...search, label });
       },
-      [setSearch, search]
+      [setSearch, search, setConnectorTypes]
     );
 
     const sortInputEntries = [
@@ -177,21 +181,30 @@ export const ConnectorTypesGalleryWrapper: FC<ConnectorTypesGalleryWrapperProps>
           'The selected connector is the basis for your Connectors instance.'
         }
       >
-        <ConnectorTypesGallery
+        <ConnectorTypesGalleryCacheProvider
+          connectorsApiBasePath={connectorsApiBasePath}
+          getToken={getToken}
+          search={search}
+          orderBy={orderBy}
+          initialSet={connectorTypes}
           page={page}
           size={size}
           total={total}
-          connectorTypes={connectorTypes}
-          labels={labels}
-          sortInputEntries={sortInputEntries}
-          currentSort={orderBy}
-          onChangeSort={doSetOrderBy}
-          searchFieldValue={search.name || ''}
-          searchFieldPlaceholder={'Search'}
-          onChangeSearchField={doSetNameSearch}
-          selectedCategories={search.label || []}
-          onChangeLabelFilter={doSetLabelSearch}
-        />
+        >
+          <ConnectorTypesGallery
+            total={total}
+            connectorTypes={connectorTypes}
+            labels={labels}
+            sortInputEntries={sortInputEntries}
+            currentSort={orderBy}
+            onChangeSort={doSetOrderBy}
+            searchFieldValue={search.name || ''}
+            searchFieldPlaceholder={'Search'}
+            onChangeSearchField={doSetNameSearch}
+            selectedCategories={search.label || []}
+            onChangeLabelFilter={doSetLabelSearch}
+          />
+        </ConnectorTypesGalleryCacheProvider>
       </StepBodyLayout>
     );
   };

@@ -16,7 +16,7 @@ import {
 } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 
-import { Loading } from '@rhoas/app-services-ui-components';
+import { Loading, useTranslation } from '@rhoas/app-services-ui-components';
 
 import { ConnectorTypeLabelCount } from './typeExtensions';
 
@@ -39,6 +39,7 @@ export const ConnectorTypesGallerySidePanel: FC<ConnectorTypesGallerySidePanelPr
     selectedCategories = [],
     onChangeLabelFilter,
   }) => {
+    const { t } = useTranslation();
     const [currentSearch, setCurrentSearch] = useState(searchFieldValue);
     const typeLabels = selectedCategories.filter(
       (category) => category !== currentCategory
@@ -70,22 +71,24 @@ export const ConnectorTypesGallerySidePanel: FC<ConnectorTypesGallerySidePanelPr
           <VerticalTabs className={'connector-types-gallery__vertical-tabs'}>
             <VerticalTabsTab
               key="all"
-              active={currentCategory === ''}
+              active={currentCategory === 'All Items'}
               onClick={() => onChangeLabelFilter(typeLabels)}
-              title={'All Items'}
+              title={t('All Items')}
             />
             {labels ? (
-              labels.map(({ label, count }) => (
-                <VerticalTabsTab
-                  key={label}
-                  active={
-                    selectedCategories.find((cat) => cat === label) !==
-                    undefined
-                  }
-                  onClick={() => onChangeLabelFilter([label, ...typeLabels])}
-                  title={`${label} (${count})`}
-                />
-              ))
+              labels
+                .filter(({ label }) => label !== 'Featured')
+                .map(({ label, count }) => (
+                  <VerticalTabsTab
+                    key={label}
+                    active={
+                      selectedCategories.find((cat) => cat === label) !==
+                      undefined
+                    }
+                    onClick={() => onChangeLabelFilter([label, ...typeLabels])}
+                    title={`${t(label)} (${count})`}
+                  />
+                ))
             ) : (
               <Loading />
             )}
@@ -95,19 +98,21 @@ export const ConnectorTypesGallerySidePanel: FC<ConnectorTypesGallerySidePanelPr
           key={'type-category'}
           title={
             <>
-              Type&nbsp;&nbsp;
+              {t('Type')}&nbsp;&nbsp;
               <Popover
                 position="right"
                 bodyContent={
                   <TextContent>
-                    <Text component={TextVariants.h5}>Type</Text>
-                    <Text component={TextVariants.h6}>Source connector</Text>
+                    <Text component={TextVariants.h5}>{t('Type')}</Text>
+                    <Text component={TextVariants.h6}>
+                      {t('Source connector')}
+                    </Text>
                     <Text component={TextVariants.p}>
-                      Ingests data from another system into a Kafka instance.
+                      {t('shortDescriptionSource')}
                     </Text>
                     <Text component={TextVariants.h6}>Sink connector</Text>
                     <Text component={TextVariants.p}>
-                      Propagates data from a Kafka instance into another system.
+                      {t('shortDescriptionSink')}
                     </Text>
                   </TextContent>
                 }
@@ -131,7 +136,7 @@ export const ConnectorTypesGallerySidePanel: FC<ConnectorTypesGallerySidePanelPr
                   ])
             }
           >
-            Source
+            {t('Source')}
           </FilterSidePanelCategoryItem>
           <FilterSidePanelCategoryItem
             key="sink"
@@ -147,7 +152,7 @@ export const ConnectorTypesGallerySidePanel: FC<ConnectorTypesGallerySidePanelPr
                   ])
             }
           >
-            Sink
+            {t('Sink')}
           </FilterSidePanelCategoryItem>
         </FilterSidePanelCategory>
       </FilterSidePanel>
