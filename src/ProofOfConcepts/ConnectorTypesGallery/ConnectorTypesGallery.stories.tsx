@@ -50,14 +50,12 @@ const categories = [
   'Azure',
 ];
 
-const CONNECTOR_COUNT = 2350;
-const FEATURED_COUNT = 25;
+const CONNECTOR_COUNT = 235;
+const FEATURED_COUNT = 5;
 const CONNECTOR_TYPES_API = `${API_HOST}/api/connector_mgmt/v1/kafka_connector_types`;
 const CONNECTOR_LABELS_API = `${API_HOST}/api/connector_mgmt/v1/kafka_connector_types/labels`;
 
-export const WithConnectorTypes = Template.bind({});
-WithConnectorTypes.args = {};
-WithConnectorTypes.parameters = {
+const SHARED_PARAMETERS = {
   msw: [
     rest.get(`${CONNECTOR_LABELS_API}*`, (req, res, ctx) => {
       const { search, orderBy } = getPaginationCriteria(req.url.searchParams);
@@ -83,6 +81,13 @@ WithConnectorTypes.parameters = {
     }),
   ],
 };
+export const WithConnectorTypesList = Template.bind({});
+WithConnectorTypesList.args = {};
+WithConnectorTypesList.parameters = { ...SHARED_PARAMETERS };
+
+export const WithConnectorTypesCards = Template.bind({});
+WithConnectorTypesCards.args = { useMasonry: true };
+WithConnectorTypesCards.parameters = { ...SHARED_PARAMETERS };
 
 function generateConnectorTypesResponse(page, size, search, orderBy, total) {
   const start = (page - 1) * size;
