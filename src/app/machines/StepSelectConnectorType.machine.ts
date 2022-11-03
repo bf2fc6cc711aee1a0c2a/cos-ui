@@ -11,7 +11,7 @@ import { createModel } from 'xstate/lib/model';
 import { ConnectorType } from '@rhoas/connector-management-sdk';
 
 import {
-  ApiSuccessResponse,
+  PaginatedApiSuccessResponse,
   getPaginatedApiMachineEvents,
   makePaginatedApiMachine,
 } from './PaginatedResponse.machine';
@@ -21,7 +21,7 @@ export const DEFAULT_CONNECTOR_TYPES_PAGE_SIZE = 20;
 type Context = {
   accessToken: () => Promise<string>;
   connectorsApiBasePath: string;
-  response?: ApiSuccessResponse<ConnectorType>;
+  response?: PaginatedApiSuccessResponse<ConnectorType>;
   selectedConnector?: ConnectorType;
   error?: Object;
   connectorTypeDetails: ConnectorType;

@@ -142,8 +142,8 @@ describe('Connectors page', () => {
   it('shows an empty state with no connectors, the call to action to create a connector works', () => {
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'noConnectors.json',
-    });
-    cy.visit(Cypress.env('homepage'));
+    }).as('noConnectors');
+    cy.visit(Cypress.env('homepage')).wait('@noConnectors');
     cy.findByText('No Connector instances').click();
     cy.findAllByText('Create a Connectors instance').should('exist');
   });

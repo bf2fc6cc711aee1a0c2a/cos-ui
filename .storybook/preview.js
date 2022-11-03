@@ -1,5 +1,6 @@
 import "@patternfly/patternfly/patternfly.css";
 import "@patternfly/react-core/dist/styles/base.css";
+import "@patternfly/react-catalog-view-extension/dist/css/react-catalog-view-extension.css";
 import "@patternfly/patternfly/utilities/Accessibility/accessibility.css";
 import "@patternfly/patternfly/utilities/BackgroundColor/BackgroundColor.css";
 import "@patternfly/patternfly/utilities/Display/display.css";

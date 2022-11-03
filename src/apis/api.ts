@@ -1,4 +1,4 @@
-import { ApiCallback } from '@app/machines/PaginatedResponse.machine';
+import { PaginatedApiCallback } from '@app/machines/PaginatedResponse.machine';
 import axios from 'axios';
 import _ from 'lodash';
 
@@ -291,7 +291,7 @@ export type ConnectorsSearch = {
 export const fetchConnectors = ({
   accessToken,
   connectorsApiBasePath,
-}: CommonApiProps): ApiCallback<
+}: CommonApiProps): PaginatedApiCallback<
   Connector,
   ConnectorsOrderBy,
   ConnectorsSearch
@@ -417,7 +417,7 @@ export type ConnectorNamespaceSearch = {
 export const fetchConnectorNamespaces = ({
   accessToken,
   connectorsApiBasePath,
-}: CommonApiProps): ApiCallback<
+}: CommonApiProps): PaginatedApiCallback<
   ConnectorNamespace,
   PlaceholderOrderBy,
   ConnectorNamespaceSearch
@@ -462,8 +462,6 @@ export const fetchConnectorNamespaces = ({
 
 export type ConnectorTypesSearch = {
   name?: string;
-  categories?: string[];
-
   description?: string;
   version?: string;
   label?: string[];
@@ -471,15 +469,16 @@ export type ConnectorTypesSearch = {
 };
 
 export type ConnectorTypesOrderBy = {
+  featured_rank?: SortOrder;
   name?: SortOrder;
 };
 
 export const fetchConnectorTypes = ({
   accessToken,
   connectorsApiBasePath,
-}: CommonApiProps): ApiCallback<
+}: CommonApiProps): PaginatedApiCallback<
   ConnectorType,
-  PlaceholderOrderBy,
+  ConnectorTypesOrderBy,
   ConnectorTypesSearch
 > => {
   const connectorsAPI = new ConnectorTypesApi(
@@ -491,20 +490,24 @@ export const fetchConnectorTypes = ({
   return (request, onSuccess, onError) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
-    const { page, size, search } = request;
-    const { name, categories = [] } = search || {};
+    const { page, size, orderBy, search } = request;
+    const { name, label = [] } = search || {};
     const nameSearch =
       name && name.length > 0 ? ` name ILIKE '%${name}%'` : undefined;
     const labelSearch =
-      categories && categories.length > 0
-        ? categories.map((s) => `label = ${s}`).join(' OR ')
+      label && label.length > 0
+        ? label.map((s) => `label = ${s}`).join(' OR ')
         : undefined;
     const searchString: string = [nameSearch, labelSearch]
       .filter(Boolean)
       .map((s) => `(${s})`)
       .join(' AND ');
+    const orderByString = Object.entries(orderBy || {})
+      .filter((val) => val[0] !== undefined && val[1] !== undefined)
+      .map((val) => ` ${val[0]} ${val[1]}`)
+      .join(',');
     connectorsAPI
-      .getConnectorTypes(`${page}`, `${size}`, undefined, searchString, {
+      .getConnectorTypes(`${page}`, `${size}`, orderByString, searchString, {
         cancelToken: source.token,
       })
       .then((response) => {
@@ -546,7 +549,7 @@ export type KafkasSearch = {
 export const fetchKafkaInstances = ({
   accessToken,
   kafkaManagementBasePath,
-}: KafkaManagementApiProps): ApiCallback<
+}: KafkaManagementApiProps): PaginatedApiCallback<
   KafkaRequest,
   PlaceholderOrderBy,
   KafkasSearch

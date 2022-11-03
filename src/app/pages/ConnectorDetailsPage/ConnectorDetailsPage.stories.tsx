@@ -69,7 +69,7 @@ export const InitialLoading = Template.bind({});
 InitialLoading.parameters = {
   msw: [
     rest.get(GET_CONNECTOR_API, (_req, res, ctx) => {
-      return res(ctx.delay(80000), ctx.status(403));
+      return res(ctx.delay('infinite'));
     }),
   ],
 };
@@ -79,7 +79,6 @@ WithCamelConnector.parameters = {
   msw: [
     rest.get(GET_CONNECTOR_API, (_req, res, ctx) => {
       return res(
-        ctx.delay(300),
         ctx.json({
           id: CONNECTOR_ID,
           owner: 'some_person',
@@ -104,7 +103,6 @@ WithCamelConnector.parameters = {
     }),
     rest.get(GET_NAMESPACE_API, (_req, res, ctx) => {
       return res(
-        ctx.delay(300),
         ctx.json({
           id: NAMESPACE_ID,
           name: 'Some Namespace',
@@ -114,7 +112,6 @@ WithCamelConnector.parameters = {
     }),
     rest.get(GET_KAFKA_API, (_req, res, ctx) => {
       return res(
-        ctx.delay(300),
         ctx.json({
           id: KAFKA_ID,
           name: 'Some Kafka',
@@ -123,7 +120,6 @@ WithCamelConnector.parameters = {
     }),
     rest.get(GET_CONNECTOR_TYPE_API, (_req, res, ctx) => {
       return res(
-        ctx.delay(300),
         ctx.json({
           id: CONNECTOR_TYPE_ID,
           schema: {
