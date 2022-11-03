@@ -1,15 +1,15 @@
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
+import { ERROR_HANDLING_STRATEGY } from '@constants/constants';
 import { toHtmlSafeId } from '@utils/shared';
 import React, { FC, useEffect, useState } from 'react';
 
 import {
   Form,
   FormGroup,
+  Grid,
+  GridItem,
   Popover,
-  Select,
-  SelectOption,
-  SelectOptionObject,
-  SelectVariant,
+  Radio,
   Text,
   TextInput,
   TextVariants,
@@ -58,16 +58,14 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
   changeIsValid,
   onUpdateConfiguration,
 }) => {
-  const [isOpen, setOpen] = useState<boolean>(false);
   const [topic, setTopic] = useState<string>();
   const [errorHandler, setErrorHandler] = useState<any>();
   const { t } = useTranslation();
   const { error_handler } = schema.properties;
   const oneOf = error_handler['oneOf'];
-  const onToggle = () => setOpen((isOpen) => !isOpen);
 
   const checkValidity = (value: string) => {
-    if (value !== 'dead_letter_queue') {
+    if (value !== ERROR_HANDLING_STRATEGY.DeadLetterQueue) {
       changeIsValid(true);
     } else if (topic) {
       changeIsValid(true);
@@ -76,25 +74,14 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
     }
   };
 
-  const onSelect = (
-    _: any,
-    value: string | SelectOptionObject,
-    isPlaceholder: boolean | undefined
+  const selectErrorHandler = (
+    _checked: boolean,
+    event: React.FormEvent<HTMLInputElement>
   ) => {
-    if (isPlaceholder) {
-      clearSelection();
-    } else {
-      const selection = typeof value === 'string' ? value : value.toString();
-      setOpen(false);
-      setTopic('');
-      setErrorHandler(selection);
-      checkValidity(selection);
-      onUpdateConfiguration('error', { [selection]: {} });
-    }
-  };
-
-  const clearSelection = () => {
-    setOpen(false);
+    setTopic('');
+    setErrorHandler(event.currentTarget.id);
+    checkValidity(event.currentTarget.id);
+    onUpdateConfiguration('error', { [event.currentTarget.id]: {} });
   };
 
   useEffect(() => {
@@ -121,76 +108,126 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
     onUpdateConfiguration('error', { dead_letter_queue: { topic: val } });
   };
 
-  const dropdownItems = oneOf.map((item: any) => {
-    const keys = Object.keys(item.properties);
-    return (
-      <SelectOption
-        data-testid={toHtmlSafeId(keys[0], 'option-')}
-        key={keys[0]}
-        value={keys[0]}
-      />
-    );
-  });
+  const ErrorHandlersList = oneOf
+    .map((item: any) => {
+      const keys = Object.keys(item.properties);
+      return keys;
+    })
+    .flat()
+    .sort()
+    .reverse();
+
+  const returnErrorHAndlersNames = (errorHandler: string) => {
+    switch (errorHandler) {
+      case ERROR_HANDLING_STRATEGY.Log:
+        return {
+          errorHandler: t('ignore'),
+          description: t('ignoreDescription'),
+        };
+      case ERROR_HANDLING_STRATEGY.DeadLetterQueue:
+        return {
+          errorHandler: t('deadLetterQueue'),
+          description: t('deadLetterQueueDescription'),
+        };
+      case ERROR_HANDLING_STRATEGY.Stop:
+        return {
+          errorHandler: t('stop'),
+          description: t('stopDescription'),
+        };
+      default:
+        return {
+          errorHandler: errorHandler,
+          description: '',
+        };
+    }
+  };
+
   return (
     <StepBodyLayout
       title={t('errorHandling')}
       description={t('errorHandlingStepDescription')}
     >
-      <Form>
-        <FormGroup
-          label={t('errorHandler')}
-          fieldId="error-handler_strategy"
-          className="error-handler_strategy"
-        >
+      <Grid hasGutter>
+        <GridItem span={8}>
           {editMode ? (
-            <Select
-              variant={SelectVariant.single}
-              aria-label="Select Error handler"
-              onToggle={onToggle}
-              onSelect={onSelect}
-              selections={errorHandler}
-              isOpen={isOpen}
-              placeholderText="Select type"
-              data-testid={'select-error-handler'}
-              ouiaId={'select-error-handler'}
-            >
-              {dropdownItems}
-            </Select>
+            <Form>
+              {ErrorHandlersList.map((item: any) => {
+                return (
+                  <Radio
+                    key={item}
+                    data-testid={toHtmlSafeId(item, 'option-')}
+                    id={item}
+                    isChecked={errorHandler === item}
+                    label={returnErrorHAndlersNames(item).errorHandler}
+                    description={returnErrorHAndlersNames(item).description}
+                    name={'error-handler'}
+                    onChange={selectErrorHandler}
+                    body={
+                      returnErrorHAndlersNames(item).errorHandler ===
+                      'Dead letter queue' ? (
+                        <>
+                          <FormGroup
+                            label={t('deadLetterQueueTopic')}
+                            isRequired
+                            fieldId="topic"
+                            helperText={t('deadLetterTopicHelper')}
+                            labelIcon={
+                              <Popover
+                                bodyContent={
+                                  <div>{t('deadLetterQueueHelper')}</div>
+                                }
+                              >
+                                <button
+                                  type="button"
+                                  aria-label={t('deadLetterTopicHelper')}
+                                  onClick={(e) => e.preventDefault()}
+                                  aria-describedby="Dead letter queue topic"
+                                  className="pf-c-form__group-label-help"
+                                >
+                                  <HelpIcon noVerticalAlign />
+                                </button>
+                              </Popover>
+                            }
+                          >
+                            <TextInput
+                              isDisabled={errorHandler !== 'dead_letter_queue'}
+                              placeholder={'Topic input here'}
+                              value={topic}
+                              onChange={updateTopic}
+                              id="topic"
+                            />
+                          </FormGroup>
+                        </>
+                      ) : (
+                        <></>
+                      )
+                    }
+                  />
+                );
+              })}
+            </Form>
           ) : (
-            <Text component={TextVariants.p}>{errorHandler}</Text>
-          )}
-        </FormGroup>
-        {errorHandler === 'dead_letter_queue' && (
-          <FormGroup
-            label="Dead Letter Topic Name"
-            isRequired
-            fieldId="topic"
-            labelIcon={
-              <Popover
-                bodyContent={
-                  <p>The name of the Kafka topic used as dead letter queue</p>
-                }
+            <Form>
+              <FormGroup
+                label={t('errorHandler')}
+                fieldId="error-handler_strategy"
+                className="error-handler_strategy"
               >
-                <button
-                  type="button"
-                  aria-label="More info for name field"
-                  onClick={(e) => e.preventDefault()}
-                  aria-describedby="simple-form-name-01"
-                  className="pf-c-form__group-label-help"
+                <Text component={TextVariants.p}>{errorHandler}</Text>
+              </FormGroup>
+              {errorHandler === ERROR_HANDLING_STRATEGY.DeadLetterQueue && (
+                <FormGroup
+                  label={t('deadLetterQueueTopic')}
+                  isRequired
+                  fieldId="topic"
                 >
-                  <HelpIcon noVerticalAlign />
-                </button>
-              </Popover>
-            }
-          >
-            {editMode ? (
-              <TextInput value={topic} onChange={updateTopic} id="topic" />
-            ) : (
-              <Text component={TextVariants.p}>{topic}</Text>
-            )}
-          </FormGroup>
-        )}
-      </Form>
+                  <Text component={TextVariants.p}>{topic}</Text>
+                </FormGroup>
+              )}
+            </Form>
+          )}
+        </GridItem>
+      </Grid>
     </StepBodyLayout>
   );
 };
