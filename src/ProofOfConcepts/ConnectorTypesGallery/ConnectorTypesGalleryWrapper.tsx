@@ -105,7 +105,6 @@ export const ConnectorTypesGalleryWrapper: FC<ConnectorTypesGalleryWrapperProps>
       getToken,
       connectorsApiBasePath,
       onGetConnectorTypeLabels,
-      setLabels,
       orderBy,
       search,
     ]);

@@ -43,17 +43,20 @@ export const RegisterEvalNamespace: React.FC<RegisterEvalNamespaceProps> = ({
     setEvalNamespace(`preview-namespace-${short.generate()}`);
   }, []);
 
-  const onSuccess = useCallback((name: string | undefined) => {
-    refreshResponse();
-    setIsLoading(false);
-    onModalToggle();
-    alert?.addAlert({
-      id: 'preview-namespace-register-success',
-      variant: AlertVariant.success,
-      title: t(`namespaceReady`),
-      description: t('creationSuccessAlertDescription', { name }),
-    });
-  }, []);
+  const onSuccess = useCallback(
+    (name: string | undefined) => {
+      refreshResponse();
+      setIsLoading(false);
+      onModalToggle();
+      alert?.addAlert({
+        id: 'preview-namespace-register-success',
+        variant: AlertVariant.success,
+        title: t(`namespaceReady`),
+        description: t('creationSuccessAlertDescription', { name }),
+      });
+    },
+    [alert, onModalToggle, refreshResponse, t]
+  );
 
   const onError = useCallback(
     (description: string) => {

@@ -325,7 +325,7 @@ export const useConnectorTypesMachine = () => {
       );
       connectorTypeRef.send({ type: 'api.query', ...request });
     },
-    [connectorTypeRef]
+    [connectorTypeRef, duplicateMode, onActivity]
   );
   return {
     ...api,
@@ -398,7 +398,7 @@ export const useKafkasMachine = () => {
       );
       kafkaRef.send({ type: 'api.query', ...request });
     },
-    [kafkaRef]
+    [kafkaRef, duplicateMode, onActivity]
   );
   return {
     ...api,
@@ -414,13 +414,10 @@ export const useNamespaceMachineIsReady = () => {
   const { namespaceRef } = useCreateConnectorWizard();
   return useSelector(
     namespaceRef,
-    useCallback(
-      (state: EmittedFrom<typeof namespaceRef>) => {
-        return state.matches({ root: { api: 'ready' } });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      },
-      [namespaceRef]
-    )
+    useCallback((state: EmittedFrom<typeof namespaceRef>) => {
+      return state.matches({ root: { api: 'ready' } });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
   );
 };
 
@@ -471,7 +468,7 @@ export const useNamespaceMachine = () => {
       );
       namespaceRef.send({ type: 'api.query', ...request });
     },
-    [namespaceRef]
+    [namespaceRef, duplicateMode, onActivity]
   );
 
   const onRefresh = useCallback(() => {

@@ -90,7 +90,7 @@ export const CreateServiceAccount: FC<CreateServiceAccountProps> = ({
       });
       setLoading(false);
     },
-    [alert]
+    [alert, t]
   );
 
   const createSA = async () => {

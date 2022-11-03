@@ -83,7 +83,7 @@ export const ConnectorTypesGalleryViewport: FC<ConnectorTypesGalleryViewportProp
     useEffect(() => {
       const scrollableElement = document.getElementById(id);
       setScrollableElement(scrollableElement);
-    });
+    }, [id]);
     return (
       <>
         <div
