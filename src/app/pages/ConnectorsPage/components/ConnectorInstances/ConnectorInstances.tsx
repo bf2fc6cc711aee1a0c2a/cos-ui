@@ -48,7 +48,7 @@ export const ConnectorInstances: FunctionComponent<ConnectorInstancesProps> = ({
   const onHelp = useCallback(() => {
     qsContext.setActiveQuickStart &&
       qsContext.setActiveQuickStart(t('connectors-getting-started'));
-  }, [qsContext]);
+  }, [qsContext, t]);
 
   const namesChips = search && search.name ? [search.name] : [];
 
