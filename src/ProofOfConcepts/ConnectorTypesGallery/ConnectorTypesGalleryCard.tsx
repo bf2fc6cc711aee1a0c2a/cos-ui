@@ -26,6 +26,8 @@ import {
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 
+import { useConnectorTypesGalleryCache } from './ConnectorTypesGalleryCache';
+
 export type ConnectorTypesGalleryCardProps = {
   id: string;
   labels: string[];
@@ -49,6 +51,7 @@ export const ConnectorTypesGalleryCard: FunctionComponent<ConnectorTypesGalleryC
     onSelect,
   }) => {
     const { t } = useTranslation();
+    const { useMasonry } = useConnectorTypesGalleryCache();
     return (
       <Card
         key={id}
@@ -56,6 +59,7 @@ export const ConnectorTypesGalleryCard: FunctionComponent<ConnectorTypesGalleryC
         isSelectable
         isSelected={selectedId === id}
         onClick={() => onSelect(id)}
+        style={useMasonry ? { height: 250, width: 300 } : {}}
       >
         <CardHeader>
           {labels.includes('source') ? (

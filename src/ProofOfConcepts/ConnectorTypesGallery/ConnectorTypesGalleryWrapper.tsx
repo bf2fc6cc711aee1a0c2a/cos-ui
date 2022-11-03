@@ -17,9 +17,11 @@ import {
   FeaturedConnectorType,
 } from './typeExtensions';
 
-export type ConnectorTypesGalleryWrapperProps = {};
+export type ConnectorTypesGalleryWrapperProps = {
+  useMasonry?: boolean;
+};
 export const ConnectorTypesGalleryWrapper: FC<ConnectorTypesGalleryWrapperProps> =
-  ({}) => {
+  ({ useMasonry }) => {
     const { t } = useTranslation();
     const { connectorsApiBasePath, getToken } = useCos();
     const [connectorTypes, setConnectorTypes] = useState<
@@ -190,6 +192,7 @@ export const ConnectorTypesGalleryWrapper: FC<ConnectorTypesGalleryWrapperProps>
           page={page}
           size={size}
           total={total}
+          useMasonry={useMasonry}
         >
           <ConnectorTypesGallery
             total={total}
