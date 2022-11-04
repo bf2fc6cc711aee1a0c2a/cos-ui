@@ -32,7 +32,7 @@ export const ConnectorTypesGalleryWrapper: FC<ConnectorTypesGalleryWrapperProps>
     >(undefined);
     const [pagination, setPagination] = useState({
       page: 1,
-      size: 20,
+      size: 9,
       total: 0,
     });
     const [orderBy, setOrderBy] = useState<ConnectorTypesOrderBy>({
@@ -112,6 +112,7 @@ export const ConnectorTypesGalleryWrapper: FC<ConnectorTypesGalleryWrapperProps>
     const doSetOrderBy = useCallback(
       (column: string) => {
         setConnectorTypes(undefined);
+        setLabels(undefined);
         const primarySort = Object.keys(orderBy)[0] || 'featured_rank';
         switch (column) {
           case 'featured_rank':
@@ -175,6 +176,7 @@ export const ConnectorTypesGalleryWrapper: FC<ConnectorTypesGalleryWrapperProps>
       doFetchConnectorTypeLabels();
     }, [doFetchConnectorTypes, doFetchConnectorTypeLabels]);
 
+    console.log('Labels: ', labels);
     return (
       <StepBodyLayout
         title={t('connector')}

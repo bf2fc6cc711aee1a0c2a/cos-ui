@@ -55,7 +55,7 @@ export const fetchConnectorTypeLabels = ({
       )
       .then((response) => {
         onSuccess({
-          items: response.data.items || [],
+          items: response.data.items,
         });
       })
       .catch((error) => {

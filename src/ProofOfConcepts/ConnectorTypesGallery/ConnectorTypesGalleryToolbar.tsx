@@ -22,6 +22,7 @@ import { useTranslation } from '@rhoas/app-services-ui-components';
 import { SortEntry } from './typeExtensions';
 
 export type ConnectorTypesGalleryToolbarProps = {
+  loading: boolean;
   total: number;
   currentCategory: string;
   sortInputEntries: Array<SortEntry>;
@@ -29,7 +30,14 @@ export type ConnectorTypesGalleryToolbarProps = {
   onChangeSort: (value: string) => void;
 };
 export const ConnectorTypesGalleryToolbar: FunctionComponent<ConnectorTypesGalleryToolbarProps> =
-  ({ currentSort, currentCategory, sortInputEntries, total, onChangeSort }) => {
+  ({
+    currentSort,
+    currentCategory,
+    sortInputEntries,
+    loading,
+    total,
+    onChangeSort,
+  }) => {
     const { t } = useTranslation();
     const [isSortOpen, setIsSortOpen] = useState(false);
     const primarySort = [
@@ -60,6 +68,7 @@ export const ConnectorTypesGalleryToolbar: FunctionComponent<ConnectorTypesGalle
                 setIsSortOpen(false);
               }}
               selections={primarySort}
+              isDisabled={loading}
             >
               {sortInputEntries.map(({ value, label }, index) => (
                 <SelectOption key={index} value={value}>
@@ -76,13 +85,18 @@ export const ConnectorTypesGalleryToolbar: FunctionComponent<ConnectorTypesGalle
         <ToolbarToggleGroup toggleIcon={<ArrowsAltVIcon />} breakpoint="xl">
           {toggleGroupItems}
         </ToolbarToggleGroup>
-        <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
-          <TextContent>
-            <Text component={TextVariants.p}>
-              <b>{t('items', { count: total })}</b>
-            </Text>
-          </TextContent>
-        </ToolbarItem>
+        {!loading && (
+          <ToolbarItem
+            variant="pagination"
+            alignment={{ default: 'alignRight' }}
+          >
+            <TextContent>
+              <Text component={TextVariants.p}>
+                <b>{t('items', { count: total })}</b>
+              </Text>
+            </TextContent>
+          </ToolbarItem>
+        )}
       </>
     );
     return (

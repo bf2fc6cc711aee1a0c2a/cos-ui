@@ -64,6 +64,7 @@ const SHARED_PARAMETERS = {
         orderBy,
         CONNECTOR_COUNT
       );
+      console.log('Returning labels response: ', response);
       return res(ctx.delay(), ctx.json(response));
     }),
     rest.get(`${CONNECTOR_TYPES_API}*`, (req, res, ctx) => {
@@ -77,10 +78,25 @@ const SHARED_PARAMETERS = {
         orderBy,
         CONNECTOR_COUNT
       );
+      console.log('Returning ConnectorTypes response: ', response);
       return res(ctx.delay(), ctx.json(response));
     }),
   ],
 };
+
+export const WithConnectorTypesListLoading = Template.bind({});
+WithConnectorTypesListLoading.args = {};
+WithConnectorTypesListLoading.parameters = {
+  msw: [
+    rest.get(`${CONNECTOR_LABELS_API}*`, (_req, res, ctx) => {
+      return res(ctx.delay('infinite'));
+    }),
+    rest.get(`${CONNECTOR_TYPES_API}*`, (_req, res, ctx) => {
+      return res(ctx.delay('infinite'));
+    }),
+  ],
+};
+
 export const WithConnectorTypesList = Template.bind({});
 WithConnectorTypesList.args = {};
 WithConnectorTypesList.parameters = { ...SHARED_PARAMETERS };

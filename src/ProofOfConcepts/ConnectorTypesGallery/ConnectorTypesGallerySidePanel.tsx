@@ -40,6 +40,7 @@ export const ConnectorTypesGallerySidePanel: FC<ConnectorTypesGallerySidePanelPr
     onChangeLabelFilter,
   }) => {
     const { t } = useTranslation();
+    const loading = typeof labels === 'undefined';
     const [currentSearch, setCurrentSearch] = useState(searchFieldValue);
     const typeLabels = selectedCategories.filter(
       (category) => category !== currentCategory
@@ -48,9 +49,10 @@ export const ConnectorTypesGallerySidePanel: FC<ConnectorTypesGallerySidePanelPr
       typeLabels.find((cat) => cat === 'sink') !== undefined;
     const isSourceChecked =
       typeLabels.find((cat) => cat === 'source') !== undefined;
+    console.log('Loading: ', loading);
     return (
       <FilterSidePanel>
-        <FilterSidePanelCategory key={'search-input'} showAll={true}>
+        <FilterSidePanelCategory key={'search-input'}>
           <SearchInput
             name="name"
             id="name"
@@ -65,18 +67,19 @@ export const ConnectorTypesGallerySidePanel: FC<ConnectorTypesGallerySidePanelPr
             value={currentSearch}
             onSearch={() => onChangeSearchField(currentSearch)}
             placeholder={searchFieldPlaceholder}
+            isDisabled={loading}
           />
         </FilterSidePanelCategory>
-        <FilterSidePanelCategory key={'category-nav'} showAll={true}>
-          <VerticalTabs className={'connector-types-gallery__vertical-tabs'}>
-            <VerticalTabsTab
-              key="all"
-              active={currentCategory === 'All Items'}
-              onClick={() => onChangeLabelFilter(typeLabels)}
-              title={t('All Items')}
-            />
-            {labels ? (
-              labels
+        <FilterSidePanelCategory key={'category-nav'}>
+          {!loading ? (
+            <VerticalTabs className={'connector-types-gallery__vertical-tabs'}>
+              <VerticalTabsTab
+                key="all"
+                active={currentCategory === 'All Items'}
+                onClick={() => onChangeLabelFilter(typeLabels)}
+                title={t('All Items')}
+              />
+              {labels!
                 .filter(({ label }) => label !== 'Featured')
                 .map(({ label, count }) => (
                   <VerticalTabsTab
@@ -88,73 +91,79 @@ export const ConnectorTypesGallerySidePanel: FC<ConnectorTypesGallerySidePanelPr
                     onClick={() => onChangeLabelFilter([label, ...typeLabels])}
                     title={`${t(label)} (${count})`}
                   />
-                ))
-            ) : (
-              <Loading />
-            )}
-          </VerticalTabs>
+                ))}
+            </VerticalTabs>
+          ) : (
+            <Loading />
+          )}
         </FilterSidePanelCategory>
-        <FilterSidePanelCategory
-          key={'type-category'}
-          title={
-            <>
-              {t('Type')}&nbsp;&nbsp;
-              <Popover
-                position="right"
-                bodyContent={
-                  <TextContent>
-                    <Text component={TextVariants.h5}>{t('Type')}</Text>
-                    <Text component={TextVariants.h6}>
-                      {t('Source connector')}
-                    </Text>
-                    <Text component={TextVariants.p}>
-                      {t('shortDescriptionSource')}
-                    </Text>
-                    <Text component={TextVariants.h6}>Sink connector</Text>
-                    <Text component={TextVariants.p}>
-                      {t('shortDescriptionSink')}
-                    </Text>
-                  </TextContent>
-                }
-              >
-                <OutlinedQuestionCircleIcon color="grey" />
-              </Popover>
-            </>
-          }
-        >
-          <FilterSidePanelCategoryItem
-            key="source"
-            checked={isSourceChecked}
-            onClick={() =>
-              isSourceChecked
-                ? onChangeLabelFilter([
-                    ...selectedCategories.filter((label) => label !== 'source'),
-                  ])
-                : onChangeLabelFilter([
-                    ...selectedCategories.filter((label) => label !== 'sink'),
-                    'source',
-                  ])
+        {!loading && (
+          <FilterSidePanelCategory
+            key={'type-category'}
+            title={
+              <>
+                {t('Type')}&nbsp;&nbsp;
+                <Popover
+                  position="right"
+                  bodyContent={
+                    <TextContent>
+                      <Text component={TextVariants.h5}>{t('Type')}</Text>
+                      <Text component={TextVariants.h6}>
+                        {t('Source connector')}
+                      </Text>
+                      <Text component={TextVariants.p}>
+                        {t('shortDescriptionSource')}
+                      </Text>
+                      <Text component={TextVariants.h6}>Sink connector</Text>
+                      <Text component={TextVariants.p}>
+                        {t('shortDescriptionSink')}
+                      </Text>
+                    </TextContent>
+                  }
+                >
+                  <OutlinedQuestionCircleIcon color="grey" />
+                </Popover>
+              </>
             }
           >
-            {t('Source')}
-          </FilterSidePanelCategoryItem>
-          <FilterSidePanelCategoryItem
-            key="sink"
-            checked={isSinkChecked}
-            onClick={() =>
-              isSinkChecked
-                ? onChangeLabelFilter([
-                    ...selectedCategories.filter((label) => label !== 'sink'),
-                  ])
-                : onChangeLabelFilter([
-                    ...selectedCategories.filter((label) => label !== 'source'),
-                    'sink',
-                  ])
-            }
-          >
-            {t('Sink')}
-          </FilterSidePanelCategoryItem>
-        </FilterSidePanelCategory>
+            <FilterSidePanelCategoryItem
+              key="source"
+              checked={isSourceChecked}
+              onClick={() =>
+                isSourceChecked
+                  ? onChangeLabelFilter([
+                      ...selectedCategories.filter(
+                        (label) => label !== 'source'
+                      ),
+                    ])
+                  : onChangeLabelFilter([
+                      ...selectedCategories.filter((label) => label !== 'sink'),
+                      'source',
+                    ])
+              }
+            >
+              {t('Source')}
+            </FilterSidePanelCategoryItem>
+            <FilterSidePanelCategoryItem
+              key="sink"
+              checked={isSinkChecked}
+              onClick={() =>
+                isSinkChecked
+                  ? onChangeLabelFilter([
+                      ...selectedCategories.filter((label) => label !== 'sink'),
+                    ])
+                  : onChangeLabelFilter([
+                      ...selectedCategories.filter(
+                        (label) => label !== 'source'
+                      ),
+                      'sink',
+                    ])
+              }
+            >
+              {t('Sink')}
+            </FilterSidePanelCategoryItem>
+          </FilterSidePanelCategory>
+        )}
       </FilterSidePanel>
     );
   };

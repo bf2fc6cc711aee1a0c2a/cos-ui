@@ -1,4 +1,5 @@
 import { ConnectorTypesOrderBy } from '@apis/api';
+import { Loading } from '@app/components/Loading/Loading';
 import React, { FC } from 'react';
 
 import {
@@ -7,8 +8,6 @@ import {
   SidebarContent,
   SidebarPanel,
 } from '@patternfly/react-core';
-
-import { Loading } from '@rhoas/app-services-ui-components';
 
 import './ConnectorTypesGallery.css';
 import { ConnectorTypesGalleryCard } from './ConnectorTypesGalleryCard';
@@ -47,6 +46,7 @@ export const ConnectorTypesGallery: FC<ConnectorTypesGalleryProps> = ({
   selectedCategories = [],
   onChangeLabelFilter,
 }) => {
+  const loading = typeof connectorTypes === 'undefined';
   const currentCategory =
     selectedCategories.filter(
       (category) => category !== 'source' && category !== 'sink'
@@ -73,8 +73,9 @@ export const ConnectorTypesGallery: FC<ConnectorTypesGalleryProps> = ({
               currentSort={currentSort}
               onChangeSort={onChangeSort}
               currentCategory={currentCategory}
+              loading={loading}
             />
-            {connectorTypes ? (
+            {!loading ? (
               <ConnectorTypesGalleryViewport
                 id={'connector-type-gallery-scroller'}
                 total={total}
