@@ -119,7 +119,7 @@ const testMachine = createMachine({
           cy.findByText(
             'Review the configuration properties for your connector instance.'
           ).should('exist');
-          cy.findByText('*****').should('exist');
+          cy.get('#clientSecret').prev().contains('*****').should('exist');
         },
       },
     },
