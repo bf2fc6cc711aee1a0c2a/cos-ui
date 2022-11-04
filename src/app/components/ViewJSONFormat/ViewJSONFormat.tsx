@@ -109,7 +109,7 @@ export const ViewJSONFormat: FunctionComponent<ViewJSONFormatProps> = ({
       (key, value) => {
         return dataToHide.indexOf(key) === -1
           ? value
-          : '*'.repeat(value.length);
+          : '*'.repeat(value.length).substring(0, 5);
       },
       2
     );

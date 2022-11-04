@@ -156,7 +156,7 @@ export const clearEmptyObjectValues = (obj: any): any => {
  * @returns
  */
 export const maskValue = (value: string) => {
-  return '*'.repeat(value.length);
+  return '*'.repeat(value.length).substring(0, 5);
 };
 
 /**
