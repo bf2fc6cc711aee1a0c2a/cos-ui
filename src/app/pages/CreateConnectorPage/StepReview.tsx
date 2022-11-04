@@ -2,7 +2,7 @@ import { UserProvidedServiceAccount } from '@apis/api';
 import { useReviewMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { ViewJSONFormat } from '@app/components/ViewJSONFormat/ViewJSONFormat';
-import { getPasswordType, maskValue } from '@utils/shared';
+import { getPasswordType } from '@utils/shared';
 import _ from 'lodash';
 import React, { useState, useCallback, FC } from 'react';
 
@@ -73,7 +73,7 @@ const ConnectorProperties = (
       return connectorProperties[property].toString();
     default:
       return dataToHide.includes(property)
-        ? maskValue(connectorProperties[property])
+        ? '*'.repeat(5)
         : connectorProperties[property];
   }
 };
@@ -246,7 +246,7 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
                   <Flex>
                     <FlexItem>
                       {toggleMaskView.clientSecret
-                        ? maskValue(userServiceAccount?.clientSecret)
+                        ? '*'.repeat(5)
                         : userServiceAccount?.clientSecret}
                       {}
                     </FlexItem>
@@ -274,7 +274,7 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
                     <GridItem span={8}>
                       {dataToHide.includes(el) ? (
                         <Flex>
-                          <FlexItem>{maskValue(connector[el])}</FlexItem>
+                          <FlexItem>{'*'.repeat(5)}</FlexItem>
                         </Flex>
                       ) : (
                         connector[el]

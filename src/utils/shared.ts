@@ -150,16 +150,6 @@ export const clearEmptyObjectValues = (obj: any): any => {
 };
 
 /**
- * Returns a new value which contain equal length of * string
- * and leaves the passed in value untouched.
- * @param value
- * @returns
- */
-export const maskValue = (value: string) => {
-  return '*'.repeat(value.length).substring(0, 5);
-};
-
-/**
  * Applies client-side workarounds to possible discrepencies in the configuration.
  *
  * Applies a default datashape value from the schema if the configuration object doesn't have one.
