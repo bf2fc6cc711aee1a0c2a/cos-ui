@@ -38,7 +38,7 @@ export const InitialLoading = Template.bind({});
 InitialLoading.parameters = {
   msw: [
     rest.get(API, (_req, res, ctx) => {
-      return res(ctx.delay(80000), ctx.status(403));
+      return res(ctx.delay('infinite'));
     }),
   ],
 };
@@ -52,7 +52,7 @@ WithConnectorTypes.parameters = {
       const size = +(searchParams.get('size') || 20);
       const search = searchParams.get('search') || '';
       const response = generateStoryConnectorTypes(page, size, search, 60);
-      return res(ctx.delay(300), ctx.json(response));
+      return res(ctx.delay(), ctx.json(response));
     }),
   ],
 };

@@ -512,7 +512,7 @@ export const fetchConnectorTypes = ({
       })
       .then((response) => {
         onSuccess({
-          items: response.data.items || [],
+          items: response.data.items,
           total: response.data.total,
           page: response.data.page,
           size: response.data.size,
