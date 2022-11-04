@@ -107,7 +107,7 @@ const testMachine = createMachine({
         CONFIGURE_ERROR_HANDLER: 'review',
       },
       meta: {
-        test: () => cy.findByText('Error handling method').should('exist'),
+        test: () => cy.findByText('Dead letter queue').should('exist'),
       },
     },
     review: {

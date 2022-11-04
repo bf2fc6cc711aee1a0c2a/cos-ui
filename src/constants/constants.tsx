@@ -14,3 +14,9 @@ export enum CONNECTOR_DETAILS_TABS {
   Overview = 'overview',
   Configuration = 'configuration',
 }
+
+export enum ERROR_HANDLING_STRATEGY {
+  Log = 'log',
+  Stop = 'stop',
+  DeadLetterQueue = 'dead_letter_queue',
+}

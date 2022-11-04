@@ -76,8 +76,6 @@ describe(
       cy.findByText('Configuration').click();
       cy.findAllByTestId('tab-error-handling').first().click();
       cy.findByText('Edit Properties').click();
-      // workaround - select doesn't seem to use data-testid
-      cy.get('[data-ouia-component-id="select-error-handler"]').click();
       cy.findByTestId('option-log').click();
       cy.intercept(Cypress.env('overviewApiPath'), {
         method: 'PATCH',
