@@ -103,13 +103,11 @@ export const ViewJSONFormat: FunctionComponent<ViewJSONFormatProps> = ({
 
   const configPrettyString = dataToPrettyString(combinedConfig);
   function maskPropertyValues(inputObj: any) {
-    const dataToHide = getPasswordType(schema).concat('clientSecret');
+    const dataToHide = getPasswordType(schema).concat('client_secret');
     const json = JSON.stringify(
       inputObj,
       (key, value) => {
-        return dataToHide.indexOf(key) === -1
-          ? value
-          : '*'.repeat(value.length);
+        return dataToHide.indexOf(key) === -1 ? value : '*'.repeat(5);
       },
       2
     );
