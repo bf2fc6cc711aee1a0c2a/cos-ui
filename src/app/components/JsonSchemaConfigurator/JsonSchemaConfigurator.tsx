@@ -12,6 +12,7 @@ import { useTranslation } from '@rhoas/app-services-ui-components';
 
 import { CustomJsonSchemaBridge } from './CustomJsonSchemaBridge';
 import './JsonSchemaConfigurator.css';
+import { TypeaheadField } from './TypeaheadField';
 
 export type CreateValidatorType = ReturnType<typeof createValidator>;
 export type ValidatorResultType = ValidateFunction<unknown>['errors'];
@@ -65,8 +66,30 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
     // no need to create form elements for error_handler, processors or steps
     const { error_handler, processors, steps, ...properties } =
       bridge.schema.properties;
-    // this is great for diagnosing form rendering problems
-    // console.log('properties: ', properties, ' configuration: ', configuration);
+    // apply global customizations across all schema based forms
+    const {
+      kafka_topic,
+      aws_access_key,
+      aws_secret_key,
+      aws_region,
+      data_shape,
+      ...otherProperties
+    } = properties;
+    // customize field components as needed
+    aws_region
+      ? (aws_region.uniforms = {
+          component: TypeaheadField,
+        })
+      : undefined;
+    // broadly organize some properties across all forms if applicable
+    const organizedProperties = {
+      ...(kafka_topic && { kafka_topic }),
+      ...(aws_access_key && { aws_access_key }),
+      ...(aws_secret_key && { aws_secret_key }),
+      ...(aws_region && { aws_region }),
+      ...otherProperties,
+      ...(data_shape && { data_shape }),
+    };
     return (
       <Grid hasGutter>
         <KameletForm
@@ -75,8 +98,8 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
           onChangeModel={(model: any) => onChangeModel(model)}
           className="connector-specific pf-c-form pf-m-9-col-on-lg"
         >
-          {Object.keys(properties).map((key) => (
-            <AutoField key={key} name={key} />
+          {Object.keys(organizedProperties).map((propertyName) => (
+            <AutoField key={propertyName} name={propertyName} />
           ))}
         </KameletForm>
       </Grid>

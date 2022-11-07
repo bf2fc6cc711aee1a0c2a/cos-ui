@@ -75,6 +75,7 @@ export class CustomJsonSchemaBridge extends JSONSchemaBridge {
             ? this.t('credentialDuplicateFieldHelpText')
             : this.t('credentialEditFieldHelpText'),
         }),
+        id: name,
         labelIcon: getLabelIcon(label || name, description),
         name,
         label,
@@ -83,6 +84,7 @@ export class CustomJsonSchemaBridge extends JSONSchemaBridge {
     }
     return {
       ...props,
+      id: name,
       helperText: getExampleText(example),
       labelIcon: getLabelIcon(label || name, description),
       name,
@@ -97,6 +99,8 @@ export class CustomJsonSchemaBridge extends JSONSchemaBridge {
     console.log(
       'Complex type, name: ',
       name,
+      ' enumValues: ',
+      enumValues,
       ' oneOf: ',
       oneOf,
       ' field: ',
