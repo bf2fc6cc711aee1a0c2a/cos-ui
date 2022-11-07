@@ -2,10 +2,7 @@ import { UserProvidedServiceAccount } from '@apis/api';
 import { useReviewMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { ViewJSONFormat } from '@app/components/ViewJSONFormat/ViewJSONFormat';
-import {
-  getPasswordType,
-  returnErrorHandlersNames,
-} from '@utils/shared';
+import { getPasswordType, returnErrorHandlersNames } from '@utils/shared';
 import _ from 'lodash';
 import React, { useState, useCallback, FC } from 'react';
 
