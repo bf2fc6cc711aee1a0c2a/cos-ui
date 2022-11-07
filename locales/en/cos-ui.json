@@ -204,7 +204,7 @@
   "startInstance": "Start Instance",
   "status": "Status",
   "stop": "Stop",
-  "stopDescription": "If a message fails to send, the Connectors instance continues to run and sends error details to the selected Kafka topic.",
+  "stopDescription": "If a message fails to send, the Connectors instance stops and the error message is available when viewing the Connectors instance details. ",
   "stopInstance": "Stop instance",
   "Storage": "Storage",
   "Streaming & messaging": "Streaming & messaging",

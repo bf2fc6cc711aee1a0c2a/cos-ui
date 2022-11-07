@@ -1,6 +1,7 @@
+import { ErrorHandler } from '@app/components/ErrorHandler/ErrorHandler';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { ERROR_HANDLING_STRATEGY } from '@constants/constants';
-import { toHtmlSafeId } from '@utils/shared';
+import { returnErrorHandlersNames } from '@utils/shared';
 import React, { FC, useEffect, useState } from 'react';
 
 import {
@@ -9,9 +10,7 @@ import {
   Grid,
   GridItem,
   Popover,
-  Radio,
   Text,
-  TextInput,
   TextVariants,
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
@@ -58,7 +57,7 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
   changeIsValid,
   onUpdateConfiguration,
 }) => {
-  const [topic, setTopic] = useState<string>();
+  const [topic, setTopic] = useState<string>('');
   const [errorHandler, setErrorHandler] = useState<any>();
   const { t } = useTranslation();
   const { error_handler } = schema.properties;
@@ -117,31 +116,6 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
     .sort()
     .reverse();
 
-  const returnErrorHAndlersNames = (errorHandler: string) => {
-    switch (errorHandler) {
-      case ERROR_HANDLING_STRATEGY.Log:
-        return {
-          errorHandler: t('ignore'),
-          description: t('ignoreDescription'),
-        };
-      case ERROR_HANDLING_STRATEGY.DeadLetterQueue:
-        return {
-          errorHandler: t('deadLetterQueue'),
-          description: t('deadLetterQueueDescription'),
-        };
-      case ERROR_HANDLING_STRATEGY.Stop:
-        return {
-          errorHandler: t('stop'),
-          description: t('stopDescription'),
-        };
-      default:
-        return {
-          errorHandler: errorHandler,
-          description: '',
-        };
-    }
-  };
-
   return (
     <StepBodyLayout
       title={t('errorHandling')}
@@ -150,70 +124,42 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
       <Grid hasGutter>
         <GridItem span={8}>
           {editMode ? (
-            <Form>
-              {ErrorHandlersList.map((item: any) => {
-                return (
-                  <Radio
-                    key={item}
-                    data-testid={toHtmlSafeId(item, 'option-')}
-                    id={item}
-                    isChecked={errorHandler === item}
-                    label={returnErrorHAndlersNames(item).errorHandler}
-                    description={returnErrorHAndlersNames(item).description}
-                    name={'error-handler'}
-                    onChange={selectErrorHandler}
-                    body={
-                      returnErrorHAndlersNames(item).errorHandler ===
-                      'Dead letter queue' ? (
-                        <>
-                          <FormGroup
-                            label={t('deadLetterQueueTopic')}
-                            isRequired
-                            fieldId="topic"
-                            helperText={t('deadLetterTopicHelper')}
-                            labelIcon={
-                              <Popover
-                                bodyContent={
-                                  <div>{t('deadLetterQueueHelper')}</div>
-                                }
-                              >
-                                <button
-                                  type="button"
-                                  aria-label={t('deadLetterTopicHelper')}
-                                  onClick={(e) => e.preventDefault()}
-                                  aria-describedby="Dead letter queue topic"
-                                  className="pf-c-form__group-label-help"
-                                >
-                                  <HelpIcon noVerticalAlign />
-                                </button>
-                              </Popover>
-                            }
-                          >
-                            <TextInput
-                              isDisabled={errorHandler !== 'dead_letter_queue'}
-                              placeholder={'Topic input here'}
-                              value={topic}
-                              onChange={updateTopic}
-                              id="topic"
-                            />
-                          </FormGroup>
-                        </>
-                      ) : (
-                        <></>
-                      )
-                    }
-                  />
-                );
-              })}
-            </Form>
+            <ErrorHandler
+              errorHandlersList={ErrorHandlersList}
+              errorHandler={errorHandler}
+              topic={topic}
+              onSetTopic={updateTopic}
+              selectErrorHandler={selectErrorHandler}
+            />
           ) : (
             <Form>
               <FormGroup
-                label={t('errorHandler')}
+                label={t('errorHandlingMethod')}
                 fieldId="error-handler_strategy"
                 className="error-handler_strategy"
+                labelIcon={
+                  <Popover
+                    bodyContent={
+                      <div>
+                        {returnErrorHandlersNames(errorHandler).description}
+                      </div>
+                    }
+                  >
+                    <button
+                      type="button"
+                      aria-label={t('errorHandlingMethod')}
+                      onClick={(e) => e.preventDefault()}
+                      aria-describedby={t('errorHandlingMethod')}
+                      className="pf-c-form__group-label-help"
+                    >
+                      <HelpIcon noVerticalAlign />
+                    </button>
+                  </Popover>
+                }
               >
-                <Text component={TextVariants.p}>{errorHandler}</Text>
+                <Text component={TextVariants.p}>
+                  {returnErrorHandlersNames(errorHandler).errorHandler}
+                </Text>
               </FormGroup>
               {errorHandler === ERROR_HANDLING_STRATEGY.DeadLetterQueue && (
                 <FormGroup

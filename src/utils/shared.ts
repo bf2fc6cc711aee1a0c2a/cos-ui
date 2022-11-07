@@ -1,4 +1,7 @@
+import { t } from 'i18next';
 import _ from 'lodash';
+
+import { ERROR_HANDLING_STRATEGY } from '../constants/constants';
 
 /**
  * Creates a string suitable as an ID for HTML, OUIA or as a data-testid
@@ -147,6 +150,42 @@ export const clearEmptyObjectValues = (obj: any): any => {
     }
   });
   return answer;
+};
+
+type ErrorHandlerObj = {
+  errorHandler: string;
+  description: string;
+};
+/**
+ * This method returns the error handler object based on the error handler strategy string
+ * @param errorHandler
+ * @returns ErrorHandlerObj
+ */
+export const returnErrorHandlersNames = (
+  errorHandler: string
+): ErrorHandlerObj => {
+  switch (errorHandler) {
+    case ERROR_HANDLING_STRATEGY.Log:
+      return {
+        errorHandler: t('ignore'),
+        description: t('ignoreDescription'),
+      };
+    case ERROR_HANDLING_STRATEGY.DeadLetterQueue:
+      return {
+        errorHandler: t('deadLetterQueue'),
+        description: t('deadLetterQueueDescription'),
+      };
+    case ERROR_HANDLING_STRATEGY.Stop:
+      return {
+        errorHandler: t('stop'),
+        description: t('stopDescription'),
+      };
+    default:
+      return {
+        errorHandler: errorHandler,
+        description: '',
+      };
+  }
 };
 
 /**

@@ -2,7 +2,10 @@ import { UserProvidedServiceAccount } from '@apis/api';
 import { useReviewMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { ViewJSONFormat } from '@app/components/ViewJSONFormat/ViewJSONFormat';
-import { getPasswordType } from '@utils/shared';
+import {
+  getPasswordType,
+  returnErrorHandlersNames,
+} from '@utils/shared';
 import _ from 'lodash';
 import React, { useState, useCallback, FC } from 'react';
 
@@ -314,14 +317,16 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
                 </Title>
                 <Grid>
                   <GridItem span={4}>
-                    <strong>{t('errorHandling')}</strong>
+                    <strong>{t('errorHandlingMethod')}</strong>
                   </GridItem>
-                  <GridItem span={8}>{userErrorHandler}</GridItem>
+                  <GridItem span={8}>
+                    {returnErrorHandlersNames(userErrorHandler).errorHandler}
+                  </GridItem>
                 </Grid>
                 {topic && (
                   <Grid>
                     <GridItem span={4}>
-                      <strong>{t('topic')}</strong>
+                      <strong>{t('deadLetterQueueTopic')}</strong>
                     </GridItem>
                     <GridItem span={8}>{topic}</GridItem>
                   </Grid>
