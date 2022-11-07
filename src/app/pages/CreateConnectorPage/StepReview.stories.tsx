@@ -90,7 +90,7 @@ export const Default = Template.bind({});
 Default.args = {
   kafka: kafka_instance_test,
   namespace: namespace_test,
-  connectorType: aws_s3_sink,
+  connectorType: aws_s3_sink.connector_type,
   name: 'test',
   topic: undefined,
   userErrorHandler: 'stop',
@@ -107,7 +107,7 @@ export const WithDLQErrorHandling = Template.bind({});
 WithDLQErrorHandling.args = {
   kafka: kafka_instance_test,
   namespace: namespace_test,
-  connectorType: aws_s3_sink,
+  connectorType: aws_s3_sink.connector_type,
   name: 'test',
   topic: 'Dead_letter_topic_name',
   userErrorHandler: 'dead_letter_queue',
@@ -124,7 +124,7 @@ export const WithDataShapeConsumesAndProduces = Template.bind({});
 WithDataShapeConsumesAndProduces.args = {
   kafka: kafka_instance_test,
   namespace: namespace_test,
-  connectorType: aws_kinesis_source,
+  connectorType: aws_kinesis_source.connector_type,
   name: 'test',
   topic: 'Dead_letter_topic_name',
   userErrorHandler: 'dead_letter_queue',
@@ -141,7 +141,7 @@ export const ForDebeziumConnector = Template.bind({});
 ForDebeziumConnector.args = {
   kafka: kafka_instance_test,
   namespace: namespace_test,
-  connectorType: debezium_postgres,
+  connectorType: debezium_postgres.connector_type,
   name: 'test',
   topic: undefined,
   userErrorHandler: undefined,

@@ -6,6 +6,7 @@ const ajv = new Ajv({
   strict: 'log',
   strictSchema: false,
 });
+ajv.addVocabulary(['options', 'uniforms']);
 export function createValidator(schema: object) {
   const validator = ajv.compile(schema);
 

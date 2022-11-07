@@ -169,3 +169,29 @@ export const patchConfigurationObject = (
   }
   return configuration;
 };
+
+/**
+ * Applies general tweaks to the form configuration received from the server
+ * to try and organize the fields a little better
+ * @param properties
+ * @returns
+ */
+export const applyClientSideFormCustomizations = (properties: any) => {
+  const {
+    kafka_topic,
+    aws_access_key,
+    aws_secret_key,
+    aws_region,
+    data_shape,
+    ...otherProperties
+  } = properties;
+  const organizedProperties = {
+    ...(kafka_topic && { kafka_topic }),
+    ...(aws_access_key && { aws_access_key }),
+    ...(aws_secret_key && { aws_secret_key }),
+    ...(aws_region && { aws_region }),
+    ...otherProperties,
+    ...(data_shape && { data_shape }),
+  };
+  return organizedProperties;
+};
