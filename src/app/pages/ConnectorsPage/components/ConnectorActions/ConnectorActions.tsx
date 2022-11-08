@@ -99,6 +99,7 @@ export const ConnectorActions: FunctionComponent<ConnectorActionsProps> = ({
       <ActionsColumn
         items={actions}
         isDisabled={connector.desired_state === ConnectorDesiredState.Deleted}
+        rowData={{ actionProps: { menuAppendTo: document.body } }}
         data-testid={`actions-for-${id!}`}
       />
     </>
