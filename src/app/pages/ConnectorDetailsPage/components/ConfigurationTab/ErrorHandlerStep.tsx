@@ -1,7 +1,9 @@
-import { ErrorHandler } from '@app/components/ErrorHandler/ErrorHandler';
+import {
+  ErrorHandler,
+  returnErrorHandlersNames,
+} from '@app/components/ErrorHandler/ErrorHandler';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { ERROR_HANDLING_STRATEGY } from '@constants/constants';
-import { returnErrorHandlersNames } from '@utils/shared';
 import React, { FC, useEffect, useState } from 'react';
 
 import {
