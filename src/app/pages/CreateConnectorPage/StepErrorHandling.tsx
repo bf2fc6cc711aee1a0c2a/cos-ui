@@ -1,20 +1,11 @@
 import { useErrorHandlingMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
+import { ErrorHandler } from '@app/components/ErrorHandler/ErrorHandler';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
-import { ERROR_HANDLING_STRATEGY } from '@constants/constants';
 import { createValidator } from '@utils/createValidator';
 import React, { FunctionComponent, useEffect } from 'react';
 import { JSONSchemaBridge } from 'uniforms-bridge-json-schema';
 
-import {
-  Form,
-  FormGroup,
-  Grid,
-  GridItem,
-  Popover,
-  Radio,
-  TextInput,
-} from '@patternfly/react-core';
-import { HelpIcon } from '@patternfly/react-icons';
+import { Grid, GridItem } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 import { ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
@@ -71,31 +62,6 @@ export const StepErrorHandling: FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const returnErrorHAndlersNames = (errorHandler: string) => {
-    switch (errorHandler) {
-      case ERROR_HANDLING_STRATEGY.Log:
-        return {
-          errorHandler: t('ignore'),
-          description: t('ignoreDescription'),
-        };
-      case ERROR_HANDLING_STRATEGY.DeadLetterQueue:
-        return {
-          errorHandler: t('deadLetterQueue'),
-          description: t('deadLetterQueueDescription'),
-        };
-      case ERROR_HANDLING_STRATEGY.Stop:
-        return {
-          errorHandler: t('stop'),
-          description: t('stopDescription'),
-        };
-      default:
-        return {
-          errorHandler: errorHandler,
-          description: '',
-        };
-    }
-  };
-
   return (
     <StepBodyLayout
       title={t('errorHandling')}
@@ -103,64 +69,13 @@ export const StepErrorHandling: FunctionComponent = () => {
     >
       <Grid hasGutter className="pf-u-p-md ">
         <GridItem span={8}>
-          <Form>
-            {ErrorHandlersList.map((item: any) => {
-              return (
-                <Radio
-                  key={item}
-                  id={item}
-                  isChecked={errorHandler === item}
-                  label={returnErrorHAndlersNames(item).errorHandler}
-                  description={returnErrorHAndlersNames(item).description}
-                  name={'error-handler'}
-                  onChange={selectErrorHandler}
-                  body={
-                    returnErrorHAndlersNames(item).errorHandler ===
-                    'Dead letter queue' ? (
-                      <>
-                        <FormGroup
-                          label={t('deadLetterQueueTopic')}
-                          isRequired
-                          fieldId="topic"
-                          helperText={t('deadLetterTopicHelper')}
-                          labelIcon={
-                            <Popover
-                              bodyContent={
-                                <div>{t('deadLetterQueueHelper')}</div>
-                              }
-                            >
-                              <button
-                                type="button"
-                                aria-label={t('deadLetterTopicHelper')}
-                                onClick={(e) => e.preventDefault()}
-                                aria-describedby="Dead letter queue topic"
-                                className="pf-c-form__group-label-help"
-                              >
-                                <HelpIcon noVerticalAlign />
-                              </button>
-                            </Popover>
-                          }
-                        >
-                          <TextInput
-                            isDisabled={
-                              errorHandler !==
-                              ERROR_HANDLING_STRATEGY.DeadLetterQueue
-                            }
-                            placeholder={'Topic input here'}
-                            value={topic}
-                            onChange={onSetTopic}
-                            id="topic"
-                          />
-                        </FormGroup>
-                      </>
-                    ) : (
-                      <></>
-                    )
-                  }
-                />
-              );
-            })}
-          </Form>
+          <ErrorHandler
+            errorHandlersList={ErrorHandlersList}
+            errorHandler={errorHandler}
+            topic={topic}
+            onSetTopic={onSetTopic}
+            selectErrorHandler={selectErrorHandler}
+          />
         </GridItem>
       </Grid>
     </StepBodyLayout>
