@@ -65,6 +65,20 @@ WithConnectors.parameters = {
   ],
 };
 
+export const WithOneConnector = Template.bind({});
+WithOneConnector.parameters = {
+  msw: [
+    rest.get(GET_CONNECTORS_API, (req, res, ctx) => {
+      const searchParams = req.url.searchParams;
+      const page = +(searchParams.get('page') || 1);
+      const size = +(searchParams.get('size') || 20);
+      const search = searchParams.get('search') || '';
+      const response = generateStoryConnectorInstances(page, size, search, 1);
+      return res(ctx.delay(), ctx.json(response));
+    }),
+  ],
+};
+
 export const WithLotsOfConnectors = Template.bind({});
 WithLotsOfConnectors.parameters = {
   msw: [
