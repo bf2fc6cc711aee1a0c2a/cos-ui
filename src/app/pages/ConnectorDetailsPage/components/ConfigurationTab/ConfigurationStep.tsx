@@ -1,6 +1,7 @@
 import { JsonSchemaConfigurator } from '@app/components/JsonSchemaConfigurator/JsonSchemaConfigurator';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import {
+  applyClientSideFormCustomizations,
   clearEmptyObjectValues,
   patchConfigurationObject,
 } from '@utils/shared';
@@ -121,7 +122,7 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
         />
       ) : (
         <Form>
-          {Object.entries(schema.properties)
+          {Object.entries(applyClientSideFormCustomizations(schema.properties))
             .filter(([key, value]: [string, any]) => {
               if (['object', 'array'].includes(value.type)) {
                 if (key === 'data_shape' && formConfiguration[key]) {

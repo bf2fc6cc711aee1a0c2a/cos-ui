@@ -1,5 +1,8 @@
 import { createValidator } from '@utils/createValidator';
-import { clearEmptyObjectValues } from '@utils/shared';
+import {
+  applyClientSideFormCustomizations,
+  clearEmptyObjectValues,
+} from '@utils/shared';
 import { ValidateFunction } from 'ajv';
 import _ from 'lodash';
 import React, { FunctionComponent } from 'react';
@@ -12,6 +15,7 @@ import { useTranslation } from '@rhoas/app-services-ui-components';
 
 import { CustomJsonSchemaBridge } from './CustomJsonSchemaBridge';
 import './JsonSchemaConfigurator.css';
+import { TypeaheadField } from './TypeaheadField';
 
 export type CreateValidatorType = ReturnType<typeof createValidator>;
 export type ValidatorResultType = ValidateFunction<unknown>['errors'];
@@ -65,8 +69,17 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
     // no need to create form elements for error_handler, processors or steps
     const { error_handler, processors, steps, ...properties } =
       bridge.schema.properties;
-    // this is great for diagnosing form rendering problems
-    // console.log('properties: ', properties, ' configuration: ', configuration);
+    // customize field components as needed
+    const { aws_region, ...otherProperties } = properties;
+    aws_region && aws_region.enum
+      ? (aws_region.uniforms = {
+          component: TypeaheadField,
+        })
+      : undefined;
+    const organizedProperties = applyClientSideFormCustomizations({
+      ...otherProperties,
+      ...(aws_region && { aws_region }),
+    });
     return (
       <Grid hasGutter>
         <KameletForm
@@ -75,8 +88,8 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
           onChangeModel={(model: any) => onChangeModel(model)}
           className="connector-specific pf-c-form pf-m-9-col-on-lg"
         >
-          {Object.keys(properties).map((key) => (
-            <AutoField key={key} name={key} />
+          {Object.keys(organizedProperties).map((propertyName) => (
+            <AutoField key={propertyName} name={propertyName} />
           ))}
         </KameletForm>
       </Grid>

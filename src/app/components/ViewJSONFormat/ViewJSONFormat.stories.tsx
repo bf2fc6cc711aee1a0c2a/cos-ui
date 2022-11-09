@@ -88,7 +88,7 @@ export const JSON_View = Template.bind({});
 JSON_View.args = {
   kafka: kafka_instance_test,
   namespace: namespace_test,
-  connectorType: aws_s3_sink,
+  connectorType: aws_s3_sink.connector_type,
   name: 'test',
   topic: undefined,
   userErrorHandler: 'stop',

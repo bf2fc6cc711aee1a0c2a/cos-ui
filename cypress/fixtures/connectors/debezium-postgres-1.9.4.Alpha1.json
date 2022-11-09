@@ -1,30 +1,19 @@
 {
+  "connector_type": {
     "id": "debezium-postgres-1.9.4.Final",
     "kind": "ConnectorType",
     "href": "/api/connector_mgmt/v1/kafka_connector_types/debezium-postgres-1.9.4.Final",
     "name": "Debezium PostgreSQL Connector",
     "version": "1.9.4.Final",
-    "channels": [
-      "stable"
-    ],
+    "channels": ["stable"],
     "icon_href": "http://example.com/images/debezium-postgres-1.9.4.Final.png",
-    "labels": [
-      "1.9.4.Final",
-      "debezium",
-      "postgres",
-      "source"
-    ],
-    "capabilities": [
-      "data_shape"
-    ],
+    "labels": ["1.9.4.Final", "debezium", "postgres", "source"],
+    "capabilities": ["data_shape"],
     "schema": {
       "$defs": {
         "serializer": {
           "default": "JSON",
-          "enum": [
-            "JSON",
-            "JSON without schema"
-          ],
+          "enum": ["JSON", "JSON without schema"],
           "type": "string"
         }
       },
@@ -93,9 +82,7 @@
             {
               "additionalProperties": true,
               "description": "An opaque reference to the password.",
-              "properties": {
-                
-              },
+              "properties": {},
               "type": "object"
             }
           ],
@@ -131,11 +118,7 @@
         "decimal.handling.mode": {
           "default": "precise",
           "description": "Specify how DECIMAL and NUMERIC columns should be represented in change events, including:'precise' (the default) uses java.math.BigDecimal to represent values, which are encoded in the change events using a binary representation and Kafka Connect's 'org.apache.kafka.connect.data.Decimal' type; 'string' uses string to represent values; 'double' represents values using Java's 'double', which may not offer the precision but will be far easier to use in consumers.",
-          "enum": [
-            "string",
-            "double",
-            "precise"
-          ],
+          "enum": ["string", "double", "precise"],
           "title": "Decimal Handling",
           "type": "string",
           "x-category": "CONNECTOR",
@@ -169,11 +152,7 @@
         "publication.autocreate.mode": {
           "default": "all_tables",
           "description": "Applies only when streaming changes using pgoutput.Determine how creation of a publication should work, the default is all_tables.DISABLED - The connector will not attempt to create a publication at all. The expectation is that the user has created the publication up-front. If the publication isn't found to exist upon startup, the connector will throw an exception and stop.ALL_TABLES - If no publication exists, the connector will create a new publication for all tables. Note this requires that the configured user has access. If the publication already exists, it will be used. i.e CREATE PUBLICATION \u003cpublication_name\u003e FOR ALL TABLES;FILTERED - If no publication exists, the connector will create a new publication for all those tables matchingthe current filter configuration (see table/database include/exclude list properties). If the publication already exists, it will be used. i.e CREATE PUBLICATION \u003cpublication_name\u003e FOR TABLE \u003ctbl1, tbl2, etc\u003e",
-          "enum": [
-            "filtered",
-            "disabled",
-            "all_tables"
-          ],
+          "enum": ["filtered", "disabled", "all_tables"],
           "title": "Publication Auto Create Mode",
           "type": "string",
           "x-category": "CONNECTION_ADVANCED_REPLICATION",
@@ -266,3 +245,4 @@
       "x-version": "1.9.4.Final"
     }
   }
+}
