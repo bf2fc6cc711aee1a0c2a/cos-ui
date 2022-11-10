@@ -24,6 +24,7 @@
   "close": "Close",
   "cloudProvider": "Cloud Provider",
   "clusterId": "Cluster id",
+  "clusterName": "Cluster name",
   "common": "Common",
   "configuration": "Configuration",
   "configurations": "Configurations",

@@ -8,8 +8,7 @@ import { KafkaInstance } from '@rhoas/app-services-ui-shared';
 import {
   Channel,
   Configuration,
-  Connector,
-  ConnectorCluster,
+  Connector, // ConnectorCluster,
   ConnectorClustersApi,
   ConnectorDesiredState,
   ConnectorNamespace,
@@ -387,7 +386,7 @@ export const getCluster = ({
   accessToken,
   connectorsApiBasePath,
   clusterId,
-}: ConnectorClusterProps): FetchCallbacks<ConnectorCluster> => {
+}: ConnectorClusterProps) => {
   const clusterAPI = new ConnectorClustersApi(
     new Configuration({
       accessToken,
@@ -395,25 +394,48 @@ export const getCluster = ({
     })
   );
 
-  return (onSuccess, onError) => {
+  return (callback: any) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     clusterAPI
-      .getConnectorCluster(clusterId!, {
+      .getConnectorCluster(clusterId, {
         cancelToken: source.token,
       })
       .then((response) => {
-        onSuccess(response.data);
+        callback(response.data);
       })
       .catch((error) => {
         if (!axios.isCancel(error)) {
-          onError(error.response.data.reason);
+          console.log(
+            `error response fetching connector cluster: ${clusterId}`,
+            error.response.data.reason
+          );
         }
       });
     return () => {
       source.cancel('Operation canceled by the user.');
     };
   };
+
+  // return (onSuccess, onError) => {
+  //   const CancelToken = axios.CancelToken;
+  //   const source = CancelToken.source();
+  //   clusterAPI
+  //     .getConnectorCluster(clusterId!, {
+  //       cancelToken: source.token,
+  //     })
+  //     .then((response) => {
+  //       onSuccess(response.data);
+  //     })
+  //     .catch((error) => {
+  //       if (!axios.isCancel(error)) {
+  //         onError(error.response.data.reason);
+  //       }
+  //     });
+  //   return () => {
+  //     source.cancel('Operation canceled by the user.');
+  //   };
+  // };
 };
 
 export const getNamespace = ({
