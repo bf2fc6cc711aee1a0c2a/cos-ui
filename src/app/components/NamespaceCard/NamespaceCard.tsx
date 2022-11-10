@@ -126,14 +126,6 @@ export const NamespaceCard: React.FunctionComponent<NamespaceCardProps> = ({
       </CardHeader>
       <CardBody>
         <DescriptionList>
-          {/*
-           TODO 
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('owner')}</DescriptionListTerm>
-            <DescriptionListDescription>
-              {namespace.owner}
-            </DescriptionListDescription>
-          </DescriptionListGroup> */}
           <DescriptionListGroup>
             <DescriptionListTerm>{t('clusterId')}</DescriptionListTerm>
             <DescriptionListDescription>{clusterId}</DescriptionListDescription>

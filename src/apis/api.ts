@@ -8,7 +8,7 @@ import { KafkaInstance } from '@rhoas/app-services-ui-shared';
 import {
   Channel,
   Configuration,
-  Connector, // ConnectorCluster,
+  Connector,
   ConnectorClustersApi,
   ConnectorDesiredState,
   ConnectorNamespace,
@@ -416,26 +416,6 @@ export const getCluster = ({
       source.cancel('Operation canceled by the user.');
     };
   };
-
-  // return (onSuccess, onError) => {
-  //   const CancelToken = axios.CancelToken;
-  //   const source = CancelToken.source();
-  //   clusterAPI
-  //     .getConnectorCluster(clusterId!, {
-  //       cancelToken: source.token,
-  //     })
-  //     .then((response) => {
-  //       onSuccess(response.data);
-  //     })
-  //     .catch((error) => {
-  //       if (!axios.isCancel(error)) {
-  //         onError(error.response.data.reason);
-  //       }
-  //     });
-  //   return () => {
-  //     source.cancel('Operation canceled by the user.');
-  //   };
-  // };
 };
 
 export const getNamespace = ({

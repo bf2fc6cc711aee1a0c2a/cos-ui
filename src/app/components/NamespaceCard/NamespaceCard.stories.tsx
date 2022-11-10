@@ -51,24 +51,3 @@ export const NamespaceCardDeleted = Template.bind({});
 NamespaceCardDeleted.args = {
   state: ConnectorNamespaceState.Deleted,
 } as ComponentMeta<typeof NamespaceCard>;
-
-// NamespaceCardWithClusterName.parameters = {
-//   msw: [
-//     rest.get(CLUSTER_ID, (_req, res, ctx) => {
-//       return res(
-//         ctx.json({
-//           id: CLUSTER_ID,
-//           kind: 'ConnectorCluster',
-//           href: '/api/connector_mgmt/v1/kafka_connector_clusters/cc6ae6o7764p8lrcfbj0',
-//           owner: 'abrianik_kafka_supporting',
-//           created_at: '2021-09-01T12:00:00Z',
-//           modified_at: '2021-09-01T12:00:00Z',
-//           name: 'rhoc-stage2',
-//           status: {
-//             state: 'ready',
-//           },
-//         })
-//       );
-//     }),
-//   ],
-// };
