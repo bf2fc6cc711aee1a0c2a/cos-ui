@@ -3,6 +3,9 @@ import { rest } from 'msw';
 import Prando from 'prando';
 import React from 'react';
 
+import { Page } from '@patternfly/react-core';
+
+import locales from '../../../locales/en/cos-ui.json';
 import { CosContextProvider } from '../../hooks/useCos';
 import { ConnectorTypesGalleryWrapper } from './ConnectorTypesGalleryWrapper';
 import { FeaturedConnectorType } from './typeExtensions';
@@ -15,13 +18,15 @@ export default {
   decorators: [
     (Story) => (
       <>
-        <CosContextProvider
-          getToken={() => Promise.resolve('')}
-          connectorsApiBasePath={API_HOST}
-          kafkaManagementApiBasePath={API_HOST}
-        >
-          <Story />
-        </CosContextProvider>
+        <Page>
+          <CosContextProvider
+            getToken={() => Promise.resolve('')}
+            connectorsApiBasePath={API_HOST}
+            kafkaManagementApiBasePath={API_HOST}
+          >
+            <Story />
+          </CosContextProvider>
+        </Page>
       </>
     ),
   ],
@@ -33,21 +38,21 @@ const Template: ComponentStory<typeof ConnectorTypesGalleryWrapper> = (
 ) => <ConnectorTypesGalleryWrapper {...args} />;
 
 const categories = [
-  'AI/Machine learning',
-  'Serverless',
-  'Big Data',
-  'Database',
-  'Change data capture',
-  'Developer tools',
-  'Integration & delivery',
-  'Logging',
-  'Monitoring',
-  'CRM',
-  'Storage',
-  'Streaming & messaging',
-  'Amazon',
-  'Google',
-  'Azure',
+  'category-ai-machine-learning',
+  'category-serverless',
+  'category-big-data',
+  'category-database',
+  'category-change-data-capture',
+  'category-developer-tools',
+  'category-integration-and-delivery',
+  'category-logging',
+  'category-monitoring',
+  'category-crm',
+  'category-storage',
+  'category-streaming-and-messaging',
+  'category-amazon',
+  'category-google',
+  'category-azure',
 ];
 
 const CONNECTOR_COUNT = 235;
@@ -157,7 +162,8 @@ function generateConnectorTypes(
     },
     (_, index) => {
       const labels = determineLabels();
-      const version = `${labels[rng.nextInt(0, labels.length - 1)]
+      const versionLabel = labels[rng.nextInt(0, labels.length - 1)];
+      const version = `${(locales[versionLabel] || versionLabel)
         .split(' ')
         .join('-')
         .replace('/', '_')
@@ -165,9 +171,9 @@ function generateConnectorTypes(
         rng.nextBoolean() ? '' : ' alpha'
       }`.toLocaleLowerCase();
       const type = rng.nextBoolean() ? 'source' : 'sink';
-      const name = `${labels.join(' ')} ${
-        type === 'source' ? 'Source' : 'Sink'
-      }`;
+      const name = `${labels
+        .map((label) => locales[label] || label)
+        .join(' ')} ${type === 'source' ? 'Source' : 'Sink'}`;
       return {
         name,
         id: `${name.split(' ').join('-').toLocaleLowerCase()}-${index}`,
@@ -214,13 +220,7 @@ function getCategoryLabels(fullSet: Array<FeaturedConnectorType>) {
       labelDictionary[label].count = count + 1;
     });
   });
-  return [
-    {
-      label: 'Featured',
-      count: fullSet.filter((item) => item.featured_rank > 0).length,
-    },
-    ...categories.map((category) => labelDictionary[category]),
-  ];
+  return [...categories.map((category) => labelDictionary[category])];
 }
 
 /**

@@ -3,11 +3,14 @@ import {
   ConnectorTypesSearch,
   fetchConnectorTypes,
 } from '@apis/api';
-import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { useCos } from '@hooks/useCos';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 
-import { useTranslation } from '@rhoas/app-services-ui-components';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  PageBreadcrumb,
+} from '@patternfly/react-core';
 
 import { ConnectorTypesGallery } from './ConnectorTypesGallery';
 import { ConnectorTypesGalleryCacheProvider } from './ConnectorTypesGalleryCache';
@@ -22,7 +25,6 @@ export type ConnectorTypesGalleryWrapperProps = {
 };
 export const ConnectorTypesGalleryWrapper: FC<ConnectorTypesGalleryWrapperProps> =
   ({ useMasonry }) => {
-    const { t } = useTranslation();
     const { connectorsApiBasePath, getToken } = useCos();
     const [connectorTypes, setConnectorTypes] = useState<
       Array<FeaturedConnectorType> | undefined
@@ -178,12 +180,15 @@ export const ConnectorTypesGalleryWrapper: FC<ConnectorTypesGalleryWrapperProps>
 
     console.log('Labels: ', labels);
     return (
-      <StepBodyLayout
-        title={t('connector')}
-        description={
-          'The selected connector is the basis for your Connectors instance.'
-        }
-      >
+      <>
+        <PageBreadcrumb>
+          <Breadcrumb>
+            <BreadcrumbItem to="#">Connectors Instances</BreadcrumbItem>
+            <BreadcrumbItem to="#" isActive>
+              Connectors
+            </BreadcrumbItem>
+          </Breadcrumb>
+        </PageBreadcrumb>
         <ConnectorTypesGalleryCacheProvider
           connectorsApiBasePath={connectorsApiBasePath}
           getToken={getToken}
@@ -209,6 +214,6 @@ export const ConnectorTypesGalleryWrapper: FC<ConnectorTypesGalleryWrapperProps>
             onChangeLabelFilter={doSetLabelSearch}
           />
         </ConnectorTypesGalleryCacheProvider>
-      </StepBodyLayout>
+      </>
     );
   };

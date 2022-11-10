@@ -18,15 +18,13 @@ import {
   CardBody,
 } from '@patternfly/react-core';
 import {
-  BuildIcon,
-  BuilderImageIcon,
+  // BuildIcon,
+  // BuilderImageIcon,
   OutlinedQuestionCircleIcon,
   OutlinedStarIcon,
 } from '@patternfly/react-icons';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-
-import { useConnectorTypesGalleryCache } from './ConnectorTypesGalleryCache';
 
 export type ConnectorTypesGalleryCardProps = {
   id: string;
@@ -37,6 +35,7 @@ export type ConnectorTypesGalleryCardProps = {
   version: string;
   selectedId: string | undefined;
   onSelect: (id: string) => void;
+  useMasonry?: boolean;
 };
 
 export const ConnectorTypesGalleryCard: FunctionComponent<ConnectorTypesGalleryCardProps> =
@@ -49,9 +48,9 @@ export const ConnectorTypesGalleryCard: FunctionComponent<ConnectorTypesGalleryC
     version,
     selectedId,
     onSelect,
+    useMasonry = false,
   }) => {
     const { t } = useTranslation();
-    const { useMasonry } = useConnectorTypesGalleryCache();
     return (
       <Card
         key={id}
@@ -59,19 +58,41 @@ export const ConnectorTypesGalleryCard: FunctionComponent<ConnectorTypesGalleryC
         isSelectable
         isSelected={selectedId === id}
         onClick={() => onSelect(id)}
-        style={useMasonry ? { height: 250, width: 300 } : {}}
+        style={
+          useMasonry
+            ? { height: 250, width: 300, margin: 5 }
+            : { height: 170, margin: 5 }
+        }
       >
         <CardHeader>
           {labels.includes('source') ? (
             <>
+              {/*
               <BuildIcon color="lightGrey" size="lg" />
+          */}
+              <i
+                style={{
+                  fontSize: 'var(--pf-global--icon--FontSize--lg)',
+                  color: 'var(--pf-global--Color--200)',
+                }}
+                className={'pf-icon pf-icon-data-source'}
+              ></i>
               <CardActions>
                 <Label color="blue">{t('Source')}</Label>
               </CardActions>
             </>
           ) : (
             <>
+              {/*
               <BuilderImageIcon color="lightGrey" size="lg" />
+          */}
+              <i
+                style={{
+                  fontSize: 'var(--pf-global--icon--FontSize--lg)',
+                  color: 'var(--pf-global--Color--200)',
+                }}
+                className={'pf-icon pf-icon-data-sink'}
+              ></i>
               <CardActions>
                 <Label color="green">{t('Sink')}</Label>
               </CardActions>
