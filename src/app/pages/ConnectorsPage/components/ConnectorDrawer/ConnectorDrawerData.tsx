@@ -79,7 +79,7 @@ export const ConnectorDrawerData: FunctionComponent<ConnectorDrawerContentProps>
     const onKIError = useCallback(
       (response: any) => {
         if (response.status === 404) {
-          setKafkaInstanceData(t('KafkaInstanceExpired'));
+          setKafkaInstanceData(t('noLongerExists'));
         } else {
           alert?.addAlert({
             id: 'connector-drawer',

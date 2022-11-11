@@ -7,15 +7,15 @@ import { ERROR_HANDLING_STRATEGY } from '@constants/constants';
 import React, { FC, useEffect, useState } from 'react';
 
 import {
+  Button,
   Form,
   FormGroup,
   Grid,
   GridItem,
-  Popover,
   Text,
+  TextContent,
   TextVariants,
 } from '@patternfly/react-core';
-import { HelpIcon } from '@patternfly/react-icons';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 import { Connector } from '@rhoas/connector-management-sdk';
@@ -49,6 +49,7 @@ export type ErrorHandlerStepProps = {
   editMode: boolean;
   schema: Record<string, any>;
   configuration: ErrorHandler | undefined;
+  kafkaId: string;
   changeIsValid: (isValid: boolean) => void;
   onUpdateConfiguration: (type: string, update: any) => void;
 };
@@ -56,6 +57,7 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
   editMode,
   schema,
   configuration,
+  kafkaId,
   changeIsValid,
   onUpdateConfiguration,
 }) => {
@@ -137,31 +139,18 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
             <Form>
               <FormGroup
                 label={t('errorHandlingMethod')}
+                isRequired
                 fieldId="error-handler_strategy"
                 className="error-handler_strategy"
-                labelIcon={
-                  <Popover
-                    bodyContent={
-                      <div>
-                        {returnErrorHandlersNames(errorHandler).description}
-                      </div>
-                    }
-                  >
-                    <button
-                      type="button"
-                      aria-label={t('errorHandlingMethod')}
-                      onClick={(e) => e.preventDefault()}
-                      aria-describedby={t('errorHandlingMethod')}
-                      className="pf-c-form__group-label-help"
-                    >
-                      <HelpIcon noVerticalAlign />
-                    </button>
-                  </Popover>
-                }
               >
-                <Text component={TextVariants.p}>
-                  {returnErrorHandlersNames(errorHandler).errorHandler}
-                </Text>
+                <TextContent>
+                  <Text component={TextVariants.p} className="pf-u-m-0">
+                    {returnErrorHandlersNames(errorHandler).errorHandler}
+                  </Text>
+                  <Text component={TextVariants.small}>
+                    {returnErrorHandlersNames(errorHandler).description}
+                  </Text>
+                </TextContent>
               </FormGroup>
               {errorHandler === ERROR_HANDLING_STRATEGY.DeadLetterQueue && (
                 <FormGroup
@@ -169,7 +158,29 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
                   isRequired
                   fieldId="topic"
                 >
-                  <Text component={TextVariants.p}>{topic}</Text>
+                  {kafkaId ? (
+                    <Button
+                      className="pf-u-p-0"
+                      variant="link"
+                      onClick={() => {
+                        window.open(
+                          `https://console.redhat.com/application-services/streams/kafkas/${kafkaId}/topics/${topic}`,
+                          '_blank'
+                        );
+                      }}
+                    >
+                      {topic}
+                    </Button>
+                  ) : (
+                    <TextContent>
+                      <Text component={TextVariants.p} className="pf-u-m-0">
+                        {topic}
+                      </Text>
+                      <Text component={TextVariants.small}>
+                        {t('kafkaInstanceExpired')}
+                      </Text>
+                    </TextContent>
+                  )}
                 </FormGroup>
               )}
             </Form>

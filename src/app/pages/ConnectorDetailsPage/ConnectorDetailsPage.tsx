@@ -65,8 +65,13 @@ export const ConnectorDetailsPageBody: FC<ConnectorDetailsPageBodyProps> = ({
     getTab(hash)
   );
   const [editMode, setEditMode] = useState<boolean>();
-  const { connectorData, connectorTypeDetails, fetchError } =
-    useConnectorDetails();
+  const {
+    connectorData,
+    connectorTypeDetails,
+    kafkaInstanceDetails,
+    setKafkaInstanceDetails,
+    fetchError,
+  } = useConnectorDetails();
 
   const updateEditMode = useCallback(
     (editEnable: boolean) => {
@@ -134,6 +139,7 @@ export const ConnectorDetailsPageBody: FC<ConnectorDetailsPageBodyProps> = ({
         >
           <OverviewTab
             connectorData={connectorData}
+            setKafkaInstanceDetails={setKafkaInstanceDetails}
             onDuplicateConnector={onDuplicateConnector}
           />
         </Tab>
@@ -146,6 +152,7 @@ export const ConnectorDetailsPageBody: FC<ConnectorDetailsPageBodyProps> = ({
             <ConfigurationTab
               onSave={onSave}
               editMode={editMode || false}
+              kafkaInstanceDetails={kafkaInstanceDetails}
               updateEditMode={updateEditMode}
               connectorData={connectorData}
               connectorTypeDetails={connectorTypeDetails}
