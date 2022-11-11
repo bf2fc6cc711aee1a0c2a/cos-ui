@@ -19,17 +19,21 @@ import { Connector, ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 export interface OverviewTabProps {
   connectorData: Connector;
+  setKafkaInstanceDetails: React.Dispatch<
+    React.SetStateAction<string | KafkaInstance>
+  >;
   onDuplicateConnector: (id: string) => void;
 }
 
 export const OverviewTab: FC<OverviewTabProps> = ({
   connectorData,
+  setKafkaInstanceDetails,
   onDuplicateConnector,
 }) => {
   const [namespaceData, setNamespaceData] = useState<ConnectorNamespace>();
   const [kafkaInstanceData, setKafkaInstanceData] = useState<
     KafkaInstance | string
-  >();
+  >('');
 
   const { connectorsApiBasePath, kafkaManagementApiBasePath, getToken } =
     useCos();
@@ -59,7 +63,7 @@ export const OverviewTab: FC<OverviewTabProps> = ({
   const onKIError = useCallback(
     (response: any) => {
       if (response.status === 404) {
-        setKafkaInstanceData(t('KafkaInstanceExpired'));
+        setKafkaInstanceData(t('noLongerExists'));
       } else {
         alert?.addAlert({
           id: 'connector-drawer',
@@ -71,6 +75,10 @@ export const OverviewTab: FC<OverviewTabProps> = ({
     },
     [alert, t]
   );
+
+  useEffect(() => {
+    setKafkaInstanceDetails(kafkaInstanceData);
+  }, [setKafkaInstanceDetails, kafkaInstanceData]);
 
   useEffect(() => {
     getNamespace({
