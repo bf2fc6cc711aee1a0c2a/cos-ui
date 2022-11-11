@@ -9,6 +9,7 @@ import {
   Channel,
   Configuration,
   Connector,
+  ConnectorClustersApi,
   ConnectorDesiredState,
   ConnectorNamespace,
   ConnectorNamespacesApi,
@@ -59,6 +60,10 @@ type ConnectorDetailProps = {
 
 type ConnectorNamespaceProps = {
   namespaceId: string;
+} & CommonApiProps;
+
+type ConnectorClusterProps = {
+  clusterId: string;
 } & CommonApiProps;
 
 type ConnectorTypeProps = {
@@ -369,6 +374,42 @@ export const registerEvalNamespace = ({
       .catch((error) => {
         if (!axios.isCancel(error)) {
           onError(error.response.data.reason);
+        }
+      });
+    return () => {
+      source.cancel('Operation canceled by the user.');
+    };
+  };
+};
+
+export const getCluster = ({
+  accessToken,
+  connectorsApiBasePath,
+  clusterId,
+}: ConnectorClusterProps) => {
+  const clusterAPI = new ConnectorClustersApi(
+    new Configuration({
+      accessToken,
+      basePath: connectorsApiBasePath,
+    })
+  );
+
+  return (callback: any) => {
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    clusterAPI
+      .getConnectorCluster(clusterId, {
+        cancelToken: source.token,
+      })
+      .then((response) => {
+        callback(response.data);
+      })
+      .catch((error) => {
+        if (!axios.isCancel(error)) {
+          console.log(
+            `error response fetching connector cluster: ${clusterId}`,
+            error.response.data.reason
+          );
         }
       });
     return () => {

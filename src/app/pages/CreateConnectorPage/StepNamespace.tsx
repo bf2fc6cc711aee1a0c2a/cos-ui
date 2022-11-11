@@ -5,12 +5,13 @@ import {
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
 import { EmptyStateNoNamespace } from '@app/components/EmptyStateNoNamespace/EmptyStateNoNamespace';
 import { Loading } from '@app/components/Loading/Loading';
+import { NamespaceCard } from '@app/components/NamespaceCard/NamespaceCard';
 import { Pagination } from '@app/components/Pagination/Pagination';
 import { RegisterEvalNamespace } from '@app/components/RegisterEvalNamespace/RegisterEvalNamespace';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
+import { useCos } from '@hooks/useCos';
 import { getPendingTime, warningType } from '@utils/shared';
 import { useDebounce } from '@utils/useDebounce';
-import { t } from 'i18next';
 import _ from 'lodash';
 import React, {
   FunctionComponent,
@@ -24,19 +25,8 @@ import {
   Alert,
   Button,
   ButtonVariant,
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
-  DescriptionList,
-  DescriptionListDescription,
-  DescriptionListGroup,
-  DescriptionListTerm,
   Gallery,
   InputGroup,
-  Spinner,
-  Stack,
-  StackItem,
   TextInput,
   Toolbar,
   ToolbarContent,
@@ -88,16 +78,14 @@ const ClustersGallery: FunctionComponent = () => {
     onRefresh();
   };
 
+  const { connectorsApiBasePath, getToken } = useCos();
+
   const getEvalNamespaceAlert = (expiration: string): string => {
     const { hours, min } = getPendingTime(new Date(expiration));
     if (hours < 0 || min < 0) {
       return t('evalNamespaceExpiredMsg');
     }
     return t('evalNamespaceExpire', { hours, min });
-  };
-
-  const onNamespaceSelection = (namespace: ConnectorNamespace) => {
-    namespace.status.state === 'ready' && onSelect(namespace.id!);
   };
 
   useEffect(() => {
@@ -212,95 +200,18 @@ const ClustersGallery: FunctionComponent = () => {
                   )}
                   <Gallery hasGutter>
                     {response?.items?.map((i) => (
-                      <Card
-                        isHoverable={i.status.state === 'ready'}
+                      <NamespaceCard
                         key={i.id}
-                        isSelectable={i.status.state === 'ready'}
-                        isSelected={selectedId === i.id}
-                        onClick={() => onNamespaceSelection(i)}
-                        className={
-                          i.status.state === 'deleting'
-                            ? 'pf-u-background-color-disabled-color-200'
-                            : ''
-                        }
-                      >
-                        <CardHeader>
-                          <Stack>
-                            <StackItem>
-                              {' '}
-                              <CardTitle>{i.name}</CardTitle>
-                            </StackItem>
-                            <StackItem>
-                              {i.status.state === 'disconnected' && (
-                                <div className="pf-u-pt-md status">
-                                  <Alert
-                                    variant="info"
-                                    customIcon={
-                                      <Spinner
-                                        size="md"
-                                        aria-label={t('Provisioning')}
-                                        aria-valuetext="Please wait..."
-                                      />
-                                    }
-                                    isInline
-                                    isPlain
-                                    title={t('Provisioning')}
-                                  />
-                                </div>
-                              )}
-                              {i.status.state === 'deleting' && (
-                                <div className="pf-u-pt-md">
-                                  <Alert
-                                    variant="danger"
-                                    isInline
-                                    isPlain
-                                    title={t('namespaceDeleting')}
-                                  />
-                                </div>
-                              )}
-                            </StackItem>
-                          </Stack>
-                        </CardHeader>
-                        <CardBody>
-                          <DescriptionList>
-                            <DescriptionListGroup>
-                              <DescriptionListTerm>
-                                {t('owner')}
-                              </DescriptionListTerm>
-                              <DescriptionListDescription>
-                                {i.owner}
-                              </DescriptionListDescription>
-                            </DescriptionListGroup>
-                            <DescriptionListGroup>
-                              <DescriptionListTerm>
-                                {t('clusterId')}
-                              </DescriptionListTerm>
-                              <DescriptionListDescription>
-                                {i.cluster_id!}
-                              </DescriptionListDescription>
-                            </DescriptionListGroup>
-                            <DescriptionListGroup>
-                              <DescriptionListTerm>
-                                {t('created')}
-                              </DescriptionListTerm>
-                              <DescriptionListDescription>
-                                <time
-                                  title={t('{{date}}', {
-                                    date: new Date(i.created_at!),
-                                  })}
-                                  dateTime={new Date(
-                                    i.created_at!
-                                  ).toISOString()}
-                                >
-                                  {t('{{ date, ago }}', {
-                                    date: new Date(i.created_at!),
-                                  })}
-                                </time>
-                              </DescriptionListDescription>
-                            </DescriptionListGroup>
-                          </DescriptionList>
-                        </CardBody>
-                      </Card>
+                        state={i.status.state}
+                        id={i.id || ''}
+                        name={i.name}
+                        clusterId={i.cluster_id}
+                        createdAt={i.created_at || ''}
+                        selectedNamespace={selectedId || ''}
+                        onSelect={onSelect}
+                        connectorsApiBasePath={connectorsApiBasePath}
+                        getToken={getToken}
+                      />
                     ))}
                   </Gallery>
                 </div>
@@ -325,7 +236,7 @@ const ClustersToolbar: FunctionComponent<ClustersToolbarProps> = ({
   onModalToggle,
   isEvalPresent,
 }) => {
-  // const { t } = useTranslation();
+  const { t } = useTranslation();
   const { request, runQuery } = useNamespaceMachine();
 
   const searchInputRef = useRef<HTMLInputElement | null>(null);
