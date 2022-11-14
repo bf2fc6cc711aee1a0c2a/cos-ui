@@ -54,7 +54,7 @@ export const ConnectorTypesGalleryCacheProvider: FC<ConnectorTypesGalleryCacheCo
     let highestLoadedIndex = highestLoadedPage * size - 1;
     const loadedConnectorTypesMap: {
       [key: number]: FeaturedConnectorType | boolean;
-    } = Array.from({ length: total })
+    } = Array.from({ length: total - 1 })
       .map((_, index) => ({ [index]: false }))
       .reduce((prev, current) => ({ ...prev, ...current }), {});
     if (typeof initialSet !== 'undefined') {

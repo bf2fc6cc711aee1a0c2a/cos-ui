@@ -45,7 +45,7 @@ export const ConnectorTypesGalleryViewport: FC<ConnectorTypesGalleryViewportProp
         })
       : new CellMeasurerCache({
           fixedWidth: true,
-          defaultHeight: 180,
+          defaultHeight: 200,
           keyMapper: (rowIndex) => rowIndex,
         });
     const cellPositioner = useMasonry
@@ -96,9 +96,10 @@ export const ConnectorTypesGalleryViewport: FC<ConnectorTypesGalleryViewportProp
             WebkitOverflowScrolling: 'touch',
             position: 'relative',
             height: 600,
+            padding: 10,
           }}
         >
-          <div style={{ padding: 15 }}>
+          <div style={{ margin: -5 }}>
             <InfiniteLoader
               isRowLoaded={isRowLoaded}
               loadMoreRows={loadMoreRows}

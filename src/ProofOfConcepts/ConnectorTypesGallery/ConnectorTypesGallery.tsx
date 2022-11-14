@@ -2,15 +2,12 @@ import { ConnectorTypesOrderBy } from '@apis/api';
 import { Loading } from '@app/components/Loading/Loading';
 import React, { FC } from 'react';
 
-import {
-  PageSection,
-  Sidebar,
-  SidebarContent,
-  SidebarPanel,
-} from '@patternfly/react-core';
+import { Sidebar, SidebarContent, SidebarPanel } from '@patternfly/react-core';
 
 import './ConnectorTypesGallery.css';
+import { useConnectorTypesGalleryCache } from './ConnectorTypesGalleryCache';
 import { ConnectorTypesGalleryCard } from './ConnectorTypesGalleryCard';
+import { ConnectorTypesGalleryCardSkeleton } from './ConnectorTypesGalleryCardSkeleton';
 import { ConnectorTypesGallerySidePanel } from './ConnectorTypesGallerySidePanel';
 import { ConnectorTypesGalleryToolbar } from './ConnectorTypesGalleryToolbar';
 import { ConnectorTypesGalleryViewport } from './ConnectorTypesGalleryViewport';
@@ -46,6 +43,7 @@ export const ConnectorTypesGallery: FC<ConnectorTypesGalleryProps> = ({
   selectedCategories = [],
   onChangeLabelFilter,
 }) => {
+  const { useMasonry } = useConnectorTypesGalleryCache();
   const loading = typeof connectorTypes === 'undefined';
   const currentCategory =
     selectedCategories.filter(
@@ -53,62 +51,63 @@ export const ConnectorTypesGallery: FC<ConnectorTypesGalleryProps> = ({
     )[0] || 'All Items';
   return (
     <>
-      <PageSection>
-        <Sidebar hasGutter tabIndex={0}>
-          <SidebarPanel variant={'sticky'}>
-            <ConnectorTypesGallerySidePanel
-              labels={labels}
-              currentCategory={currentCategory}
-              searchFieldValue={searchFieldValue}
-              searchFieldPlaceholder={searchFieldPlaceholder}
-              onChangeSearchField={onChangeSearchField}
-              selectedCategories={selectedCategories}
-              onChangeLabelFilter={onChangeLabelFilter}
-            />
-          </SidebarPanel>
-          <SidebarContent>
-            <ConnectorTypesGalleryToolbar
+      <Sidebar hasNoBackground tabIndex={0}>
+        <SidebarPanel variant={'sticky'}>
+          <ConnectorTypesGallerySidePanel
+            labels={labels}
+            currentCategory={currentCategory}
+            searchFieldValue={searchFieldValue}
+            searchFieldPlaceholder={searchFieldPlaceholder}
+            onChangeSearchField={onChangeSearchField}
+            selectedCategories={selectedCategories}
+            onChangeLabelFilter={onChangeLabelFilter}
+          />
+        </SidebarPanel>
+        <SidebarContent className={'connector-type-gallery__sidebar-content'}>
+          <ConnectorTypesGalleryToolbar
+            total={total}
+            sortInputEntries={sortInputEntries}
+            currentSort={currentSort}
+            onChangeSort={onChangeSort}
+            currentCategory={currentCategory}
+            loading={loading}
+          />
+          {!loading ? (
+            <ConnectorTypesGalleryViewport
+              id={'connector-type-gallery-scroller'}
               total={total}
-              sortInputEntries={sortInputEntries}
-              currentSort={currentSort}
-              onChangeSort={onChangeSort}
-              currentCategory={currentCategory}
-              loading={loading}
+              renderConnectorTypeLoading={() => (
+                <ConnectorTypesGalleryCardSkeleton useMasonry={useMasonry} />
+              )}
+              renderConnectorType={({
+                id,
+                labels,
+                name,
+                description,
+                version,
+                featuredRank,
+              }) => (
+                <ConnectorTypesGalleryCard
+                  key={id}
+                  id={id!}
+                  labels={labels!}
+                  name={name!}
+                  description={description!}
+                  version={version!}
+                  selectedId={undefined}
+                  featuredRank={featuredRank}
+                  onSelect={(id: string) => {
+                    console.log('onSelect: ', id);
+                  }}
+                  useMasonry={useMasonry}
+                />
+              )}
             />
-            {!loading ? (
-              <ConnectorTypesGalleryViewport
-                id={'connector-type-gallery-scroller'}
-                total={total}
-                renderConnectorTypeLoading={() => <Loading />}
-                renderConnectorType={({
-                  id,
-                  labels,
-                  name,
-                  description,
-                  version,
-                  featuredRank,
-                }) => (
-                  <ConnectorTypesGalleryCard
-                    key={id}
-                    id={id!}
-                    labels={labels!}
-                    name={name!}
-                    description={description!}
-                    version={version!}
-                    selectedId={undefined}
-                    featuredRank={featuredRank}
-                    onSelect={(id: string) => {
-                      console.log('onSelect: ', id);
-                    }}
-                  />
-                )}
-              />
-            ) : (
-              <Loading />
-            )}
-          </SidebarContent>
-        </Sidebar>
-      </PageSection>
+          ) : (
+            <Loading />
+          )}
+        </SidebarContent>
+      </Sidebar>
     </>
   );
 };

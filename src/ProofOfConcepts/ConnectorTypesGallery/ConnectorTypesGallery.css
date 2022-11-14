@@ -1,3 +1,7 @@
+.connector-type-gallery__sidebar-content.pf-c-sidebar__content {
+  background-color: inherit;
+}
+
 .connector-types-gallery__vertical-tabs {
   margin-bottom: 0px;
 }
