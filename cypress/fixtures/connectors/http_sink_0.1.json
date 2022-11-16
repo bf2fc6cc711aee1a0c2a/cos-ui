@@ -1,0 +1,126 @@
+{
+  "connector_type": {
+    "id": "http_sink_0.1",
+    "kind": "ConnectorType",
+    "href": "/api/connector_mgmt/v1/kafka_connector_types/http_sink_0.1",
+    "name": "HTTP sink",
+    "version": "0.1",
+    "channels": ["stable"],
+    "description": "Send data to a HTTP endpoint.",
+    "icon_href": "TODO",
+    "labels": ["sink"],
+    "capabilities": ["data_shape", "error_handler", "processors"],
+    "schema": {
+      "$defs": {
+        "data_shape": {
+          "consumes": {
+            "additionalProperties": false,
+            "properties": {
+              "format": {
+                "default": "application/octet-stream",
+                "description": "The format of the data that Kafka sends to the sink connector.",
+                "enum": ["application/octet-stream"],
+                "type": "string"
+              }
+            },
+            "required": ["format"],
+            "type": "object"
+          }
+        },
+        "error_handler": {
+          "dead_letter_queue": {
+            "additionalProperties": false,
+            "properties": {
+              "topic": {
+                "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error.",
+                "title": "Dead Letter Topic Name",
+                "type": "string"
+              }
+            },
+            "required": ["topic"],
+            "type": "object"
+          },
+          "log": {
+            "additionalProperties": false,
+            "type": "object"
+          },
+          "stop": {
+            "additionalProperties": false,
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "data_shape": {
+          "additionalProperties": false,
+          "properties": {
+            "consumes": {
+              "$ref": "#/$defs/data_shape/consumes"
+            }
+          },
+          "type": "object"
+        },
+        "error_handler": {
+          "default": {
+            "stop": {}
+          },
+          "oneOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "log": {
+                  "$ref": "#/$defs/error_handler/log"
+                }
+              },
+              "required": ["log"],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "stop": {
+                  "$ref": "#/$defs/error_handler/stop"
+                }
+              },
+              "required": ["stop"],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "dead_letter_queue": {
+                  "$ref": "#/$defs/error_handler/dead_letter_queue"
+                }
+              },
+              "required": ["dead_letter_queue"],
+              "type": "object"
+            }
+          ],
+          "type": "object"
+        },
+        "http_method": {
+          "default": "POST",
+          "description": "The HTTP method to use.",
+          "title": "Method",
+          "type": "string"
+        },
+        "http_url": {
+          "description": "The URL to which you want to send data.",
+          "example": "https://my-service/path",
+          "pattern": "^(http|https)://.*",
+          "title": "URL",
+          "type": "string"
+        },
+        "kafka_topic": {
+          "description": "A comma-separated list of Kafka topic names.",
+          "title": "Topic Names",
+          "type": "string"
+        },
+        "processors": {}
+      },
+      "required": ["http_url", "kafka_topic"],
+      "type": "object"
+    }
+  }
+}

@@ -12,6 +12,8 @@ export function createValidator(schema: object) {
 
   return (model: object) => {
     validator(model);
-    return validator.errors?.length ? { details: validator.errors } : null;
+    return validator.errors?.length
+      ? { details: validator.errors }
+      : { details: [] };
   };
 }

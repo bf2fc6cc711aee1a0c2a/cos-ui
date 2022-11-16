@@ -2,6 +2,8 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
 import { withFixtures } from 'storybook-fixtures';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
+
 import aws_kinesis_sink from '../../../../cypress/fixtures/connectors/aws_kinesis_sink_0.1.json';
 import aws_kinesis_source from '../../../../cypress/fixtures/connectors/aws_kinesis_source_0.1.json';
 import aws_s3_sink from '../../../../cypress/fixtures/connectors/aws_s3_sink_0.1.json';
@@ -9,6 +11,7 @@ import aws_s3_source from '../../../../cypress/fixtures/connectors/aws_s3_source
 import aws_sns_sink from '../../../../cypress/fixtures/connectors/aws_sns_sink_0.1.json';
 import aws_sqs_sink from '../../../../cypress/fixtures/connectors/aws_sqs_sink_0.1.json';
 import aws_sqs_source from '../../../../cypress/fixtures/connectors/aws_sqs_source_0.1.json';
+import http_sink from '../../../../cypress/fixtures/connectors/http_sink_0.1.json';
 import injector_source from '../../../../cypress/fixtures/connectors/injector_source_0.1.json';
 import log_sink from '../../../../cypress/fixtures/connectors/log_sink_0.1.json';
 import mariadb_sink from '../../../../cypress/fixtures/connectors/mariadb_sink_0.1.json';
@@ -21,6 +24,7 @@ import postgresql_sink from '../../../../cypress/fixtures/connectors/postgresql_
 import postgresql_source from '../../../../cypress/fixtures/connectors/postgresql_source_0.1.json';
 import sqlserver_sink from '../../../../cypress/fixtures/connectors/sqlserver_sink_0.1.json';
 import sqlserver_source from '../../../../cypress/fixtures/connectors/sqlserver_source_0.1.json';
+import { StepBodyLayout } from '../StepBodyLayout/StepBodyLayout';
 import { JsonSchemaConfigurator } from './JsonSchemaConfigurator';
 
 export default {
@@ -42,13 +46,19 @@ const Template: ComponentStory<typeof JsonSchemaConfigurator> = (
   { fixture }
 ) => {
   console.log(args, fixture);
+  const { t } = useTranslation();
   return (
-    <JsonSchemaConfigurator
-      {...args}
-      schema={
-        fixture.connector_type.json_schema || fixture.connector_type.schema
-      }
-    />
+    <StepBodyLayout
+      title={t('connectorSpecific')}
+      description={t('configurationStepDescription')}
+    >
+      <JsonSchemaConfigurator
+        {...args}
+        schema={
+          fixture.connector_type.json_schema || fixture.connector_type.schema
+        }
+      />
+    </StepBodyLayout>
   );
 };
 
@@ -92,6 +102,12 @@ export const Aws_sqs_source = Template.bind({});
 Aws_sqs_source.parameters = {
   fixtures: {
     aws_sqs_source: { aws_sqs_source },
+  },
+};
+export const Http_sink = Template.bind({});
+Http_sink.parameters = {
+  fixtures: {
+    http_sink: { http_sink },
   },
 };
 export const Injector_source = Template.bind({});
