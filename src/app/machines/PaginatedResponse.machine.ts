@@ -320,7 +320,7 @@ export function makePaginatedApiMachine<RawDataType, OrderBy, Search, DataType>(
           entry: fetch,
           on: {
             'api.setResponse': {
-              actions: setResponse,
+              actions: [setResponse, model.actions.notifySuccess()],
             },
           },
           after: {
