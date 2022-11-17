@@ -3,15 +3,16 @@ import {
   applyClientSideFormCustomizations,
   clearEmptyObjectValues,
 } from '@utils/shared';
-import { ValidateFunction } from 'ajv';
-import _ from 'lodash';
-import React, { FunctionComponent } from 'react';
+import { ErrorObject, ValidateFunction } from 'ajv';
+import jsonpointer from 'jsonpointer';
+import { capitalize } from 'lodash';
+import React, { FunctionComponent, useCallback } from 'react';
 import { AutoForm, ValidatedQuickForm } from 'uniforms';
 import { AutoField } from 'uniforms-patternfly';
 
 import { Grid } from '@patternfly/react-core';
 
-import { useTranslation } from '@rhoas/app-services-ui-components';
+import { TFunction, useTranslation } from '@rhoas/app-services-ui-components';
 
 import { CustomJsonSchemaBridge } from './CustomJsonSchemaBridge';
 import './JsonSchemaConfigurator.css';
@@ -43,28 +44,28 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
       duplicateMode || false
     );
 
-    const onChangeModel = async (model: any) => {
-      // schemaValidator returns null when there's no errors in the form
-      const errors = (schemaValidator(model) || { details: [] }).details.filter(
-        ({ instancePath, /* schemaPath, keyword, params, */ message }) => {
-          // Deal with validation edge cases
-          switch (message) {
-            // these cases are valid when the property is
-            // not required, in this case the value is set
-            // to null
-            case 'must be string':
-            case 'must be number':
-              return (
-                ((required as string[]) || []).filter((req) =>
-                  instancePath.endsWith(req)
-                ).length > 0
-              );
-          }
-          return true;
-        }
-      );
-      onChange(model, errors.length === 0);
-    };
+    const onValidate = useCallback(
+      (model: any, error: any) => {
+        const details = overrideErrorMessages(
+          t,
+          filterEdgeCases(required, error.details),
+          model
+        );
+        return { ...error, details };
+      },
+      [schema]
+    );
+
+    const onChangeModel = useCallback(
+      (model: any) => {
+        const details = filterEdgeCases(
+          required,
+          schemaValidator(model).details
+        );
+        onChange(model, details.length === 0);
+      },
+      [onChange]
+    );
 
     // no need to create form elements for error_handler, processors or steps
     const { error_handler, processors, steps, ...properties } =
@@ -83,10 +84,13 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
     return (
       <Grid hasGutter>
         <KameletForm
+          className="connector-specific pf-c-form pf-m-9-col-on-lg"
           schema={bridge}
           model={clearEmptyObjectValues(configuration)}
-          onChangeModel={(model: any) => onChangeModel(model)}
-          className="connector-specific pf-c-form pf-m-9-col-on-lg"
+          onValidate={onValidate}
+          validate={'onChange'}
+          onChangeModel={onChangeModel}
+          showInlineError
         >
           {Object.keys(organizedProperties).map((propertyName) => (
             <AutoField key={propertyName} name={propertyName} />
@@ -106,3 +110,79 @@ function Auto(parent: any): any {
   return _;
 }
 const KameletForm = Auto(ValidatedQuickForm);
+
+/**
+ * Customizes and overrides validation error messages before they're
+ * made visible to the user.
+ * @param t
+ * @param details
+ * @returns
+ */
+function overrideErrorMessages(
+  t: TFunction<'translation', undefined>,
+  details: Array<ErrorObject<string, Record<string, any>, unknown>>,
+  model: any
+) {
+  return details
+    .map((detail) => {
+      const { instancePath, keyword } = detail;
+      switch (keyword) {
+        case 'required':
+          return { ...detail, message: t('pleaseEnterAValue') };
+        case 'type':
+          const value = jsonpointer.get(model, instancePath);
+          if (value === null) {
+            return { ...detail, message: t('pleaseEnterAValue') };
+          }
+          break;
+        default:
+          break;
+      }
+      return { ...detail, message: capitalize(detail.message) };
+    })
+    .filter((detail) => {
+      const { keyword, params } = detail;
+      switch (keyword) {
+        case 'required':
+          if (params.missingProperty) {
+            const value = model[params.missingProperty];
+            if (typeof value === 'undefined') {
+              return false;
+            }
+          }
+          break;
+        default:
+          break;
+      }
+      return true;
+    });
+}
+
+/**
+ * Deals with the one edge case where a non-required field is set to
+ * empty and therefore a null value.
+ * @param required
+ * @param details
+ * @returns
+ */
+function filterEdgeCases(
+  required: string[],
+  details: Array<ErrorObject<string, Record<string, any>, unknown>>
+) {
+  return details.filter(({ instancePath, message }) => {
+    // Deal with validation edge cases
+    switch (message) {
+      // these cases are valid when the property is
+      // not required, in this case the value is set
+      // to null
+      case 'must be string':
+      case 'must be number':
+        return (
+          ((required as string[]) || []).filter((req) =>
+            instancePath.endsWith(req)
+          ).length > 0
+        );
+    }
+    return true;
+  });
+}
