@@ -102,7 +102,6 @@ export function makePaginatedApiMachine<RawDataType, OrderBy, Search, DataType>(
       },
     }
   );
-
   const setResponse = model.assign((context, e) => {
     if (e.page !== context.request.page) return {};
     if (context.onBeforeSetResponse) {
@@ -116,7 +115,6 @@ export function makePaginatedApiMachine<RawDataType, OrderBy, Search, DataType>(
       },
     };
   }, 'api.setResponse');
-
   const fetch = model.assign((context) => {
     if (context.actor && context.actor.stop) {
       context.actor.stop();
@@ -317,10 +315,11 @@ export function makePaginatedApiMachine<RawDataType, OrderBy, Search, DataType>(
           },
         },
         polling: {
-          entry: fetch,
+          entry: [model.actions.notifyLoading(), fetch],
           on: {
             'api.setResponse': {
               actions: [setResponse, model.actions.notifySuccess()],
+              cond: 'isPollingEnabled',
             },
           },
           after: {
