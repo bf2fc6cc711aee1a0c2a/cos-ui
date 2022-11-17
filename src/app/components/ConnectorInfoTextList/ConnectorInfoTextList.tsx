@@ -102,7 +102,7 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
                   case t('kafkaInstance'):
                     return (value as KafkaInstance)?.name ? (
                       <Button
-                        className="Kafka-link-button"
+                        className="pf-u-p-0"
                         variant="link"
                         onClick={() => {
                           window.open(
@@ -123,7 +123,7 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
                           {value}
                         </Text>
                         <Button
-                          className="Kafka-link-button"
+                          className="pf-u-p-0"
                           variant="link"
                           onClick={() => onDuplicateConnector(id)}
                         >
@@ -183,7 +183,7 @@ export const ConnectorInfoTextList: FunctionComponent<ConnectorInfoTextListProps
                   t(''),
                   <Alert
                     customIcon={<OutlinedClockIcon />}
-                    className="my-class"
+                    className="namespace-expiration-alert"
                     variant={warningType(
                       new Date(
                         (namespaceData as ConnectorNamespace)?.expiration!
