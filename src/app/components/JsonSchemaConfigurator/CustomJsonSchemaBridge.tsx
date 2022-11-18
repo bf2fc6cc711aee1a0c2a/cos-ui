@@ -58,6 +58,7 @@ export class CustomJsonSchemaBridge extends JSONSchemaBridge {
       id: name,
       helperText: getExampleText(example),
       labelIcon: getLabelIcon(label || name, description),
+      description,
       name,
       label,
     };

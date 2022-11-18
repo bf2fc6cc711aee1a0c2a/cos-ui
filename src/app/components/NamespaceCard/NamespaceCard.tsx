@@ -96,13 +96,13 @@ export const NamespaceCard: React.FunctionComponent<NamespaceCardProps> = ({
                   customIcon={
                     <Spinner
                       size="md"
-                      aria-label={t('Provisioning')}
+                      aria-label={t('provisioning')}
                       aria-valuetext="Please wait..."
                     />
                   }
                   isInline
                   isPlain
-                  title={t('Provisioning')}
+                  title={t('provisioning')}
                 />
               </div>
             )}
