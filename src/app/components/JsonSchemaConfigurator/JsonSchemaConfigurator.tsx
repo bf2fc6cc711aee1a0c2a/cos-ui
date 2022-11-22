@@ -5,7 +5,7 @@ import {
 } from '@utils/shared';
 import { ErrorObject, ValidateFunction } from 'ajv';
 import jsonpointer from 'jsonpointer';
-import { capitalize } from 'lodash';
+import { capitalize, forEach } from 'lodash';
 import React, { FunctionComponent, useCallback } from 'react';
 import { AutoForm, ValidatedQuickForm } from 'uniforms';
 import { AutoField } from 'uniforms-patternfly';
@@ -14,6 +14,7 @@ import { Grid } from '@patternfly/react-core';
 
 import { TFunction, useTranslation } from '@rhoas/app-services-ui-components';
 
+import { CheckboxWithDescriptionField } from './CheckboxWithDescriptionField';
 import { CustomJsonSchemaBridge } from './CustomJsonSchemaBridge';
 import './JsonSchemaConfigurator.css';
 import { TypeaheadField } from './TypeaheadField';
@@ -77,6 +78,15 @@ export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorPro
           component: TypeaheadField,
         })
       : undefined;
+
+    forEach(otherProperties, (val: any, key: string) => {
+      val.type === 'boolean'
+        ? (otherProperties[key].uniforms = {
+            component: CheckboxWithDescriptionField,
+          })
+        : undefined;
+    });
+
     const organizedProperties = applyClientSideFormCustomizations({
       ...otherProperties,
       ...(aws_region && { aws_region }),
