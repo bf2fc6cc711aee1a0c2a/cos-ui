@@ -12,8 +12,8 @@ import {
 } from '@patternfly/react-core';
 
 import './ConnectorTypesGallery.css';
-import { ConnectorTypesGalleryCard } from './ConnectorTypesGalleryCard';
 import { ConnectorTypesGalleryCardSkeleton } from './ConnectorTypesGalleryCardSkeleton';
+import { ConnectorTypeListItem } from './ConnectorTypesGalleryListView';
 import { ConnectorTypesGallerySidePanel } from './ConnectorTypesGallerySidePanel';
 import { ConnectorTypesGalleryToolbar } from './ConnectorTypesGalleryToolbar';
 import { ConnectorTypesGalleryViewport } from './ConnectorTypesGalleryViewport';
@@ -87,26 +87,13 @@ export const ConnectorTypesGallery: FC<ConnectorTypesGalleryProps> = ({
                     renderConnectorTypeLoading={() => (
                       <ConnectorTypesGalleryCardSkeleton />
                     )}
-                    renderConnectorType={({
-                      id,
-                      labels,
-                      name,
-                      description,
-                      version,
-                      featuredRank,
-                    }) => (
-                      <ConnectorTypesGalleryCard
+                    renderConnectorType={({ id, labels, name, version }) => (
+                      <ConnectorTypeListItem
                         key={id}
                         id={id!}
                         labels={labels!}
-                        name={name!}
-                        description={description!}
-                        version={version!}
-                        selectedId={undefined}
-                        featuredRank={featuredRank}
-                        onSelect={(id: string) => {
-                          console.log('onSelect: ', id);
-                        }}
+                        title={name!}
+                        verison={version!}
                       />
                     )}
                   />
