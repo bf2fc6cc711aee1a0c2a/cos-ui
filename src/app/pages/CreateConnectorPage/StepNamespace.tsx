@@ -19,6 +19,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  SyntheticEvent,
 } from 'react';
 
 import {
@@ -34,6 +35,11 @@ import {
   ToolbarItem,
   ToolbarToggleGroup,
   Tooltip,
+  Dropdown,
+  DropdownToggle,
+  DropdownPosition,
+  DropdownItem,
+  ToolbarFilter,
 } from '@patternfly/react-core';
 import { ClockIcon, FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
@@ -239,95 +245,154 @@ const ClustersToolbar: FunctionComponent<ClustersToolbarProps> = ({
   const { t } = useTranslation();
   const { request, runQuery } = useNamespaceMachine();
 
-  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
+  const clusterIdInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedOnQuery = useDebounce(runQuery, 1000);
+  const [categoryToggled, setCategoryToggled] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('Name');
 
-  // const [statuses, setStatuses] = useState<string[]>([
-  //   'Pending',
-  //   'Created',
-  //   'Cancelled',
-  // ]);
-  // const [statusesToggled, setStatusesToggled] = useState(false);
-  // const clearAllFilters = useCallback(() => {
-  //   setSearchValue('');
-  //   setStatuses([]);
-  // }, []);
-  // const toggleStatuses = useCallback(
-  //   () => setStatusesToggled(prev => !prev),
-  //   []
-  // );
-  // const onSelectStatus = useCallback(
-  //   (_, status) =>
-  //     setStatuses(prev =>
-  //       prev.includes(status)
-  //         ? prev.filter(s => s !== status)
-  //         : [...prev, status]
-  //     ),
-  //   []
-  // );
+  const { name, cluster_id } = request.search || {};
 
-  // const statusMenuItems = [
-  //   <SelectOption key="statusPending" value="Pending" />,
-  //   <SelectOption key="statusCreated" value="Created" />,
-  //   <SelectOption key="statusCancelled" value="Cancelled" />,
-  // ];
+  const clearAllFilters = useCallback(
+    () => runQuery({ page: 1, size: request.size }),
+    [runQuery, request.size]
+  );
 
-  // ensure the search input value reflects what's specified in the request object
-  // useEffect(() => {
-  //   if (searchInputRef.current) {
-  //     searchInputRef.current.value = (request.name as string | undefined) || '';
-  //   }
-  // }, [searchInputRef, request]);
+  const onDeleteQueryGroup = (category: string) =>
+    runQuery({
+      ...request,
+      search: {
+        ...(request.search || {}),
+        [category]: undefined,
+      },
+    });
+
+  const filterCategoryMenuItems = filterCategoryOptions.map(
+    ({ value, label }) => <DropdownItem key={value}>{label}</DropdownItem>
+  );
+
+  const onFilterCategoryToggle = useCallback(
+    () => setCategoryToggled((prev) => !prev),
+    []
+  );
+
+  const selectCategory = useCallback(
+    (event?: SyntheticEvent<HTMLDivElement, Event> | undefined) => {
+      const eventTarget = event?.target as HTMLElement;
+      const selectedCategory = eventTarget.innerText;
+      setSelectedCategory(selectedCategory);
+      setCategoryToggled((prev) => !prev);
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (nameInputRef.current) {
+      nameInputRef.current.value = name || '';
+    }
+    if (clusterIdInputRef.current) {
+      clusterIdInputRef.current.value = cluster_id || '';
+    }
+  }, [nameInputRef, clusterIdInputRef, name, cluster_id]);
+
+  const filterCategoryDropdown = (
+    <ToolbarItem>
+      <Dropdown
+        onSelect={(event) => selectCategory(event)}
+        position={DropdownPosition.left}
+        toggle={
+          <DropdownToggle
+            onToggle={onFilterCategoryToggle}
+            style={{ width: '100%' }}
+          >
+            <FilterIcon size="sm" /> {selectedCategory}
+          </DropdownToggle>
+        }
+        isOpen={categoryToggled}
+        dropdownItems={filterCategoryMenuItems}
+        style={{ width: '100%' }}
+      ></Dropdown>
+    </ToolbarItem>
+  );
 
   const toggleGroupItems = (
-    <>
-      <ToolbarItem>
-        <InputGroup>
-          <TextInput
-            name="textInput2"
-            id="textInput2"
-            type="search"
-            aria-label="search input example"
-            onChange={(value) =>
-              debouncedOnQuery({
-                size: request.size,
-                page: 1,
-                search: {
-                  name: value,
-                },
-              })
-            }
-            ref={searchInputRef}
-          />
-          <Button
-            variant={'control'}
-            aria-label="search button for search input"
-          >
-            <SearchIcon />
-          </Button>
-        </InputGroup>
-      </ToolbarItem>
-      {/* <ToolbarGroup variant="filter-group">
-        <ToolbarFilter
-          chips={statuses}
-          deleteChip={onSelectStatus}
-          deleteChipGroup={() => setStatuses([])}
-          categoryName="Status"
-        >
-          <Select
-            variant={'checkbox'}
-            aria-label="Status"
-            onToggle={toggleStatuses}
-            onSelect={onSelectStatus}
-            selections={statuses}
-            isOpen={statusesToggled}
-            placeholderText="Status"
-          >
-            {statusMenuItems}
-          </Select>
-        </ToolbarFilter>
-      </ToolbarGroup> */}
-    </>
+    <ToolbarGroup variant="filter-group">
+      {filterCategoryDropdown}
+      <ToolbarFilter
+        chips={name ? [name] : []}
+        deleteChip={() => onDeleteQueryGroup('name')}
+        categoryName={t('name')}
+      >
+        {selectedCategory === t('name') && (
+          <ToolbarItem>
+            <InputGroup>
+              <TextInput
+                name={t('name')}
+                id={t('name')}
+                type="search"
+                placeholder={t('nameSearchPlaceholder')}
+                aria-label={t('nameSearchPlaceholder')}
+                onChange={(name) =>
+                  debouncedOnQuery({
+                    size: request.size,
+                    page: 1,
+                    orderBy: request.orderBy,
+                    search: {
+                      ...request.search,
+                      name,
+                    },
+                  })
+                }
+                ref={nameInputRef}
+              />
+              <Button
+                variant={'control'}
+                aria-label="search button for search input"
+              >
+                <SearchIcon />
+              </Button>
+            </InputGroup>
+          </ToolbarItem>
+        )}
+      </ToolbarFilter>
+      <ToolbarFilter
+        chips={cluster_id ? [cluster_id] : []}
+        deleteChip={() => onDeleteQueryGroup('cluster_id')}
+        categoryName={t('clusterid')}
+      >
+        {selectedCategory === t('clusterid') && (
+          <ToolbarItem>
+            <InputGroup>
+              <TextInput
+                name={t('clusterid')}
+                id={t('clusterid')}
+                type="search"
+                placeholder={t('clusteridSearchPlaceholder')}
+                aria-label={t('clusteridSearchPlaceholder')}
+                onChange={(cluster_id) =>
+                  debouncedOnQuery({
+                    size: request.size,
+                    page: 1,
+                    orderBy: request.orderBy,
+                    search: {
+                      ...request.search,
+                      cluster_id,
+                    },
+                  })
+                }
+                ref={clusterIdInputRef}
+              />
+              <Button
+                variant={'control'}
+                aria-label="search button for search input"
+              >
+                <SearchIcon />
+              </Button>
+            </InputGroup>
+          </ToolbarItem>
+        )}
+      </ToolbarFilter>
+    </ToolbarGroup>
   );
   const toolbarItems = (
     <>
@@ -366,7 +431,7 @@ const ClustersToolbar: FunctionComponent<ClustersToolbarProps> = ({
     <Toolbar
       id="toolbar-group-types"
       collapseListedFiltersBreakpoint="xl"
-      // clearAllFilters={clearAllFilters}
+      clearAllFilters={clearAllFilters}
     >
       <ToolbarContent>{toolbarItems}</ToolbarContent>
     </Toolbar>
@@ -392,3 +457,12 @@ const ClustersPagination: FunctionComponent<ClustersPaginationProps> = ({
     />
   );
 };
+type KeyValueOptions = {
+  value: string;
+  label: string;
+};
+
+const filterCategoryOptions: KeyValueOptions[] = [
+  { value: 'name', label: 'Name' },
+  { value: 'cluster_id', label: 'Cluster Id' },
+];

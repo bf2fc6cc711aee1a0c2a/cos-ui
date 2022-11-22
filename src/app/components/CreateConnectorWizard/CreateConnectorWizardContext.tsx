@@ -1,6 +1,7 @@
 import {
   ConnectorTypesOrderBy,
   ConnectorTypesSearch,
+  ConnectorNamespaceSearch,
   KafkasSearch,
   UserProvidedServiceAccount,
 } from '@apis/api';
@@ -14,7 +15,6 @@ import {
   PaginatedApiActorType,
   PaginatedApiRequest,
   PlaceholderOrderBy,
-  PlaceholderSearch,
 } from '@app/machines/PaginatedResponse.machine';
 import {
   ConnectorConfiguratorResponse,
@@ -427,7 +427,7 @@ export const useNamespaceMachine = () => {
   const api = usePagination<
     ConnectorNamespace,
     PlaceholderOrderBy,
-    PlaceholderSearch,
+    ConnectorNamespaceSearch,
     ConnectorNamespace
   >(
     namespaceRef.getSnapshot()?.children[
@@ -435,7 +435,7 @@ export const useNamespaceMachine = () => {
     ] as PaginatedApiActorType<
       ConnectorNamespace,
       PlaceholderOrderBy,
-      PlaceholderSearch,
+      ConnectorNamespaceSearch,
       ConnectorNamespace
     >
   );
@@ -461,7 +461,9 @@ export const useNamespaceMachine = () => {
   }, [namespaceRef]);
 
   const runQuery = useCallback(
-    (request: PaginatedApiRequest<PlaceholderOrderBy, PlaceholderSearch>) => {
+    (
+      request: PaginatedApiRequest<PlaceholderOrderBy, ConnectorNamespaceSearch>
+    ) => {
       onActivity(
         `${duplicateMode ? 'Duplicate' : 'Create'}-Search-Namespaces`,
         request

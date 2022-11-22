@@ -1,4 +1,4 @@
-import { fetchConnectorNamespaces } from '@apis/api';
+import { ConnectorNamespaceSearch, fetchConnectorNamespaces } from '@apis/api';
 import { PAGINATED_MACHINE_ID } from '@constants/constants';
 
 import { ActorRefFrom, send, sendParent } from 'xstate';
@@ -11,7 +11,6 @@ import {
   getPaginatedApiMachineEvents,
   makePaginatedApiMachine,
   PlaceholderOrderBy,
-  PlaceholderSearch,
 } from './PaginatedResponse.machine';
 
 type Context = {
@@ -40,7 +39,7 @@ const model = createModel(
       ...getPaginatedApiMachineEvents<
         ConnectorNamespace,
         PlaceholderOrderBy,
-        PlaceholderSearch,
+        ConnectorNamespaceSearch,
         ConnectorNamespace
       >(),
     },
@@ -88,7 +87,7 @@ export const selectNamespaceMachine = model.createMachine(
                 makePaginatedApiMachine<
                   ConnectorNamespace,
                   PlaceholderOrderBy,
-                  PlaceholderSearch,
+                  ConnectorNamespaceSearch,
                   ConnectorNamespace
                 >(fetchConnectorNamespaces(context), (i) => i, {
                   pollingEnabled: true,
