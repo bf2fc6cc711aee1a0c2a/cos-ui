@@ -5,7 +5,8 @@ import {
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
 import { EmptyStateNoNamespace } from '@app/components/EmptyStateNoNamespace/EmptyStateNoNamespace';
 import { Loading } from '@app/components/Loading/Loading';
-import { NamespaceCard } from '@app/components/NamespaceCard/NamespaceCard';
+import { DefaultNamespaceCard } from '@app/components/NamespaceCard/DefaultNamespaceCard';
+import { EvalNamespaceCard } from '@app/components/NamespaceCard/EvalNamespaceCard';
 import { Pagination } from '@app/components/Pagination/Pagination';
 import { RegisterEvalNamespace } from '@app/components/RegisterEvalNamespace/RegisterEvalNamespace';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
@@ -205,20 +206,33 @@ const ClustersGallery: FunctionComponent = () => {
                     />
                   )}
                   <Gallery hasGutter>
-                    {response?.items?.map((i) => (
-                      <NamespaceCard
-                        key={i.id}
-                        state={i.status.state}
-                        id={i.id || ''}
-                        name={i.name}
-                        clusterId={i.cluster_id}
-                        createdAt={i.created_at || ''}
-                        selectedNamespace={selectedId || ''}
-                        onSelect={onSelect}
-                        connectorsApiBasePath={connectorsApiBasePath}
-                        getToken={getToken}
-                      />
-                    ))}
+                    {response?.items?.map((i) =>
+                      i.expiration ? (
+                        <EvalNamespaceCard
+                          key={i.id}
+                          state={i.status.state}
+                          id={i.id || ''}
+                          name={i.name}
+                          owner={i.owner!}
+                          createdAt={i.created_at || ''}
+                          selectedNamespace={selectedId || ''}
+                          onSelect={onSelect}
+                        />
+                      ) : (
+                        <DefaultNamespaceCard
+                          key={i.id}
+                          state={i.status.state}
+                          id={i.id || ''}
+                          name={i.name}
+                          clusterId={i.cluster_id}
+                          createdAt={i.created_at || ''}
+                          selectedNamespace={selectedId || ''}
+                          onSelect={onSelect}
+                          connectorsApiBasePath={connectorsApiBasePath}
+                          getToken={getToken}
+                        />
+                      )
+                    )}
                   </Gallery>
                 </div>
               </>
