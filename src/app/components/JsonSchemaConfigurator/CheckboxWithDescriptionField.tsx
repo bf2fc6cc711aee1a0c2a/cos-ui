@@ -1,7 +1,7 @@
 import React from 'react';
 import { connectField, filterDOMProps } from 'uniforms';
 
-import { Checkbox } from '@patternfly/react-core';
+import { Checkbox, FormGroup } from '@patternfly/react-core';
 
 export type CheckboxWithDescriptionProps = {
   id: string;
@@ -29,14 +29,16 @@ function CheckboxWithDescription({
   ...props
 }: CheckboxWithDescriptionProps) {
   return (
-    <Checkbox
-      id={id}
-      isChecked={value}
-      label={label}
-      onChange={() => onChange(!value)}
-      description={description}
-      {...filterDOMProps(props)}
-    />
+    <FormGroup fieldId={id} helperText={help}>
+      <Checkbox
+        id={id}
+        isChecked={value}
+        label={label}
+        onChange={() => onChange(!value)}
+        description={description}
+        {...filterDOMProps(props)}
+      />
+    </FormGroup>
   );
 }
 
