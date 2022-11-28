@@ -464,5 +464,5 @@ type KeyValueOptions = {
 
 const filterCategoryOptions: KeyValueOptions[] = [
   { value: 'name', label: 'Name' },
-  { value: 'cluster_id', label: 'Cluster Id' },
+  { value: 'cluster_id', label: 'Cluster id' },
 ];
