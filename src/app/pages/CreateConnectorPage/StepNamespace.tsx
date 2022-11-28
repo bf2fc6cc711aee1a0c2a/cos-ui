@@ -358,14 +358,14 @@ const ClustersToolbar: FunctionComponent<ClustersToolbarProps> = ({
       <ToolbarFilter
         chips={cluster_id ? [cluster_id] : []}
         deleteChip={() => onDeleteQueryGroup('cluster_id')}
-        categoryName={t('clusterid')}
+        categoryName={t('clusterId')}
       >
-        {selectedCategory === t('clusterid') && (
+        {selectedCategory === t('clusterId') && (
           <ToolbarItem>
             <InputGroup>
               <TextInput
-                name={t('clusterid')}
-                id={t('clusterid')}
+                name={t('clusterId')}
+                id={t('clusterId')}
                 type="search"
                 placeholder={t('clusteridSearchPlaceholder')}
                 aria-label={t('clusteridSearchPlaceholder')}

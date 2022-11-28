@@ -224,6 +224,5 @@
   "viewJSONFormat": "View JSON format",
   "viewLess": "view less",
   "viewMore": "view more",
-  "clusterid": "Cluster Id",
   "clusteridSearchPlaceholder": "Filter by cluster id"
 }
