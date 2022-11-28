@@ -453,6 +453,7 @@ export const getNamespace = ({
 
 export type ConnectorNamespaceSearch = {
   name?: string;
+  cluster_id?: string;
 };
 
 export const fetchConnectorNamespaces = ({
@@ -473,10 +474,14 @@ export const fetchConnectorNamespaces = ({
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     const { page, size, search } = request;
-    const { name } = search || {};
+    const { name, cluster_id } = search || {};
     const nameSearch =
       name && name.length > 0 ? ` name ILIKE '%${name}%'` : undefined;
-    const searchString: string = [nameSearch]
+    const clusterIdSearch =
+      cluster_id && cluster_id.length > 0
+        ? ` cluster_id ILIKE '%${cluster_id}%'`
+        : undefined;
+    const searchString: string = [nameSearch, clusterIdSearch]
       .filter(Boolean)
       .map((s) => `(${s})`)
       .join(' AND ');

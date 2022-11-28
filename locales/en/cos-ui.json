@@ -223,5 +223,6 @@
   "version": "Version",
   "viewJSONFormat": "View JSON format",
   "viewLess": "view less",
-  "viewMore": "view more"
+  "viewMore": "view more",
+  "clusteridSearchPlaceholder": "Filter by cluster id"
 }
