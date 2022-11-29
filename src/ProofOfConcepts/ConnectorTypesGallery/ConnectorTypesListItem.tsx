@@ -12,7 +12,6 @@ import {
   LabelGroup,
 } from '@patternfly/react-core';
 import OutlinedQuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/outlined-question-circle-icon';
-import PlusCircleIcon from '@patternfly/react-icons/dist/esm/icons/plus-circle-icon';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 
@@ -37,9 +36,21 @@ export const ConnectorTypeListItem: React.FunctionComponent<ConnectorTypesListIt
             <Flex justifyContent={{ default: 'justifyContentFlexStart' }}>
               <FlexItem>
                 {labels.includes('source') ? (
-                  <PlusCircleIcon size="md" color="blue" />
+                  <i
+                    style={{
+                      fontSize: 'var(--pf-global--icon--FontSize--lg)',
+                      color: 'var(--pf-global--Color--200)',
+                    }}
+                    className={'pf-icon pf-icon-data-source'}
+                  ></i>
                 ) : (
-                  <PlusCircleIcon size="md" color="green" />
+                  <i
+                    style={{
+                      fontSize: 'var(--pf-global--icon--FontSize--lg)',
+                      color: 'var(--pf-global--Color--200)',
+                    }}
+                    className={'pf-icon pf-icon-data-sink'}
+                  ></i>
                 )}
               </FlexItem>
               <FlexItem>
