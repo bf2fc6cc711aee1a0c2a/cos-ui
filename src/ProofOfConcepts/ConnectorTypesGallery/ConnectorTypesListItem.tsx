@@ -27,8 +27,6 @@ export const ConnectorTypeListItem: React.FunctionComponent<ConnectorTypesListIt
   ({ id, labels = [], title, verison, numLabels }) => {
     const { t } = useTranslation();
 
-    var labelFiltered: any;
-
     return (
       <DataList aria-label="selectable data list connector">
         <DataListItem aria-labelledby={id} id={id}>
@@ -88,21 +86,19 @@ export const ConnectorTypeListItem: React.FunctionComponent<ConnectorTypesListIt
                             ) : (
                               <Label color="green">Sink</Label>
                             )}
-                            {
-                              (labelFiltered = labels
-                                .filter(
-                                  (label) =>
-                                    label !== 'source' && label !== 'sink'
-                                )
-                                .sort((a, b) =>
-                                  a
-                                    .toLocaleLowerCase()
-                                    .localeCompare(b.toLocaleLowerCase())
-                                )
-                                .map((label) => (
-                                  <Label key={label}>{t(label)}</Label>
-                                )))
-                            }
+                            {labels
+                              .filter(
+                                (label) =>
+                                  label !== 'source' && label !== 'sink'
+                              )
+                              .sort((a, b) =>
+                                a
+                                  .toLocaleLowerCase()
+                                  .localeCompare(b.toLocaleLowerCase())
+                              )
+                              .map((label) => (
+                                <Label key={label}>{t(label)}</Label>
+                              ))}
                           </LabelGroup>
                         </FlexItem>
                       </Flex>
