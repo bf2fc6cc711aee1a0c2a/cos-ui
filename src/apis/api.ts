@@ -403,7 +403,7 @@ export const getClusters = ({
         if (!axios.isCancel(error)) {
           console.log(
             `error response fetching connector clusters}`,
-            error.response.data.reason
+            error?.response?.data?.reason
           );
         }
       });

@@ -118,27 +118,30 @@ const ClustersGallery: FunctionComponent = () => {
     );
   };
 
-  let getClusterInfo = useCallback((data) => {
-    const responseCopyItems = { ...response }.items!.map((item) => {
-      return {
-        ...item,
-        ...(!item.expiration && {
-          clusterName: getClusterName(data, item.cluster_id),
-        }),
-      };
-    });
-    setUpdateResponse({ ...response!, items: responseCopyItems });
-  }, []);
+  let getClusterInfo = useCallback(
+    (data) => {
+      const responseCopyItems = { ...response }.items!.map((item) => {
+        return {
+          ...item,
+          ...(!item.expiration && {
+            clusterName: getClusterName(data, item.cluster_id),
+          }),
+        };
+      });
+      setUpdateResponse({ ...response!, items: responseCopyItems });
+    },
+    [response]
+  );
 
   useEffect(() => {
     if (!isEqual(prevResponse, response)) {
+      prevResponse && setUpdateResponse({ ...response! });
       getClusters({
         accessToken: getToken,
         connectorsApiBasePath: connectorsApiBasePath,
       })(getClusterInfo);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [response]);
+  }, [connectorsApiBasePath, getClusterInfo, getToken, prevResponse, response]);
 
   useEffect(() => {
     const id = response?.items?.find(
@@ -159,6 +162,9 @@ const ClustersGallery: FunctionComponent = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duplicateMode, response, onDeselect]);
+
+  console.log('response', response);
+  console.log('updateResponse', updateResponse);
 
   return (
     <StepBodyLayout
