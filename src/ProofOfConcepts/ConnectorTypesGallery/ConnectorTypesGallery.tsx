@@ -13,10 +13,10 @@ import {
 
 import './ConnectorTypesGallery.css';
 import { ConnectorTypesGalleryCardSkeleton } from './ConnectorTypesGalleryCardSkeleton';
-import { ConnectorTypeListItem } from './ConnectorTypesGalleryListView';
 import { ConnectorTypesGallerySidePanel } from './ConnectorTypesGallerySidePanel';
 import { ConnectorTypesGalleryToolbar } from './ConnectorTypesGalleryToolbar';
 import { ConnectorTypesGalleryViewport } from './ConnectorTypesGalleryViewport';
+import { ConnectorTypeListItem } from './ConnectorTypesListItem';
 import { ConnectorTypeLabelCount, SortEntry } from './typeExtensions';
 
 type ConnectorTypesGalleryProps = {
@@ -94,6 +94,7 @@ export const ConnectorTypesGallery: FC<ConnectorTypesGalleryProps> = ({
                         labels={labels!}
                         title={name!}
                         verison={version!}
+                        numLabels={10}
                       />
                     )}
                   />
