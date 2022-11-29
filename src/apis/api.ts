@@ -389,7 +389,7 @@ export const getClusters = ({
     })
   );
 
-  return (callback: any) => {
+  return (onSuccess: any, onError: any) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     clusterAPI
@@ -397,14 +397,11 @@ export const getClusters = ({
         cancelToken: source.token,
       })
       .then((response) => {
-        callback(response.data);
+        onSuccess(response.data);
       })
       .catch((error) => {
         if (!axios.isCancel(error)) {
-          console.log(
-            `error response fetching connector clusters}`,
-            error?.response?.data?.reason
-          );
+          onError();
         }
       });
     return () => {

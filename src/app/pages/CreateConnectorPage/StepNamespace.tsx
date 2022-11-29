@@ -15,7 +15,7 @@ import { useCos } from '@hooks/useCos';
 import usePrevious from '@hooks/usePrevious';
 import { getPendingTime, warningType } from '@utils/shared';
 import { useDebounce } from '@utils/useDebounce';
-import { has, isEqual } from 'lodash';
+import { has, isEqual, cloneDeep } from 'lodash';
 import React, {
   FunctionComponent,
   useCallback,
@@ -133,13 +133,25 @@ const ClustersGallery: FunctionComponent = () => {
     [response]
   );
 
+  const onClusterError = useCallback(() => {
+    const responseCopyItems = { ...response }.items!.map((item) => {
+      return {
+        ...item,
+        ...(!item.expiration && {
+          clusterName: t('clusterError'),
+        }),
+      };
+    });
+    setUpdateResponse({ ...response!, items: responseCopyItems });
+  }, [response]);
+
   useEffect(() => {
     if (!isEqual(prevResponse, response)) {
-      prevResponse && setUpdateResponse({ ...response! });
+      setUpdateResponse(cloneDeep(response));
       getClusters({
         accessToken: getToken,
         connectorsApiBasePath: connectorsApiBasePath,
-      })(getClusterInfo);
+      })(getClusterInfo, onClusterError);
     }
   }, [connectorsApiBasePath, getClusterInfo, getToken, prevResponse, response]);
 
