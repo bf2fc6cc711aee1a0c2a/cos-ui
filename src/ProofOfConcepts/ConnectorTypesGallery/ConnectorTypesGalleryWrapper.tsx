@@ -20,11 +20,9 @@ import {
   FeaturedConnectorType,
 } from './typeExtensions';
 
-export type ConnectorTypesGalleryWrapperProps = {
-  useMasonry?: boolean;
-};
+export type ConnectorTypesGalleryWrapperProps = {};
 export const ConnectorTypesGalleryWrapper: FC<ConnectorTypesGalleryWrapperProps> =
-  ({ useMasonry }) => {
+  ({}) => {
     const { connectorsApiBasePath, getToken } = useCos();
     const [connectorTypes, setConnectorTypes] = useState<
       Array<FeaturedConnectorType> | undefined
@@ -198,11 +196,10 @@ export const ConnectorTypesGalleryWrapper: FC<ConnectorTypesGalleryWrapperProps>
           page={page}
           size={size}
           total={total}
-          useMasonry={useMasonry}
         >
           <ConnectorTypesGallery
             total={total}
-            connectorTypes={connectorTypes}
+            connectorTypesLoading={typeof connectorTypes === 'undefined'}
             labels={labels}
             sortInputEntries={sortInputEntries}
             currentSort={orderBy}

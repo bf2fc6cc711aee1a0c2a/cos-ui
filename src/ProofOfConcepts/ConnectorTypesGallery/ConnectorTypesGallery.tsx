@@ -1,24 +1,26 @@
 import { ConnectorTypesOrderBy } from '@apis/api';
 import { Loading } from '@app/components/Loading/Loading';
 import React, { FC } from 'react';
+import { ViewportProvider } from 'react-viewport-utils';
 
-import { Sidebar, SidebarContent, SidebarPanel } from '@patternfly/react-core';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarPanel,
+  Stack,
+  StackItem,
+} from '@patternfly/react-core';
 
 import './ConnectorTypesGallery.css';
-import { useConnectorTypesGalleryCache } from './ConnectorTypesGalleryCache';
 import { ConnectorTypesGalleryCard } from './ConnectorTypesGalleryCard';
 import { ConnectorTypesGalleryCardSkeleton } from './ConnectorTypesGalleryCardSkeleton';
 import { ConnectorTypesGallerySidePanel } from './ConnectorTypesGallerySidePanel';
 import { ConnectorTypesGalleryToolbar } from './ConnectorTypesGalleryToolbar';
 import { ConnectorTypesGalleryViewport } from './ConnectorTypesGalleryViewport';
-import {
-  ConnectorTypeLabelCount,
-  FeaturedConnectorType,
-  SortEntry,
-} from './typeExtensions';
+import { ConnectorTypeLabelCount, SortEntry } from './typeExtensions';
 
 type ConnectorTypesGalleryProps = {
-  connectorTypes?: Array<FeaturedConnectorType>;
+  connectorTypesLoading: boolean;
   labels?: Array<ConnectorTypeLabelCount>;
   total: number;
   sortInputEntries: Array<SortEntry>;
@@ -31,7 +33,7 @@ type ConnectorTypesGalleryProps = {
   onChangeLabelFilter: (value: Array<string>) => void;
 };
 export const ConnectorTypesGallery: FC<ConnectorTypesGalleryProps> = ({
-  connectorTypes,
+  connectorTypesLoading = true,
   labels,
   sortInputEntries,
   total,
@@ -43,8 +45,6 @@ export const ConnectorTypesGallery: FC<ConnectorTypesGalleryProps> = ({
   selectedCategories = [],
   onChangeLabelFilter,
 }) => {
-  const { useMasonry } = useConnectorTypesGalleryCache();
-  const loading = typeof connectorTypes === 'undefined';
   const currentCategory =
     selectedCategories.filter(
       (category) => category !== 'source' && category !== 'sink'
@@ -52,60 +52,70 @@ export const ConnectorTypesGallery: FC<ConnectorTypesGalleryProps> = ({
   return (
     <>
       <Sidebar hasNoBackground tabIndex={0}>
-        <SidebarPanel variant={'sticky'}>
-          <ConnectorTypesGallerySidePanel
-            labels={labels}
-            currentCategory={currentCategory}
-            searchFieldValue={searchFieldValue}
-            searchFieldPlaceholder={searchFieldPlaceholder}
-            onChangeSearchField={onChangeSearchField}
-            selectedCategories={selectedCategories}
-            onChangeLabelFilter={onChangeLabelFilter}
-          />
-        </SidebarPanel>
-        <SidebarContent className={'connector-type-gallery__sidebar-content'}>
-          <ConnectorTypesGalleryToolbar
-            total={total}
-            sortInputEntries={sortInputEntries}
-            currentSort={currentSort}
-            onChangeSort={onChangeSort}
-            currentCategory={currentCategory}
-            loading={loading}
-          />
-          {!loading ? (
-            <ConnectorTypesGalleryViewport
-              id={'connector-type-gallery-scroller'}
-              total={total}
-              renderConnectorTypeLoading={() => (
-                <ConnectorTypesGalleryCardSkeleton useMasonry={useMasonry} />
-              )}
-              renderConnectorType={({
-                id,
-                labels,
-                name,
-                description,
-                version,
-                featuredRank,
-              }) => (
-                <ConnectorTypesGalleryCard
-                  key={id}
-                  id={id!}
-                  labels={labels!}
-                  name={name!}
-                  description={description!}
-                  version={version!}
-                  selectedId={undefined}
-                  featuredRank={featuredRank}
-                  onSelect={(id: string) => {
-                    console.log('onSelect: ', id);
-                  }}
-                  useMasonry={useMasonry}
-                />
-              )}
+        <SidebarPanel>
+          <ViewportProvider>
+            <ConnectorTypesGallerySidePanel
+              id={'connector-types-gallery-filter-panel'}
+              labels={labels}
+              currentCategory={currentCategory}
+              searchFieldValue={searchFieldValue}
+              searchFieldPlaceholder={searchFieldPlaceholder}
+              onChangeSearchField={onChangeSearchField}
+              selectedCategories={selectedCategories}
+              onChangeLabelFilter={onChangeLabelFilter}
             />
-          ) : (
-            <Loading />
-          )}
+          </ViewportProvider>
+        </SidebarPanel>
+        <SidebarContent className={'connector-types-gallery__sidebar-content'}>
+          <Stack>
+            <StackItem key={'toolbar'}>
+              <ConnectorTypesGalleryToolbar
+                total={total}
+                sortInputEntries={sortInputEntries}
+                currentSort={currentSort}
+                onChangeSort={onChangeSort}
+                currentCategory={currentCategory}
+                loading={connectorTypesLoading}
+              />
+            </StackItem>
+            <StackItem key={'viewport'} isFilled>
+              {!connectorTypesLoading ? (
+                <ViewportProvider>
+                  <ConnectorTypesGalleryViewport
+                    id={'connector-types-gallery-viewport'}
+                    total={total}
+                    renderConnectorTypeLoading={() => (
+                      <ConnectorTypesGalleryCardSkeleton />
+                    )}
+                    renderConnectorType={({
+                      id,
+                      labels,
+                      name,
+                      description,
+                      version,
+                      featuredRank,
+                    }) => (
+                      <ConnectorTypesGalleryCard
+                        key={id}
+                        id={id!}
+                        labels={labels!}
+                        name={name!}
+                        description={description!}
+                        version={version!}
+                        selectedId={undefined}
+                        featuredRank={featuredRank}
+                        onSelect={(id: string) => {
+                          console.log('onSelect: ', id);
+                        }}
+                      />
+                    )}
+                  />
+                </ViewportProvider>
+              ) : (
+                <Loading />
+              )}
+            </StackItem>
+          </Stack>
         </SidebarContent>
       </Sidebar>
     </>

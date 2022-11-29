@@ -35,7 +35,6 @@ export type ConnectorTypesGalleryCardProps = {
   version: string;
   selectedId: string | undefined;
   onSelect: (id: string) => void;
-  useMasonry?: boolean;
 };
 
 export const ConnectorTypesGalleryCard: FunctionComponent<ConnectorTypesGalleryCardProps> =
@@ -48,7 +47,6 @@ export const ConnectorTypesGalleryCard: FunctionComponent<ConnectorTypesGalleryC
     version,
     selectedId,
     onSelect,
-    useMasonry = false,
   }) => {
     const { t } = useTranslation();
     return (
@@ -58,11 +56,7 @@ export const ConnectorTypesGalleryCard: FunctionComponent<ConnectorTypesGalleryC
         isSelectable
         isSelected={selectedId === id}
         onClick={() => onSelect(id)}
-        style={
-          useMasonry
-            ? { height: 250, width: 300, margin: 5 }
-            : { height: 170, margin: 5 }
-        }
+        style={{ height: 170, margin: 5 }}
       >
         <CardHeader>
           {labels.includes('source') ? (

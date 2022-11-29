@@ -17,22 +17,12 @@ import {
   Skeleton,
 } from '@patternfly/react-core';
 
-export type ConnectorTypesGalleryCardSkeletonProps = {
-  useMasonry?: boolean;
-};
+export type ConnectorTypesGalleryCardSkeletonProps = {};
 
 export const ConnectorTypesGalleryCardSkeleton: FunctionComponent<ConnectorTypesGalleryCardSkeletonProps> =
-  ({ useMasonry }) => {
+  ({}) => {
     return (
-      <Card
-        isCompact={true}
-        isSelectable
-        style={
-          useMasonry
-            ? { height: 250, width: 300, margin: 5 }
-            : { height: 170, margin: 5 }
-        }
-      >
+      <Card isCompact={true} isSelectable style={{ height: 170, margin: 5 }}>
         <CardHeader>
           <>
             <Skeleton shape={'circle'} width={'1.4em'} />
