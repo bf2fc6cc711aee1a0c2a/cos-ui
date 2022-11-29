@@ -393,7 +393,7 @@ export const getClusters = ({
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     clusterAPI
-      .listConnectorClusters(undefined, undefined, undefined, undefined, {
+      .listConnectorClusters('', '', undefined, undefined, {
         cancelToken: source.token,
       })
       .then((response) => {

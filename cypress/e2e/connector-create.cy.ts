@@ -175,6 +175,9 @@ describe('Connector creation', () => {
       cy.intercept(Cypress.env('namespacesApiPath'), {
         fixture: 'namespaces.json',
       });
+      cy.intercept(Cypress.env('clustersApiPath'), {
+        fixture: 'clusters.json',
+      });
       cy.intercept(Cypress.env('serviceAccountApiPath'), {
         fixture: 'serviceAccount.json',
       }).as('serviceAccount');

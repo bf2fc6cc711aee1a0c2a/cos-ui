@@ -163,9 +163,6 @@ const ClustersGallery: FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duplicateMode, response, onDeselect]);
 
-  console.log('response', response);
-  console.log('updateResponse', updateResponse);
-
   return (
     <StepBodyLayout
       title={t('namespace')}
