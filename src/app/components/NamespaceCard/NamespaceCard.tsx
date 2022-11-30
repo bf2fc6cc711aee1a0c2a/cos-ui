@@ -3,8 +3,6 @@ import React from 'react';
 import {
   Card,
   CardHeader,
-  Stack,
-  StackItem,
   CardTitle,
   Alert,
   Spinner,
@@ -15,7 +13,10 @@ import {
   DescriptionListDescription,
   Truncate,
   Skeleton,
+  CardActions,
+  Label,
 } from '@patternfly/react-core';
+import { CubesIcon } from '@patternfly/react-icons';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 import { ConnectorNamespaceState } from '@rhoas/connector-management-sdk';
@@ -64,46 +65,48 @@ export const NamespaceCard: React.FunctionComponent<NamespaceCardProps> = ({
       hasSelectableInput
     >
       <CardHeader>
-        <Stack>
-          <StackItem>
-            <CardTitle>{name}</CardTitle>
-          </StackItem>
-          <StackItem>
-            {state === ConnectorNamespaceState.Disconnected && (
-              <div className="pf-u-pt-md status">
-                <Alert
-                  variant="info"
-                  customIcon={
-                    <Spinner
-                      size="md"
-                      aria-label={t('provisioning')}
-                      aria-valuetext="Please wait..."
-                    />
-                  }
-                  isInline
-                  isPlain
-                  title={t('provisioning')}
-                />
-              </div>
-            )}
-            {(state === ConnectorNamespaceState.Deleting ||
-              state === ConnectorNamespaceState.Deleted) && (
-              <div className="pf-u-pt-md">
-                <Alert
-                  variant="danger"
-                  isInline
-                  isPlain
-                  title={
-                    state === ConnectorNamespaceState.Deleting
-                      ? t('namespaceDeleting')
-                      : t('deleted')
-                  }
-                />
-              </div>
-            )}
-          </StackItem>
-        </Stack>
+        <CubesIcon size="lg" />
+        {isEval && (
+          <CardActions>
+            <Label>{t('preview')}</Label>
+          </CardActions>
+        )}
       </CardHeader>
+      <CardTitle>
+        {name}
+        {state === ConnectorNamespaceState.Disconnected && (
+          <div className="pf-u-pt-sm">
+            <Alert
+              variant="info"
+              customIcon={
+                <Spinner
+                  size="md"
+                  aria-label={t('provisioning')}
+                  aria-valuetext="Please wait..."
+                />
+              }
+              isInline
+              isPlain
+              title={t('provisioning')}
+            />
+          </div>
+        )}
+        {(state === ConnectorNamespaceState.Deleting ||
+          state === ConnectorNamespaceState.Deleted) && (
+          <div className="pf-u-pt-sm">
+            <Alert
+              variant="danger"
+              isInline
+              isPlain
+              title={
+                state === ConnectorNamespaceState.Deleting
+                  ? t('namespaceDeleting')
+                  : t('deleted')
+              }
+            />
+          </div>
+        )}
+      </CardTitle>
       <CardBody>
         <DescriptionList>
           <DescriptionListGroup>
