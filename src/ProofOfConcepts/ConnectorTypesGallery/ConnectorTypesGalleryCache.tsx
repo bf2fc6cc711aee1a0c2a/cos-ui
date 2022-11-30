@@ -14,7 +14,6 @@ export type ConnectorTypesGalleryCacheContextType = {
     stopIndex: number;
   }) => Promise<void>;
   getRow: (props: { index: number }) => FeaturedConnectorType | boolean;
-  useMasonry: boolean;
 };
 
 const ConnectorTypesGalleryCacheContext =
@@ -22,7 +21,6 @@ const ConnectorTypesGalleryCacheContext =
     isRowLoaded: (_) => false,
     loadMoreRows: (_) => Promise.resolve(),
     getRow: (_) => false,
-    useMasonry: false,
   });
 
 export type ConnectorTypesGalleryCacheContextProviderProps = {
@@ -34,7 +32,6 @@ export type ConnectorTypesGalleryCacheContextProviderProps = {
   page: number;
   size: number;
   total: number;
-  useMasonry?: boolean;
 };
 
 export const ConnectorTypesGalleryCacheProvider: FC<ConnectorTypesGalleryCacheContextProviderProps> =
@@ -47,7 +44,6 @@ export const ConnectorTypesGalleryCacheProvider: FC<ConnectorTypesGalleryCacheCo
     page,
     size,
     total,
-    useMasonry,
     children,
   }) => {
     let highestLoadedPage = page;
@@ -104,7 +100,6 @@ export const ConnectorTypesGalleryCacheProvider: FC<ConnectorTypesGalleryCacheCo
           isRowLoaded,
           loadMoreRows,
           getRow,
-          useMasonry: !!useMasonry,
         }}
       >
         {children}

@@ -33,6 +33,7 @@
     "react-dom": "17.0.2",
     "react-error-boundary": "3.1.4",
     "react-router-dom": "5.2.1",
+    "react-viewport-utils": "2.0.2",
     "react-virtualized": "9.21.1",
     "short-uuid": "4.2.0",
     "uniforms": "3.10.1",

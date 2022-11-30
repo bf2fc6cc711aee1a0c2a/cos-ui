@@ -106,10 +106,6 @@ export const WithConnectorTypesList = Template.bind({});
 WithConnectorTypesList.args = {};
 WithConnectorTypesList.parameters = { ...SHARED_PARAMETERS };
 
-export const WithConnectorTypesCards = Template.bind({});
-WithConnectorTypesCards.args = { useMasonry: true };
-WithConnectorTypesCards.parameters = { ...SHARED_PARAMETERS };
-
 function generateConnectorTypesResponse(page, size, search, orderBy, total) {
   const start = (page - 1) * size;
   const end = start + size;

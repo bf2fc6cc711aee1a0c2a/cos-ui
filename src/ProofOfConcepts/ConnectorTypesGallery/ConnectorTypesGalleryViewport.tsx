@@ -1,10 +1,9 @@
 import React, { FC, useEffect } from 'react';
+import { useDimensionsEffect } from 'react-viewport-utils';
 import {
   CellMeasurerCache,
   CellMeasurer,
   InfiniteLoader,
-  createMasonryCellPositioner,
-  Masonry,
 } from 'react-virtualized';
 
 import {
@@ -14,6 +13,7 @@ import {
 } from '@patternfly/react-virtualized-extension';
 
 import { useConnectorTypesGalleryCache } from './ConnectorTypesGalleryCache';
+import './ConnectorTypesGalleryViewport.css';
 
 export type ConnectorTypesGalleryViewportProps = {
   id: string;
@@ -30,32 +30,14 @@ export type ConnectorTypesGalleryViewportProps = {
 };
 export const ConnectorTypesGalleryViewport: FC<ConnectorTypesGalleryViewportProps> =
   ({ id, renderConnectorType, renderConnectorTypeLoading, total }) => {
-    const { isRowLoaded, loadMoreRows, getRow, useMasonry } =
+    const { isRowLoaded, loadMoreRows, getRow } =
       useConnectorTypesGalleryCache();
     const [scrollableElement, setScrollableElement] = React.useState<any>();
-    const cellMeasurementCache = useMasonry
-      ? new CellMeasurerCache({
-          fixedWidth: true,
-          fixedHeight: true,
-          defaultHeight: 250,
-          defaultWidth: 300,
-          minHeight: 250,
-          minWidth: 250,
-          keyMapper: (rowIndex) => rowIndex,
-        })
-      : new CellMeasurerCache({
-          fixedWidth: true,
-          defaultHeight: 200,
-          keyMapper: (rowIndex) => rowIndex,
-        });
-    const cellPositioner = useMasonry
-      ? createMasonryCellPositioner({
-          cellMeasurerCache: cellMeasurementCache,
-          columnCount: 3,
-          columnWidth: 300,
-          spacer: 10,
-        })
-      : undefined;
+    const cellMeasurementCache = new CellMeasurerCache({
+      fixedWidth: true,
+      defaultHeight: 200,
+      keyMapper: (rowIndex) => rowIndex,
+    });
     const rowRenderer = ({ index, key, parent, style }: any) => {
       const row = getRow({ index });
       return (
@@ -80,6 +62,11 @@ export const ConnectorTypesGalleryViewport: FC<ConnectorTypesGalleryViewportProp
         </CellMeasurer>
       );
     };
+    useDimensionsEffect((dimensions) => {
+      const scrollableElement = document.getElementById(id);
+      const top = scrollableElement!.offsetTop + 20;
+      scrollableElement!.style.height = `${dimensions.height - top}px`;
+    });
     useEffect(() => {
       const scrollableElement = document.getElementById(id);
       setScrollableElement(scrollableElement);
@@ -88,18 +75,11 @@ export const ConnectorTypesGalleryViewport: FC<ConnectorTypesGalleryViewportProp
       <>
         <div
           id={id}
-          className="pf-c-scrollablegrid"
-          style={{
-            overflowX: 'auto',
-            overflowY: 'scroll',
-            scrollBehavior: 'smooth',
-            WebkitOverflowScrolling: 'touch',
-            position: 'relative',
-            height: 600,
-            padding: 10,
-          }}
+          className={
+            'pf-c-scrollablegrid connector-types-gallery__viewport-container'
+          }
         >
-          <div style={{ margin: -5 }}>
+          <div className={'connector-types-gallery__viewport-container-inner'}>
             <InfiniteLoader
               isRowLoaded={isRowLoaded}
               loadMoreRows={loadMoreRows}
@@ -120,50 +100,27 @@ export const ConnectorTypesGalleryViewport: FC<ConnectorTypesGalleryViewportProp
                     <AutoSizer disableHeight>
                       {({ width }: any) => (
                         <div ref={registerChild}>
-                          {useMasonry ? (
-                            <Masonry
-                              className={
-                                'pf-c-virtualized pf-c-window-scroller'
-                              }
-                              cellCount={total}
-                              cellMeasurerCache={cellMeasurementCache}
-                              cellPositioner={cellPositioner!}
-                              cellRenderer={rowRenderer}
-                              height={height || 0}
-                              width={width}
-                              autoHeight={true}
-                              isScrolling={isScrolling}
-                              isScrollingOptOut={true}
-                              onScroll={onChildScroll}
-                              scrollTop={scrollTop}
-                              onCellsRendered={onRowsRendered}
-                              rowHeight={cellMeasurementCache.rowHeight}
-                            />
-                          ) : (
-                            <VirtualTableBody
-                              estimatedRowSize={180}
-                              height={height || 0}
-                              width={width}
-                              autoHeight
-                              className={
-                                'pf-c-virtualized pf-c-window-scroller'
-                              }
-                              deferredMeasurementCache={cellMeasurementCache}
-                              isScrolling={isScrolling}
-                              isScrollingOptOut={true}
-                              onScroll={onChildScroll}
-                              scrollTop={scrollTop}
-                              overscanRowCount={2}
-                              columnCount={1}
-                              rowHeight={cellMeasurementCache.rowHeight}
-                              rowCount={total}
-                              onRowsRendered={onRowsRendered}
-                              rowRenderer={rowRenderer}
-                              rows={[]}
-                              scrollContainerComponent={'div'}
-                              innerScrollContainerComponent={'div'}
-                            />
-                          )}
+                          <VirtualTableBody
+                            estimatedRowSize={200}
+                            height={height || 0}
+                            width={width}
+                            autoHeight
+                            className={'pf-c-virtualized pf-c-window-scroller'}
+                            deferredMeasurementCache={cellMeasurementCache}
+                            isScrolling={isScrolling}
+                            isScrollingOptOut={true}
+                            onScroll={onChildScroll}
+                            scrollTop={scrollTop}
+                            overscanRowCount={2}
+                            columnCount={1}
+                            rowHeight={cellMeasurementCache.rowHeight}
+                            rowCount={total}
+                            onRowsRendered={onRowsRendered}
+                            rowRenderer={rowRenderer}
+                            rows={[]}
+                            scrollContainerComponent={'div'}
+                            innerScrollContainerComponent={'div'}
+                          />
                         </div>
                       )}
                     </AutoSizer>

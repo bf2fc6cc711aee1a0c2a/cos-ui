@@ -1,0 +1,21 @@
+.connector-types-gallery__viewport-container {
+  overflow: auto scroll;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  padding: 15;
+}
+
+/*
+.connector-types-gallery__viewport-container-inner {
+    margin: -5px;
+}
+*/
+
+.pf-c-window-scroller .ReactVirtualized__VirtualGrid {
+  overflow: visible !important;
+}
+
+.pf-c-window-scroller .ReactVirtualized__VirtualGrid__innerScrollContainer {
+  overflow: visible !important;
+}
