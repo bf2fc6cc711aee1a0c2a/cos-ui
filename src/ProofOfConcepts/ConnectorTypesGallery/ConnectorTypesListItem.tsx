@@ -10,6 +10,7 @@ import {
   FlexItem,
   Label,
   LabelGroup,
+  Popover,
 } from '@patternfly/react-core';
 import OutlinedQuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/outlined-question-circle-icon';
 
@@ -19,13 +20,20 @@ export type ConnectorTypesListItemProps = {
   id: string;
   labels: string[];
   title: string;
-  verison: string;
-  numLabels: number;
+  version: string;
+  description: string;
 };
 
 export const ConnectorTypeListItem: React.FunctionComponent<ConnectorTypesListItemProps> =
-  ({ id, labels = [], title, verison, numLabels }) => {
+  ({ id, labels = [], title, version, description }) => {
     const { t } = useTranslation();
+
+    const displayLabels = labels
+      .filter((label) => label !== 'source' && label !== 'sink')
+      .sort((a, b) =>
+        a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase())
+      )
+      .map((label) => <Label key={label}>{t(label)}</Label>);
 
     return (
       <DataList aria-label="selectable data list connector">
@@ -67,38 +75,30 @@ export const ConnectorTypeListItem: React.FunctionComponent<ConnectorTypesListIt
                               </strong>
                             </FlexItem>
                             <FlexItem>
-                              <OutlinedQuestionCircleIcon
-                                href="#filled"
-                                color="grey"
-                              />
+                              <Popover
+                                position="right"
+                                aria-label={t('ConnectorHelpAndGuidances')}
+                                headerContent={t('ConnectorHelpAndGuidances')}
+                                bodyContent={description}
+                              >
+                                <OutlinedQuestionCircleIcon color="grey" />
+                              </Popover>
                             </FlexItem>
                             <FlexItem>
                               <span className="pf-u-font-size-sm pf-u-color-400">
-                                {verison}
+                                {version}
                               </span>
                             </FlexItem>
                           </Flex>
                         </FlexItem>
                         <FlexItem>
-                          <LabelGroup numLabels={numLabels}>
+                          <LabelGroup numLabels={labels.length}>
                             {labels.includes('source') ? (
                               <Label color="blue">Source</Label>
                             ) : (
                               <Label color="green">Sink</Label>
                             )}
-                            {labels
-                              .filter(
-                                (label) =>
-                                  label !== 'source' && label !== 'sink'
-                              )
-                              .sort((a, b) =>
-                                a
-                                  .toLocaleLowerCase()
-                                  .localeCompare(b.toLocaleLowerCase())
-                              )
-                              .map((label) => (
-                                <Label key={label}>{t(label)}</Label>
-                              ))}
+                            {displayLabels}
                           </LabelGroup>
                         </FlexItem>
                       </Flex>

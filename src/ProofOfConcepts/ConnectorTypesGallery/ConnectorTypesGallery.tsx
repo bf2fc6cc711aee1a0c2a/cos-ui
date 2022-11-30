@@ -87,14 +87,20 @@ export const ConnectorTypesGallery: FC<ConnectorTypesGalleryProps> = ({
                     renderConnectorTypeLoading={() => (
                       <ConnectorTypesGalleryCardSkeleton />
                     )}
-                    renderConnectorType={({ id, labels, name, version }) => (
+                    renderConnectorType={({
+                      id,
+                      labels,
+                      name,
+                      version,
+                      description,
+                    }) => (
                       <ConnectorTypeListItem
                         key={id}
                         id={id!}
                         labels={labels!}
                         title={name!}
-                        verison={version!}
-                        numLabels={10}
+                        version={version!}
+                        description={description!}
                       />
                     )}
                   />
