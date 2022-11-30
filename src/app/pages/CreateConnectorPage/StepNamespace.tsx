@@ -143,7 +143,7 @@ const ClustersGallery: FunctionComponent = () => {
       };
     });
     setUpdateResponse({ ...response!, items: responseCopyItems });
-  }, [response]);
+  }, [response, t]);
 
   useEffect(() => {
     if (!isEqual(prevResponse, response)) {
@@ -153,7 +153,14 @@ const ClustersGallery: FunctionComponent = () => {
         connectorsApiBasePath: connectorsApiBasePath,
       })(getClusterInfo, onClusterError);
     }
-  }, [connectorsApiBasePath, getClusterInfo, getToken, prevResponse, response]);
+  }, [
+    connectorsApiBasePath,
+    getClusterInfo,
+    getToken,
+    onClusterError,
+    prevResponse,
+    response,
+  ]);
 
   useEffect(() => {
     const id = response?.items?.find(
