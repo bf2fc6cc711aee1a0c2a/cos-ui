@@ -52,8 +52,6 @@ import {
   ConnectorNamespace,
 } from '@rhoas/connector-management-sdk';
 
-import './StepNamespace.css';
-
 export function SelectNamespace() {
   const isReady = useNamespaceMachineIsReady();
 
