@@ -131,7 +131,9 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
   const kafkaTopic = JSON.parse(configString).kafka;
   const schema: Record<string, any> = (connectorType as ConnectorTypeAllOf)
     .schema!;
-  const dataToHide = getPasswordType(schema);
+  const dataToHide = getPasswordType(schema).map((item) =>
+    item.replace(/\./g, '_')
+  );
 
   const modifiedObject = _.mapKeys(config, (_, key) => {
     return (key = key.replace(/\./g, '_'));
