@@ -131,7 +131,9 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
   const kafkaTopic = JSON.parse(configString).kafka;
   const schema: Record<string, any> = (connectorType as ConnectorTypeAllOf)
     .schema!;
-  const dataToHide = getPasswordType(schema);
+  const dataToHide = getPasswordType(schema).map((item) =>
+    item.replace(/\./g, '_')
+  );
 
   const modifiedObject = _.mapKeys(config, (_, key) => {
     return (key = key.replace(/\./g, '_'));
@@ -298,7 +300,7 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
             {connector === undefined &&
               Object.keys(modifiedObject).map((el) => {
                 return (
-                  <Grid key={el}>
+                  <Grid key={el} style={{ color: 'red' }}>
                     <GridItem span={4}>
                       <strong>{_.startCase(el)}</strong>
                     </GridItem>
