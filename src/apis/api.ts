@@ -62,10 +62,6 @@ type ConnectorNamespaceProps = {
   namespaceId: string;
 } & CommonApiProps;
 
-type ConnectorClusterProps = {
-  clusterId: string;
-} & CommonApiProps;
-
 type ConnectorTypeProps = {
   connectorTypeId: string;
 } & CommonApiProps;
@@ -382,11 +378,10 @@ export const registerEvalNamespace = ({
   };
 };
 
-export const getCluster = ({
+export const getClusters = ({
   accessToken,
   connectorsApiBasePath,
-  clusterId,
-}: ConnectorClusterProps) => {
+}: CommonApiProps) => {
   const clusterAPI = new ConnectorClustersApi(
     new Configuration({
       accessToken,
@@ -394,22 +389,19 @@ export const getCluster = ({
     })
   );
 
-  return (callback: any) => {
+  return (onSuccess: any, onError: any) => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     clusterAPI
-      .getConnectorCluster(clusterId, {
+      .listConnectorClusters('', '', undefined, undefined, {
         cancelToken: source.token,
       })
       .then((response) => {
-        callback(response.data);
+        onSuccess(response.data);
       })
       .catch((error) => {
         if (!axios.isCancel(error)) {
-          console.log(
-            `error response fetching connector cluster: ${clusterId}`,
-            error.response.data.reason
-          );
+          onError();
         }
       });
     return () => {
@@ -486,7 +478,9 @@ export const fetchConnectorNamespaces = ({
       .map((s) => `(${s})`)
       .join(' AND ');
     namespacesAPI
-      .listConnectorNamespaces(`${page}`, `${size}`, undefined, searchString)
+      .listConnectorNamespaces(`${page}`, `${size}`, undefined, searchString, {
+        cancelToken: source.token,
+      })
       .then((response) => {
         onSuccess({
           items: response.data.items || [],

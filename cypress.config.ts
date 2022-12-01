@@ -18,6 +18,8 @@ export default defineConfig({
         '/localhost/api/connector_mgmt/v1/kafka_connector_namespaces/c9ns6husvba2r48dqnd0',
       namespacesApiPath:
         '/localhost/api/connector_mgmt/v1/kafka_connector_namespaces?page=1&size=20&search=',
+      clustersApiPath:
+        '/localhost/api/connector_mgmt/v1/kafka_connector_clusters?page=&size=',
       serviceAccountApiPath: '/localhost/api/kafkas_mgmt/v1/service_accounts',
       connectorCreationApiPath:
         '/localhost/api/connector_mgmt/v1/kafka_connectors?async=true',

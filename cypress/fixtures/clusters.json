@@ -1,31 +1,19 @@
 {
   "kind": "ConnectorClusterList",
   "page": 1,
-  "size": 2,
-  "total": 2,
+  "size": 1,
+  "total": 1,
   "items": [
     {
-      "id": "1r9uyAjkDfKKOr5pOnZbfdzj23D",
+      "id": "c928s834guu03nmd3r1g",
       "kind": "ConnectorCluster",
-      "href": "/api/connector_mgmt/v1/kafka_connector_clusters?page=1&size=10/1r9uyAjkDfKKOr5pOnZbfdzj23D",
-      "owner": "rforina",
-      "name": "megalord",
-      "created_at": "2021-04-08T06:03:59.22Z",
-      "modified_at": "2021-04-14T11:47:58.593218Z",
+      "href": "/api/connector_mgmt/v1/kafka_connector_clusters/cdl1esihpipg6b0rluk0",
+      "owner": "RHOC_dev",
+      "created_at": "2022-11-08T08:46:42.796453Z",
+      "modified_at": "2022-11-08T08:46:42.786886Z",
+      "name": "lgarciaa-284031049BE84BC7ACF3F6AF1B1DF5D9",
       "status": {
-        "state": "unconnected"
-      }
-    },
-    {
-      "id": "1qnpZvkkZerQwjRY52v4SC82YxA",
-      "kind": "ConnectorCluster",
-      "href": "/api/connector_mgmt/v1/kafka_connector_clusters?page=1&size=10/1qnpZvkkZerQwjRY52v4SC82YxA",
-      "owner": "rforina",
-      "name": "string",
-      "created_at": "2021-04-06T16:07:12.505Z",
-      "updated_at": "2021-04-06T16:07:47.154849Z",
-      "status": {
-        "state": "unconnected"
+        "state": "disconnected"
       }
     }
   ]

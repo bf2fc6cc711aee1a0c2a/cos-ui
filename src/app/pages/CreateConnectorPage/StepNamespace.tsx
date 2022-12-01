@@ -1,3 +1,4 @@
+import { getClusters } from '@apis/api';
 import {
   useNamespaceMachineIsReady,
   useNamespaceMachine,
@@ -9,10 +10,12 @@ import { NamespaceCard } from '@app/components/NamespaceCard/NamespaceCard';
 import { Pagination } from '@app/components/Pagination/Pagination';
 import { RegisterEvalNamespace } from '@app/components/RegisterEvalNamespace/RegisterEvalNamespace';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
+import { PaginatedApiResponse } from '@app/machines/PaginatedResponse.machine';
 import { useCos } from '@hooks/useCos';
+import usePrevious from '@hooks/usePrevious';
 import { getPendingTime, warningType } from '@utils/shared';
 import { useDebounce } from '@utils/useDebounce';
-import _ from 'lodash';
+import { has, isEqual, cloneDeep } from 'lodash';
 import React, {
   FunctionComponent,
   useCallback,
@@ -26,7 +29,6 @@ import {
   Alert,
   Button,
   ButtonVariant,
-  Gallery,
   InputGroup,
   TextInput,
   Toolbar,
@@ -40,13 +42,15 @@ import {
   DropdownPosition,
   DropdownItem,
   ToolbarFilter,
+  Gallery,
 } from '@patternfly/react-core';
 import { ClockIcon, FilterIcon, SearchIcon } from '@patternfly/react-icons';
 
 import { Trans, useTranslation } from '@rhoas/app-services-ui-components';
-import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
-
-import './StepNamespace.css';
+import {
+  ConnectorClusterList,
+  ConnectorNamespace,
+} from '@rhoas/connector-management-sdk';
 
 export function SelectNamespace() {
   const isReady = useNamespaceMachineIsReady();
@@ -54,11 +58,18 @@ export function SelectNamespace() {
   return isReady ? <ClustersGallery /> : null;
 }
 
+export type ConnectorNamespaceWithCluster = {
+  clusterName?: string | undefined;
+} & ConnectorNamespace;
+
 const ClustersGallery: FunctionComponent = () => {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [evalInstance, setEvalInstance] = useState<
     ConnectorNamespace | undefined
+  >();
+  const [updateResponse, setUpdateResponse] = useState<
+    PaginatedApiResponse<ConnectorNamespaceWithCluster> | undefined
   >();
   const [namespaceExpired, setNamespaceExpired] = useState<boolean>(false);
 
@@ -94,10 +105,65 @@ const ClustersGallery: FunctionComponent = () => {
     return t('evalNamespaceExpire', { hours, min });
   };
 
+  const prevResponse = usePrevious(response);
+
+  const getClusterName = (
+    clusterList: ConnectorClusterList,
+    clusterId: string
+  ) => {
+    return (
+      clusterList.items.find((cluster) => cluster.id === clusterId)?.name || ''
+    );
+  };
+
+  let getClusterInfo = useCallback(
+    (data) => {
+      const responseCopyItems = { ...response }.items!.map((item) => {
+        return {
+          ...item,
+          ...(!item.expiration && {
+            clusterName: getClusterName(data, item.cluster_id),
+          }),
+        };
+      });
+      setUpdateResponse({ ...response!, items: responseCopyItems });
+    },
+    [response]
+  );
+
+  const onClusterError = useCallback(() => {
+    const responseCopyItems = { ...response }.items!.map((item) => {
+      return {
+        ...item,
+        ...(!item.expiration && {
+          clusterName: t('clusterError'),
+        }),
+      };
+    });
+    setUpdateResponse({ ...response!, items: responseCopyItems });
+  }, [response, t]);
+
+  useEffect(() => {
+    if (!isEqual(prevResponse, response)) {
+      setUpdateResponse(cloneDeep(response));
+      getClusters({
+        accessToken: getToken,
+        connectorsApiBasePath: connectorsApiBasePath,
+      })(getClusterInfo, onClusterError);
+    }
+  }, [
+    connectorsApiBasePath,
+    getClusterInfo,
+    getToken,
+    onClusterError,
+    prevResponse,
+    response,
+  ]);
+
   useEffect(() => {
     const id = response?.items?.find(
       (namespace) =>
-        namespace.tenant.kind === 'user' && _.has(namespace, 'expiration')
+        namespace.tenant.kind === 'user' && has(namespace, 'expiration')
     );
     id ? setEvalInstance(id) : setEvalInstance(undefined);
   }, [response]);
@@ -205,20 +271,24 @@ const ClustersGallery: FunctionComponent = () => {
                     />
                   )}
                   <Gallery hasGutter>
-                    {response?.items?.map((i) => (
-                      <NamespaceCard
-                        key={i.id}
-                        state={i.status.state}
-                        id={i.id || ''}
-                        name={i.name}
-                        clusterId={i.cluster_id}
-                        createdAt={i.created_at || ''}
-                        selectedNamespace={selectedId || ''}
-                        onSelect={onSelect}
-                        connectorsApiBasePath={connectorsApiBasePath}
-                        getToken={getToken}
-                      />
-                    ))}
+                    {updateResponse &&
+                      updateResponse?.items?.map((i) => (
+                        <NamespaceCard
+                          key={i.id}
+                          isEval={!!i.expiration}
+                          state={i.status.state}
+                          id={i.id || ''}
+                          name={i.name}
+                          owner={i.owner!}
+                          clusterId={i.cluster_id}
+                          clusterName={i.clusterName || ''}
+                          createdAt={i.created_at || ''}
+                          selectedNamespace={selectedId || ''}
+                          onSelect={onSelect}
+                          connectorsApiBasePath={connectorsApiBasePath}
+                          getToken={getToken}
+                        />
+                      ))}
                   </Gallery>
                 </div>
               </>
