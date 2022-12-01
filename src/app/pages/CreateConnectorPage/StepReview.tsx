@@ -300,7 +300,7 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
             {connector === undefined &&
               Object.keys(modifiedObject).map((el) => {
                 return (
-                  <Grid key={el} style={{ color: 'red' }}>
+                  <Grid key={el}>
                     <GridItem span={4}>
                       <strong>{_.startCase(el)}</strong>
                     </GridItem>
