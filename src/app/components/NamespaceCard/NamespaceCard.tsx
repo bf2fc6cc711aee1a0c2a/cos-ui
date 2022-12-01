@@ -44,7 +44,6 @@ export const NamespaceCard: React.FunctionComponent<NamespaceCardProps> = ({
   owner,
   clusterId,
   clusterName,
-  createdAt,
   selectedNamespace,
   onSelect,
 }) => {
@@ -110,15 +109,14 @@ export const NamespaceCard: React.FunctionComponent<NamespaceCardProps> = ({
       <CardBody>
         <DescriptionList>
           <DescriptionListGroup>
+            <DescriptionListTerm>{t('owner')}</DescriptionListTerm>
+            <DescriptionListDescription>{owner}</DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
             <DescriptionListTerm>{t('clusterId')}</DescriptionListTerm>
             <DescriptionListDescription>{clusterId}</DescriptionListDescription>
           </DescriptionListGroup>
-          {isEval ? (
-            <DescriptionListGroup>
-              <DescriptionListTerm>{t('owner')}</DescriptionListTerm>
-              <DescriptionListDescription>{owner}</DescriptionListDescription>
-            </DescriptionListGroup>
-          ) : (
+          {!isEval && (
             <DescriptionListGroup>
               <DescriptionListTerm>{t('clusterName')}</DescriptionListTerm>
               <DescriptionListDescription>
@@ -133,22 +131,6 @@ export const NamespaceCard: React.FunctionComponent<NamespaceCardProps> = ({
               </DescriptionListDescription>
             </DescriptionListGroup>
           )}
-
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('created')}</DescriptionListTerm>
-            <DescriptionListDescription>
-              <time
-                title={t('{{date}}', {
-                  date: new Date(createdAt),
-                })}
-                dateTime={new Date(createdAt)?.toISOString()}
-              >
-                {t('{{ date, ago }}', {
-                  date: new Date(createdAt),
-                })}
-              </time>
-            </DescriptionListDescription>
-          </DescriptionListGroup>
         </DescriptionList>
       </CardBody>
     </Card>
