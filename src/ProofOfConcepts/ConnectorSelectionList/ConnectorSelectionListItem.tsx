@@ -12,11 +12,12 @@ import {
   LabelGroup,
   Popover,
 } from '@patternfly/react-core';
+import { OutlinedStarIcon } from '@patternfly/react-icons';
 import OutlinedQuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/outlined-question-circle-icon';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 
-export type ConnectorTypesListItemProps = {
+export type ConnectorSelectionListItemProps = {
   id: string;
   labels: string[];
   title: string;
@@ -24,16 +25,27 @@ export type ConnectorTypesListItemProps = {
   description: string;
 };
 
-export const ConnectorTypeListItem: React.FunctionComponent<ConnectorTypesListItemProps> =
+export const ConnectorSelectionListItem: React.FunctionComponent<ConnectorSelectionListItemProps> =
   ({ id, labels = [], title, version, description }) => {
     const { t } = useTranslation();
 
     const displayLabels = labels
       .filter((label) => label !== 'source' && label !== 'sink')
       .sort((a, b) =>
-        a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase())
+        a === 'category-featured'
+          ? 1
+          : a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase())
       )
-      .map((label) => <Label key={label}>{t(label)}</Label>);
+      .map((label) =>
+        label === 'category-featured' ? (
+          <Label key={label}>
+            <OutlinedStarIcon />
+            &nbsp;{t(label)}
+          </Label>
+        ) : (
+          <Label key={label}>{t(label)}</Label>
+        )
+      );
 
     return (
       <DataList aria-label="selectable data list connector">

@@ -3,22 +3,21 @@ import { rest } from 'msw';
 import Prando from 'prando';
 import React from 'react';
 
-import { Page } from '@patternfly/react-core';
-
 import locales from '../../../locales/en/cos-ui.json';
+import { StepBodyLayout } from '../../app/components/StepBodyLayout/StepBodyLayout';
 import { CosContextProvider } from '../../hooks/useCos';
-import { ConnectorTypesGalleryWrapper } from './ConnectorTypesGalleryWrapper';
+import { ConnectorSelectionList } from './ConnectorSelectionList';
 import { FeaturedConnectorType } from './typeExtensions';
 
 const API_HOST = 'https://dummy.server';
 
 export default {
-  title: 'Proof Of Concepts/ConnectorTypesGallery',
-  component: ConnectorTypesGalleryWrapper,
+  title: 'Proof Of Concepts/Connector Selection List',
+  component: ConnectorSelectionList,
   decorators: [
     (Story) => (
       <>
-        <Page>
+        <StepBodyLayout title={'Connectors'}>
           <CosContextProvider
             getToken={() => Promise.resolve('')}
             connectorsApiBasePath={API_HOST}
@@ -26,18 +25,19 @@ export default {
           >
             <Story />
           </CosContextProvider>
-        </Page>
+        </StepBodyLayout>
       </>
     ),
   ],
   args: {},
-} as ComponentMeta<typeof ConnectorTypesGalleryWrapper>;
+} as ComponentMeta<typeof ConnectorSelectionList>;
 
-const Template: ComponentStory<typeof ConnectorTypesGalleryWrapper> = (
-  args
-) => <ConnectorTypesGalleryWrapper {...args} />;
+const Template: ComponentStory<typeof ConnectorSelectionList> = (args) => (
+  <ConnectorSelectionList {...args} />
+);
 
 const categories = [
+  'category-featured',
   'category-ai-machine-learning',
   'category-serverless',
   'category-big-data',
@@ -60,7 +60,56 @@ const FEATURED_COUNT = 5;
 const CONNECTOR_TYPES_API = `${API_HOST}/api/connector_mgmt/v1/kafka_connector_types`;
 const CONNECTOR_LABELS_API = `${API_HOST}/api/connector_mgmt/v1/kafka_connector_types/labels`;
 
-const SHARED_PARAMETERS = {
+export const InitialLoadingState = Template.bind({});
+InitialLoadingState.args = {};
+InitialLoadingState.parameters = {
+  msw: [
+    rest.get(`${CONNECTOR_LABELS_API}*`, (_req, res, ctx) => {
+      return res(ctx.delay('infinite'));
+    }),
+    rest.get(`${CONNECTOR_TYPES_API}*`, (_req, res, ctx) => {
+      return res(ctx.delay('infinite'));
+    }),
+  ],
+};
+
+export const WithPartialLoading = Template.bind({});
+WithPartialLoading.args = {};
+WithPartialLoading.parameters = {
+  msw: [
+    rest.get(`${CONNECTOR_LABELS_API}*`, (req, res, ctx) => {
+      const { search, orderBy } = getPaginationCriteria(req.url.searchParams);
+      const response = generateConnectorTypeLabelsResponse(
+        search,
+        orderBy,
+        CONNECTOR_COUNT
+      );
+      console.log('Returning labels response: ', response);
+      return res(ctx.delay(), ctx.json(response));
+    }),
+    rest.get(`${CONNECTOR_TYPES_API}*`, (req, res, ctx) => {
+      const { page, size, search, orderBy } = getPaginationCriteria(
+        req.url.searchParams
+      );
+      if (page > 1) {
+        return res(ctx.delay('infinite'));
+      }
+      const response = generateConnectorTypesResponse(
+        page,
+        size,
+        search,
+        orderBy,
+        CONNECTOR_COUNT
+      );
+      console.log('Returning ConnectorTypes response: ', response);
+      return res(ctx.delay(), ctx.json(response));
+    }),
+  ],
+};
+
+export const WithConnectors = Template.bind({});
+WithConnectors.args = {};
+WithConnectors.parameters = {
   msw: [
     rest.get(`${CONNECTOR_LABELS_API}*`, (req, res, ctx) => {
       const { search, orderBy } = getPaginationCriteria(req.url.searchParams);
@@ -88,23 +137,6 @@ const SHARED_PARAMETERS = {
     }),
   ],
 };
-
-export const WithConnectorTypesListLoading = Template.bind({});
-WithConnectorTypesListLoading.args = {};
-WithConnectorTypesListLoading.parameters = {
-  msw: [
-    rest.get(`${CONNECTOR_LABELS_API}*`, (_req, res, ctx) => {
-      return res(ctx.delay('infinite'));
-    }),
-    rest.get(`${CONNECTOR_TYPES_API}*`, (_req, res, ctx) => {
-      return res(ctx.delay('infinite'));
-    }),
-  ],
-};
-
-export const WithConnectorTypesList = Template.bind({});
-WithConnectorTypesList.args = {};
-WithConnectorTypesList.parameters = { ...SHARED_PARAMETERS };
 
 function generateConnectorTypesResponse(page, size, search, orderBy, total) {
   const start = (page - 1) * size;
@@ -145,9 +177,12 @@ function generateConnectorTypes(
 
   function determineLabels() {
     const numLabels = rng.nextInt(1, 3);
+    const filteredCategories = categories.filter(
+      (category) => category !== 'category-featured'
+    );
     const answer = Array.from(
       { length: numLabels },
-      () => categories[rng.nextInt(0, categories.length - 1)]
+      () => filteredCategories[rng.nextInt(0, filteredCategories.length - 1)]
     );
     return answer.filter((val, index, self) => self.indexOf(val) === index);
   }
@@ -184,10 +219,9 @@ function generateConnectorTypes(
     }
   );
   for (let i = 0; i < FEATURED_COUNT; i++) {
-    fullSet[rng.nextInt(0, fullSet.length - 1)].featured_rank = rng.nextInt(
-      1,
-      10
-    );
+    const entry = fullSet[rng.nextInt(0, fullSet.length - 1)];
+    entry.featured_rank = rng.nextInt(1, 10);
+    entry.labels.push('category-featured');
   }
   sortFunctions.forEach((func) => fullSet.sort(func));
   return fullSet.filter((connectorType) =>

@@ -12,10 +12,10 @@ import {
   WindowScroller,
 } from '@patternfly/react-virtualized-extension';
 
-import { useConnectorTypesGalleryCache } from './ConnectorTypesGalleryCache';
-import './ConnectorTypesGalleryViewport.css';
+import { useConnectorTypesGalleryCache } from './ConnectorSelectionListCache';
+import './ConnectorSelectionListViewport.css';
 
-export type ConnectorTypesGalleryViewportProps = {
+export type ConnectorSelectionListViewportProps = {
   id: string;
   total: number;
   renderConnectorType: (connectorType: {
@@ -28,7 +28,7 @@ export type ConnectorTypesGalleryViewportProps = {
   }) => React.ReactElement;
   renderConnectorTypeLoading: () => React.ReactElement;
 };
-export const ConnectorTypesGalleryViewport: FC<ConnectorTypesGalleryViewportProps> =
+export const ConnectorSelectionListViewport: FC<ConnectorSelectionListViewportProps> =
   ({ id, renderConnectorType, renderConnectorTypeLoading, total }) => {
     const { isRowLoaded, loadMoreRows, getRow } =
       useConnectorTypesGalleryCache();
@@ -76,10 +76,10 @@ export const ConnectorTypesGalleryViewport: FC<ConnectorTypesGalleryViewportProp
         <div
           id={id}
           className={
-            'pf-c-scrollablegrid connector-types-gallery__viewport-container'
+            'pf-c-scrollablegrid connector-selection-list__viewport-container'
           }
         >
-          <div className={'connector-types-gallery__viewport-container-inner'}>
+          <div className={'connector-selection-list__viewport-container-inner'}>
             <InfiniteLoader
               isRowLoaded={isRowLoaded}
               loadMoreRows={loadMoreRows}

@@ -1,0 +1,16 @@
+.connector-selection-list__side-panel-main {
+  margin-bottom: 0;
+}
+.connector-selection-list__side-panel-vertical-tabs {
+  margin-bottom: 0;
+}
+
+.connector-selection-list__side-panel-viewport {
+  margin-top: 1.8em;
+  overflow: auto auto;
+}
+
+.connector-selection-list__side-panel-expander-text > a {
+  margin-top: 0.2em;
+  color: var(--vertical-tab-pf-active-color);
+}
