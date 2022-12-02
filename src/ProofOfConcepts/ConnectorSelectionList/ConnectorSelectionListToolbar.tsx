@@ -14,31 +14,40 @@ import {
   Select,
   SelectOption,
   SelectOptionObject,
+  SearchInput,
 } from '@patternfly/react-core';
 import { ArrowsAltVIcon } from '@patternfly/react-icons';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 
+import './ConnectorSelectionListToolbar.css';
 import { SortEntry } from './typeExtensions';
 
-export type ConnectorTypesGalleryToolbarProps = {
+export type ConnectorSelectionListToolbarProps = {
   loading: boolean;
   total: number;
   currentCategory: string;
+  searchFieldPlaceholder: string;
+  searchFieldValue: string;
+  onChangeSearchField: (value: string) => void;
   sortInputEntries: Array<SortEntry>;
   currentSort: ConnectorTypesOrderBy;
   onChangeSort: (value: string) => void;
 };
-export const ConnectorTypesGalleryToolbar: FunctionComponent<ConnectorTypesGalleryToolbarProps> =
+export const ConnectorSelectionListToolbar: FunctionComponent<ConnectorSelectionListToolbarProps> =
   ({
     currentSort,
     currentCategory,
     sortInputEntries,
     loading,
     total,
+    searchFieldPlaceholder,
+    searchFieldValue,
+    onChangeSearchField,
     onChangeSort,
   }) => {
     const { t } = useTranslation();
+    const [currentSearch, setCurrentSearch] = useState(searchFieldValue);
     const [isSortOpen, setIsSortOpen] = useState(false);
     const primarySort = [
       Object.keys(currentSort || {})[0] || sortInputEntries[0].value,
@@ -48,8 +57,30 @@ export const ConnectorTypesGalleryToolbar: FunctionComponent<ConnectorTypesGalle
         <ToolbarGroup variant={'button-group'}>
           <ToolbarItem>
             <TextContent>
-              <Text component={TextVariants.h3}>{t(currentCategory)}</Text>
+              <Text
+                className={'connector-selection-list__toolbar-category-title'}
+                component={TextVariants.h3}
+              >
+                {t(currentCategory)}
+              </Text>
             </TextContent>
+          </ToolbarItem>
+          <ToolbarItem variant={'search-filter'}>
+            <SearchInput
+              name="search-by-name"
+              id="search-by-name"
+              type="search"
+              aria-label="filter by connector name"
+              onChange={setCurrentSearch}
+              onClear={() => {
+                setCurrentSearch('');
+                onChangeSearchField('');
+              }}
+              value={currentSearch}
+              onSearch={() => onChangeSearchField(currentSearch)}
+              placeholder={searchFieldPlaceholder}
+              isDisabled={loading}
+            />
           </ToolbarItem>
         </ToolbarGroup>
         <ToolbarGroup variant={'filter-group'}>

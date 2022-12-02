@@ -7,7 +7,7 @@ import React, { FC, createContext, useContext } from 'react';
 
 import { FeaturedConnectorType } from './typeExtensions';
 
-export type ConnectorTypesGalleryCacheContextType = {
+export type ConnectorSelectionListCacheContextType = {
   isRowLoaded: (props: { index: number }) => boolean;
   loadMoreRows: (props: {
     startIndex: number;
@@ -16,14 +16,14 @@ export type ConnectorTypesGalleryCacheContextType = {
   getRow: (props: { index: number }) => FeaturedConnectorType | boolean;
 };
 
-const ConnectorTypesGalleryCacheContext =
-  createContext<ConnectorTypesGalleryCacheContextType>({
+const ConnectorSelectionListCacheContext =
+  createContext<ConnectorSelectionListCacheContextType>({
     isRowLoaded: (_) => false,
     loadMoreRows: (_) => Promise.resolve(),
     getRow: (_) => false,
   });
 
-export type ConnectorTypesGalleryCacheContextProviderProps = {
+export type ConnectorSelectionListCacheContextProviderProps = {
   connectorsApiBasePath: string;
   getToken: () => Promise<string>;
   search: ConnectorTypesSearch;
@@ -34,7 +34,7 @@ export type ConnectorTypesGalleryCacheContextProviderProps = {
   total: number;
 };
 
-export const ConnectorTypesGalleryCacheProvider: FC<ConnectorTypesGalleryCacheContextProviderProps> =
+export const ConnectorSelectionListCacheProvider: FC<ConnectorSelectionListCacheContextProviderProps> =
   ({
     connectorsApiBasePath,
     getToken,
@@ -47,7 +47,7 @@ export const ConnectorTypesGalleryCacheProvider: FC<ConnectorTypesGalleryCacheCo
     children,
   }) => {
     let highestLoadedPage = page;
-    let highestLoadedIndex = highestLoadedPage * size - 1;
+    let highestLoadedIndex = highestLoadedPage * size;
     const loadedConnectorTypesMap: {
       [key: number]: FeaturedConnectorType | boolean;
     } = Array.from({ length: total - 1 })
@@ -76,12 +76,12 @@ export const ConnectorTypesGalleryCacheProvider: FC<ConnectorTypesGalleryCacheCo
             { page: highestLoadedPage + 1, size, search, orderBy },
             ({ page, size, items }) => {
               highestLoadedPage = page;
-              items.forEach(
-                (item, index) =>
-                  (loadedConnectorTypesMap[highestLoadedIndex + index] =
-                    item as FeaturedConnectorType)
-              );
-              highestLoadedIndex = highestLoadedPage * size - 1;
+              const previousHighestLoadedIndex = highestLoadedIndex;
+              highestLoadedIndex = highestLoadedPage * size;
+              items.forEach((item, index) => {
+                loadedConnectorTypesMap[previousHighestLoadedIndex + index] =
+                  item as FeaturedConnectorType;
+              });
               resolve();
             },
             (error) => {
@@ -95,7 +95,7 @@ export const ConnectorTypesGalleryCacheProvider: FC<ConnectorTypesGalleryCacheCo
     const getRow = ({ index }: { index: number }) =>
       loadedConnectorTypesMap[index];
     return (
-      <ConnectorTypesGalleryCacheContext.Provider
+      <ConnectorSelectionListCacheContext.Provider
         value={{
           isRowLoaded,
           loadMoreRows,
@@ -103,13 +103,13 @@ export const ConnectorTypesGalleryCacheProvider: FC<ConnectorTypesGalleryCacheCo
         }}
       >
         {children}
-      </ConnectorTypesGalleryCacheContext.Provider>
+      </ConnectorSelectionListCacheContext.Provider>
     );
   };
 
 export const useConnectorTypesGalleryCache =
-  (): ConnectorTypesGalleryCacheContextType => {
-    const service = useContext(ConnectorTypesGalleryCacheContext);
+  (): ConnectorSelectionListCacheContextType => {
+    const service = useContext(ConnectorSelectionListCacheContext);
     if (!service) {
       throw new Error(
         `useConnectorTypesGalleryCache() must be used in a child of <ConnectorTypesGalleryCacheContextProvider>`
