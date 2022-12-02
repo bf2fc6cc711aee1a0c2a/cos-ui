@@ -35,6 +35,7 @@ export const ConnectorSelectionList: FC<ConnectorSelectionListProps> = ({}) => {
   const [search, setSearch] = useState<ConnectorTypesSearch>({
     name: '',
     label: [],
+    pricing_tier: '',
   });
   const { page, size, total } = pagination;
 
@@ -144,6 +145,17 @@ export const ConnectorSelectionList: FC<ConnectorSelectionListProps> = ({}) => {
     [setSearch, search]
   );
 
+  const doSetPricingTierSearch = useCallback(
+    async (pricingTier: string) => {
+      setConnectorTypes(undefined);
+      await setTimeout(
+        () => setSearch({ ...search, pricing_tier: pricingTier }),
+        0
+      );
+    },
+    [setSearch, search]
+  );
+
   const doSetLabelSearch = useCallback(
     async (label: Array<string>) => {
       setConnectorTypes(undefined);
@@ -193,6 +205,8 @@ export const ConnectorSelectionList: FC<ConnectorSelectionListProps> = ({}) => {
           onChangeSearchField={doSetNameSearch}
           selectedCategories={search.label || []}
           onChangeLabelFilter={doSetLabelSearch}
+          selectedPricingTier={search.pricing_tier || ''}
+          onChangePricingTierFilter={doSetPricingTierSearch}
         />
       </ConnectorSelectionListCacheProvider>
     </>

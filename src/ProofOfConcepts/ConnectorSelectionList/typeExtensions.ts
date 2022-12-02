@@ -9,7 +9,10 @@ export type SortEntry = {
 };
 
 export type FeaturedConnectorType = ConnectorTypeAllOf &
-  ObjectReference & { featured_rank: number };
+  ObjectReference & {
+    annotations?: Record<string, string>;
+    featured_rank?: number;
+  };
 
 export type ConnectorTypeLabelCount = {
   label: string;

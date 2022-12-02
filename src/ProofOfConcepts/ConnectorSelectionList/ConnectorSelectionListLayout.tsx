@@ -31,6 +31,8 @@ type ConnectorSelectionListLayoutProps = {
   onChangeSearchField: (value: string) => void;
   selectedCategories: Array<string>;
   onChangeLabelFilter: (value: Array<string>) => void;
+  selectedPricingTier: string;
+  onChangePricingTierFilter: (value: string) => void;
 };
 export const ConnectorSelectionListLayout: FC<ConnectorSelectionListLayoutProps> =
   ({
@@ -45,6 +47,8 @@ export const ConnectorSelectionListLayout: FC<ConnectorSelectionListLayoutProps>
     onChangeSearchField,
     selectedCategories = [],
     onChangeLabelFilter,
+    selectedPricingTier,
+    onChangePricingTierFilter,
   }) => {
     const currentCategory =
       selectedCategories.filter(
@@ -61,6 +65,8 @@ export const ConnectorSelectionListLayout: FC<ConnectorSelectionListLayoutProps>
                 currentCategory={currentCategory}
                 selectedCategories={selectedCategories}
                 onChangeLabelFilter={onChangeLabelFilter}
+                selectedPricingTier={selectedPricingTier}
+                onChangePricingTierFilter={onChangePricingTierFilter}
               />
             </ViewportProvider>
           </SidebarPanel>
@@ -91,6 +97,7 @@ export const ConnectorSelectionListLayout: FC<ConnectorSelectionListLayoutProps>
                         <ConnectorTypesGalleryCardSkeleton />
                       )}
                       renderConnectorType={({
+                        annotations,
                         id,
                         labels,
                         name,
@@ -104,6 +111,7 @@ export const ConnectorSelectionListLayout: FC<ConnectorSelectionListLayoutProps>
                           title={name!}
                           version={version!}
                           description={description!}
+                          pricingTier={annotations['cos.bf2.org/pricing-tier']}
                         />
                       )}
                     />

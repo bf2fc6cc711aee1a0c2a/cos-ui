@@ -25,6 +25,7 @@ export type ConnectorSelectionListViewportProps = {
     description: string;
     version: string;
     featuredRank: number;
+    annotations: Record<string, string>;
   }) => React.ReactElement;
   renderConnectorTypeLoading: () => React.ReactElement;
 };
@@ -55,7 +56,8 @@ export const ConnectorSelectionListViewport: FC<ConnectorSelectionListViewportPr
                   name: row.name!,
                   description: row.description!,
                   version: row.version!,
-                  featuredRank: row.featured_rank,
+                  featuredRank: row.featured_rank!,
+                  annotations: row.annotations!,
                 })
               : renderConnectorTypeLoading()}
           </div>
