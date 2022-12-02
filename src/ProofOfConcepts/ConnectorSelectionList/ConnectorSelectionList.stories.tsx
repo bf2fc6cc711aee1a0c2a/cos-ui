@@ -55,6 +55,10 @@ const categories = [
   'category-azure',
 ];
 
+const pricingTiers = ['free', 'essentials', 'plus'];
+
+const PRICING_TIER_ANNOTATION = 'cos.bf2.org/pricing-tier';
+
 const CONNECTOR_COUNT = 235;
 const FEATURED_COUNT = 5;
 const CONNECTOR_TYPES_API = `${API_HOST}/api/connector_mgmt/v1/kafka_connector_types`;
@@ -209,6 +213,10 @@ function generateConnectorTypes(
         name,
         id: `${name.split(' ').join('-').toLocaleLowerCase()}-${index}`,
         version,
+        annotations: {
+          [PRICING_TIER_ANNOTATION]:
+            pricingTiers[rng.nextInt(0, pricingTiers.length - 1)],
+        },
         description:
           type === 'source'
             ? `Receives data from ${name} and is connector type ${index}`
@@ -320,12 +328,25 @@ function createFilterFunctions(search) {
           const [field, term] = criteria
             .split('ILIKE')
             .map((part) => part.trim());
-          return (connectorType: FeaturedConnectorType) => {
-            return (connectorType[field] || '').toLocaleLowerCase().includes(
-              // pretend to act like SQL % search operator
-              term.slice(2, term.length - 2).toLocaleLowerCase()
-            );
-          };
+          const comparatorTerm = term.slice(1, term.length - 1);
+          switch (field) {
+            // pricing_tier is a special search field
+            case 'pricing_tier':
+              return (connectorType: FeaturedConnectorType) => {
+                const annotation =
+                  connectorType.annotations![PRICING_TIER_ANNOTATION];
+                return comparatorTerm === annotation;
+              };
+            default:
+              return (connectorType: FeaturedConnectorType) => {
+                return (connectorType[field] || '')
+                  .toLocaleLowerCase()
+                  .includes(
+                    // pretend to act like SQL % search operator
+                    comparatorTerm.toLocaleLowerCase()
+                  );
+              };
+          }
         // this deals with the label filtering
         case 'OR':
           const criterias = criteria.split('OR').map((part) => part.trim());

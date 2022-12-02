@@ -506,6 +506,7 @@ export type ConnectorTypesSearch = {
   version?: string;
   label?: string[];
   channel?: string;
+  pricing_tier?: string;
 };
 
 export type ConnectorTypesOrderBy = {
@@ -531,14 +532,18 @@ export const fetchConnectorTypes = ({
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     const { page, size, orderBy, search } = request;
-    const { name, label = [] } = search || {};
+    const { name, label = [], pricing_tier } = search || {};
     const nameSearch =
       name && name.length > 0 ? ` name ILIKE '%${name}%'` : undefined;
+    const pricingTierSearch =
+      pricing_tier && pricing_tier.length > 0
+        ? ` pricing_tier ILIKE '${pricing_tier}'`
+        : undefined;
     const labelSearch =
       label && label.length > 0
         ? label.map((s) => `label = ${s}`).join(' OR ')
         : undefined;
-    const searchString: string = [nameSearch, labelSearch]
+    const searchString: string = [nameSearch, labelSearch, pricingTierSearch]
       .filter(Boolean)
       .map((s) => `(${s})`)
       .join(' AND ');

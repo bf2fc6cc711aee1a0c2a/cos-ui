@@ -23,10 +23,11 @@ export type ConnectorSelectionListItemProps = {
   title: string;
   version: string;
   description: string;
+  pricingTier: string;
 };
 
 export const ConnectorSelectionListItem: React.FunctionComponent<ConnectorSelectionListItemProps> =
-  ({ id, labels = [], title, version, description }) => {
+  ({ id, labels = [], title, version, description, pricingTier }) => {
     const { t } = useTranslation();
 
     const displayLabels = labels
@@ -104,12 +105,13 @@ export const ConnectorSelectionListItem: React.FunctionComponent<ConnectorSelect
                           </Flex>
                         </FlexItem>
                         <FlexItem>
-                          <LabelGroup numLabels={labels.length}>
+                          <LabelGroup numLabels={labels.length + 1}>
                             {labels.includes('source') ? (
                               <Label color="blue">Source</Label>
                             ) : (
                               <Label color="green">Sink</Label>
                             )}
+                            <Label>{t(pricingTier)}</Label>
                             {displayLabels}
                           </LabelGroup>
                         </FlexItem>

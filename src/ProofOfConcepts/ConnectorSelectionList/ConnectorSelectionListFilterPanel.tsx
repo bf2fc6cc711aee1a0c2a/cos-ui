@@ -27,6 +27,8 @@ export type ConnectorSelectionListFilterPanelProps = {
   currentCategory: string;
   selectedCategories: Array<string>;
   onChangeLabelFilter: (value: Array<string>) => void;
+  selectedPricingTier: string;
+  onChangePricingTierFilter: (value: string) => void;
 };
 export const ConnectorSelectionListFilterPanel: FC<ConnectorSelectionListFilterPanelProps> =
   ({
@@ -35,6 +37,8 @@ export const ConnectorSelectionListFilterPanel: FC<ConnectorSelectionListFilterP
     labels,
     selectedCategories = [],
     onChangeLabelFilter,
+    selectedPricingTier,
+    onChangePricingTierFilter,
   }) => {
     const { t } = useTranslation();
     const loading = typeof labels === 'undefined';
@@ -144,15 +148,19 @@ export const ConnectorSelectionListFilterPanel: FC<ConnectorSelectionListFilterP
                   </>
                 }
               >
-                <FilterSidePanelCategoryItem key={'free'}>
-                  {t('Free')}
-                </FilterSidePanelCategoryItem>
-                <FilterSidePanelCategoryItem key={'essential'}>
-                  {t('Essential')}
-                </FilterSidePanelCategoryItem>
-                <FilterSidePanelCategoryItem key={'plus'}>
-                  {t('Plus')}
-                </FilterSidePanelCategoryItem>
+                {['free', 'essentials', 'plus'].map((tier) => (
+                  <FilterSidePanelCategoryItem
+                    key={tier}
+                    checked={selectedPricingTier === tier}
+                    onClick={() =>
+                      selectedPricingTier === tier
+                        ? onChangePricingTierFilter('')
+                        : onChangePricingTierFilter(tier)
+                    }
+                  >
+                    {t(tier)}
+                  </FilterSidePanelCategoryItem>
+                ))}
               </FilterSidePanelCategory>
             </>
           )}
