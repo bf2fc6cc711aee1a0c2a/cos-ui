@@ -12,11 +12,11 @@ import {
 } from '@patternfly/react-core';
 
 import './ConnectorTypesGallery.css';
-import { ConnectorTypesGalleryCard } from './ConnectorTypesGalleryCard';
 import { ConnectorTypesGalleryCardSkeleton } from './ConnectorTypesGalleryCardSkeleton';
 import { ConnectorTypesGallerySidePanel } from './ConnectorTypesGallerySidePanel';
 import { ConnectorTypesGalleryToolbar } from './ConnectorTypesGalleryToolbar';
 import { ConnectorTypesGalleryViewport } from './ConnectorTypesGalleryViewport';
+import { ConnectorTypeListItem } from './ConnectorTypesListItem';
 import { ConnectorTypeLabelCount, SortEntry } from './typeExtensions';
 
 type ConnectorTypesGalleryProps = {
@@ -91,22 +91,16 @@ export const ConnectorTypesGallery: FC<ConnectorTypesGalleryProps> = ({
                       id,
                       labels,
                       name,
-                      description,
                       version,
-                      featuredRank,
+                      description,
                     }) => (
-                      <ConnectorTypesGalleryCard
+                      <ConnectorTypeListItem
                         key={id}
                         id={id!}
                         labels={labels!}
-                        name={name!}
-                        description={description!}
+                        title={name!}
                         version={version!}
-                        selectedId={undefined}
-                        featuredRank={featuredRank}
-                        onSelect={(id: string) => {
-                          console.log('onSelect: ', id);
-                        }}
+                        description={description!}
                       />
                     )}
                   />

@@ -35,7 +35,7 @@ export const ConnectorTypesGalleryViewport: FC<ConnectorTypesGalleryViewportProp
     const [scrollableElement, setScrollableElement] = React.useState<any>();
     const cellMeasurementCache = new CellMeasurerCache({
       fixedWidth: true,
-      defaultHeight: 200,
+      defaultHeight: 119,
       keyMapper: (rowIndex) => rowIndex,
     });
     const rowRenderer = ({ index, key, parent, style }: any) => {
@@ -101,7 +101,7 @@ export const ConnectorTypesGalleryViewport: FC<ConnectorTypesGalleryViewportProp
                       {({ width }: any) => (
                         <div ref={registerChild}>
                           <VirtualTableBody
-                            estimatedRowSize={200}
+                            estimatedRowSize={119}
                             height={height || 0}
                             width={width}
                             autoHeight

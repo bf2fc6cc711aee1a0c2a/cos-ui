@@ -22,7 +22,7 @@ export type ConnectorTypesGalleryCardSkeletonProps = {};
 export const ConnectorTypesGalleryCardSkeleton: FunctionComponent<ConnectorTypesGalleryCardSkeletonProps> =
   ({}) => {
     return (
-      <Card isCompact={true} isSelectable style={{ height: 170, margin: 5 }}>
+      <Card isCompact={true} isSelectable style={{ height: 109, margin: 5 }}>
         <CardHeader>
           <>
             <Skeleton shape={'circle'} width={'1.4em'} />
