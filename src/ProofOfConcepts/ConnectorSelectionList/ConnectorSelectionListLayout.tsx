@@ -14,9 +14,9 @@ import {
 import { ConnectorSelectionListFilterPanel } from './ConnectorSelectionListFilterPanel';
 import { ConnectorSelectionListItem } from './ConnectorSelectionListItem';
 import './ConnectorSelectionListLayout.css';
+import { ConnectorSelectionListSkeleton } from './ConnectorSelectionListSkeleton';
 import { ConnectorSelectionListToolbar } from './ConnectorSelectionListToolbar';
 import { ConnectorSelectionListViewport } from './ConnectorSelectionListViewport';
-import { ConnectorTypesGalleryCardSkeleton } from './ConnectorTypesGalleryCardSkeleton';
 import { ConnectorTypeLabelCount, SortEntry } from './typeExtensions';
 
 type ConnectorSelectionListLayoutProps = {
@@ -94,7 +94,7 @@ export const ConnectorSelectionListLayout: FC<ConnectorSelectionListLayoutProps>
                       id={'connector-selection-list-viewport'}
                       total={total}
                       renderConnectorTypeLoading={() => (
-                        <ConnectorTypesGalleryCardSkeleton />
+                        <ConnectorSelectionListSkeleton />
                       )}
                       renderConnectorType={({
                         annotations,
