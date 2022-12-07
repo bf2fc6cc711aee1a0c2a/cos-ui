@@ -10,7 +10,7 @@ import {
   QuickStartContext,
   QuickStartContextValues,
 } from '@patternfly/quickstarts';
-import { Card, PageSection } from '@patternfly/react-core';
+import { PageSection } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 
@@ -128,32 +128,28 @@ export const ConnectorInstances: FunctionComponent<ConnectorInstancesProps> = ({
           <PageSection variant={'light'}>
             <ConnectorsPageTitle />
           </PageSection>
-          <PageSection padding={{ default: 'noPadding' }} isFilled>
-            <Card className={'pf-u-pb-xl'}>
-              <div className={'pf-u-p-md'}>
-                <ConnectorInstancesTable
-                  activeSortColumn={activeSortColumn}
-                  activeSortDirection={activeSortDirection as string}
-                  isFiltered={isFiltered}
-                  itemCount={total || 0}
-                  items={items as Array<ConnectorMachineActorRef>}
-                  namesChips={namesChips}
-                  onClearAllFilters={onClearAllFilters}
-                  onConnectorDetail={onConnectorDetail}
-                  onCreateConnector={onCreateConnector}
-                  onDuplicateConnector={onDuplicateConnector}
-                  onHelp={onHelp}
-                  onPageChange={onPageChange}
-                  onRemoveNameChip={onRemoveChip}
-                  onRemoveNameChipGroup={onRemoveGroup}
-                  onSearchName={onSearch}
-                  onSort={onSort}
-                  page={page}
-                  selectedConnector={selectedConnector}
-                  size={size}
-                />
-              </div>
-            </Card>
+          <PageSection padding={{ default: 'noPadding' }} variant={'default'}>
+            <ConnectorInstancesTable
+              activeSortColumn={activeSortColumn}
+              activeSortDirection={activeSortDirection as string}
+              isFiltered={isFiltered}
+              itemCount={total || 0}
+              items={items as Array<ConnectorMachineActorRef>}
+              namesChips={namesChips}
+              onClearAllFilters={onClearAllFilters}
+              onConnectorDetail={onConnectorDetail}
+              onCreateConnector={onCreateConnector}
+              onDuplicateConnector={onDuplicateConnector}
+              onHelp={onHelp}
+              onPageChange={onPageChange}
+              onRemoveNameChip={onRemoveChip}
+              onRemoveNameChipGroup={onRemoveGroup}
+              onSearchName={onSearch}
+              onSort={onSort}
+              page={page}
+              selectedConnector={selectedConnector}
+              size={size}
+            />
           </PageSection>
         </ConnectorDrawer>
       );
