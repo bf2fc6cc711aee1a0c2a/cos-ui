@@ -5,6 +5,8 @@ import { ConnectorMachineActorRef } from '@app/machines/Connector.machine';
 import React, { FunctionComponent } from 'react';
 import { NavLink } from 'react-router-dom';
 
+import { Card, PageSection } from '@patternfly/react-core';
+
 import { TableView } from '@rhoas/app-services-ui-components';
 import { useTranslation } from '@rhoas/app-services-ui-components';
 import { Connector } from '@rhoas/connector-management-sdk';
@@ -65,96 +67,103 @@ export const ConnectorInstancesTable: FunctionComponent<ConnectorInstancesTableP
       state: t('status'),
     } as { [key in typeof CONNECTOR_INSTANCES_COLUMNS[number]]: string };
     return (
-      <div className={'connector-instances-table__wrapper'}>
-        <TableView
-          ariaLabel="Sortable Connectors Instance Table"
-          columns={CONNECTOR_INSTANCES_COLUMNS}
-          data={items}
-          renderHeader={({ column, Th, key }) => (
-            <Th
-              key={key}
-              sort={{
-                sortBy: {
-                  index:
-                    CONNECTOR_INSTANCES_COLUMNS.indexOf(
-                      activeSortColumn as typeof CONNECTOR_INSTANCES_COLUMNS[number]
-                    ) || 0,
-                  direction: (activeSortDirection as 'asc') || 'desc',
-                  defaultDirection: 'asc',
-                },
-                onSort: (_event, index, direction) =>
-                  onSort({ [CONNECTOR_INSTANCES_COLUMNS[index]]: direction }),
-                columnIndex: CONNECTOR_INSTANCES_COLUMNS.indexOf(column),
-              }}
-            >
-              {columnLabels[column]}
-            </Th>
-          )}
-          renderActions={({ row, ActionsColumn }) => (
-            <ConnectorActions
-              ActionsColumn={ActionsColumn}
-              connectorRef={row}
-              onConnectorDetail={onConnectorDetail}
-              onDuplicateConnector={onDuplicateConnector}
-            />
-          )}
-          renderCell={({ column, row, key, Td }) => (
-            <ConnectorCell
-              key={key}
-              Td={Td}
-              column={column}
-              columnLabels={columnLabels}
-              tdKey={key}
-              connectorRef={row}
-              onConnectorDetail={onConnectorDetail}
-            />
-          )}
-          onRowClick={({ row }) => row.send('connector.select')}
-          isRowSelected={({ row }) =>
-            selectedConnector
-              ? selectedConnector.id === row.getSnapshot()?.context.connector.id
-              : false
-          }
-          setActionCellOuiaId={({ row }) =>
-            `actions-for-${row.getSnapshot()?.context.connector.id}`
-          }
-          toolbarBreakpoint={'lg'}
-          filters={{
-            name: {
-              type: 'search',
-              chips: namesChips,
-              onSearch: onSearchName,
-              onRemoveChip: onRemoveNameChip,
-              onRemoveGroup: onRemoveNameChipGroup,
-              validate: (_val) => true,
-              errorMessage: t('input_field_invalid_message'),
-            },
-          }}
-          tools={[
-            <NavLink
-              className="pf-c-button pf-m-primary"
-              to={'/create-connector'}
-              data-ouia-component-id={'button-create'}
-            >
-              {t('createConnectorsInstance')}
-            </NavLink>,
-          ]}
-          itemCount={itemCount}
-          page={page}
-          perPage={size}
-          onClearAllFilters={onClearAllFilters}
-          isFiltered={isFiltered}
-          onPageChange={onPageChange}
-          emptyStateNoData={
-            <EmptyStateGettingStarted
-              onCreate={onCreateConnector}
-              onHelp={onHelp}
-            />
-          }
-          emptyStateNoResults={
-            <EmptyStateNoMatchesFound onClear={onClearAllFilters} />
-          }
-        />
-      </div>
+      <PageSection
+        padding={{ default: 'noPadding' }}
+        variant={'default'}
+        className={'connector-instances-table__wrapper'}
+      >
+        <Card isPlain className={'pf-u-p-lg'}>
+          <TableView
+            ariaLabel="Sortable Connectors Instance Table"
+            columns={CONNECTOR_INSTANCES_COLUMNS}
+            data={items}
+            renderHeader={({ column, Th, key }) => (
+              <Th
+                key={key}
+                sort={{
+                  sortBy: {
+                    index:
+                      CONNECTOR_INSTANCES_COLUMNS.indexOf(
+                        activeSortColumn as typeof CONNECTOR_INSTANCES_COLUMNS[number]
+                      ) || 0,
+                    direction: (activeSortDirection as 'asc') || 'desc',
+                    defaultDirection: 'asc',
+                  },
+                  onSort: (_event, index, direction) =>
+                    onSort({ [CONNECTOR_INSTANCES_COLUMNS[index]]: direction }),
+                  columnIndex: CONNECTOR_INSTANCES_COLUMNS.indexOf(column),
+                }}
+              >
+                {columnLabels[column]}
+              </Th>
+            )}
+            renderActions={({ row, ActionsColumn }) => (
+              <ConnectorActions
+                ActionsColumn={ActionsColumn}
+                connectorRef={row}
+                onConnectorDetail={onConnectorDetail}
+                onDuplicateConnector={onDuplicateConnector}
+              />
+            )}
+            renderCell={({ column, row, key, Td }) => (
+              <ConnectorCell
+                key={key}
+                Td={Td}
+                column={column}
+                columnLabels={columnLabels}
+                tdKey={key}
+                connectorRef={row}
+                onConnectorDetail={onConnectorDetail}
+              />
+            )}
+            onRowClick={({ row }) => row.send('connector.select')}
+            isRowSelected={({ row }) =>
+              selectedConnector
+                ? selectedConnector.id ===
+                  row.getSnapshot()?.context.connector.id
+                : false
+            }
+            setActionCellOuiaId={({ row }) =>
+              `actions-for-${row.getSnapshot()?.context.connector.id}`
+            }
+            toolbarBreakpoint={'lg'}
+            filters={{
+              name: {
+                type: 'search',
+                chips: namesChips,
+                onSearch: onSearchName,
+                onRemoveChip: onRemoveNameChip,
+                onRemoveGroup: onRemoveNameChipGroup,
+                validate: (_val) => true,
+                errorMessage: t('input_field_invalid_message'),
+              },
+            }}
+            tools={[
+              <NavLink
+                className="pf-c-button pf-m-primary"
+                to={'/create-connector'}
+                data-ouia-component-id={'button-create'}
+              >
+                {t('createConnectorsInstance')}
+              </NavLink>,
+            ]}
+            itemCount={itemCount}
+            page={page}
+            perPage={size}
+            onClearAllFilters={onClearAllFilters}
+            isFiltered={isFiltered}
+            onPageChange={onPageChange}
+            emptyStateNoData={
+              <EmptyStateGettingStarted
+                onCreate={onCreateConnector}
+                onHelp={onHelp}
+              />
+            }
+            emptyStateNoResults={
+              <EmptyStateNoMatchesFound onClear={onClearAllFilters} />
+            }
+          />
+        </Card>
+      </PageSection>
     );
   };

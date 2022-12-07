@@ -9,8 +9,14 @@ import {
   EmptyStateVariant,
   Title,
   TitleSizes,
+  Text,
+  TextVariants,
 } from '@patternfly/react-core';
-import { PlusCircleIcon } from '@patternfly/react-icons';
+import {
+  PlusCircleIcon,
+  ExternalLinkAltIcon,
+  OpenDrawerRightIcon,
+} from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 
 import { Trans, useTranslation } from '@rhoas/app-services-ui-components';
@@ -33,21 +39,46 @@ export const EmptyStateGettingStarted: FunctionComponent<EmptyStateGettingStarte
           {t('noConnectorInstances')}
         </Title>
         <EmptyStateBody>
-          <Trans i18nKey={'gettingStartedBody'}>
-            For help getting started, access the{' '}
-            <Button
-              variant={ButtonVariant.link}
-              isSmall
-              isInline
-              onClick={onHelp}
-              ouiaId={'link-QuickStart'}
-            >
-              quick start guide.
-            </Button>
-          </Trans>
+          <Text component={TextVariants.p} className="pf-u-pb-md">
+            <Trans i18nKey={'gettingStartedBodyPrerequisites'}>
+              The creation{' '}
+              <Button
+                variant={ButtonVariant.link}
+                isSmall
+                isInline
+                onClick={() => {
+                  window.open(
+                    'https://access.redhat.com/documentation/en-us/openshift_connectors/1/guide/21f5b059-044f-49d4-afca-1051e6e09c37#_b7b12de2-f59e-4d2e-b33b-afab7a7159e1',
+                    '_blank'
+                  );
+                }}
+                ouiaId={'link-Prerequisites'}
+                icon={<ExternalLinkAltIcon />}
+                iconPosition="right"
+              >
+                prerequisites
+              </Button>
+            </Trans>
+          </Text>
+          <Text component={TextVariants.p}>
+            <Trans i18nKey={'gettingStartedBodyQuickStartGuide'}>
+              For help getting started, access the{' '}
+              <Button
+                variant={ButtonVariant.link}
+                isSmall
+                isInline
+                onClick={onHelp}
+                ouiaId={'link-QuickStart'}
+                icon={<OpenDrawerRightIcon />}
+                iconPosition="right"
+              >
+                quick start guide.
+              </Button>
+            </Trans>
+          </Text>
         </EmptyStateBody>
         <Button variant={'primary'} onClick={onCreate} ouiaId={'button-create'}>
-          {t('createAConnectorsInstance')}
+          {t('createConnectorsInstance')}
         </Button>
       </EmptyState>
     );

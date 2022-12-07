@@ -1,3 +1,7 @@
 .connector-instances-table__wrapper .pf-c-scroll-outer-wrapper {
   margin-bottom: 10em;
 }
+.connector-instances-table__wrapper .pf-c-toolbar {
+  padding-right: var(--pf-c-toolbar__content--PaddingRight);
+  padding-left: var(--pf-c-toolbar__content--PaddingLeft);
+}
