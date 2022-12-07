@@ -14,6 +14,7 @@ export type ConnectorSelectionListCacheContextType = {
     stopIndex: number;
   }) => Promise<void>;
   getRow: (props: { index: number }) => FeaturedConnectorType | boolean;
+  getRowById: (props: { id: string }) => FeaturedConnectorType | boolean;
 };
 
 const ConnectorSelectionListCacheContext =
@@ -21,6 +22,7 @@ const ConnectorSelectionListCacheContext =
     isRowLoaded: (_) => false,
     loadMoreRows: (_) => Promise.resolve(),
     getRow: (_) => false,
+    getRowById: (_) => false,
   });
 
 export type ConnectorSelectionListCacheContextProviderProps = {
@@ -29,7 +31,6 @@ export type ConnectorSelectionListCacheContextProviderProps = {
   search: ConnectorTypesSearch;
   orderBy: ConnectorTypesOrderBy;
   initialSet: Array<FeaturedConnectorType> | undefined;
-  page: number;
   size: number;
   total: number;
 };
@@ -42,19 +43,16 @@ export const ConnectorSelectionListCacheProvider: FC<
   search,
   orderBy,
   initialSet,
-  page,
   size,
   total,
   children,
 }) => {
-  let highestLoadedPage = page;
-  let highestLoadedIndex = highestLoadedPage * size;
   const loadedConnectorTypesMap: {
     [key: number]: FeaturedConnectorType | boolean;
   } = Array.from({ length: total - 1 })
     .map((_, index) => ({ [index]: false }))
     .reduce((prev, current) => ({ ...prev, ...current }), {});
-  if (typeof initialSet !== 'undefined') {
+  if (typeof initialSet !== 'undefined' && initialSet !== null) {
     initialSet.forEach(
       (item, index) => (loadedConnectorTypesMap[index] = item)
     );
@@ -68,39 +66,53 @@ export const ConnectorSelectionListCacheProvider: FC<
     startIndex: number;
     stopIndex: number;
   }) => {
-    if (startIndex > highestLoadedIndex || stopIndex > highestLoadedIndex) {
-      return new Promise<void>((resolve, reject) => {
+    if (typeof initialSet === 'undefined' || total === 0) {
+      // react-virtualized can still ask for entries, but we're loading
+      return Promise.resolve();
+    }
+    const numPages = Math.ceil((stopIndex - startIndex) / size) || 1;
+    const startPage = Math.floor(startIndex / size) + 1;
+    return new Promise<void>((resolve, reject) => {
+      const pageIndices = [...Array(numPages).keys()];
+      pageIndices.forEach((pageIndex: number) => {
         fetchConnectorTypes({
           accessToken: getToken,
           connectorsApiBasePath,
         })(
-          { page: highestLoadedPage + 1, size, search, orderBy },
+          { page: startPage + pageIndex, size, search, orderBy },
           ({ page, size, items }) => {
-            highestLoadedPage = page;
-            const previousHighestLoadedIndex = highestLoadedIndex;
-            highestLoadedIndex = highestLoadedPage * size;
-            items.forEach((item, index) => {
-              loadedConnectorTypesMap[previousHighestLoadedIndex + index] =
-                item as FeaturedConnectorType;
-            });
-            resolve();
+            const offset = (page - 1) * size;
+            if (items) {
+              items.forEach((item, index) => {
+                loadedConnectorTypesMap[offset + index] =
+                  item as FeaturedConnectorType;
+              });
+            }
+            if (pageIndex === pageIndices.length - 1) {
+              resolve();
+            }
           },
           (error) => {
+            console.debug('error fetching items for cache: ', error);
             reject(error);
           }
         );
       });
-    }
-    return Promise.resolve();
+    });
   };
   const getRow = ({ index }: { index: number }) =>
     loadedConnectorTypesMap[index];
+  const getRowById = ({ id }: { id: string }) =>
+    Object.values(loadedConnectorTypesMap).find(
+      (connector) => typeof connector !== 'boolean' && connector!.id === id
+    ) || false;
   return (
     <ConnectorSelectionListCacheContext.Provider
       value={{
         isRowLoaded,
         loadMoreRows,
         getRow,
+        getRowById,
       }}
     >
       {children}
@@ -108,7 +120,7 @@ export const ConnectorSelectionListCacheProvider: FC<
   );
 };
 
-export const useConnectorTypesGalleryCache =
+export const useConnectorSelectionListCache =
   (): ConnectorSelectionListCacheContextType => {
     const service = useContext(ConnectorSelectionListCacheContext);
     if (!service) {

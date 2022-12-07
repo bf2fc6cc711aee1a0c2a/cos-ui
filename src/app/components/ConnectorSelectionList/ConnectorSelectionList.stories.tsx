@@ -1,18 +1,34 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import { rest } from 'msw';
 import Prando from 'prando';
-import React from 'react';
+import React, { FC, useState } from 'react';
 
-import locales from '../../../locales/en/cos-ui.json';
-import { StepBodyLayout } from '../../app/components/StepBodyLayout/StepBodyLayout';
-import { CosContextProvider } from '../../hooks/useCos';
-import { ConnectorSelectionList } from './ConnectorSelectionList';
+import locales from '../../../../locales/en/cos-ui.json';
+import { CosContextProvider } from '../../../hooks/useCos';
+import { StepBodyLayout } from '../StepBodyLayout/StepBodyLayout';
+import {
+  ConnectorSelectionList,
+  ConnectorSelectionListInnerProps,
+} from './ConnectorSelectionList';
 import { FeaturedConnectorType } from './typeExtensions';
 
 const API_HOST = 'https://dummy.server';
 
+const SelectionViewInner: FC<ConnectorSelectionListInnerProps> = ({
+  renderSelectionList,
+}) => {
+  const [selectedId, onSelect] = useState<string | undefined>(undefined);
+  return renderSelectionList({
+    selectedId,
+    onSelect: (connector) => {
+      console.log('Selected connector: ', connector);
+      onSelect(connector.id!);
+    },
+  });
+};
+
 export default {
-  title: 'Proof Of Concepts/Connector Selection List',
+  title: 'Wizard Step 1/Connector Type Step',
   component: ConnectorSelectionList,
   decorators: [
     (Story) => (
@@ -29,7 +45,11 @@ export default {
       </>
     ),
   ],
-  args: {},
+  args: {
+    renderSelector: (renderSelectionList) => (
+      <SelectionViewInner renderSelectionList={renderSelectionList} />
+    ),
+  },
 } as ComponentMeta<typeof ConnectorSelectionList>;
 
 const Template: ComponentStory<typeof ConnectorSelectionList> = (args) => (
@@ -142,6 +162,19 @@ WithConnectors.parameters = {
   ],
 };
 
+export const WithErrors = Template.bind({});
+InitialLoadingState.args = {};
+InitialLoadingState.parameters = {
+  msw: [
+    rest.get(`${CONNECTOR_LABELS_API}*`, (_req, res, ctx) => {
+      return res(ctx.status(403));
+    }),
+    rest.get(`${CONNECTOR_TYPES_API}*`, (_req, res, ctx) => {
+      return res(ctx.status(403));
+    }),
+  ],
+};
+
 function generateConnectorTypesResponse(page, size, search, orderBy, total) {
   const start = (page - 1) * size;
   const end = start + size;
@@ -150,7 +183,7 @@ function generateConnectorTypesResponse(page, size, search, orderBy, total) {
   return {
     page,
     size,
-    items,
+    items: items.length ? items : null,
     total: fullSet.length,
   };
 }
@@ -231,6 +264,8 @@ function generateConnectorTypes(
     entry.featured_rank = rng.nextInt(1, 10);
     entry.labels.push('category-featured');
   }
+  // this is a great line to comment out when debugging react-virtualized
+  // related loading problems
   sortFunctions.forEach((func) => fullSet.sort(func));
   return fullSet.filter((connectorType) =>
     filterFunctions.every((func) => func(connectorType))

@@ -10,6 +10,8 @@ import React, {
 } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 
+import '@patternfly/react-catalog-view-extension/dist/css/react-catalog-view-extension.css';
+
 import { I18nextProvider } from '@rhoas/app-services-ui-components';
 import { useAuth, useBasename, useConfig } from '@rhoas/app-services-ui-shared';
 

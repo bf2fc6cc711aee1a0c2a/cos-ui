@@ -1,8 +1,12 @@
 .connector-selection-list__side-panel-main {
-  margin-bottom: 0;
+  margin-bottom: 0 !important;
 }
 .connector-selection-list__side-panel-vertical-tabs {
   margin-bottom: 0;
+}
+
+.connector-selection-list__side-panel-vertical-tabs .vertical-tabs-pf-tab > a {
+  font-size: inherit;
 }
 
 .connector-selection-list__side-panel-viewport {

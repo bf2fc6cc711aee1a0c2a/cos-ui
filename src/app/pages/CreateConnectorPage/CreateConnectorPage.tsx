@@ -18,48 +18,48 @@ import {
 import { useTranslation } from '@rhoas/app-services-ui-components';
 import { useConfig } from '@rhoas/app-services-ui-shared';
 
-type CreateConnectorPageProps = {
+export type CreateConnectorPageProps = {
   onSave: (name: string) => void;
   onClose: () => void;
 };
 export const CreateConnectorPage: FunctionComponent<
   CreateConnectorPageProps
 > = ({ onSave, onClose }) => {
-  const { t } = useTranslation();
   const config = useConfig();
   const { connectorsApiBasePath, getToken, kafkaManagementApiBasePath } =
     useCos();
+  const { t } = useTranslation();
   const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
   const openLeaveConfirm = () => setAskForLeaveConfirm(true);
   const closeLeaveConfirm = () => setAskForLeaveConfirm(false);
   return (
     <>
-      <PageSection variant={'light'} hasShadowBottom>
-        <Breadcrumb>
-          <BreadcrumbItem>
-            <Link to={'/'}>{t('connectorsInstances')}</Link>
-          </BreadcrumbItem>
-          <BreadcrumbItem isActive>
-            {t('createAConnectorsInstance')}
-          </BreadcrumbItem>
-        </Breadcrumb>
-        <Level className={'pf-u-pt-md pf-u-pb-md'}>
-          <Title headingLevel="h1">{t('createAConnectorsInstance')}</Title>
-        </Level>
-      </PageSection>
-      <PageSection
-        padding={{ default: 'noPadding' }}
-        style={{ zIndex: 0 }}
-        type={'wizard'}
+      <CreateConnectorWizardProvider
+        accessToken={getToken}
+        connectorsApiBasePath={connectorsApiBasePath}
+        kafkaManagementApiBasePath={kafkaManagementApiBasePath}
+        fetchConfigurator={(connector) =>
+          fetchConfigurator(connector, config?.cos.configurators || {})
+        }
+        onSave={onSave}
       >
-        <CreateConnectorWizardProvider
-          accessToken={getToken}
-          connectorsApiBasePath={connectorsApiBasePath}
-          kafkaManagementApiBasePath={kafkaManagementApiBasePath}
-          fetchConfigurator={(connector) =>
-            fetchConfigurator(connector, config?.cos.configurators || {})
-          }
-          onSave={onSave}
+        <PageSection variant={'light'} hasShadowBottom>
+          <Breadcrumb>
+            <BreadcrumbItem>
+              <Link to={'/'}>{t('connectorsInstances')}</Link>
+            </BreadcrumbItem>
+            <BreadcrumbItem isActive>
+              {t('createAConnectorsInstance')}
+            </BreadcrumbItem>
+          </Breadcrumb>
+          <Level className={'pf-u-pt-md pf-u-pb-md'}>
+            <Title headingLevel="h1">{t('createAConnectorsInstance')}</Title>
+          </Level>
+        </PageSection>
+        <PageSection
+          padding={{ default: 'noPadding' }}
+          style={{ zIndex: 0 }}
+          type={'wizard'}
         >
           <CreateConnectorWizard onClose={openLeaveConfirm} />
           <Modal
@@ -78,8 +78,8 @@ export const CreateConnectorPage: FunctionComponent<
           >
             {t('leaveCreateConnectorConfirmModalDescription')}
           </Modal>
-        </CreateConnectorWizardProvider>
-      </PageSection>
+        </PageSection>
+      </CreateConnectorWizardProvider>
     </>
   );
 };

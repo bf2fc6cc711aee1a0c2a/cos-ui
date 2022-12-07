@@ -191,7 +191,7 @@ describe('Connector creation', () => {
       },
       CLICK_CONNECTOR: () => {
         cy.findByLabelText('filter by connector name').type('telegram');
-        cy.findByText('Telegram source').click();
+        cy.findByText('Telegram source').click({ force: true });
         cy.findByText('Next').click();
       },
       CLICK_KAFKA_INSTANCE: () => {
@@ -299,8 +299,7 @@ describe('Connector creation', () => {
     ).withEvents({
       CLICK_CONNECTOR: () => {
         cy.findByLabelText('filter by connector name').type('telegram');
-        cy.findByText('Telegram source').click();
-
+        cy.findByText('Telegram source').click({ force: true });
         cy.findByText('Next').click();
       },
       ON_CLOSE: () => {
@@ -332,7 +331,7 @@ describe('Connector creation', () => {
     ).withEvents({
       CLICK_CONNECTOR: () => {
         cy.findByLabelText('filter by connector name').type('telegram');
-        cy.findByText('Telegram source').click();
+        cy.findByText('Telegram source').click({ force: true });
         cy.findByText('Next').click();
       },
       CLICK_KAFKA_INSTANCE: () => {

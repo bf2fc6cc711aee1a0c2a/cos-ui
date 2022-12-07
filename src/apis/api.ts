@@ -541,8 +541,28 @@ export const fetchConnectorTypes = ({
         : undefined;
     const labelSearch =
       label && label.length > 0
-        ? label.map((s) => `label = ${s}`).join(' OR ')
+        ? [
+            label
+              .filter((s) => !s.startsWith('!!'))
+              .map((s) => `label = ${s}`)
+              .join(' OR '),
+            label
+              .filter((s) => s.startsWith('!!'))
+              .map((s) => `label = ${s.slice(2, s.length)}`)
+              .join(' AND '),
+          ]
+            .filter(Boolean)
+            .join(' AND ')
         : undefined;
+    /*
+      * label searches could probably use the IN operator
+      label && label.length > 0
+        ? `label IN (${label
+            .map((s) => `'${s.startsWith('!!') ? s.slice(2, s.length) : s}'`)
+            .join(', ')})`
+        : undefined;
+    */
+
     const searchString: string = [nameSearch, labelSearch, pricingTierSearch]
       .filter(Boolean)
       .map((s) => `(${s})`)

@@ -1,6 +1,12 @@
 import React, { FunctionComponent, ReactNode } from 'react';
 
-import { Level, LevelItem, Title } from '@patternfly/react-core';
+import {
+  Level,
+  LevelItem,
+  Stack,
+  StackItem,
+  Title,
+} from '@patternfly/react-core';
 
 import './StepBodyLayout.css';
 
@@ -12,25 +18,26 @@ type CreateConnectorWizardBodyLayoutProps = {
 export const StepBodyLayout: FunctionComponent<
   CreateConnectorWizardBodyLayoutProps
 > = ({ title, description, component, children }) => (
-  <div className={'pf-l-stack'}>
-    <div className={'pf-l-stack__item pf-u-p-md'}>
+  <Stack>
+    <StackItem className={'pf-u-p-md'}>
       <Level>
-        <LevelItem>
+        <LevelItem key="title">
           <Title headingLevel="h2">{title}</Title>
         </LevelItem>
-        <LevelItem>{component}</LevelItem>
+        {component && <LevelItem key="component">{component}</LevelItem>}
       </Level>
-      {(() => {
-        switch (typeof description) {
-          case 'string':
-            return <p className="wizard-step__description">{description}</p>;
-          default:
-            return description;
-        }
-      })()}
-    </div>
-    <div className="pf-l-stack__item pf-l-stack pf-m-fill pf-u-pl-md pf-u-pr-md  pf-u-pb-md">
+      {description &&
+        (() => {
+          switch (typeof description) {
+            case 'string':
+              return <p className="wizard-step__description">{description}</p>;
+            default:
+              return description;
+          }
+        })()}
+    </StackItem>
+    <StackItem isFilled className={'pf-u-pl-md pf-u-pr-md pf-u-pb-md'}>
       {children}
-    </div>
-  </div>
+    </StackItem>
+  </Stack>
 );

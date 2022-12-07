@@ -1,5 +1,5 @@
-import React, { FC, useCallback, useState } from 'react';
-import { useDimensionsEffect } from 'react-viewport-utils';
+import React, { FC, useCallback } from 'react';
+import { Dimensions, useDimensionsEffect } from 'react-viewport-utils';
 
 import {
   FilterSidePanel,
@@ -29,6 +29,10 @@ export type ConnectorSelectionListFilterPanelProps = {
   onChangeLabelFilter: (value: Array<string>) => void;
   selectedPricingTier: string;
   onChangePricingTierFilter: (value: string) => void;
+  onAdjustViewportHeight: (
+    dimensions: Dimensions,
+    viewportEl: HTMLElement
+  ) => void;
 };
 export const ConnectorSelectionListFilterPanel: FC<
   ConnectorSelectionListFilterPanelProps
@@ -40,40 +44,49 @@ export const ConnectorSelectionListFilterPanel: FC<
   onChangeLabelFilter,
   selectedPricingTier,
   onChangePricingTierFilter,
+  onAdjustViewportHeight,
 }) => {
   const { t } = useTranslation();
   const loading = typeof labels === 'undefined';
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const typeLabels: Array<string> = selectedCategories.filter(
-    (category) => category !== currentCategory
+  const selectedTypeLabels: Array<string> = selectedCategories.filter(
+    (category) => !category.startsWith('category-')
   );
-  const isSinkChecked = typeLabels.find((cat) => cat === 'sink') !== undefined;
+  const categoryLabels =
+    typeof labels !== 'undefined'
+      ? labels
+          .filter(({ label }) => label.startsWith('category-'))
+          .sort(({ label }) => (label === 'category-featured' ? -1 : 0))
+      : [];
+
+  const isSinkChecked =
+    selectedTypeLabels.find((cat) => cat === '!!sink') !== undefined;
   const isSourceChecked =
-    typeLabels.find((cat) => cat === 'source') !== undefined;
+    selectedTypeLabels.find((cat) => cat === '!!source') !== undefined;
   const handleSourceChecked = useCallback(() => {
     isSourceChecked
       ? onChangeLabelFilter([
-          ...selectedCategories.filter((label) => label !== 'source'),
+          ...selectedCategories.filter((label) => label !== '!!source'),
         ])
       : onChangeLabelFilter([
-          ...selectedCategories.filter((label) => label !== 'sink'),
-          'source',
+          ...selectedCategories.filter((label) => label !== '!!sink'),
+          '!!source',
         ]);
   }, [isSourceChecked, onChangeLabelFilter, selectedCategories]);
   const handleSinkChecked = useCallback(() => {
     isSinkChecked
       ? onChangeLabelFilter([
-          ...selectedCategories.filter((label) => label !== 'sink'),
+          ...selectedCategories.filter((label) => label !== '!!sink'),
         ])
       : onChangeLabelFilter([
-          ...selectedCategories.filter((label) => label !== 'source'),
-          'sink',
+          ...selectedCategories.filter((label) => label !== '!!source'),
+          '!!sink',
         ]);
   }, [isSinkChecked, onChangeLabelFilter, selectedCategories]);
   useDimensionsEffect((dimensions) => {
     const scrollableElement = document.getElementById(id);
-    const top = scrollableElement!.offsetTop + 20;
-    scrollableElement!.style.height = `${dimensions.height - top}px`;
+    if (scrollableElement) {
+      onAdjustViewportHeight(dimensions, scrollableElement!);
+    }
   });
   return (
     <FilterSidePanel className={'connector-selection-list__side-panel-main'}>
@@ -167,42 +180,22 @@ export const ConnectorSelectionListFilterPanel: FC<
               <VerticalTabsTab
                 key="all"
                 active={currentCategory === 'All Items'}
-                onClick={() => onChangeLabelFilter(typeLabels)}
+                onClick={() => onChangeLabelFilter(selectedTypeLabels)}
                 title={t('All Items')}
               />
-              {labels!
-                .slice(0, isExpanded ? labels.length : 10)
-                .map(({ label, count }) => (
-                  <VerticalTabsTab
-                    key={label}
-                    active={
-                      selectedCategories.find((cat) => cat === label) !==
-                      undefined
-                    }
-                    onClick={() => onChangeLabelFilter([label, ...typeLabels])}
-                    title={`${t(label)} (${count})`}
-                  />
-                ))}
-              {isExpanded && (
+              {categoryLabels!.map(({ label, count }) => (
                 <VerticalTabsTab
-                  className={
-                    'connector-selection-list__side-panel-expander-text'
+                  key={label}
+                  active={
+                    selectedCategories.find((cat) => cat === label) !==
+                    undefined
                   }
-                  key={'show-less'}
-                  onClick={() => setIsExpanded(false)}
-                  title={t('Show less')}
-                />
-              )}
-              {!isExpanded && (
-                <VerticalTabsTab
-                  className={
-                    'connector-selection-list__side-panel-expander-text'
+                  onClick={() =>
+                    onChangeLabelFilter([label, ...selectedTypeLabels])
                   }
-                  key={'show-more'}
-                  onClick={() => setIsExpanded(true)}
-                  title={t('Show more')}
+                  title={`${t(label)} (${count})`}
                 />
-              )}
+              ))}
             </VerticalTabs>
           ) : (
             <Loading />

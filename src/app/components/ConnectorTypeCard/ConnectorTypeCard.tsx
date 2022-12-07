@@ -15,10 +15,11 @@ import {
   DescriptionListDescription,
 } from '@patternfly/react-core';
 import {
-  BuildIcon,
-  BuilderImageIcon,
   OutlinedQuestionCircleIcon,
+  DataSourceIcon,
+  DataSinkIcon,
 } from '@patternfly/react-icons';
+import { global_Color_200 } from '@patternfly/react-tokens';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 
@@ -54,7 +55,7 @@ export const ConnectorTypeCard: FunctionComponent<ConnectorTypeCardProps> = ({
     >
       {labels?.includes('source') && (
         <CardHeader>
-          <BuildIcon color="lightGrey" size="lg" />
+          <DataSourceIcon color={global_Color_200.value} size="lg" />
           <CardActions>
             <Label color="blue">{t('source')}</Label>
           </CardActions>
@@ -62,7 +63,7 @@ export const ConnectorTypeCard: FunctionComponent<ConnectorTypeCardProps> = ({
       )}
       {labels?.includes('sink') && (
         <CardHeader>
-          <BuilderImageIcon color="lightGrey" size="lg" />
+          <DataSinkIcon color={global_Color_200.value} size="lg" />
           <CardActions>
             <Label color="green">{t('sink')}</Label>
           </CardActions>

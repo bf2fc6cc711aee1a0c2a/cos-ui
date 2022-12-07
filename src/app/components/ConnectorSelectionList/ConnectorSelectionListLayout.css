@@ -1,0 +1,10 @@
+.connector-selection-list__sidebar-content.pf-c-sidebar__content {
+  background-color: inherit;
+  /* cater for the "Feedback" tab */
+  padding-right: 1.8em;
+}
+
+.connector-selection-list__viewport-container-inner
+  .pf-c-data-list__item.pf-m-selectable:hover {
+  border-bottom: none;
+}

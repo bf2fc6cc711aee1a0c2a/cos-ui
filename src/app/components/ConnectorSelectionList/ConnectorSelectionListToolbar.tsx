@@ -1,5 +1,5 @@
 import { ConnectorTypesOrderBy } from '@apis/api';
-import React, { FunctionComponent, useState } from 'react';
+import React, { FC, useState } from 'react';
 
 import {
   Text,
@@ -34,7 +34,7 @@ export type ConnectorSelectionListToolbarProps = {
   currentSort: ConnectorTypesOrderBy;
   onChangeSort: (value: string) => void;
 };
-export const ConnectorSelectionListToolbar: FunctionComponent<
+export const ConnectorSelectionListToolbar: FC<
   ConnectorSelectionListToolbarProps
 > = ({
   currentSort,
@@ -77,7 +77,7 @@ export const ConnectorSelectionListToolbar: FunctionComponent<
               setCurrentSearch('');
               onChangeSearchField('');
             }}
-            value={currentSearch}
+            value={searchFieldValue}
             onSearch={() => onChangeSearchField(currentSearch)}
             placeholder={searchFieldPlaceholder}
             isDisabled={loading}
