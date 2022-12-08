@@ -3,7 +3,10 @@ import {
   ConnectorTypesSearch,
   fetchConnectorTypes,
 } from '@apis/api';
-import { PAGINATED_MACHINE_ID } from '@constants/constants';
+import {
+  PAGINATED_MACHINE_ID,
+  SELECT_CONNECTOR_TYPE,
+} from '@constants/constants';
 
 import { ActorRefFrom, send, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
@@ -66,7 +69,7 @@ const selectConnector = model.assign(
   },
   'selectConnector'
 );
-const reset = model.assign(
+const deselectConnector = model.assign(
   {
     selectedConnector: undefined,
   },
@@ -149,7 +152,14 @@ export const selectConnectorTypeMachine = model.createMachine(
                 },
               },
               valid: {
-                entry: sendParent('isValid'),
+                entry: sendParent((context) => ({
+                  type: 'isValid',
+                  data: {
+                    updatedValue: context.selectedConnector,
+                    updatedStep: SELECT_CONNECTOR_TYPE,
+                    connectorTypeDetails: context.connectorTypeDetails,
+                  },
+                })),
                 on: {
                   selectConnector: {
                     target: 'verify',
@@ -157,7 +167,7 @@ export const selectConnectorTypeMachine = model.createMachine(
                   },
                   deselectConnector: {
                     target: 'verify',
-                    actions: reset,
+                    actions: deselectConnector,
                   },
                   confirm: {
                     target: '#done',

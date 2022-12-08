@@ -1,4 +1,5 @@
 import { UserProvidedServiceAccount } from '@apis/api';
+import { CORE_CONFIGURATION } from '@constants/constants';
 
 import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
@@ -55,6 +56,14 @@ export const coreConfigurationMachine = model.createMachine(
     predictableActionArguments: true,
     states: {
       verify: {
+        entry: sendParent((context) => ({
+          type: 'isInvalid',
+          data: {
+            updatedValue: context.userServiceAccount,
+            updatedStep: CORE_CONFIGURATION,
+            name: context.name,
+          },
+        })),
         always: [
           { target: 'valid', cond: 'isCoreConfigurationConfigured' },
           { target: 'typing' },

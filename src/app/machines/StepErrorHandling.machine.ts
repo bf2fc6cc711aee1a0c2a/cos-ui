@@ -1,3 +1,5 @@
+import { ERROR_HANDLING } from '@constants/constants';
+
 import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
@@ -45,6 +47,14 @@ export const errorHandlingMachine = model.createMachine(
     predictableActionArguments: true,
     states: {
       verify: {
+        entry: sendParent((context) => ({
+          type: 'isInvalid',
+          data: {
+            updatedValue: context.userErrorHandler,
+            updatedStep: ERROR_HANDLING,
+            topic: context.topic,
+          },
+        })),
         always: [
           { target: 'valid', cond: 'isErrorHandlerConfigured' },
           { target: 'typing' },
@@ -65,7 +75,14 @@ export const errorHandlingMachine = model.createMachine(
       },
       valid: {
         id: 'valid',
-        entry: sendParent('isValid'),
+        entry: sendParent((context) => ({
+          type: 'isValid',
+          data: {
+            updatedValue: context.userErrorHandler,
+            updatedStep: ERROR_HANDLING,
+            topic: context.topic,
+          },
+        })),
         on: {
           setTopic: {
             target: 'verify',
@@ -94,12 +111,13 @@ export const errorHandlingMachine = model.createMachine(
   },
   {
     guards: {
-      isErrorHandlerConfigured: (context) =>
-        context.userErrorHandler !== undefined &&
-        context.userErrorHandler === 'dead_letter_queue'
-          ? context.topic !== undefined && context.topic.length > 0
-          : (context.topic !== undefined && context.topic.length > 0) ||
-            context.userErrorHandler !== undefined,
+      isErrorHandlerConfigured: (context) => {
+        const { userErrorHandler, topic } = context;
+        return userErrorHandler !== undefined &&
+          userErrorHandler === 'dead_letter_queue'
+          ? topic !== undefined && topic.length > 0
+          : userErrorHandler !== undefined;
+      },
     },
   }
 );

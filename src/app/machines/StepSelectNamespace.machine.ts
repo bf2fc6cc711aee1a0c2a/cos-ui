@@ -1,5 +1,5 @@
 import { ConnectorNamespaceSearch, fetchConnectorNamespaces } from '@apis/api';
-import { PAGINATED_MACHINE_ID } from '@constants/constants';
+import { PAGINATED_MACHINE_ID, SELECT_NAMESPACE } from '@constants/constants';
 
 import { ActorRefFrom, send, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
@@ -138,7 +138,13 @@ export const selectNamespaceMachine = model.createMachine(
                 },
               },
               valid: {
-                entry: sendParent('isValid'),
+                entry: sendParent((context) => ({
+                  type: 'isValid',
+                  data: {
+                    updatedValue: context.selectedNamespace,
+                    updatedStep: SELECT_NAMESPACE,
+                  },
+                })),
                 on: {
                   selectNamespace: {
                     target: 'verify',
