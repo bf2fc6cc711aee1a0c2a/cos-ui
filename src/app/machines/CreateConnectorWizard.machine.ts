@@ -729,9 +729,7 @@ export const creationWizardMachine = model.createMachine(
           switch (updatedStep) {
             case SELECT_CONNECTOR_TYPE:
               context.selectedConnector = updatedValue;
-              // connectorData: context.connectorData,
               context.connectorTypeDetails = event.data.connectorTypeDetails;
-              // duplicateMode: context.duplicateMode,
               context.connectorConfiguration = false;
               context.activeConfigurationStep = 0;
               context.isConfigurationValid = false;
