@@ -55,6 +55,14 @@ export const coreConfigurationMachine = model.createMachine(
     predictableActionArguments: true,
     states: {
       verify: {
+        entry: sendParent((context) => ({
+          type: 'isInvalid',
+          data: {
+            updatedValue: context.userServiceAccount,
+            updatedStep: 'core',
+            name: context.name,
+          },
+        })),
         always: [
           { target: 'valid', cond: 'isCoreConfigurationConfigured' },
           { target: 'typing' },

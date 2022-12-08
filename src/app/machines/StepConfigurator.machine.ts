@@ -86,7 +86,13 @@ export const configuratorMachine = model.createMachine(
     },
     states: {
       configuring: {
-        entry: sendParent('isInvalid'),
+        entry: sendParent((context) => ({
+          type: 'isInvalid',
+          data: {
+            updatedValue: context.configuration,
+            updatedStep: 'configurator',
+          },
+        })),
         always: [{ target: 'valid', cond: 'activeStepValid' }],
       },
       valid: {

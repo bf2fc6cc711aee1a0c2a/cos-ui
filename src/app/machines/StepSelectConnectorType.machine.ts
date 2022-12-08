@@ -66,7 +66,7 @@ const selectConnector = model.assign(
   },
   'selectConnector'
 );
-const reset = model.assign(
+const deselectConnector = model.assign(
   {
     selectedConnector: undefined,
   },
@@ -149,7 +149,14 @@ export const selectConnectorTypeMachine = model.createMachine(
                 },
               },
               valid: {
-                entry: sendParent('isValid'),
+                entry: sendParent((context) => ({
+                  type: 'isValid',
+                  data: {
+                    updatedValue: context.selectedConnector,
+                    updatedStep: 'connector',
+                    connectorTypeDetails: context.connectorTypeDetails,
+                  },
+                })),
                 on: {
                   selectConnector: {
                     target: 'verify',
@@ -157,7 +164,7 @@ export const selectConnectorTypeMachine = model.createMachine(
                   },
                   deselectConnector: {
                     target: 'verify',
-                    actions: reset,
+                    actions: deselectConnector,
                   },
                   confirm: {
                     target: '#done',

@@ -47,9 +47,9 @@ export type CreateWizardContextData = {
   connectorConfiguration?: unknown;
   name: string;
   sACreated: boolean;
-  topic: string;
+  topic?: string;
   userServiceAccount: UserProvidedServiceAccount;
-  userErrorHandler: string;
+  userErrorHandler?: string;
 };
 
 /**
@@ -81,7 +81,7 @@ type WizardGuard = (context: CreateWizardContext, event: Event<any>) => boolean;
 // model
 const model = createModel({} as CreateWizardContext, {
   events: {
-    isValid: () => ({}),
+    isValid: ({ data }: { data?: any }) => ({ data }),
     isInvalid: () => ({}),
     prev: () => ({}),
     next: () => ({}),
@@ -99,6 +99,7 @@ const model = createModel({} as CreateWizardContext, {
   },
   actions: {
     notifySave: () => ({}),
+    notifyUserUpdate: () => ({}),
   },
 });
 
@@ -120,22 +121,6 @@ const isKafkaInstanceSelected: WizardGuard = (context, _event) =>
 
 const isNamespaceSelected: WizardGuard = (context, _event) =>
   context.selectedNamespace !== undefined;
-
-const isConnectorConfigured: WizardGuard = (context, _event) => {
-  if (!context.configurationSteps) {
-    return (
-      context.connectorConfiguration !== undefined &&
-      context.connectorConfiguration !== false
-    );
-  }
-  return (
-    (context.connectorConfiguration !== undefined &&
-      context.connectorConfiguration !== false) ||
-    (context.activeConfigurationStep ===
-      context.configurationSteps.length - 1 &&
-      context.isConfigurationValid === true)
-  );
-};
 
 const isCoreConfigurationConfigured: WizardGuard = (context, _event) => {
   return (
@@ -164,6 +149,23 @@ const isErrorHandlerConfigured: WizardGuard = (context, _event) => {
     ? context.topic !== undefined && context.topic.length > 0
     : (context.topic !== undefined && context.topic.length > 0) ||
         context.userErrorHandler !== undefined;
+};
+
+const isConnectorConfigured: WizardGuard = (context, _event) => {
+  if (!context.configurationSteps) {
+    return (
+      context.connectorConfiguration !== undefined &&
+      context.connectorConfiguration !== false &&
+      isErrorHandlerConfigured(context, _event)
+    );
+  }
+  return (
+    (context.connectorConfiguration !== undefined &&
+      context.connectorConfiguration !== false) ||
+    (context.activeConfigurationStep ===
+      context.configurationSteps.length - 1 &&
+      context.isConfigurationValid === true)
+  );
 };
 
 const canConfigurationBeSaved: WizardGuard = (context, event) => {
@@ -228,6 +230,7 @@ export const creationWizardMachine = model.createMachine(
             },
           },
           valid: {
+            entry: ['notifyUserUpdate'],
             on: {
               isInvalid: 'selecting',
               next: {
@@ -276,6 +279,7 @@ export const creationWizardMachine = model.createMachine(
             },
           },
           valid: {
+            entry: ['notifyUserUpdate'],
             on: {
               isInvalid: 'selecting',
               next: {
@@ -324,6 +328,7 @@ export const creationWizardMachine = model.createMachine(
             },
           },
           valid: {
+            entry: ['notifyUserUpdate'],
             on: {
               isInvalid: 'selecting',
               next: {
@@ -398,6 +403,7 @@ export const creationWizardMachine = model.createMachine(
             },
           },
           invalid: {
+            entry: ['notifyUserUpdate'],
             on: {
               isValid: 'submittable',
             },
@@ -501,6 +507,7 @@ export const creationWizardMachine = model.createMachine(
                 },
               },
               invalid: {
+                entry: ['notifyUserUpdate'],
                 on: {
                   isValid: 'submittable',
                 },
@@ -570,6 +577,7 @@ export const creationWizardMachine = model.createMachine(
         },
         states: {
           submittable: {
+            entry: ['notifyUserUpdate'],
             on: {
               isInvalid: 'invalid',
               next: {
@@ -578,6 +586,7 @@ export const creationWizardMachine = model.createMachine(
             },
           },
           invalid: {
+            entry: ['notifyUserUpdate'],
             on: {
               isValid: 'submittable',
             },
@@ -712,6 +721,35 @@ export const creationWizardMachine = model.createMachine(
       notifySave: (context) => {
         if (context.onSave) {
           context.onSave(context.name);
+        }
+      },
+      notifyUserUpdate: (context, event: any) => {
+        const { updatedValue, updatedStep } = event.data || {};
+        if (updatedValue && updatedStep) {
+          if (updatedStep === 'connector') {
+            context.selectedConnector = updatedValue;
+            // connectorData: context.connectorData,
+            context.connectorTypeDetails = event.data.connectorTypeDetails;
+            // duplicateMode: context.duplicateMode,
+            context.connectorConfiguration = false;
+            context.activeConfigurationStep = 0;
+            context.isConfigurationValid = false;
+            context.configurationSteps = false;
+            context.userErrorHandler = undefined;
+            context.topic = undefined;
+          } else if (updatedStep === 'kafka') {
+            context.selectedKafkaInstance = updatedValue;
+          } else if (updatedStep === 'namespace') {
+            context.selectedNamespace = updatedValue;
+          } else if (updatedStep === 'core') {
+            context.userServiceAccount = updatedValue;
+            context.name = event.data.name;
+          } else if (updatedStep === 'configurator') {
+            context.connectorConfiguration = updatedValue;
+          } else if (updatedStep === 'errorHandler') {
+            context.userErrorHandler = updatedValue;
+            context.topic = event.data.topic;
+          }
         }
       },
     },

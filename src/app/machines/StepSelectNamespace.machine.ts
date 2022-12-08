@@ -138,7 +138,13 @@ export const selectNamespaceMachine = model.createMachine(
                 },
               },
               valid: {
-                entry: sendParent('isValid'),
+                entry: sendParent((context) => ({
+                  type: 'isValid',
+                  data: {
+                    updatedValue: context.selectedNamespace,
+                    updatedStep: 'namespace',
+                  },
+                })),
                 on: {
                   selectNamespace: {
                     target: 'verify',

@@ -4,6 +4,7 @@ import {
 } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { EmptyStateNoKafkaInstances } from '@app/components/EmptyStateNoKafkaInstances/EmptyStateNoKafkaInstances';
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
+import { KafkaCard } from '@app/components/KakfaCard/kafkaCard';
 import { Loading } from '@app/components/Loading/Loading';
 import { Pagination } from '@app/components/Pagination/Pagination';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
@@ -22,14 +23,6 @@ import { useDebounce } from 'src/utils/useDebounce';
 import {
   Alert,
   Button,
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
-  DescriptionList,
-  DescriptionListDescription,
-  DescriptionListGroup,
-  DescriptionListTerm,
   Dropdown,
   DropdownItem,
   DropdownPosition,
@@ -140,39 +133,16 @@ const KafkasGallery: FunctionComponent = () => {
                   )}
                   <Gallery hasGutter>
                     {response?.items?.map((i) => (
-                      <Card
-                        isHoverable
+                      <KafkaCard
                         key={i.id}
-                        isSelectable
-                        isSelected={selectedId === i.id}
-                        onClick={() => onSelect(i.id!)}
-                      >
-                        <CardHeader>
-                          <CardTitle>{i.name}</CardTitle>
-                        </CardHeader>
-                        <CardBody>
-                          <DescriptionList>
-                            <DescriptionListGroup>
-                              <DescriptionListTerm>Region</DescriptionListTerm>
-                              <DescriptionListDescription>
-                                {i.region}
-                              </DescriptionListDescription>
-                            </DescriptionListGroup>
-                            <DescriptionListGroup>
-                              <DescriptionListTerm>Owner</DescriptionListTerm>
-                              <DescriptionListDescription>
-                                {i.owner}
-                              </DescriptionListDescription>
-                            </DescriptionListGroup>
-                            <DescriptionListGroup>
-                              <DescriptionListTerm>Created</DescriptionListTerm>
-                              <DescriptionListDescription>
-                                {i.created_at}
-                              </DescriptionListDescription>
-                            </DescriptionListGroup>
-                          </DescriptionList>
-                        </CardBody>
-                      </Card>
+                        id={i.id}
+                        name={i.name!}
+                        region={i.region!}
+                        owner={i.owner!}
+                        createdAt={i.created_at || ''}
+                        selectedKafka={selectedId}
+                        onSelect={onSelect}
+                      />
                     ))}
                   </Gallery>
                 </div>

@@ -308,13 +308,18 @@ export const useConnectorTypesMachine = () => {
       []
     )
   );
+  const onDeselect = useCallback(() => {
+    connectorTypeRef.send({ type: 'deselectConnector' });
+  }, [connectorTypeRef]);
 
   const onSelect = useCallback(
     (selectedConnector: string) => {
+      onDeselect();
       connectorTypeRef.send({ type: 'selectConnector', selectedConnector });
     },
-    [connectorTypeRef]
+    [connectorTypeRef, onDeselect]
   );
+
   const runQuery = useCallback(
     (
       request: PaginatedApiRequest<ConnectorTypesOrderBy, ConnectorTypesSearch>
@@ -379,16 +384,18 @@ export const useKafkasMachine = () => {
       []
     )
   );
-  const onSelect = useCallback(
-    (selectedInstance: string) => {
-      kafkaRef.send({ type: 'selectInstance', selectedInstance });
-    },
-    [kafkaRef]
-  );
 
   const onDeselect = useCallback(() => {
     kafkaRef.send({ type: 'deselectInstance' });
   }, [kafkaRef]);
+
+  const onSelect = useCallback(
+    (selectedInstance: string) => {
+      onDeselect();
+      kafkaRef.send({ type: 'selectInstance', selectedInstance });
+    },
+    [kafkaRef, onDeselect]
+  );
 
   const runQuery = useCallback(
     (request: PaginatedApiRequest<PlaceholderOrderBy, KafkasSearch>) => {
@@ -449,16 +456,17 @@ export const useNamespaceMachine = () => {
       []
     )
   );
-  const onSelect = useCallback(
-    (selectedNamespace: string) => {
-      namespaceRef.send({ type: 'selectNamespace', selectedNamespace });
-    },
-    [namespaceRef]
-  );
-
   const onDeselect = useCallback(() => {
     namespaceRef.send({ type: 'deselectNamespace' });
   }, [namespaceRef]);
+
+  const onSelect = useCallback(
+    (selectedNamespace: string) => {
+      onDeselect();
+      namespaceRef.send({ type: 'selectNamespace', selectedNamespace });
+    },
+    [namespaceRef, onDeselect]
+  );
 
   const runQuery = useCallback(
     (

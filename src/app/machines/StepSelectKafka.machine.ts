@@ -142,7 +142,13 @@ export const selectKafkaMachine = model.createMachine(
                 },
               },
               valid: {
-                entry: sendParent('isValid'),
+                entry: sendParent((context) => ({
+                  type: 'isValid',
+                  data: {
+                    updatedValue: context.selectedInstance,
+                    updatedStep: 'kafka',
+                  },
+                })),
                 on: {
                   selectInstance: {
                     target: 'verify',
