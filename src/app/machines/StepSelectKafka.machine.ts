@@ -1,5 +1,8 @@
 import { KafkasSearch, fetchKafkaInstances } from '@apis/api';
-import { PAGINATED_MACHINE_ID } from '@constants/constants';
+import {
+  PAGINATED_MACHINE_ID,
+  SELECT_KAFKA_INSTANCE,
+} from '@constants/constants';
 
 import { ActorRefFrom, send } from 'xstate';
 import { sendParent } from 'xstate/lib/actions';
@@ -146,7 +149,7 @@ export const selectKafkaMachine = model.createMachine(
                   type: 'isValid',
                   data: {
                     updatedValue: context.selectedInstance,
-                    updatedStep: 'kafka',
+                    updatedStep: SELECT_KAFKA_INSTANCE,
                   },
                 })),
                 on: {

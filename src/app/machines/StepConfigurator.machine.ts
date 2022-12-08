@@ -1,3 +1,5 @@
+import { CONNECTOR_SPECIFIC } from '@constants/constants';
+
 import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
@@ -90,7 +92,7 @@ export const configuratorMachine = model.createMachine(
           type: 'isInvalid',
           data: {
             updatedValue: context.configuration,
-            updatedStep: 'configurator',
+            updatedStep: CONNECTOR_SPECIFIC,
           },
         })),
         always: [{ target: 'valid', cond: 'activeStepValid' }],

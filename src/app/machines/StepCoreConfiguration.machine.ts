@@ -1,4 +1,5 @@
 import { UserProvidedServiceAccount } from '@apis/api';
+import { CORE_CONFIGURATION } from '@constants/constants';
 
 import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
@@ -59,7 +60,7 @@ export const coreConfigurationMachine = model.createMachine(
           type: 'isInvalid',
           data: {
             updatedValue: context.userServiceAccount,
-            updatedStep: 'core',
+            updatedStep: CORE_CONFIGURATION,
             name: context.name,
           },
         })),

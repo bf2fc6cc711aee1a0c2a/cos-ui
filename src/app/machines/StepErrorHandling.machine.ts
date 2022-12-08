@@ -1,3 +1,5 @@
+import { ERROR_HANDLING } from '@constants/constants';
+
 import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
@@ -49,7 +51,7 @@ export const errorHandlingMachine = model.createMachine(
           type: 'isInvalid',
           data: {
             updatedValue: context.userErrorHandler,
-            updatedStep: 'errorHandler',
+            updatedStep: ERROR_HANDLING,
             topic: context.topic,
           },
         })),
@@ -77,7 +79,7 @@ export const errorHandlingMachine = model.createMachine(
           type: 'isValid',
           data: {
             updatedValue: context.userErrorHandler,
-            updatedStep: 'errorHandler',
+            updatedStep: ERROR_HANDLING,
             topic: context.topic,
           },
         })),

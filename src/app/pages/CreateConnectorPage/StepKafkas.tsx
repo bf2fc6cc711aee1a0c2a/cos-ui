@@ -4,7 +4,7 @@ import {
 } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { EmptyStateNoKafkaInstances } from '@app/components/EmptyStateNoKafkaInstances/EmptyStateNoKafkaInstances';
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
-import { KafkaCard } from '@app/components/KakfaCard/kafkaCard';
+import { KafkaCard } from '@app/components/KafkaCard/KafkaCard';
 import { Loading } from '@app/components/Loading/Loading';
 import { Pagination } from '@app/components/Pagination/Pagination';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';

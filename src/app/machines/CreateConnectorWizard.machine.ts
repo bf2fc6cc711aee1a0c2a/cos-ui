@@ -726,29 +726,36 @@ export const creationWizardMachine = model.createMachine(
       notifyUserUpdate: (context, event: any) => {
         const { updatedValue, updatedStep } = event.data || {};
         if (updatedValue && updatedStep) {
-          if (updatedStep === 'connector') {
-            context.selectedConnector = updatedValue;
-            // connectorData: context.connectorData,
-            context.connectorTypeDetails = event.data.connectorTypeDetails;
-            // duplicateMode: context.duplicateMode,
-            context.connectorConfiguration = false;
-            context.activeConfigurationStep = 0;
-            context.isConfigurationValid = false;
-            context.configurationSteps = false;
-            context.userErrorHandler = undefined;
-            context.topic = undefined;
-          } else if (updatedStep === 'kafka') {
-            context.selectedKafkaInstance = updatedValue;
-          } else if (updatedStep === 'namespace') {
-            context.selectedNamespace = updatedValue;
-          } else if (updatedStep === 'core') {
-            context.userServiceAccount = updatedValue;
-            context.name = event.data.name;
-          } else if (updatedStep === 'configurator') {
-            context.connectorConfiguration = updatedValue;
-          } else if (updatedStep === 'errorHandler') {
-            context.userErrorHandler = updatedValue;
-            context.topic = event.data.topic;
+          switch (updatedStep) {
+            case SELECT_CONNECTOR_TYPE:
+              context.selectedConnector = updatedValue;
+              // connectorData: context.connectorData,
+              context.connectorTypeDetails = event.data.connectorTypeDetails;
+              // duplicateMode: context.duplicateMode,
+              context.connectorConfiguration = false;
+              context.activeConfigurationStep = 0;
+              context.isConfigurationValid = false;
+              context.configurationSteps = false;
+              context.userErrorHandler = undefined;
+              context.topic = undefined;
+              break;
+            case SELECT_KAFKA_INSTANCE:
+              context.selectedKafkaInstance = updatedValue;
+              break;
+            case SELECT_NAMESPACE:
+              context.selectedNamespace = updatedValue;
+              break;
+            case CORE_CONFIGURATION:
+              context.userServiceAccount = updatedValue;
+              context.name = event.data.name;
+              break;
+            case CONNECTOR_SPECIFIC:
+              context.connectorConfiguration = updatedValue;
+              break;
+            case ERROR_HANDLING:
+              context.userErrorHandler = updatedValue;
+              context.topic = event.data.topic;
+              break;
           }
         }
       },

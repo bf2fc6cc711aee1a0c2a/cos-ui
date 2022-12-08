@@ -3,7 +3,10 @@ import {
   ConnectorTypesSearch,
   fetchConnectorTypes,
 } from '@apis/api';
-import { PAGINATED_MACHINE_ID } from '@constants/constants';
+import {
+  PAGINATED_MACHINE_ID,
+  SELECT_CONNECTOR_TYPE,
+} from '@constants/constants';
 
 import { ActorRefFrom, send, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
@@ -153,7 +156,7 @@ export const selectConnectorTypeMachine = model.createMachine(
                   type: 'isValid',
                   data: {
                     updatedValue: context.selectedConnector,
-                    updatedStep: 'connector',
+                    updatedStep: SELECT_CONNECTOR_TYPE,
                     connectorTypeDetails: context.connectorTypeDetails,
                   },
                 })),
