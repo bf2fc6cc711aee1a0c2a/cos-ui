@@ -1,5 +1,9 @@
-.pf-c-clipboard-copy__text-pf-m-code{
-    background-color: var( --pf-c-clipboard-copy--m-inline--BackgroundColor)!important;
-    --pf-c-clipboard-copy--m-inline--BackgroundColor: var(--pf-global--palette--red-50)!important;  
-    color: var(--pf-global--link--Color);
+.pf-c-clipboard-copy__text-pf-m-code {
+  background-color: var(
+    --pf-c-clipboard-copy--m-inline--BackgroundColor
+  ) !important;
+  --pf-c-clipboard-copy--m-inline--BackgroundColor: var(
+    --pf-global--palette--red-50
+  ) !important;
+  color: var(--pf-global--link--Color);
 }
