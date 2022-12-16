@@ -2,11 +2,12 @@ import React from 'react';
 
 import {
   Alert,
-  AlertActionCloseButton,
   ClipboardCopy,
+  TextContent,
+  Text,
 } from '@patternfly/react-core';
 
-import { useTranslation } from '@rhoas/app-services-ui-components';
+import { Trans, useTranslation } from '@rhoas/app-services-ui-components';
 
 import './CommunicationErrorStatus.css';
 
@@ -20,29 +21,24 @@ export const ExpandableAlerts = () => {
         isInline
         variant="danger"
         title={t('communicationErrorTitle')}
-        actionClose={
-          <AlertActionCloseButton
-            onClose={() => alert('Clicked the close button')}
-          />
-        }
-        actionLinks={<React.Fragment></React.Fragment>}
       >
-        <p>{t('communicationErrorDescripton')}</p>
-        <p>
-          <br />
-        </p>
-        <p>
-          {t('communicationErrorMessageNoSubscripton')}
-          <ClipboardCopy
-            className="pf-c-clipboard-copy__text-pf-m-code"
-            hoverTip="Copy"
-            clickTip="Copied"
-            variant="inline-compact"
-            isCode
-          >
-            {t('communicationErrorEmail')}
-          </ClipboardCopy>
-        </p>
+        <TextContent>
+          <Text>{t('communicationErrorDescripton')}</Text>
+          <Text>
+            <Trans i18nKey={'communicationErrorMessageNoSubscripton'}>
+              To get help, email us at
+              <ClipboardCopy
+                className="pf-c-clipboard-copy__text-pf-m-code"
+                hoverTip={t('communicationErrorHoverTip')}
+                clickTip={t('communicationErrorClickTip')}
+                variant="inline-compact"
+                isCode
+              >
+                {t('communicationErrorEmail')}
+              </ClipboardCopy>
+            </Trans>
+          </Text>
+        </TextContent>
       </Alert>
     </React.Fragment>
   );
