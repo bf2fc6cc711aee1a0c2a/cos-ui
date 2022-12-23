@@ -36,9 +36,9 @@
     "react-viewport-utils": "2.0.2",
     "react-virtualized": "9.21.1",
     "short-uuid": "4.2.0",
-    "uniforms": "3.10.1",
-    "uniforms-bridge-json-schema": "3.10.1",
-    "uniforms-patternfly": "4.7.6",
+    "uniforms": "3.10.2",
+    "uniforms-bridge-json-schema": "3.10.2",
+    "uniforms-patternfly": "4.7.7",
     "xstate": "4.35.1"
   },
   "devDependencies": {
