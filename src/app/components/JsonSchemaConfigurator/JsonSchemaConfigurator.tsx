@@ -55,7 +55,7 @@ export const JsonSchemaConfigurator: FunctionComponent<
       );
       return { ...error, details };
     },
-    [schema]
+    [required, t]
   );
 
   const onChangeModel = useCallback(
@@ -63,7 +63,7 @@ export const JsonSchemaConfigurator: FunctionComponent<
       const details = filterEdgeCases(required, schemaValidator(model).details);
       onChange(model, details.length === 0);
     },
-    [onChange]
+    [onChange, required, schemaValidator]
   );
 
   // no need to create form elements for error_handler, processors or steps
