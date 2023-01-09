@@ -19,25 +19,26 @@ export type EmptyStateFetchErrorProps = {
   buttonText?: string;
 };
 
-export const EmptyStateFetchError: FunctionComponent<EmptyStateFetchErrorProps> =
-  ({ message, buttonText, onClick }) => {
-    const { t } = useTranslation();
-    return (
-      <EmptyState variant={EmptyStateVariant.full}>
-        <EmptyStateIcon icon={ExclamationCircleIcon} />
-        <Title headingLevel={'h1'} size={TitleSizes['lg']}>
-          {t('somethingWentWrong')}
-        </Title>
-        <EmptyStateBody>{t('fetchErrorBody', { message })}</EmptyStateBody>
-        {buttonText && onClick && (
-          <Button
-            variant={'primary'}
-            ouiaId={'button-fetch-error'}
-            onClick={onClick}
-          >
-            {buttonText}
-          </Button>
-        )}
-      </EmptyState>
-    );
-  };
+export const EmptyStateFetchError: FunctionComponent<
+  EmptyStateFetchErrorProps
+> = ({ message, buttonText, onClick }) => {
+  const { t } = useTranslation();
+  return (
+    <EmptyState variant={EmptyStateVariant.full}>
+      <EmptyStateIcon icon={ExclamationCircleIcon} />
+      <Title headingLevel={'h1'} size={TitleSizes['lg']}>
+        {t('somethingWentWrong')}
+      </Title>
+      <EmptyStateBody>{t('fetchErrorBody', { message })}</EmptyStateBody>
+      {buttonText && onClick && (
+        <Button
+          variant={'primary'}
+          ouiaId={'button-fetch-error'}
+          onClick={onClick}
+        >
+          {buttonText}
+        </Button>
+      )}
+    </EmptyState>
+  );
+};

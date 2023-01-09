@@ -31,18 +31,19 @@ type ConnectorsPageProviderPropsType = {
   onError: (error: string) => void;
 };
 
-export const ConnectorsPageProvider: FunctionComponent<ConnectorsPageProviderPropsType> =
-  ({ children, accessToken, connectorsApiBasePath, onError }) => {
-    const service = useInterpret(connectorsPageMachine, {
-      context: { accessToken, connectorsApiBasePath, onError },
-      devTools: true,
-    });
-    return (
-      <ConnectorsPageContext.Provider value={service}>
-        <ConnectorsMachineInitializer>{children}</ConnectorsMachineInitializer>
-      </ConnectorsPageContext.Provider>
-    );
-  };
+export const ConnectorsPageProvider: FunctionComponent<
+  ConnectorsPageProviderPropsType
+> = ({ children, accessToken, connectorsApiBasePath, onError }) => {
+  const service = useInterpret(connectorsPageMachine, {
+    context: { accessToken, connectorsApiBasePath, onError },
+    devTools: true,
+  });
+  return (
+    <ConnectorsPageContext.Provider value={service}>
+      <ConnectorsMachineInitializer>{children}</ConnectorsMachineInitializer>
+    </ConnectorsPageContext.Provider>
+  );
+};
 
 const ConnectorsMachineInitializer: FunctionComponent = ({ children }) => {
   const isReady = useConnectorsPageIsReady();

@@ -67,164 +67,164 @@ type CreateConnectorWizardProviderProps = {
   onSave: (name: string) => void;
 };
 
-export const CreateConnectorWizardProvider: FunctionComponent<CreateConnectorWizardProviderProps> =
-  ({
-    children,
-    accessToken,
-    connectorsApiBasePath,
-    kafkaManagementApiBasePath,
-    fetchConfigurator,
-    onSave,
-    connectorData,
-    connectorTypeDetails,
-    connectorId,
-    duplicateMode,
-  }) => {
-    const { onActivity } = useAnalytics();
-    const makeConfiguratorLoaderMachine = useCallback(
-      () =>
-        configuratorLoaderMachine.withConfig({
-          services: {
-            fetchConfigurator: (context) =>
-              fetchConfigurator(context.connector),
-          },
-        }),
-      [fetchConfigurator]
-    );
-    const service = useInterpret(creationWizardMachine, {
-      devTools: true,
-      context: {
-        accessToken,
-        connectorsApiBasePath,
-        kafkaManagementApiBasePath,
-        onSave,
-        connectorId,
-        connectorData,
-        connectorTypeDetails,
-        duplicateMode,
-      },
-      services: {
-        makeConfiguratorLoaderMachine,
-      },
-    });
-    const onUserActivity = (event: string, properties?: unknown) => {
-      onActivity(
-        `${duplicateMode ? 'Duplicate' : 'Create'}-${event}`,
-        properties
-      );
-    };
-    // Map state machine transitions to user activity events
-    service.onTransition((state) => {
-      const { selectConnectorRef, selectKafkaInstanceRef, selectNamespaceRef } =
-        state.children as {
-          selectConnectorRef: ConnectorTypesMachineActorRef;
-          selectKafkaInstanceRef: KafkaMachineActorRef;
-          selectNamespaceRef: NamespaceMachineActorRef;
-        };
-      const { type } = state.event;
-      // this actually also carries child events
-      switch (type as string) {
-        case 'isValid':
-          switch (true) {
-            case !!selectConnectorRef:
-              const { selectedConnector } =
-                selectConnectorRef.getSnapshot()!.context;
-              onUserActivity('Connector-Select-Connector-Selection', {
-                name: selectedConnector!.name,
-                id: selectedConnector!.id,
-                type:
-                  (selectedConnector!.labels || []).find(
-                    (label: string) => label === 'source'
-                  ) !== undefined
-                    ? 'source'
-                    : 'sink',
-              });
-              break;
-            case !!selectKafkaInstanceRef:
-              const { selectedInstance } =
-                selectKafkaInstanceRef.getSnapshot()!.context;
-              onUserActivity('Kafka-Select-Kafka-Selection', {
-                name: selectedInstance!.name,
-                createdAt: selectedInstance!.created_at,
-                expiresAt: selectedInstance!.expires_at,
-              });
-              break;
-            case !!selectNamespaceRef:
-              const { selectedNamespace } =
-                selectNamespaceRef.getSnapshot()!.context;
-              onUserActivity('Namespace-Select-Namespace-Selection', {
-                name: selectedNamespace?.name,
-                expiration: selectedNamespace!.expiration
-                  ? selectedNamespace!.expiration
-                  : 'No Expiration',
-              });
-              break;
-            default:
-              // nothing to do
-              break;
-          }
-          break;
-        case 'next':
-          onUserActivity('Connector-Next');
-          break;
-        case 'prev':
-          onUserActivity('Connector-Back');
-          break;
-        case 'done.invoke.coreConfigurationRef': {
-          const { data } = state.event as {
-            type: string;
-            data: { name: string; sACreated: boolean };
-          };
-          onUserActivity('Connector-Core-Complete', {
-            name: data.name,
-            serviceAccountCreated: data.sACreated ? 'yes' : 'no',
-          });
-          break;
-        }
-        case 'done.invoke.configuratorRef':
-          onUserActivity('Connector-Specific-Complete');
-          break;
-        case 'done.invoke.errorRef': {
-          const { data } = state.event as {
-            type: string;
-            data: { userErrorHandler: string };
-          };
-          onUserActivity('Connector-Error-Handler-Complete', {
-            errorHandler: data.userErrorHandler,
-          });
-          break;
-        }
-        case 'done.invoke.reviewRef':
-          onUserActivity('Connector-Final');
-          break;
-        case 'jumpToSelectConnector':
-        case 'jumpToSelectKafka':
-        case 'jumpToSelectNamespace':
-        case 'jumpToCoreConfiguration':
-        case 'jumpToErrorConfiguration':
-        case 'jumpToReviewConfiguration': {
-          const { fromStep } = state.event as JumpEvent;
-          onUserActivity(type, { fromStep });
-          break;
-        }
-        case 'jumpToConfigureConnector': {
-          const { fromStep, subStep } = state.event as JumpEvent & {
-            subStep?: number;
-          };
-          onUserActivity(type, { fromStep, subStep });
-          break;
-        }
-        default:
-          // nothing to do
-          break;
-      }
-    });
-    return (
-      <CreateConnectorWizardMachineService.Provider value={service}>
-        {children}
-      </CreateConnectorWizardMachineService.Provider>
+export const CreateConnectorWizardProvider: FunctionComponent<
+  CreateConnectorWizardProviderProps
+> = ({
+  children,
+  accessToken,
+  connectorsApiBasePath,
+  kafkaManagementApiBasePath,
+  fetchConfigurator,
+  onSave,
+  connectorData,
+  connectorTypeDetails,
+  connectorId,
+  duplicateMode,
+}) => {
+  const { onActivity } = useAnalytics();
+  const makeConfiguratorLoaderMachine = useCallback(
+    () =>
+      configuratorLoaderMachine.withConfig({
+        services: {
+          fetchConfigurator: (context) => fetchConfigurator(context.connector),
+        },
+      }),
+    [fetchConfigurator]
+  );
+  const service = useInterpret(creationWizardMachine, {
+    devTools: true,
+    context: {
+      accessToken,
+      connectorsApiBasePath,
+      kafkaManagementApiBasePath,
+      onSave,
+      connectorId,
+      connectorData,
+      connectorTypeDetails,
+      duplicateMode,
+    },
+    services: {
+      makeConfiguratorLoaderMachine,
+    },
+  });
+  const onUserActivity = (event: string, properties?: unknown) => {
+    onActivity(
+      `${duplicateMode ? 'Duplicate' : 'Create'}-${event}`,
+      properties
     );
   };
+  // Map state machine transitions to user activity events
+  service.onTransition((state) => {
+    const { selectConnectorRef, selectKafkaInstanceRef, selectNamespaceRef } =
+      state.children as {
+        selectConnectorRef: ConnectorTypesMachineActorRef;
+        selectKafkaInstanceRef: KafkaMachineActorRef;
+        selectNamespaceRef: NamespaceMachineActorRef;
+      };
+    const { type } = state.event;
+    // this actually also carries child events
+    switch (type as string) {
+      case 'isValid':
+        switch (true) {
+          case !!selectConnectorRef:
+            const { selectedConnector } =
+              selectConnectorRef.getSnapshot()!.context;
+            onUserActivity('Connector-Select-Connector-Selection', {
+              name: selectedConnector!.name,
+              id: selectedConnector!.id,
+              type:
+                (selectedConnector!.labels || []).find(
+                  (label: string) => label === 'source'
+                ) !== undefined
+                  ? 'source'
+                  : 'sink',
+            });
+            break;
+          case !!selectKafkaInstanceRef:
+            const { selectedInstance } =
+              selectKafkaInstanceRef.getSnapshot()!.context;
+            onUserActivity('Kafka-Select-Kafka-Selection', {
+              name: selectedInstance!.name,
+              createdAt: selectedInstance!.created_at,
+              expiresAt: selectedInstance!.expires_at,
+            });
+            break;
+          case !!selectNamespaceRef:
+            const { selectedNamespace } =
+              selectNamespaceRef.getSnapshot()!.context;
+            onUserActivity('Namespace-Select-Namespace-Selection', {
+              name: selectedNamespace?.name,
+              expiration: selectedNamespace!.expiration
+                ? selectedNamespace!.expiration
+                : 'No Expiration',
+            });
+            break;
+          default:
+            // nothing to do
+            break;
+        }
+        break;
+      case 'next':
+        onUserActivity('Connector-Next');
+        break;
+      case 'prev':
+        onUserActivity('Connector-Back');
+        break;
+      case 'done.invoke.coreConfigurationRef': {
+        const { data } = state.event as {
+          type: string;
+          data: { name: string; sACreated: boolean };
+        };
+        onUserActivity('Connector-Core-Complete', {
+          name: data.name,
+          serviceAccountCreated: data.sACreated ? 'yes' : 'no',
+        });
+        break;
+      }
+      case 'done.invoke.configuratorRef':
+        onUserActivity('Connector-Specific-Complete');
+        break;
+      case 'done.invoke.errorRef': {
+        const { data } = state.event as {
+          type: string;
+          data: { userErrorHandler: string };
+        };
+        onUserActivity('Connector-Error-Handler-Complete', {
+          errorHandler: data.userErrorHandler,
+        });
+        break;
+      }
+      case 'done.invoke.reviewRef':
+        onUserActivity('Connector-Final');
+        break;
+      case 'jumpToSelectConnector':
+      case 'jumpToSelectKafka':
+      case 'jumpToSelectNamespace':
+      case 'jumpToCoreConfiguration':
+      case 'jumpToErrorConfiguration':
+      case 'jumpToReviewConfiguration': {
+        const { fromStep } = state.event as JumpEvent;
+        onUserActivity(type, { fromStep });
+        break;
+      }
+      case 'jumpToConfigureConnector': {
+        const { fromStep, subStep } = state.event as JumpEvent & {
+          subStep?: number;
+        };
+        onUserActivity(type, { fromStep, subStep });
+        break;
+      }
+      default:
+        // nothing to do
+        break;
+    }
+  });
+  return (
+    <CreateConnectorWizardMachineService.Provider value={service}>
+      {children}
+    </CreateConnectorWizardMachineService.Provider>
+  );
+};
 
 export const useCreateConnectorWizardService = () => {
   const service = useContext(CreateConnectorWizardMachineService);

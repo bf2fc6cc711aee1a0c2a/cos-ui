@@ -14,8 +14,10 @@ import { CONNECTOR_INSTANCES_COLUMNS } from '../../constants';
 
 export type ConnectorCellProps = {
   Td: typeof Td;
-  column: typeof CONNECTOR_INSTANCES_COLUMNS[number];
-  columnLabels: { [key in typeof CONNECTOR_INSTANCES_COLUMNS[number]]: string };
+  column: (typeof CONNECTOR_INSTANCES_COLUMNS)[number];
+  columnLabels: {
+    [key in (typeof CONNECTOR_INSTANCES_COLUMNS)[number]]: string;
+  };
   connectorRef: ConnectorMachineActorRef;
   tdKey: string;
   onConnectorDetail: (id: string, goToConnectorDetails: string) => void;
