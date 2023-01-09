@@ -337,22 +337,23 @@ type ConnectorTypesPaginationProps = {
     event: PaginationEvent<ConnectorTypesOrderBy, ConnectorTypesSearch>
   ) => void;
 };
-const ConnectorTypesPagination: FunctionComponent<ConnectorTypesPaginationProps> =
-  ({ isCompact = false, onChange }) => {
-    const { request, response } = useConnectorTypesMachine();
-    return (
-      <Pagination
-        itemCount={response?.total || 0}
-        page={request.page}
-        perPage={request.size}
-        onChange={(event) => {
-          onChange({
-            ...event,
-            orderBy: request.orderBy,
-            search: request.search,
-          });
-        }}
-        isCompact={isCompact}
-      />
-    );
-  };
+const ConnectorTypesPagination: FunctionComponent<
+  ConnectorTypesPaginationProps
+> = ({ isCompact = false, onChange }) => {
+  const { request, response } = useConnectorTypesMachine();
+  return (
+    <Pagination
+      itemCount={response?.total || 0}
+      page={request.page}
+      perPage={request.size}
+      onChange={(event) => {
+        onChange({
+          ...event,
+          orderBy: request.orderBy,
+          search: request.search,
+        });
+      }}
+      isCompact={isCompact}
+    />
+  );
+};

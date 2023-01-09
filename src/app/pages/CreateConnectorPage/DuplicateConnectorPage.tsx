@@ -36,127 +36,124 @@ type DuplicateConnectorPageProps = {
   onSave: (name: string) => void;
   onClose: () => void;
 };
-export const DuplicateConnectorPage: FunctionComponent<DuplicateConnectorPageProps> =
-  ({ onSave, onClose }) => {
-    const { t } = useTranslation();
-    const alert = useAlert();
-    const config = useConfig();
-    const { connectorsApiBasePath, kafkaManagementApiBasePath, getToken } =
-      useCos();
-    const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
-    const openLeaveConfirm = () => setAskForLeaveConfirm(true);
-    const closeLeaveConfirm = () => setAskForLeaveConfirm(false);
+export const DuplicateConnectorPage: FunctionComponent<
+  DuplicateConnectorPageProps
+> = ({ onSave, onClose }) => {
+  const { t } = useTranslation();
+  const alert = useAlert();
+  const config = useConfig();
+  const { connectorsApiBasePath, kafkaManagementApiBasePath, getToken } =
+    useCos();
+  const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
+  const openLeaveConfirm = () => setAskForLeaveConfirm(true);
+  const closeLeaveConfirm = () => setAskForLeaveConfirm(false);
 
-    const [connectorData, setConnectorData] = useState<Connector>();
-    const { hash } = useLocation();
-    const connectorId = hash.split('&')[0].substring(1);
-    const getConnectorData = useCallback((data) => {
-      setConnectorData(data as Connector);
-    }, []);
+  const [connectorData, setConnectorData] = useState<Connector>();
+  const { hash } = useLocation();
+  const connectorId = hash.split('&')[0].substring(1);
+  const getConnectorData = useCallback((data) => {
+    setConnectorData(data as Connector);
+  }, []);
 
-    const [connectorTypeDetails, setConnectorTypeDetails] =
-      useState<ConnectorTypeAllOf>();
+  const [connectorTypeDetails, setConnectorTypeDetails] =
+    useState<ConnectorTypeAllOf>();
 
-    const onError = useCallback(
-      (description: string) => {
-        alert?.addAlert({
-          id: 'connector-duplicate-error',
-          variant: AlertVariant.danger,
-          title: t('somethingWentWrong'),
-          description,
-        });
-      },
-      [alert, t]
-    );
+  const onError = useCallback(
+    (description: string) => {
+      alert?.addAlert({
+        id: 'connector-duplicate-error',
+        variant: AlertVariant.danger,
+        title: t('somethingWentWrong'),
+        description,
+      });
+    },
+    [alert, t]
+  );
 
-    const getConnectorTypeInfo = useCallback((data) => {
-      setConnectorTypeDetails(data as ConnectorTypeAllOf);
-    }, []);
+  const getConnectorTypeInfo = useCallback((data) => {
+    setConnectorTypeDetails(data as ConnectorTypeAllOf);
+  }, []);
 
-    useEffect(() => {
-      getConnector({
+  useEffect(() => {
+    getConnector({
+      accessToken: getToken,
+      connectorsApiBasePath: connectorsApiBasePath,
+      connectorId: connectorId,
+    })(getConnectorData, onError);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connectorId]);
+
+  useEffect(() => {
+    if (connectorData?.connector_type_id) {
+      getConnectorTypeDetail({
         accessToken: getToken,
         connectorsApiBasePath: connectorsApiBasePath,
-        connectorId: connectorId,
-      })(getConnectorData, onError);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [connectorId]);
+        connectorTypeId: connectorData?.connector_type_id,
+      })(getConnectorTypeInfo);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connectorData]);
 
-    useEffect(() => {
-      if (connectorData?.connector_type_id) {
-        getConnectorTypeDetail({
-          accessToken: getToken,
-          connectorsApiBasePath: connectorsApiBasePath,
-          connectorTypeId: connectorData?.connector_type_id,
-        })(getConnectorTypeInfo);
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [connectorData]);
-
-    return (
-      <>
-        <PageSection variant={'light'} hasShadowBottom>
-          <Breadcrumb>
-            <BreadcrumbItem>
-              <Link to={'/'}>{t('connectorsInstances')}</Link>
-            </BreadcrumbItem>
-            <BreadcrumbItem isActive>{t('duplicateConnector')}</BreadcrumbItem>
-          </Breadcrumb>
-          <TextContent className={'pf-u-pt-md pf-u-pb-md'}>
-            <Title headingLevel="h1">{t('duplicateConnector')}</Title>
-            {connectorData && connectorTypeDetails ? (
-              <Text>
-                <strong>{t('Connector')}: </strong>
-                {connectorTypeDetails.name}
-              </Text>
-            ) : null}
-          </TextContent>
-        </PageSection>
-        <PageSection
-          padding={{ default: 'noPadding' }}
-          style={{ zIndex: 0 }}
-          type={'wizard'}
-        >
+  return (
+    <>
+      <PageSection variant={'light'} hasShadowBottom>
+        <Breadcrumb>
+          <BreadcrumbItem>
+            <Link to={'/'}>{t('connectorsInstances')}</Link>
+          </BreadcrumbItem>
+          <BreadcrumbItem isActive>{t('duplicateConnector')}</BreadcrumbItem>
+        </Breadcrumb>
+        <TextContent className={'pf-u-pt-md pf-u-pb-md'}>
+          <Title headingLevel="h1">{t('duplicateConnector')}</Title>
           {connectorData && connectorTypeDetails ? (
-            <CreateConnectorWizardProvider
-              accessToken={getToken}
-              connectorsApiBasePath={connectorsApiBasePath}
-              kafkaManagementApiBasePath={kafkaManagementApiBasePath}
-              fetchConfigurator={(connector) =>
-                fetchConfigurator(connector, config?.cos.configurators || {})
-              }
-              connectorId={connectorId}
-              connectorData={connectorData}
-              connectorTypeDetails={connectorTypeDetails}
-              duplicateMode={true}
-              onSave={onSave}
+            <Text>
+              <strong>{t('Connector')}: </strong>
+              {connectorTypeDetails.name}
+            </Text>
+          ) : null}
+        </TextContent>
+      </PageSection>
+      <PageSection
+        padding={{ default: 'noPadding' }}
+        style={{ zIndex: 0 }}
+        type={'wizard'}
+      >
+        {connectorData && connectorTypeDetails ? (
+          <CreateConnectorWizardProvider
+            accessToken={getToken}
+            connectorsApiBasePath={connectorsApiBasePath}
+            kafkaManagementApiBasePath={kafkaManagementApiBasePath}
+            fetchConfigurator={(connector) =>
+              fetchConfigurator(connector, config?.cos.configurators || {})
+            }
+            connectorId={connectorId}
+            connectorData={connectorData}
+            connectorTypeDetails={connectorTypeDetails}
+            duplicateMode={true}
+            onSave={onSave}
+          >
+            <CreateConnectorWizard onClose={openLeaveConfirm} />
+            <Modal
+              title={t('leaveDuplicateConnectorConfirmModalTitle')}
+              variant={'small'}
+              isOpen={askForLeaveConfirm}
+              onClose={closeLeaveConfirm}
+              actions={[
+                <Button key="confirm" variant="primary" onClick={onClose}>
+                  Confirm
+                </Button>,
+                <Button key="cancel" variant="link" onClick={closeLeaveConfirm}>
+                  Cancel
+                </Button>,
+              ]}
             >
-              <CreateConnectorWizard onClose={openLeaveConfirm} />
-              <Modal
-                title={t('leaveDuplicateConnectorConfirmModalTitle')}
-                variant={'small'}
-                isOpen={askForLeaveConfirm}
-                onClose={closeLeaveConfirm}
-                actions={[
-                  <Button key="confirm" variant="primary" onClick={onClose}>
-                    Confirm
-                  </Button>,
-                  <Button
-                    key="cancel"
-                    variant="link"
-                    onClick={closeLeaveConfirm}
-                  >
-                    Cancel
-                  </Button>,
-                ]}
-              >
-                {t('leaveDuplicateConnectorConfirmModalDescription')}
-              </Modal>
-            </CreateConnectorWizardProvider>
-          ) : (
-            <Loading />
-          )}
-        </PageSection>
-      </>
-    );
-  };
+              {t('leaveDuplicateConnectorConfirmModalDescription')}
+            </Modal>
+          </CreateConnectorWizardProvider>
+        ) : (
+          <Loading />
+        )}
+      </PageSection>
+    </>
+  );
+};

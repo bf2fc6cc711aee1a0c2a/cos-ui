@@ -30,85 +30,83 @@ type JsonSchemaConfiguratorProps = {
   onChange: (configuration: unknown, isValid: boolean) => void;
 };
 
-export const JsonSchemaConfigurator: FunctionComponent<JsonSchemaConfiguratorProps> =
-  ({ schema, configuration, duplicateMode, editMode, onChange }) => {
-    const { t } = useTranslation();
-    schema.type = schema.type || 'object';
-    const { required } = schema;
+export const JsonSchemaConfigurator: FunctionComponent<
+  JsonSchemaConfiguratorProps
+> = ({ schema, configuration, duplicateMode, editMode, onChange }) => {
+  const { t } = useTranslation();
+  schema.type = schema.type || 'object';
+  const { required } = schema;
 
-    const schemaValidator = createValidator(schema);
-    const bridge = new CustomJsonSchemaBridge(
-      schema,
-      schemaValidator,
-      t,
-      duplicateMode || editMode || false,
-      duplicateMode || false
-    );
+  const schemaValidator = createValidator(schema);
+  const bridge = new CustomJsonSchemaBridge(
+    schema,
+    schemaValidator,
+    t,
+    duplicateMode || editMode || false,
+    duplicateMode || false
+  );
 
-    const onValidate = useCallback(
-      (model: any, error: any) => {
-        const details = overrideErrorMessages(
-          t,
-          filterEdgeCases(required, error.details),
-          model
-        );
-        return { ...error, details };
-      },
-      [schema]
-    );
+  const onValidate = useCallback(
+    (model: any, error: any) => {
+      const details = overrideErrorMessages(
+        t,
+        filterEdgeCases(required, error.details),
+        model
+      );
+      return { ...error, details };
+    },
+    [schema]
+  );
 
-    const onChangeModel = useCallback(
-      (model: any) => {
-        const details = filterEdgeCases(
-          required,
-          schemaValidator(model).details
-        );
-        onChange(model, details.length === 0);
-      },
-      [onChange]
-    );
+  const onChangeModel = useCallback(
+    (model: any) => {
+      const details = filterEdgeCases(required, schemaValidator(model).details);
+      onChange(model, details.length === 0);
+    },
+    [onChange]
+  );
 
-    // no need to create form elements for error_handler, processors or steps
-    const { error_handler, processors, steps, ...properties } =
-      bridge.schema.properties;
-    // customize field components as needed
-    const { aws_region, ...otherProperties } = properties;
-    aws_region && aws_region.enum
-      ? (aws_region.uniforms = {
-          component: TypeaheadField,
+  // no need to create form elements for error_handler, processors or steps
+  const { error_handler, processors, steps, ...properties } =
+    bridge.schema.properties;
+  // customize field components as needed
+  const { aws_region, ...otherProperties } = properties;
+  aws_region && aws_region.enum
+    ? (aws_region.uniforms = {
+        component: TypeaheadField,
+      })
+    : undefined;
+
+  forEach(otherProperties, (val: any, key: string) => {
+    val.type === 'boolean'
+      ? (otherProperties[key].uniforms = {
+          component: CheckboxWithDescriptionField,
         })
       : undefined;
+  });
 
-    forEach(otherProperties, (val: any, key: string) => {
-      val.type === 'boolean'
-        ? (otherProperties[key].uniforms = {
-            component: CheckboxWithDescriptionField,
-          })
-        : undefined;
-    });
-
-    const organizedProperties = applyClientSideFormCustomizations({
-      ...otherProperties,
-      ...(aws_region && { aws_region }),
-    });
-    return (
-      <Grid hasGutter>
-        <KameletForm
-          className="connector-specific pf-c-form pf-m-9-col-on-lg"
-          schema={bridge}
-          model={clearEmptyObjectValues(configuration)}
-          onValidate={onValidate}
-          validate={'onChange'}
-          onChangeModel={onChangeModel}
-          showInlineError
-        >
-          {Object.keys(organizedProperties).map((propertyName) => (
-            <AutoField key={propertyName} name={propertyName} />
-          ))}
-        </KameletForm>
-      </Grid>
-    );
-  };
+  const organizedProperties = applyClientSideFormCustomizations({
+    ...otherProperties,
+    ...(aws_region && { aws_region }),
+  });
+  return (
+    <Grid hasGutter>
+      <KameletForm
+        className="connector-specific pf-c-form pf-m-9-col-on-lg"
+        schema={bridge}
+        model={clearEmptyObjectValues(configuration)}
+        onValidate={onValidate}
+        validate={'onChange'}
+        onChangeModel={onChangeModel}
+        showInlineError
+      >
+        {Object.keys(organizedProperties).map((propertyName) => (
+          <AutoField key={propertyName} name={propertyName} />
+        ))}
+      </KameletForm>
+    </Grid>
+  );
+};
 function Auto(parent: any): any {
   class _ extends AutoForm.Auto(parent) {
     static Auto = Auto;
