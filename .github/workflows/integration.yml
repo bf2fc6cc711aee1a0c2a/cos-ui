@@ -41,6 +41,8 @@ jobs:
 
       - name: Install dependencies if needed.
         if: steps.npm-cache.outputs.cache-hit != 'true'
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
         run: npm ci
 
       - name: Cypress run
