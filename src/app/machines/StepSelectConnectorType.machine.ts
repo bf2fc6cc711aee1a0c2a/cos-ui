@@ -1,71 +1,33 @@
-import {
-  ConnectorTypesOrderBy,
-  ConnectorTypesSearch,
-  fetchConnectorTypes,
-} from '@apis/api';
-import {
-  PAGINATED_MACHINE_ID,
-  SELECT_CONNECTOR_TYPE,
-} from '@constants/constants';
+import { SELECT_CONNECTOR_TYPE } from '@constants/constants';
 
-import { ActorRefFrom, send, sendParent } from 'xstate';
+import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
 import { ConnectorType } from '@rhoas/connector-management-sdk';
 
-import {
-  PaginatedApiSuccessResponse,
-  getPaginatedApiMachineEvents,
-  makePaginatedApiMachine,
-} from './PaginatedResponse.machine';
-
-export const DEFAULT_CONNECTOR_TYPES_PAGE_SIZE = 20;
-
 type Context = {
-  accessToken: () => Promise<string>;
-  connectorsApiBasePath: string;
-  response?: PaginatedApiSuccessResponse<ConnectorType>;
   selectedConnector?: ConnectorType;
-  error?: Object;
-  connectorTypeDetails: ConnectorType;
   duplicateMode?: boolean | undefined;
 };
 
 const model = createModel(
   {
-    accessToken: () => Promise.resolve(''),
-    connectorsApiBasePath: '',
-    response: undefined,
     selectedConnector: undefined,
-    error: undefined,
   } as Context,
   {
     events: {
-      selectConnector: (payload: { selectedConnector: string }) => ({
+      selectConnector: (payload: { connector: ConnectorType }) => ({
         ...payload,
       }),
       deselectConnector: () => ({}),
       confirm: () => ({}),
-      ...getPaginatedApiMachineEvents<
-        ConnectorType,
-        ConnectorTypesOrderBy,
-        ConnectorTypesSearch,
-        ConnectorType
-      >(),
     },
   }
 );
 
-const success = model.assign((_context, event) => {
-  const { type, ...response } = event;
-  return {
-    response,
-  };
-}, 'api.success');
 const selectConnector = model.assign(
   {
-    selectedConnector: ({ response }, { selectedConnector }) =>
-      response!.items.find((connector) => connector.id === selectedConnector),
+    selectedConnector: (_, { connector }) => connector,
   },
   'selectConnector'
 );
@@ -84,53 +46,8 @@ export const selectConnectorTypeMachine = model.createMachine(
     initial: 'root',
     states: {
       root: {
-        type: 'parallel',
+        initial: 'selection',
         states: {
-          api: {
-            initial: 'idle',
-            invoke: {
-              id: PAGINATED_MACHINE_ID,
-              src: (context) =>
-                makePaginatedApiMachine<
-                  ConnectorType,
-                  ConnectorTypesOrderBy,
-                  ConnectorTypesSearch,
-                  ConnectorType
-                >(fetchConnectorTypes(context), (i) => i, {
-                  initialPageSize: DEFAULT_CONNECTOR_TYPES_PAGE_SIZE,
-                }),
-            },
-            states: {
-              idle: {
-                entry: send(
-                  {
-                    type: 'api.query',
-                    query: { categories: ['sink', 'source'] },
-                  },
-                  { to: PAGINATED_MACHINE_ID }
-                ),
-                on: {
-                  'api.ready': 'ready',
-                },
-              },
-              ready: {},
-            },
-            on: {
-              'api.refresh': {
-                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
-              },
-              'api.nextPage': {
-                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
-              },
-              'api.prevPage': {
-                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
-              },
-              'api.query': {
-                actions: send((_, e) => e, { to: PAGINATED_MACHINE_ID }),
-              },
-              'api.success': { actions: success },
-            },
-          },
           selection: {
             id: 'selection',
             initial: 'verify',
@@ -147,7 +64,7 @@ export const selectConnectorTypeMachine = model.createMachine(
                   selectConnector: {
                     target: 'valid',
                     actions: selectConnector,
-                    cond: (_, event) => event.selectedConnector !== undefined,
+                    cond: (_, event) => event.connector !== undefined,
                   },
                 },
               },
@@ -157,7 +74,7 @@ export const selectConnectorTypeMachine = model.createMachine(
                   data: {
                     updatedValue: context.selectedConnector,
                     updatedStep: SELECT_CONNECTOR_TYPE,
-                    connectorTypeDetails: context.connectorTypeDetails,
+                    connectorTypeDetails: context.selectedConnector,
                   },
                 })),
                 on: {
@@ -183,10 +100,10 @@ export const selectConnectorTypeMachine = model.createMachine(
         id: 'done',
         type: 'final',
         data: {
+          connectorId: (context: Context) => context.selectedConnector!.id,
           selectedConnector: (context: Context) => context.selectedConnector,
           duplicateMode: (context: Context) => context.duplicateMode,
-          connectorTypeDetails: (context: Context) =>
-            context.connectorTypeDetails,
+          connectorTypeDetails: (context: Context) => context.selectedConnector,
         },
       },
     },

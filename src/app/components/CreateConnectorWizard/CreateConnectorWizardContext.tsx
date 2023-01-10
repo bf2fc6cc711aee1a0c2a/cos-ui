@@ -1,6 +1,4 @@
 import {
-  ConnectorTypesOrderBy,
-  ConnectorTypesSearch,
   ConnectorNamespaceSearch,
   KafkasSearch,
   UserProvidedServiceAccount,
@@ -42,7 +40,6 @@ import {
   Connector,
   ConnectorNamespace,
   ConnectorType,
-  ObjectReference,
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
@@ -129,16 +126,18 @@ export const CreateConnectorWizardProvider: FunctionComponent<
           case !!selectConnectorRef:
             const { selectedConnector } =
               selectConnectorRef.getSnapshot()!.context;
-            onUserActivity('Connector-Select-Connector-Selection', {
-              name: selectedConnector!.name,
-              id: selectedConnector!.id,
-              type:
-                (selectedConnector!.labels || []).find(
-                  (label: string) => label === 'source'
-                ) !== undefined
-                  ? 'source'
-                  : 'sink',
-            });
+            if (selectedConnector) {
+              onUserActivity('Connector-Select-Connector-Selection', {
+                name: selectedConnector!.name,
+                id: selectedConnector!.id,
+                type:
+                  (selectedConnector!.labels || []).find(
+                    (label: string) => label === 'source'
+                  ) !== undefined
+                    ? 'source'
+                    : 'sink',
+              });
+            }
             break;
           case !!selectKafkaInstanceRef:
             const { selectedInstance } =
@@ -264,46 +263,18 @@ export const useCreateConnectorWizard = (): {
   );
 };
 
-export const useConnectorTypesMachineIsReady = () => {
-  const { connectorTypeRef } = useCreateConnectorWizard();
-  return useSelector(
-    connectorTypeRef,
-    useCallback(
-      (state: EmittedFrom<typeof connectorTypeRef>) => {
-        return state.matches({ root: { api: 'ready' } });
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [connectorTypeRef]
-    )
-  );
-};
-
 export const useConnectorTypesMachine = () => {
   const { connectorTypeRef } = useCreateConnectorWizard();
-  const { onActivity } = useAnalytics();
 
-  const api = usePagination<
-    ConnectorType,
-    ConnectorTypesOrderBy,
-    ConnectorTypesSearch,
-    ConnectorType
-  >(
-    connectorTypeRef.getSnapshot()?.children[
-      PAGINATED_MACHINE_ID
-    ] as PaginatedApiActorType<
-      ConnectorType,
-      ConnectorTypesOrderBy,
-      ConnectorTypesSearch,
-      ConnectorType
-    >
-  );
   const { selectedId, connectorTypeDetails, duplicateMode } = useSelector(
     connectorTypeRef,
     useCallback(
       (state: EmittedFrom<typeof connectorTypeRef>) => ({
-        selectedId: (state.context.selectedConnector as ObjectReference)?.id,
+        selectedId: state.context.selectedConnector
+          ? state.context.selectedConnector!.id
+          : undefined,
         duplicateMode: state.context.duplicateMode,
-        connectorTypeDetails: state.context.connectorTypeDetails,
+        connectorTypeDetails: state.context.selectedConnector!,
       }),
       []
     )
@@ -313,30 +284,15 @@ export const useConnectorTypesMachine = () => {
   }, [connectorTypeRef]);
 
   const onSelect = useCallback(
-    (selectedConnector: string) => {
+    (connector: ConnectorType) => {
       onDeselect();
-      connectorTypeRef.send({ type: 'selectConnector', selectedConnector });
+      connectorTypeRef.send({ type: 'selectConnector', connector });
     },
     [connectorTypeRef, onDeselect]
   );
-
-  const runQuery = useCallback(
-    (
-      request: PaginatedApiRequest<ConnectorTypesOrderBy, ConnectorTypesSearch>
-    ) => {
-      onActivity(
-        `${duplicateMode ? 'Duplicate' : 'Create'}-Search-Connectors`,
-        request
-      );
-      connectorTypeRef.send({ type: 'api.query', ...request });
-    },
-    [connectorTypeRef, duplicateMode, onActivity]
-  );
   return {
-    ...api,
     selectedId,
     onSelect,
-    runQuery,
     connectorTypeDetails,
     duplicateMode,
   };

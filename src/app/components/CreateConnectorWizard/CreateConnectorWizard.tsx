@@ -7,7 +7,7 @@ import {
 import { creationWizardMachine } from '@app/machines/CreateConnectorWizard.machine';
 import { ConfiguratorActorRef } from '@app/machines/StepConfigurator.machine';
 import { ConfiguratorStep } from '@app/pages/CreateConnectorPage/StepConfigurator';
-import { SelectConnectorType } from '@app/pages/CreateConnectorPage/StepConnectorTypes';
+import { StepConnectorSelection } from '@app/pages/CreateConnectorPage/StepConnectorSelection';
 import { StepCoreConfiguration } from '@app/pages/CreateConnectorPage/StepCoreConfiguration';
 import { StepErrorHandling } from '@app/pages/CreateConnectorPage/StepErrorHandling';
 import { SelectKafkaInstance } from '@app/pages/CreateConnectorPage/StepKafkas';
@@ -255,7 +255,7 @@ export const CreateConnectorWizard: FunctionComponent<
       isActive: state.matches('selectConnector'),
       component: (
         <StepErrorBoundary>
-          <SelectConnectorType />
+          <StepConnectorSelection />
         </StepErrorBoundary>
       ),
       canJumpTo:

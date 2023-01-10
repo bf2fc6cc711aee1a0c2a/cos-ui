@@ -1,5 +1,4 @@
-import React from 'react';
-import { FunctionComponent } from 'react';
+import React, { FC } from 'react';
 
 import {
   LabelGroup,
@@ -15,16 +14,16 @@ import {
   Label,
 } from '@patternfly/react-core';
 
-export type ConnectorSelectionListSkeletonProps = {};
+export type ConnectorSelectionListSkeletonProps = {
+  rowHeight: number;
+  style: any;
+};
 
-export const ConnectorSelectionListSkeleton: FunctionComponent<
+export const ConnectorSelectionListSkeleton: FC<
   ConnectorSelectionListSkeletonProps
-> = ({}) => {
+> = ({ style }) => {
   return (
-    <DataList
-      aria-label="selectable data list connector"
-      style={{ height: 109 }}
-    >
+    <DataList aria-label="selectable data list connector" style={{ ...style }}>
       <DataListItem>
         <DataListItemRow>
           <Flex justifyContent={{ default: 'justifyContentFlexStart' }}>

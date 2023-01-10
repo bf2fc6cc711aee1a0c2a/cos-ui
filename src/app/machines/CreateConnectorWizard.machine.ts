@@ -195,11 +195,7 @@ export const creationWizardMachine = model.createMachine(
           src: selectConnectorTypeMachine,
           data: (context) => {
             return {
-              accessToken: context.accessToken,
-              connectorsApiBasePath: context.connectorsApiBasePath,
-              selectedConnector: context.duplicateMode
-                ? context.connectorTypeDetails
-                : context.selectedConnector,
+              selectedConnector: context.connectorTypeDetails,
               connectorData: context.connectorData,
               connectorTypeDetails: context.connectorTypeDetails,
               duplicateMode: context.duplicateMode,
@@ -213,7 +209,6 @@ export const creationWizardMachine = model.createMachine(
                 : event.data.selectedConnector,
               connectorData: context.connectorData,
               connectorTypeDetails: context.connectorTypeDetails,
-              duplicateMode: context.duplicateMode,
               connectorConfiguration: false,
               activeConfigurationStep: 0,
               isConfigurationValid: false,
@@ -228,10 +223,18 @@ export const creationWizardMachine = model.createMachine(
             on: {
               isValid: 'valid',
             },
+            always: [
+              { target: 'valid', cond: 'duplicateMode' },
+              {
+                target: 'valid',
+                cond: 'isConnectorSelected',
+              },
+            ],
           },
           valid: {
             entry: ['notifyUserUpdate'],
             on: {
+              isValid: { actions: 'notifyUserUpdate' },
               isInvalid: 'selecting',
               next: {
                 actions: send('confirm', { to: 'selectConnectorRef' }),
@@ -716,6 +719,7 @@ export const creationWizardMachine = model.createMachine(
       isErrorHandlerConfigured,
       canConfigurationBeSaved,
       areThereSubsteps: (context) => context.activeConfigurationStep! > 0,
+      duplicateMode: (context) => context.duplicateMode === true,
     },
     actions: {
       notifySave: (context) => {
