@@ -4,13 +4,17 @@ import {
   useNamespaceMachine,
 } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
-import { EmptyStateNoNamespace } from '@app/components/EmptyStateNoNamespace/EmptyStateNoNamespace';
+// import { EmptyStateNoNamespace } from '@app/components/EmptyStateNoNamespace/EmptyStateNoNamespace';
 import { Loading } from '@app/components/Loading/Loading';
 import { NamespaceCard } from '@app/components/NamespaceCard/NamespaceCard';
+import { OSDTrailEmptyCard } from '@app/components/NamespaceCard/OSDTrailEmptyCard';
+import { PreviewNamespaceEmptyCard } from '@app/components/NamespaceCard/PreviewNamespaceEmptyCard';
+import { ROSAEmptyCard } from '@app/components/NamespaceCard/ROSAEmptyCard';
 import { Pagination } from '@app/components/Pagination/Pagination';
 import { RegisterEvalNamespace } from '@app/components/RegisterEvalNamespace/RegisterEvalNamespace';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { PaginatedApiResponse } from '@app/machines/PaginatedResponse.machine';
+import { RHOC_SUBSCRIPTION_URL } from '@constants/constants';
 import { useCos } from '@hooks/useCos';
 import usePrevious from '@hooks/usePrevious';
 import { getPendingTime, warningType } from '@utils/shared';
@@ -35,8 +39,7 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  ToolbarToggleGroup,
-  Tooltip,
+  ToolbarToggleGroup, // Tooltip,
   Dropdown,
   DropdownToggle,
   DropdownPosition,
@@ -55,14 +58,14 @@ import {
 export function SelectNamespace() {
   const isReady = useNamespaceMachineIsReady();
 
-  return isReady ? <ClustersGallery /> : null;
+  return isReady ? <DeploymentGallery /> : null;
 }
 
 export type ConnectorNamespaceWithCluster = {
   clusterName?: string | undefined;
 } & ConnectorNamespace;
 
-const ClustersGallery: FunctionComponent = () => {
+const DeploymentGallery: FunctionComponent = () => {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [evalInstance, setEvalInstance] = useState<
@@ -182,26 +185,27 @@ const ClustersGallery: FunctionComponent = () => {
 
   return (
     <StepBodyLayout
-      title={t('namespace')}
+      title={t('deployment')}
       description={
-        <Trans i18nKey={'namespaceStepDescription'}>
-          The selected namespace hosts your Connectors instance. Use a namespace
-          in an OpenShift Dedicated trial cluster, or have Red Hat create a
-          preview namespace for you. For instructions on adding a namespace to a
-          trial cluster, access the{' '}
-          <Button
-            variant={ButtonVariant.link}
-            isSmall
-            isInline
-            component={'a'}
-            href={t('osdInstallationGuideLink')}
-            target={'_blank'}
-            ouiaId={'description-osd-guide-link'}
-          >
-            guide
-          </Button>
-          .
-        </Trans>
+        <>
+          {t('deploymentStepDetail')}
+          <br />
+          <Trans i18nKey={'deploymentStepDescription'}>
+            Alternatively, a Red Hat OpenShift Service on AWS (ROSA) cluster is
+            an option that is available with a subscription.{' '}
+            <Button
+              variant={ButtonVariant.link}
+              isSmall
+              isInline
+              component={'a'}
+              href={RHOC_SUBSCRIPTION_URL}
+              target={'_blank'}
+              ouiaId={'description-osd-guide-link'}
+            >
+              Talk to a Red
+            </Button>
+          </Trans>
+        </>
       }
     >
       {(() => {
@@ -211,10 +215,7 @@ const ClustersGallery: FunctionComponent = () => {
           case queryEmpty:
             return (
               <>
-                <ClustersToolbar
-                  onModalToggle={onModalToggle}
-                  isEvalPresent={!!evalInstance}
-                />
+                <DeploymentToolbar />
                 <EmptyStateNoMatchesFound
                   onClear={() => onQuery({ page: 1, size: 10 })}
                 />
@@ -223,37 +224,37 @@ const ClustersGallery: FunctionComponent = () => {
           case noResults || error:
             return (
               <>
-                <ClustersToolbar
-                  onModalToggle={onModalToggle}
-                  isEvalPresent={!!evalInstance}
-                />
-                <EmptyStateNoNamespace onModalToggle={onModalToggle} />
+                <div className={'pf-l-stack__item pf-m-fill'}>
+                  <Gallery hasGutter>
+                    <ROSAEmptyCard />
+                    <OSDTrailEmptyCard />
+                    {!evalInstance && (
+                      <PreviewNamespaceEmptyCard
+                        onModalToggle={onModalToggle}
+                      />
+                    )}
+                  </Gallery>
+                </div>
               </>
             );
           case loading:
             return (
               <>
-                <ClustersToolbar
-                  onModalToggle={onModalToggle}
-                  isEvalPresent={!!evalInstance}
-                />
+                <DeploymentToolbar />
                 <Loading />
               </>
             );
           default:
             return (
               <>
-                <ClustersToolbar
-                  onModalToggle={onModalToggle}
-                  isEvalPresent={!!evalInstance}
-                />
+                <DeploymentToolbar />
                 <div className={'pf-l-stack__item pf-m-fill'}>
                   {duplicateMode && namespaceExpired && (
                     <Alert
                       variant="info"
                       className="pf-u-mb-md"
                       isInline
-                      title={t('duplicateAlertNamespace')}
+                      title={t('duplicateAlertDeployment')}
                     />
                   )}
 
@@ -289,6 +290,13 @@ const ClustersGallery: FunctionComponent = () => {
                           getToken={getToken}
                         />
                       ))}
+                    <ROSAEmptyCard />
+                    <OSDTrailEmptyCard />
+                    {!evalInstance && (
+                      <PreviewNamespaceEmptyCard
+                        onModalToggle={onModalToggle}
+                      />
+                    )}
                   </Gallery>
                 </div>
               </>
@@ -304,14 +312,7 @@ const ClustersGallery: FunctionComponent = () => {
   );
 };
 
-type ClustersToolbarProps = {
-  onModalToggle: () => void;
-  isEvalPresent: boolean;
-};
-const ClustersToolbar: FunctionComponent<ClustersToolbarProps> = ({
-  onModalToggle,
-  isEvalPresent,
-}) => {
+const DeploymentToolbar: FunctionComponent = () => {
   const { t } = useTranslation();
   const { request, runQuery } = useNamespaceMachine();
 
@@ -469,30 +470,8 @@ const ClustersToolbar: FunctionComponent<ClustersToolbarProps> = ({
       <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
         {toggleGroupItems}
       </ToolbarToggleGroup>
-      <ToolbarGroup variant="icon-button-group">
-        <ToolbarItem>
-          <Tooltip
-            content={
-              <div>
-                {isEvalPresent
-                  ? t('namespaceDisabledTooltip')
-                  : t('namespaceEnabledTooltip')}
-              </div>
-            }
-          >
-            <Button
-              variant="secondary"
-              isDisabled={isEvalPresent}
-              onClick={onModalToggle}
-              ouiaId={'button-create'}
-            >
-              {t('createPreviewNamespace')}
-            </Button>
-          </Tooltip>
-        </ToolbarItem>
-      </ToolbarGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
-        <ClustersPagination isCompact />
+        <NamespacePagination isCompact />
       </ToolbarItem>
     </>
   );
@@ -508,10 +487,10 @@ const ClustersToolbar: FunctionComponent<ClustersToolbarProps> = ({
   );
 };
 
-type ClustersPaginationProps = {
+type NamespacePaginationProps = {
   isCompact?: boolean;
 };
-const ClustersPagination: FunctionComponent<ClustersPaginationProps> = ({
+const NamespacePagination: FunctionComponent<NamespacePaginationProps> = ({
   isCompact = false,
 }) => {
   const { request, response, runQuery } = useNamespaceMachine();

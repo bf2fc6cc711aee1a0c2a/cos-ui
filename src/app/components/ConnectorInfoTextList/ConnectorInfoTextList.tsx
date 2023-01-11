@@ -174,7 +174,7 @@ export const ConnectorInfoTextList: FunctionComponent<
             {textListItem(t('bootstrapServer'), bootstrapServer)}
             {textListItem(t('kafkaInstance'), kafkaInstanceData)}
             {textListItem(
-              t('namespace'),
+              t('deployment'),
               (namespaceData as ConnectorNamespace).name
                 ? (namespaceData as ConnectorNamespace).name
                 : namespaceData

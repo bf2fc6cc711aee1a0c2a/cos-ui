@@ -202,7 +202,7 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
             </Grid>
             <Grid>
               <GridItem span={4}>
-                <strong>{t('namespace')}</strong>
+                <strong>{t('deployment')}</strong>
               </GridItem>
               <GridItem span={8}>{namespace.name}</GridItem>
             </Grid>
