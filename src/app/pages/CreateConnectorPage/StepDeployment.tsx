@@ -4,7 +4,6 @@ import {
   useNamespaceMachine,
 } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
-// import { EmptyStateNoNamespace } from '@app/components/EmptyStateNoNamespace/EmptyStateNoNamespace';
 import { Loading } from '@app/components/Loading/Loading';
 import { NamespaceCard } from '@app/components/NamespaceCard/NamespaceCard';
 import { OSDTrailEmptyCard } from '@app/components/NamespaceCard/OSDTrailEmptyCard';
