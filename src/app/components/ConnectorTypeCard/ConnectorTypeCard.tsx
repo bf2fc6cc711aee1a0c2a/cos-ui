@@ -81,7 +81,11 @@ export const ConnectorTypeCard: FunctionComponent<ConnectorTypeCardProps> = ({
         </Popover>
       </CardTitle>
       <CardBody>
-        <DescriptionList isHorizontal isFluid>
+        <DescriptionList
+          isHorizontal
+          isFluid
+          className="pf-c-description-list__text--Font-style "
+        >
           <DescriptionListGroup>
             <DescriptionListTerm>{t('version')}:</DescriptionListTerm>
             <DescriptionListDescription>{version}</DescriptionListDescription>

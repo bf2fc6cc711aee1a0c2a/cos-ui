@@ -9,6 +9,10 @@ import React, { useState, useCallback, FC } from 'react';
 
 import {
   Alert,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
   FormAlert,
   Switch,
   Title,
@@ -184,68 +188,72 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
         />
       ) : (
         <>
-          <dl className="pf-c-description-list pf-m-horizontal">
-            <div className="pf-c-description-list__group">
-              <dt className="pf-c-description-list__term">
+          <DescriptionList
+            isHorizontal
+            horizontalTermWidthModifier={{
+              default: '12ch',
+              sm: '15ch',
+              md: '20ch',
+              lg: '28ch',
+              xl: '30ch',
+              '2xl': '35ch',
+            }}
+          >
+            <DescriptionListGroup>
+              <DescriptionListTerm>
                 {t('connectorCategory')}
-              </dt>
-              <dd className="pf-c-description-list__description">
+              </DescriptionListTerm>
+              <DescriptionListDescription>
                 {(connectorType as ConnectorTypeAllOf).description}
-              </dd>
-            </div>
-            <div className="pf-c-description-list__group">
-              <dt className="pf-c-description-list__term">
-                {t('kafkaInstance')}
-              </dt>
-              <dd className="pf-c-description-list__description">
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{t('kafkaInstance')}</DescriptionListTerm>
+              <DescriptionListDescription>
                 {kafka.name}
-              </dd>
-            </div>
-            <div className="pf-c-description-list__group">
-              <dt className="pf-c-description-list__term">{t('namespace')}</dt>
-              <dd className="pf-c-description-list__description">
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{t('namespace')}</DescriptionListTerm>
+              <DescriptionListDescription>
                 {namespace.name}
-              </dd>
-            </div>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
             <Title
               headingLevel="h3"
-              size={TitleSizes['xl']}
+              size={TitleSizes['lg']}
               className="--pf-c-title--Size"
             >
               {t('basic')}
             </Title>
-            <div className="pf-c-description-list__group">
-              <dt className="pf-c-description-list__term">
-                {t('connectorName')}
-              </dt>
-              <dd className="pf-c-description-list__description">{name}</dd>
-            </div>
-            <div className="pf-c-description-list__group">
-              <dt className="pf-c-description-list__term">{t('type')}</dt>
-              <dd className="pf-c-description-list__description">
+            <DescriptionListGroup>
+              <DescriptionListTerm>{t('connectorName')}</DescriptionListTerm>
+              <DescriptionListDescription>{name}</DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{t('type')}</DescriptionListTerm>
+              <DescriptionListDescription>
                 {(connectorType as ConnectorTypeAllOf).labels?.map(
                   (type) => type
                 )}
-              </dd>
-            </div>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
             {userServiceAccount?.clientId && (
-              <div className="pf-c-description-list__group">
-                <dt className="pf-c-description-list__term">{t('clientId')}</dt>
-                <dd className="pf-c-description-list__description">
+              <DescriptionListGroup>
+                <DescriptionListTerm>{t('clientId')}</DescriptionListTerm>
+                <DescriptionListDescription>
                   <Flex>
                     <FlexItem id="clientId">
                       {userServiceAccount?.clientId}
                     </FlexItem>
                   </Flex>
-                </dd>
-              </div>
+                </DescriptionListDescription>
+              </DescriptionListGroup>
             )}
             {userServiceAccount?.clientSecret && (
-              <div className="pf-c-description-list__group">
-                <dt className="pf-c-description-list__term">
-                  {t('clientSecret')}
-                </dt>
-                <dd className="pf-c-description-list__description">
+              <DescriptionListGroup>
+                <DescriptionListTerm>{t('clientSecret')}</DescriptionListTerm>
+                <DescriptionListDescription>
                   <Flex>
                     <FlexItem>
                       {toggleMaskView.clientSecret
@@ -261,12 +269,12 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
                       )}
                     </FlexItem>
                   </Flex>
-                </dd>
-              </div>
+                </DescriptionListDescription>
+              </DescriptionListGroup>
             )}
             <Title
               headingLevel="h3"
-              size={TitleSizes['xl']}
+              size={TitleSizes['lg']}
               className="--pf-c-title--Size"
             >
               {t('connectorSpecific')}
@@ -274,11 +282,9 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
             {connector &&
               Object.keys(connector).map((el) => {
                 return (
-                  <div className="pf-c-description-list__group">
-                    <dt className="pf-c-description-list__term">
-                      {_.startCase(el)}
-                    </dt>
-                    <dd className="pf-c-description-list__description">
+                  <DescriptionListGroup>
+                    <DescriptionListTerm>{_.startCase(el)}</DescriptionListTerm>
+                    <DescriptionListDescription>
                       {dataToHide.includes(el) ? (
                         <Flex>
                           <FlexItem>{'*'.repeat(5)}</FlexItem>
@@ -286,66 +292,62 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
                       ) : (
                         connector[el]
                       )}
-                    </dd>
-                  </div>
+                    </DescriptionListDescription>
+                  </DescriptionListGroup>
                 );
               })}
             {kafkaTopic &&
               Object.keys(kafkaTopic).map((el) => {
                 return (
-                  <div className="pf-c-description-list__group">
-                    <dt className="pf-c-description-list__term">
-                      {_.startCase(el)}
-                    </dt>
-                    <dd className="pf-c-description-list__description">
+                  <DescriptionListGroup>
+                    <DescriptionListTerm>{_.startCase(el)}</DescriptionListTerm>
+                    <DescriptionListDescription>
                       {kafkaTopic[el]}
-                    </dd>
-                  </div>
+                    </DescriptionListDescription>
+                  </DescriptionListGroup>
                 );
               })}
             {connector === undefined &&
               Object.keys(modifiedObject).map((el) => {
                 return (
-                  <div className="pf-c-description-list__group">
-                    <dt className="pf-c-description-list__term">
-                      {_.startCase(el)}
-                    </dt>
-                    <dd className="pf-c-description-list__description">
+                  <DescriptionListGroup>
+                    <DescriptionListTerm>{_.startCase(el)}</DescriptionListTerm>
+                    <DescriptionListDescription>
                       {ConnectorProperties(el, modifiedObject, dataToHide)}
-                    </dd>
-                  </div>
+                    </DescriptionListDescription>
+                  </DescriptionListGroup>
                 );
               })}
             {userErrorHandler && !configurationSteps && (
               <>
                 <Title
                   headingLevel="h3"
-                  size={TitleSizes['xl']}
+                  size={TitleSizes['lg']}
                   className="--pf-c-title--Size"
                 >
                   {t('errorHandling')}
                 </Title>
-                <div className="pf-c-description-list__group">
-                  <dt className="pf-c-description-list__term">
+                <DescriptionListGroup>
+                  <DescriptionListTerm>
                     {t('errorHandlingMethod')}
-                  </dt>
-                  <dd className="pf-c-description-list__description">
+                  </DescriptionListTerm>
+                  <DescriptionListDescription>
                     {returnErrorHandlersNames(userErrorHandler).errorHandler}
-                  </dd>
-                </div>
+                  </DescriptionListDescription>
+                </DescriptionListGroup>
                 {topic && (
-                  <div className="pf-c-description-list__group">
-                    <dt className="pf-c-description-list__term">
+                  <DescriptionListGroup>
+                    <DescriptionListTerm>
                       {t('deadLetterQueueTopic')}
-                    </dt>
-                    <dd className="pf-c-description-list__description">
+                    </DescriptionListTerm>
+                    <DescriptionListDescription>
                       {topic}
-                    </dd>
-                  </div>
+                    </DescriptionListDescription>
+                  </DescriptionListGroup>
                 )}
               </>
             )}
-          </dl>
+          </DescriptionList>
         </>
       )}
     </StepBodyLayout>
@@ -360,12 +362,12 @@ export const DataShape: FC<DataShape> = ({ data }) => {
     <>
       {Object.keys(data).map((key) => {
         return (
-          <div className="pf-c-description-list__group">
-            <dt className="pf-c-description-list__term">{_.startCase(key)}:</dt>
-            <dd className="pf-c-description-list__description">
+          <DescriptionListGroup>
+            <DescriptionListTerm>{_.startCase(key)}:</DescriptionListTerm>
+            <DescriptionListDescription>
               {typeof data[key] === 'string' ? data[key] : data[key].format}
-            </dd>
-          </div>
+            </DescriptionListDescription>
+          </DescriptionListGroup>
         );
       })}
     </>
