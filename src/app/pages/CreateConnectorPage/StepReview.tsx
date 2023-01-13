@@ -222,7 +222,7 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
             <Title
               headingLevel="h3"
               size={TitleSizes['lg']}
-              className="--pf-c-title--Size"
+              className="--pf-c-title--Title-size"
             >
               {t('basic')}
             </Title>
@@ -275,7 +275,7 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
             <Title
               headingLevel="h3"
               size={TitleSizes['lg']}
-              className="--pf-c-title--Size"
+              className="--pf-c-title--Title-size"
             >
               {t('connectorSpecific')}
             </Title>
@@ -323,7 +323,7 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
                 <Title
                   headingLevel="h3"
                   size={TitleSizes['lg']}
-                  className="--pf-c-title--Size"
+                  className="--pf-c-title--Title-size"
                 >
                   {t('errorHandling')}
                 </Title>
