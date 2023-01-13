@@ -1,3 +1,3 @@
 .step-common_service_account-desc {
-  font-size: var(--pf-global--FontSize--sm);
+  color: var(--pf-c-content--Color) !important;
 }

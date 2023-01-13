@@ -7,6 +7,7 @@ import { createModel } from 'xstate/lib/model';
 type Context = {
   name: string;
   sACreated: boolean;
+  sAConfiguredConfirmed: boolean;
   userServiceAccount?: UserProvidedServiceAccount;
   duplicateMode?: boolean | undefined;
 };
@@ -15,12 +16,15 @@ const model = createModel(
   {
     name: '',
     sACreated: false,
+    sAConfiguredConfirmed: false,
     userServiceAccount: { clientId: '', clientSecret: '' },
   } as Context,
   {
     events: {
       setName: (payload: { name: string }) => payload,
       setSaCreated: (payload: { sACreated: boolean }) => payload,
+      setSaConfiguredConfirmed: (payload: { sAConfiguredConfirmed: boolean }) =>
+        payload,
       setServiceAccount: (payload: {
         serviceAccount: UserProvidedServiceAccount;
       }) => payload,
@@ -40,6 +44,13 @@ const setSaCreated = model.assign(
     sACreated: (_, event) => event.sACreated,
   },
   'setSaCreated'
+);
+
+const setSaConfiguredConfirmed = model.assign(
+  {
+    sAConfiguredConfirmed: (_, event) => event.sAConfiguredConfirmed,
+  },
+  'setSaConfiguredConfirmed'
 );
 
 const setServiceAccount = model.assign(
@@ -80,6 +91,10 @@ export const coreConfigurationMachine = model.createMachine(
             target: 'verify',
             actions: setSaCreated,
           },
+          setSaConfiguredConfirmed: {
+            target: 'verify',
+            actions: setSaConfiguredConfirmed,
+          },
           setServiceAccount: {
             target: 'verify',
             actions: setServiceAccount,
@@ -98,6 +113,10 @@ export const coreConfigurationMachine = model.createMachine(
             target: 'verify',
             actions: setSaCreated,
           },
+          setSaConfiguredConfirmed: {
+            target: 'verify',
+            actions: setSaConfiguredConfirmed,
+          },
           setServiceAccount: {
             target: 'verify',
             actions: setServiceAccount,
@@ -114,6 +133,8 @@ export const coreConfigurationMachine = model.createMachine(
         data: {
           name: (context: Context) => context.name,
           sACreated: (context: Context) => context.sACreated,
+          sAConfiguredConfirmed: (context: Context) =>
+            context.sAConfiguredConfirmed,
           userServiceAccount: (context: Context) => context.userServiceAccount,
           duplicateMode: (context: Context) => context.duplicateMode,
         },
@@ -123,13 +144,14 @@ export const coreConfigurationMachine = model.createMachine(
   {
     guards: {
       isCoreConfigurationConfigured: (context) => {
-        const { name, userServiceAccount } = context;
+        const { name, userServiceAccount, sAConfiguredConfirmed } = context;
         return (
           name !== undefined &&
           name.length > 0 &&
           userServiceAccount !== undefined &&
           userServiceAccount.clientId.length > 0 &&
-          userServiceAccount.clientSecret.length > 0
+          userServiceAccount.clientSecret.length > 0 &&
+          sAConfiguredConfirmed
         );
       },
     },

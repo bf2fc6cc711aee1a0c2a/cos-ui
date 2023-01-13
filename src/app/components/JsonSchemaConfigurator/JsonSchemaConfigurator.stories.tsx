@@ -28,7 +28,7 @@ import { StepBodyLayout } from '../StepBodyLayout/StepBodyLayout';
 import { JsonSchemaConfigurator } from './JsonSchemaConfigurator';
 
 export default {
-  title: 'Wizard step 4.2/Connector Form',
+  title: 'Wizard Step 4.2/Connector Form',
   component: JsonSchemaConfigurator,
   args: {
     configuration: {},

@@ -30,6 +30,11 @@ export const parameters = {
       date: /Date$/,
     },
   },
+  options: {
+    storySort: {
+      order: ['Pages', 'UI', 'Wizard Step 1', 'Wizard Step 3', 'Wizard Step 4.1', 'Wizard Step 4.2', 'Wizard Step 4.3', 'Wizard Step 5', 'ProofOfConcepts'],
+    },
+  }
 };
 
 export const decorators = [
