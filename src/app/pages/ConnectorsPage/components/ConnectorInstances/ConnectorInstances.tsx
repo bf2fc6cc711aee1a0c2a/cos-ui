@@ -1,10 +1,17 @@
-import { ConnectorsOrderBy } from '@apis/api';
+import { ConnectorsOrderBy, deleteConnector } from '@apis/api';
+import { DialogDeleteConnector } from '@app/components/DialogDeleteConnector/DialogDeleteConnector';
 import { EmptyStateGenericError } from '@app/components/EmptyStateGenericError/EmptyStateGenericError';
 import { Loading } from '@app/components/Loading/Loading';
 import { ConnectorMachineActorRef } from '@app/machines/Connector.machine';
 import { DEFAULT_PAGE_SIZE } from '@app/machines/PaginatedResponse.machine';
 import { ConnectorDrawer } from '@app/pages/ConnectorsPage/components/ConnectorDrawer/ConnectorDrawer';
-import React, { FunctionComponent, useCallback, useContext } from 'react';
+import { useCos } from '@hooks/useCos';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useContext,
+  useState,
+} from 'react';
 
 import {
   QuickStartContext,
@@ -13,6 +20,7 @@ import {
 import { PageSection } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
+import { Connector } from '@rhoas/connector-management-sdk';
 
 import { useConnectorsMachine } from '../../ConnectorsPageContext';
 import { ConnectorActionsMenu } from '../ConnectorActionsMenu/ConnectorActionsMenu';
@@ -44,6 +52,10 @@ export const ConnectorInstances: FunctionComponent<ConnectorInstancesProps> = ({
   const { total, items } = response || { total: 0, items: [] };
   const { t } = useTranslation();
 
+  const { connectorsApiBasePath, getToken } = useCos();
+  const [connectorToDelete, setConnectorToDelete] = useState<Connector>();
+  const [showDeleteConnectorConfirm, setShowDeleteConnectorConfirm] =
+    useState(false);
   const qsContext: QuickStartContextValues = useContext(QuickStartContext);
   const onHelp = useCallback(() => {
     qsContext.setActiveQuickStart &&
@@ -105,6 +117,30 @@ export const ConnectorInstances: FunctionComponent<ConnectorInstancesProps> = ({
     orderBy || { name: 'asc' }
   );
 
+  const openDeleteDialog = (connector: any) => {
+    setConnectorToDelete(connector);
+    setShowDeleteConnectorConfirm(true);
+  };
+
+  const doCancelDeleteConnector = () => {
+    setShowDeleteConnectorConfirm(false);
+  };
+
+  const doDeleteConnector = () => {
+    setShowDeleteConnectorConfirm(false);
+    onDelete();
+  };
+
+  const onDelete = () => {
+    deleteConnector({
+      accessToken: getToken,
+      connectorsApiBasePath: connectorsApiBasePath,
+      connector: connectorToDelete!,
+    })((data: any) => {
+      console.log(data.type);
+    });
+  };
+
   switch (true) {
     case firstRequest:
     case loading:
@@ -128,6 +164,12 @@ export const ConnectorInstances: FunctionComponent<ConnectorInstancesProps> = ({
           <PageSection variant={'light'}>
             <ConnectorsPageTitle />
           </PageSection>
+          <DialogDeleteConnector
+            connectorName={connectorToDelete?.name}
+            showDialog={showDeleteConnectorConfirm}
+            onCancel={doCancelDeleteConnector}
+            onConfirm={doDeleteConnector}
+          />
           <PageSection padding={{ default: 'noPadding' }} variant={'default'}>
             <ConnectorInstancesTable
               activeSortColumn={activeSortColumn}
@@ -149,6 +191,7 @@ export const ConnectorInstances: FunctionComponent<ConnectorInstancesProps> = ({
               page={page}
               selectedConnector={selectedConnector}
               size={size}
+              onDelete={(row) => openDeleteDialog(row)}
             />
           </PageSection>
         </ConnectorDrawer>
