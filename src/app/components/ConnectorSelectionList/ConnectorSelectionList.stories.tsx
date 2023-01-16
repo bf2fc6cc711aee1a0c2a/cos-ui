@@ -142,7 +142,14 @@ WithConnectors.parameters = {
         orderBy,
         CONNECTOR_COUNT
       );
-      console.log('Returning labels response: ', response);
+      console.log(
+        'Received parameters search: ',
+        search,
+        ' orderBy: ',
+        orderBy,
+        ' returning labels API response: ',
+        response
+      );
       return res(ctx.delay(), ctx.json(response));
     }),
     rest.get(`${CONNECTOR_TYPES_API}*`, (req, res, ctx) => {
@@ -156,7 +163,14 @@ WithConnectors.parameters = {
         orderBy,
         CONNECTOR_COUNT
       );
-      console.log('Returning ConnectorTypes response: ', response);
+      console.log(
+        'Received parameters search: ',
+        search,
+        ' orderBy: ',
+        orderBy,
+        ' returning ConnectorTypes API response: ',
+        response
+      );
       return res(ctx.delay(), ctx.json(response));
     }),
   ],
@@ -344,26 +358,29 @@ function createFilterFunctions(search) {
       }
       return trimmed;
     })
-    .map((trimmed) => {
-      const operator = ['ILIKE', 'OR', '='].reduce((prev, current) => {
+    .map((expression) => {
+      // good debugging point
+      // console.log('Search expression: ', expression);
+      const operator = ['ILIKE', 'LIKE', '='].reduce((prev, current) => {
         if (prev === '') {
-          return trimmed.includes(current) ? current : '';
+          return expression.includes(current) ? current : '';
         }
         return prev;
       }, '');
       return {
         operator,
-        criteria: trimmed.trim(),
+        criteria: expression.trim(),
       };
     })
-    .map(({ criteria, operator }) => {
+    .map(({ criteria, operator }: { criteria: string; operator: string }) => {
       switch (operator) {
-        case 'ILIKE':
+        case 'ILIKE': {
           // this is really to handle the name search
           const [field, term] = criteria
             .split('ILIKE')
             .map((part) => part.trim());
-          const comparatorTerm = term.slice(1, term.length - 1);
+          // this assumes a format like '%term%'
+          const comparatorTerm = term.slice(2, term.length - 2);
           switch (field) {
             // pricing_tier is a special search field
             case 'pricing_tier':
@@ -374,6 +391,17 @@ function createFilterFunctions(search) {
               };
             default:
               return (connectorType: FeaturedConnectorType) => {
+                // good debugging spot
+                /*
+                console.log(
+                  'Checking field: ',
+                  field,
+                  ' with value: ',
+                  connectorType[field],
+                  ' against: ',
+                  comparatorTerm
+                );
+                */
                 return (connectorType[field] || '')
                   .toLocaleLowerCase()
                   .includes(
@@ -382,18 +410,30 @@ function createFilterFunctions(search) {
                   );
               };
           }
+        }
         // this deals with the label filtering
-        case 'OR':
-          const criterias = criteria.split('OR').map((part) => part.trim());
-          const funcs = criterias.map((orCriteria) => {
-            return createOrCriteriaFunction(orCriteria);
+        case 'LIKE': {
+          const [field, term] = criteria
+            .split('LIKE')
+            .map((part) => part.trim());
+          const terms = term
+            .split('%')
+            .filter((part: string) => part.length > 0)
+            .map((part) => part.trim());
+          // helpful debugging point
+          // console.log('Field: ', field, ' term: ', term, ' criterias: ', terms);
+          const funcs = terms.map((term) => {
+            return createCriteriaFunction(field, term);
           });
           return (connectorType: FeaturedConnectorType) => {
             return funcs.every((func) => func(connectorType));
           };
+        }
         // this catches the case where only label filtering happens
-        case '=':
-          return createOrCriteriaFunction(criteria);
+        case '=': {
+          const [field, term] = criteria.split('=').map((part) => part.trim());
+          return createCriteriaFunction(field, term);
+        }
         default:
           // or no search at all
           console.log(
@@ -409,16 +449,29 @@ function createFilterFunctions(search) {
     });
 }
 
-function createOrCriteriaFunction(orCriteria: string) {
-  const [field, term] = orCriteria.split(' = ').map((str) => str.trim());
+function createCriteriaFunction(field: string, term: string) {
   return (connectorType: FeaturedConnectorType) => {
     const targetField = connectorType[field] || connectorType[`${field}s`]; // such a hack
+    // helpful debugging point
+    /*
+    console.log(
+      'Checking field: ',
+      field,
+      ' for term: ',
+      term,
+      ' against field value: ',
+      targetField,
+      ' connectorType: ',
+      connectorType
+    );
+    */
     switch (typeof targetField) {
       case 'string':
-        return targetField === term;
+        return targetField.includes(term);
       case 'object':
         return (targetField as Array<string>).includes(term);
       default:
+        // this really isn't the right way to behave, but until a field with a number is used...
         return true;
     }
   };
