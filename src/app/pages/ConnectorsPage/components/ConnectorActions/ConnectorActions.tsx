@@ -1,9 +1,8 @@
-import { DialogDeleteConnector } from '@app/components/DialogDeleteConnector/DialogDeleteConnector';
 import {
   ConnectorMachineActorRef,
   useConnector,
 } from '@app/machines/Connector.machine';
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 
 import {
   ActionsColumn as ActionsColumnType,
@@ -11,43 +10,29 @@ import {
 } from '@patternfly/react-table';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { ConnectorDesiredState } from '@rhoas/connector-management-sdk';
+import {
+  ConnectorDesiredState,
+  Connector,
+} from '@rhoas/connector-management-sdk';
 
 type ConnectorActionsProps = {
   ActionsColumn: typeof ActionsColumnType;
   connectorRef: ConnectorMachineActorRef;
   onConnectorDetail: (id: string, goToConnectorDetails: string) => void;
   onDuplicateConnector: (id: string) => void;
+  onDelete: (connector: Connector) => void;
 };
 export const ConnectorActions: FunctionComponent<ConnectorActionsProps> = ({
   ActionsColumn,
   connectorRef,
   onConnectorDetail,
   onDuplicateConnector,
+  onDelete,
 }) => {
   const { t } = useTranslation();
-  const [showDeleteConnectorConfirm, setShowDeleteConnectorConfirm] =
-    useState(false);
-  const {
-    connector,
-    canStart,
-    canStop,
-    canDelete,
-    onStart,
-    onStop,
-    onDelete,
-    onSelect,
-  } = useConnector(connectorRef);
-  const { id, name } = connector;
-  const doCancelDeleteConnector = () => {
-    setShowDeleteConnectorConfirm(false);
-  };
-
-  const doDeleteConnector = () => {
-    setShowDeleteConnectorConfirm(false);
-    onDelete();
-  };
-
+  const { connector, canStart, canStop, canDelete, onStart, onStop, onSelect } =
+    useConnector(connectorRef);
+  const { id } = connector;
   const actions: IActions = [
     {
       title: t('startInstance'),
@@ -84,24 +69,16 @@ export const ConnectorActions: FunctionComponent<ConnectorActionsProps> = ({
     },
     {
       title: t('deleteInstance'),
-      onClick: () => setShowDeleteConnectorConfirm(true),
+      onClick: () => onDelete(connector),
       isDisabled: !canDelete,
     },
   ];
   return (
-    <>
-      <DialogDeleteConnector
-        connectorName={name}
-        showDialog={showDeleteConnectorConfirm}
-        onCancel={doCancelDeleteConnector}
-        onConfirm={doDeleteConnector}
-      />
-      <ActionsColumn
-        items={actions}
-        isDisabled={connector.desired_state === ConnectorDesiredState.Deleted}
-        rowData={{ actionProps: { menuAppendTo: document.body } }}
-        data-testid={`actions-for-${id!}`}
-      />
-    </>
+    <ActionsColumn
+      items={actions}
+      isDisabled={connector.desired_state === ConnectorDesiredState.Deleted}
+      rowData={{ actionProps: { menuAppendTo: document.body } }}
+      data-testid={`actions-for-${connector.id!}`}
+    />
   );
 };
