@@ -362,12 +362,14 @@ export const DataShape: FC<DataShape> = ({ data }) => {
     <>
       {Object.keys(data).map((key) => {
         return (
-          <DescriptionListGroup>
-            <DescriptionListTerm>{_.startCase(key)}:</DescriptionListTerm>
-            <DescriptionListDescription>
-              {typeof data[key] === 'string' ? data[key] : data[key].format}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
+          <DescriptionList isHorizontal>
+            <DescriptionListGroup>
+              <DescriptionListDescription>
+                <strong>{_.startCase(key)}:</strong>&nbsp;
+                {typeof data[key] === 'string' ? data[key] : data[key].format}
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+          </DescriptionList>
         );
       })}
     </>
