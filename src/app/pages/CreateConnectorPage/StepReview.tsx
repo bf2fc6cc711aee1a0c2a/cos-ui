@@ -9,11 +9,12 @@ import React, { useState, useCallback, FC } from 'react';
 
 import {
   Alert,
-  Form,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
   FormAlert,
   Switch,
-  Grid,
-  GridItem,
   Title,
   TitleSizes,
   Flex,
@@ -28,6 +29,8 @@ import {
   ConnectorTypeAllOf,
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
+
+import './StepReview.css';
 
 export function Review() {
   const {
@@ -161,91 +164,96 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
         />
       }
     >
-      <Form>
-        {savingError && (
-          <FormAlert>
-            <Alert
-              variant="danger"
-              title={savingError}
-              aria-live="polite"
-              isInline
-            />
-          </FormAlert>
-        )}
-        {toggleView ? (
-          <ViewJSONFormat
-            kafka={kafka}
-            namespace={namespace}
-            connectorType={connectorType}
-            name={name}
-            topic={topic}
-            userErrorHandler={userErrorHandler}
-            userServiceAccount={userServiceAccount}
-            configString={configString}
-            configurationSteps={configurationSteps}
+      {savingError && (
+        <FormAlert>
+          <Alert
+            variant="danger"
+            title={savingError}
+            aria-live="polite"
+            isInline
           />
-        ) : (
-          <>
-            <Grid>
-              <GridItem span={4}>
-                <strong>{t('connectorCategory')}</strong>
-              </GridItem>
-              <GridItem span={8}>
+        </FormAlert>
+      )}
+      {toggleView ? (
+        <ViewJSONFormat
+          kafka={kafka}
+          namespace={namespace}
+          connectorType={connectorType}
+          name={name}
+          topic={topic}
+          userErrorHandler={userErrorHandler}
+          userServiceAccount={userServiceAccount}
+          configString={configString}
+          configurationSteps={configurationSteps}
+        />
+      ) : (
+        <>
+          <DescriptionList
+            isHorizontal
+            horizontalTermWidthModifier={{
+              default: '12ch',
+              sm: '15ch',
+              md: '20ch',
+              lg: '28ch',
+              xl: '30ch',
+              '2xl': '35ch',
+            }}
+          >
+            <DescriptionListGroup>
+              <DescriptionListTerm>
+                {t('connectorCategory')}
+              </DescriptionListTerm>
+              <DescriptionListDescription>
                 {(connectorType as ConnectorTypeAllOf).description}
-              </GridItem>
-            </Grid>
-            <Grid>
-              <GridItem span={4}>
-                <strong>{t('kafkaInstance')}</strong>
-              </GridItem>
-              <GridItem span={8}>{kafka.name}</GridItem>
-            </Grid>
-            <Grid>
-              <GridItem span={4}>
-                <strong>{t('deployment')}</strong>
-              </GridItem>
-              <GridItem span={8}>{namespace.name}</GridItem>
-            </Grid>
-
-            <Title headingLevel="h3" size={TitleSizes['2xl']}>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{t('kafkaInstance')}</DescriptionListTerm>
+              <DescriptionListDescription>
+                {kafka.name}
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{t('namespace')}</DescriptionListTerm>
+              <DescriptionListDescription>
+                {namespace.name}
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            <Title
+              headingLevel="h3"
+              size={TitleSizes['lg']}
+              className="--pf-c-title--Title-size"
+            >
               {t('basic')}
             </Title>
-            <Grid>
-              <GridItem span={4}>
-                <strong>{t('connectorName')}</strong>
-              </GridItem>
-              <GridItem span={8}>{name}</GridItem>
-            </Grid>
-            <Grid>
-              <GridItem span={4}>
-                <strong>{t('type')}</strong>
-              </GridItem>
-              <GridItem span={8}>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{t('connectorName')}</DescriptionListTerm>
+              <DescriptionListDescription>{name}</DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{t('type')}</DescriptionListTerm>
+              <DescriptionListDescription>
                 {(connectorType as ConnectorTypeAllOf).labels?.map(
                   (type) => type
                 )}
-              </GridItem>
-            </Grid>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
             {userServiceAccount?.clientId && (
-              <Grid>
-                <GridItem span={4}>
-                  <strong>{t('clientId')}</strong>
-                </GridItem>
-                <GridItem span={8}>
+              <DescriptionListGroup>
+                <DescriptionListTerm>{t('clientId')}</DescriptionListTerm>
+                <DescriptionListDescription>
                   <Flex>
                     <FlexItem id="clientId">
                       {userServiceAccount?.clientId}
                     </FlexItem>
                   </Flex>
-                </GridItem>
-              </Grid>
+                </DescriptionListDescription>
+              </DescriptionListGroup>
             )}
             {userServiceAccount?.clientSecret && (
-              <Grid>
-                <GridItem span={4}>
-                  <strong>{t('clientSecret')}</strong>
-                </GridItem>
-                <GridItem span={8}>
+              <DescriptionListGroup>
+                <DescriptionListTerm>{t('clientSecret')}</DescriptionListTerm>
+                <DescriptionListDescription>
                   <Flex>
                     <FlexItem>
                       {toggleMaskView.clientSecret
@@ -261,20 +269,22 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
                       )}
                     </FlexItem>
                   </Flex>
-                </GridItem>
-              </Grid>
+                </DescriptionListDescription>
+              </DescriptionListGroup>
             )}
-            <Title headingLevel="h3" size={TitleSizes['2xl']}>
+            <Title
+              headingLevel="h3"
+              size={TitleSizes['lg']}
+              className="--pf-c-title--Title-size"
+            >
               {t('connectorSpecific')}
             </Title>
             {connector &&
               Object.keys(connector).map((el) => {
                 return (
-                  <Grid key={el}>
-                    <GridItem span={4}>
-                      <strong>{_.startCase(el)}</strong>
-                    </GridItem>
-                    <GridItem span={8}>
+                  <DescriptionListGroup>
+                    <DescriptionListTerm>{_.startCase(el)}</DescriptionListTerm>
+                    <DescriptionListDescription>
                       {dataToHide.includes(el) ? (
                         <Flex>
                           <FlexItem>{'*'.repeat(5)}</FlexItem>
@@ -282,60 +292,64 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
                       ) : (
                         connector[el]
                       )}
-                    </GridItem>
-                  </Grid>
+                    </DescriptionListDescription>
+                  </DescriptionListGroup>
                 );
               })}
             {kafkaTopic &&
               Object.keys(kafkaTopic).map((el) => {
                 return (
-                  <Grid key={el}>
-                    <GridItem span={4}>
-                      <strong>{_.startCase(el)}</strong>
-                    </GridItem>
-                    <GridItem span={8}>{kafkaTopic[el]}</GridItem>
-                  </Grid>
+                  <DescriptionListGroup>
+                    <DescriptionListTerm>{_.startCase(el)}</DescriptionListTerm>
+                    <DescriptionListDescription>
+                      {kafkaTopic[el]}
+                    </DescriptionListDescription>
+                  </DescriptionListGroup>
                 );
               })}
             {connector === undefined &&
               Object.keys(modifiedObject).map((el) => {
                 return (
-                  <Grid key={el}>
-                    <GridItem span={4}>
-                      <strong>{_.startCase(el)}</strong>
-                    </GridItem>
-                    <GridItem span={8}>
+                  <DescriptionListGroup>
+                    <DescriptionListTerm>{_.startCase(el)}</DescriptionListTerm>
+                    <DescriptionListDescription>
                       {ConnectorProperties(el, modifiedObject, dataToHide)}
-                    </GridItem>
-                  </Grid>
+                    </DescriptionListDescription>
+                  </DescriptionListGroup>
                 );
               })}
             {userErrorHandler && !configurationSteps && (
               <>
-                <Title headingLevel="h3" size={TitleSizes['2xl']}>
+                <Title
+                  headingLevel="h3"
+                  size={TitleSizes['lg']}
+                  className="--pf-c-title--Title-size"
+                >
                   {t('errorHandling')}
                 </Title>
-                <Grid>
-                  <GridItem span={4}>
-                    <strong>{t('errorHandlingMethod')}</strong>
-                  </GridItem>
-                  <GridItem span={8}>
+                <DescriptionListGroup>
+                  <DescriptionListTerm>
+                    {t('errorHandlingMethod')}
+                  </DescriptionListTerm>
+                  <DescriptionListDescription>
                     {returnErrorHandlersNames(userErrorHandler).errorHandler}
-                  </GridItem>
-                </Grid>
+                  </DescriptionListDescription>
+                </DescriptionListGroup>
                 {topic && (
-                  <Grid>
-                    <GridItem span={4}>
-                      <strong>{t('deadLetterQueueTopic')}</strong>
-                    </GridItem>
-                    <GridItem span={8}>{topic}</GridItem>
-                  </Grid>
+                  <DescriptionListGroup>
+                    <DescriptionListTerm>
+                      {t('deadLetterQueueTopic')}
+                    </DescriptionListTerm>
+                    <DescriptionListDescription>
+                      {topic}
+                    </DescriptionListDescription>
+                  </DescriptionListGroup>
                 )}
               </>
             )}
-          </>
-        )}
-      </Form>
+          </DescriptionList>
+        </>
+      )}
     </StepBodyLayout>
   );
 };
@@ -348,14 +362,14 @@ export const DataShape: FC<DataShape> = ({ data }) => {
     <>
       {Object.keys(data).map((key) => {
         return (
-          <Grid key={key}>
-            <GridItem span={2}>
-              <strong>{_.startCase(key)}:</strong>
-            </GridItem>
-            <GridItem span={10}>
-              {typeof data[key] === 'string' ? data[key] : data[key].format}
-            </GridItem>
-          </Grid>
+          <DescriptionList isHorizontal>
+            <DescriptionListGroup>
+              <DescriptionListDescription>
+                <strong>{_.startCase(key)}:</strong>&nbsp;
+                {typeof data[key] === 'string' ? data[key] : data[key].format}
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+          </DescriptionList>
         );
       })}
     </>
