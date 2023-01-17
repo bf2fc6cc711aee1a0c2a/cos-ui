@@ -36,6 +36,7 @@ export type ConnectorInstancesTableProps = {
   page: number;
   selectedConnector?: Connector;
   size: number;
+  onDelete: (row: Connector) => void;
 };
 
 export const ConnectorInstancesTable: FunctionComponent<
@@ -60,6 +61,7 @@ export const ConnectorInstancesTable: FunctionComponent<
   page,
   selectedConnector,
   size,
+  onDelete,
 }: ConnectorInstancesTableProps) => {
   const { t } = useTranslation();
   const columnLabels = {
@@ -104,6 +106,7 @@ export const ConnectorInstancesTable: FunctionComponent<
               connectorRef={row}
               onConnectorDetail={onConnectorDetail}
               onDuplicateConnector={onDuplicateConnector}
+              onDelete={onDelete}
             />
           )}
           renderCell={({ column, row, key, Td }) => (

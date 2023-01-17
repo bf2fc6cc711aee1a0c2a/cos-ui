@@ -92,7 +92,7 @@ export const ConnectorSelectionListLayout: FC<
 }) => {
   const currentCategory =
     selectedCategories.filter(
-      (category) => category !== '!!source' && category !== '!!sink'
+      (category) => category !== 'source' && category !== 'sink'
     )[0] || 'All Items';
   return (
     <>

@@ -85,7 +85,8 @@ const testMachine = createMachine({
     selectNamespaceEmptyState: {
       meta: {
         noCoverage: true,
-        test: () => cy.findByText('No namespaces').should('exist'),
+        // No card of any namespace type does not exist 
+        test: () => cy.findByText('Owner').should('not.exist'),
       },
     },
     coreConfiguration: {

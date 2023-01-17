@@ -20,3 +20,8 @@ export enum ERROR_HANDLING_STRATEGY {
   Stop = 'stop',
   DeadLetterQueue = 'dead_letter_queue',
 }
+
+export const ADDON_INSTALLATION_GUIDE_URL =
+  'https://access.redhat.com/documentation/en-us/openshift_connectors/1/guide/15a79de0-8827-4bf1-b445-8e3b3eef7b01';
+export const RHOC_SUBSCRIPTION_URL =
+  'https://www.redhat.com/en/technologies/cloud-computing/openshift/connectors';

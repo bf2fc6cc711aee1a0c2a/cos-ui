@@ -59,27 +59,27 @@ export const ConnectorSelectionListFilterPanel: FC<
       : [];
 
   const isSinkChecked =
-    selectedTypeLabels.find((cat) => cat === '!!sink') !== undefined;
+    selectedTypeLabels.find((cat) => cat === 'sink') !== undefined;
   const isSourceChecked =
-    selectedTypeLabels.find((cat) => cat === '!!source') !== undefined;
+    selectedTypeLabels.find((cat) => cat === 'source') !== undefined;
   const handleSourceChecked = useCallback(() => {
     isSourceChecked
       ? onChangeLabelFilter([
-          ...selectedCategories.filter((label) => label !== '!!source'),
+          ...selectedCategories.filter((label) => label !== 'source'),
         ])
       : onChangeLabelFilter([
-          ...selectedCategories.filter((label) => label !== '!!sink'),
-          '!!source',
+          ...selectedCategories.filter((label) => label !== 'sink'),
+          'source',
         ]);
   }, [isSourceChecked, onChangeLabelFilter, selectedCategories]);
   const handleSinkChecked = useCallback(() => {
     isSinkChecked
       ? onChangeLabelFilter([
-          ...selectedCategories.filter((label) => label !== '!!sink'),
+          ...selectedCategories.filter((label) => label !== 'sink'),
         ])
       : onChangeLabelFilter([
-          ...selectedCategories.filter((label) => label !== '!!source'),
-          '!!sink',
+          ...selectedCategories.filter((label) => label !== 'source'),
+          'sink',
         ]);
   }, [isSinkChecked, onChangeLabelFilter, selectedCategories]);
   useDimensionsEffect((dimensions) => {

@@ -1,6 +1,7 @@
 import {
   ConnectorTypesOrderBy,
   ConnectorTypesSearch,
+  fetchConnectorTypeLabels,
   fetchConnectorTypes,
 } from '@apis/api';
 import { EmptyStateFetchError } from '@app/components/EmptyStateFetchError/EmptyStateFetchError';
@@ -19,7 +20,6 @@ import {
 } from '@rhoas/connector-management-sdk';
 
 import { ConnectorSelectionListLayout } from './ConnectorSelectionListLayout';
-import { fetchConnectorTypeLabels } from './apiExtensions';
 import {
   ConnectorTypeLabelCount,
   FeaturedConnectorType,
@@ -97,13 +97,7 @@ export const ConnectorSelectionList: FC<ConnectorSelectionListProps> = ({
       connectorsApiBasePath,
     })(
       {
-        search: {
-          name: search.name,
-          label: (search.label || []).filter(
-            (label) => label === 'source' || label === 'sink'
-          ),
-          pricing_tier: search.pricing_tier,
-        },
+        search,
         orderBy,
       },
       onGetConnectorTypeLabels,

@@ -15,6 +15,7 @@ import {
   ConnectorNamespacesApi,
   ConnectorsApi,
   ConnectorType,
+  ConnectorTypeLabelCount,
   ConnectorTypesApi,
   ObjectReference,
   ServiceAccount,
@@ -537,32 +538,19 @@ export const fetchConnectorTypes = ({
       name && name.length > 0 ? ` name ILIKE '%${name}%'` : undefined;
     const pricingTierSearch =
       pricing_tier && pricing_tier.length > 0
-        ? ` pricing_tier ILIKE '${pricing_tier}'`
+        ? ` pricing_tier ILIKE '%${pricing_tier}%'`
         : undefined;
-    const labelSearch =
-      label && label.length > 0
-        ? [
-            label
-              .filter((s) => !s.startsWith('!!'))
-              .map((s) => `label = ${s}`)
-              .join(' OR '),
-            label
-              .filter((s) => s.startsWith('!!'))
-              .map((s) => `label = ${s.slice(2, s.length)}`)
-              .join(' AND '),
-          ]
-            .filter(Boolean)
-            .join(' AND ')
-        : undefined;
-    /*
-      * label searches could probably use the IN operator
-      label && label.length > 0
-        ? `label IN (${label
-            .map((s) => `'${s.startsWith('!!') ? s.slice(2, s.length) : s}'`)
-            .join(', ')})`
-        : undefined;
-    */
-
+    // avoid the aggregated query if there's only one label to look for
+    const labelSearch = ((label: string[]) => {
+      switch (label.length) {
+        case 0:
+          return undefined;
+        case 1:
+          return `label = ${label[0]}`;
+        default:
+          return `label LIKE %${label.join('%')}%`;
+      }
+    })(label || []);
     const searchString: string = [nameSearch, labelSearch, pricingTierSearch]
       .filter(Boolean)
       .map((s) => `(${s})`)
@@ -590,6 +578,80 @@ export const fetchConnectorTypes = ({
       });
     return () => {
       source.cancel('Operation canceled by the user.');
+    };
+  };
+};
+
+type FetchConnectorTypeLabelsRequest = {
+  search?: ConnectorTypesSearch;
+  orderBy?: ConnectorTypesOrderBy;
+};
+
+type FetchConnectorTypeLabelsOnSuccess = (payload: {
+  items: Array<ConnectorTypeLabelCount>;
+}) => void;
+type FetchConnectorTypeLabelsOnError = (payload: string) => void;
+
+export const fetchConnectorTypeLabels = ({
+  accessToken,
+  connectorsApiBasePath,
+}: CommonApiProps) => {
+  const connectorsAPI = new ConnectorTypesApi(
+    new Configuration({
+      accessToken,
+      basePath: connectorsApiBasePath,
+    })
+  );
+  return (
+    request: FetchConnectorTypeLabelsRequest,
+    onSuccess: FetchConnectorTypeLabelsOnSuccess,
+    onError: FetchConnectorTypeLabelsOnError
+  ) => {
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    const { orderBy, search } = request;
+    const { name, label = [], pricing_tier } = search || {};
+    const nameSearch =
+      name && name.length > 0 ? ` name ILIKE '%${name}%'` : undefined;
+    const pricingTierSearch =
+      pricing_tier && pricing_tier.length > 0
+        ? ` pricing_tier ILIKE '%${pricing_tier}'%`
+        : undefined;
+    // avoid the aggregated query if there's only one label to look for
+    const labelSearch = ((label: string[]) => {
+      switch (label.length) {
+        case 0:
+          return undefined;
+        case 1:
+          return `label = ${label[0]}`;
+        default:
+          return `label LIKE %${label.join('%')}%`;
+      }
+    })(label || []);
+    const searchString: string = [nameSearch, labelSearch, pricingTierSearch]
+      .filter(Boolean)
+      .map((s) => `(${s})`)
+      .join(' AND ');
+    const orderByString = Object.entries(orderBy || {})
+      .filter((val) => val[0] !== undefined && val[1] !== undefined)
+      .map((val) => ` ${val[0]} ${val[1]}`)
+      .join(',');
+    connectorsAPI
+      .getConnectorTypeLabels(orderByString, searchString, {
+        cancelToken: source.token,
+      })
+      .then((response) => {
+        onSuccess({
+          items: response.data.items!,
+        });
+      })
+      .catch((error) => {
+        if (!axios.isCancel(error)) {
+          onError(error.message);
+        }
+      });
+    return () => {
+      source.cancel('Operation canceled by the user');
     };
   };
 };
