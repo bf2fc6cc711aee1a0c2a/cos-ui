@@ -207,6 +207,7 @@ describe('Connector creation', () => {
         cy.findByLabelText('Connectors instance name *').type('my-connector');
         cy.findByLabelText('Client ID *').type('client-id');
         cy.findByLabelText('Client secret *').type('client-secret');
+        cy.findByLabelText('I have set the Kafka instance to allow access for this service account.*').click();
         cy.findByText('Next').should('be.enabled').click();
       },
 

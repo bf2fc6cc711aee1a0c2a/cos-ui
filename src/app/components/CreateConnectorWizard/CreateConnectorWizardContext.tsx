@@ -60,6 +60,8 @@ type CreateConnectorWizardProviderProps = {
   connectorData?: Connector;
   connectorTypeDetails?: ConnectorType;
   connectorId?: string;
+  selectedKafkaInstance?: KafkaRequest;
+  selectedNamespace?: ConnectorNamespace;
   duplicateMode?: boolean;
   onSave: (name: string) => void;
 };
@@ -76,6 +78,8 @@ export const CreateConnectorWizardProvider: FunctionComponent<
   connectorData,
   connectorTypeDetails,
   connectorId,
+  selectedKafkaInstance,
+  selectedNamespace,
   duplicateMode,
 }) => {
   const { onActivity } = useAnalytics();
@@ -98,6 +102,8 @@ export const CreateConnectorWizardProvider: FunctionComponent<
       connectorId,
       connectorData,
       connectorTypeDetails,
+      selectedKafkaInstance,
+      selectedNamespace,
       duplicateMode,
     },
     services: {
@@ -454,12 +460,19 @@ export const useNamespaceMachine = () => {
 export const useCoreConfigurationMachine = () => {
   const { coreConfigurationRef: coreConfigurationRef } =
     useCreateConnectorWizard();
-  const { name, sACreated, serviceAccount, duplicateMode } = useSelector(
+  const {
+    name,
+    sACreated,
+    sAConfiguredConfirmed,
+    serviceAccount,
+    duplicateMode,
+  } = useSelector(
     coreConfigurationRef,
     useCallback((state: EmittedFrom<typeof coreConfigurationRef>) => {
       return {
         name: state.context.name,
         sACreated: state.context.sACreated,
+        sAConfiguredConfirmed: state.context.sAConfiguredConfirmed,
         serviceAccount: state.context.userServiceAccount,
         duplicateMode: state.context.duplicateMode,
       };
@@ -479,6 +492,16 @@ export const useCoreConfigurationMachine = () => {
     [coreConfigurationRef]
   );
 
+  const onSetSaConfiguredConfirmed = useCallback(
+    (sAConfiguredConfirmed: boolean) => {
+      coreConfigurationRef.send({
+        type: 'setSaConfiguredConfirmed',
+        sAConfiguredConfirmed,
+      });
+    },
+    [coreConfigurationRef]
+  );
+
   const onSetServiceAccount = useCallback(
     (serviceAccount: UserProvidedServiceAccount) => {
       coreConfigurationRef.send({ type: 'setServiceAccount', serviceAccount });
@@ -489,7 +512,9 @@ export const useCoreConfigurationMachine = () => {
     serviceAccount,
     name,
     sACreated,
+    sAConfiguredConfirmed,
     onSetSaCreated,
+    onSetSaConfiguredConfirmed,
     onSetName,
     onSetServiceAccount,
     duplicateMode,

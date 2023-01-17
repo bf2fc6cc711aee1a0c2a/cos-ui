@@ -76,7 +76,7 @@ const namespace_test = {
 };
 
 export default {
-  title: 'Wizard step 5/Review Step',
+  title: 'Wizard Step 5/Review Step',
   component: StepReviewComponent,
   decorators: [(Story) => <Story />],
   args: {},

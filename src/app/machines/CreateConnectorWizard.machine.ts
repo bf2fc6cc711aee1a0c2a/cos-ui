@@ -47,6 +47,7 @@ export type CreateWizardContextData = {
   connectorConfiguration?: unknown;
   name: string;
   sACreated: boolean;
+  sAConfiguredConfirmed: boolean;
   topic?: string;
   userServiceAccount: UserProvidedServiceAccount;
   userErrorHandler?: string;
@@ -381,6 +382,8 @@ export const creationWizardMachine = model.createMachine(
               userErrorHandler: context.userErrorHandler,
               duplicateMode: context.duplicateMode,
               sACreated: context.sACreated,
+              sAConfiguredConfirmed:
+                context.duplicateMode || context.sAConfiguredConfirmed,
             };
           },
           onDone: {
@@ -388,6 +391,7 @@ export const creationWizardMachine = model.createMachine(
             actions: assign((context, event) => ({
               name: event.data.name,
               sACreated: event.data.sACreated,
+              sAConfiguredConfirmed: event.data.sAConfiguredConfirmed,
               userServiceAccount: event.data.userServiceAccount,
               duplicateMode: context.duplicateMode,
             })),

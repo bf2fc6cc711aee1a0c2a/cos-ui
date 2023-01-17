@@ -3,6 +3,7 @@
   "{{date}}": "{{date}}",
   "accepted": "Creation pending",
   "accessKey": "Access Key",
+  "accessPermissions": "Access permissions",
   "actions": "Actions",
   "addOnLink": "Learn more about add-on installation",
   "All Items": "All Items",
@@ -87,6 +88,7 @@
   "createKafkaInstance": "Create Kafka instance",
   "createPreviewNamespace": "Create a preview namespace",
   "createServiceAccount": "Create service account",
+  "createServiceAccountForKafkaGuideLink": "https://access.redhat.com/documentation/en-us/red_hat_openshift_streams_for_apache_kafka/1/guide/f351c4bd-9840-42ef-bcf2-b0c9be4ee30a#_7cb5e3f0-4b76-408d-b245-ff6959d3dbf7",
   "creationInProgress": "Creation in progress",
   "creationPending": "Creation pending",
   "createRosaNamespace": "Create a namespace on a ROSA cluster",
@@ -183,6 +185,7 @@
   "namespaceModelAlert": "The namespace will be ready shortly after creation.",
   "namespaceReady": "Namespace ready",
   "namespaceStepDescription": "The selected namespace hosts your Connectors instance. Use a namespace in an OpenShift Dedicated trial cluster, or have Red Hat create a preview namespace for you. For instructions on adding a namespace to a trial cluster, access the <2>guide</2>.",
+  "no": "No",
   "noConnectorInstances": "No Connectors instances",
   "noDeploymentNamespaceAvailable": "No deployment namespace available",
   "noFilterResultsFound": "No results match the filter criteria. <2>Clear all filters</2> to show results.",
@@ -219,6 +222,8 @@
   "serviceAccount": "Service account",
   "serviceAccountAlertMsg": "Make a copy of the client ID and secret to store in a safe place. The client secret won't appear again after closing this screen.",
   "serviceAccountDescText": "A service account enables the Connectors instance to authenticate with the Kafka instance. Provide credentials of a service account that has access to the Kafka instance, or create a new one. Define the service account's permissions from the Access tab of the Kafka instance so that source connectors can produce to, and sink connectors can consume from, topics.",
+  "serviceAccountInstructionsConfirmationDescription": "I configured the service account as described in <2>Setting permissions for a service account in a Kafka instance in OpenShift Streams for Apache Kafka.</2>",
+  "serviceAccountInstructionsConfirmationLabel": "I have set the Kafka instance to allow access for this service account.",
   "serviceAccountEditDescription": "A service account enables the Connectors instance to authenticate with a Kafka instance.",
   "shortDescription": "Short description",
   "shortDescriptionExampleText": "Must start with a letter and end with a letter or number. Valid characters include lowercase letters from a to z, numbers from 0 to 9, and hyphens ( - ).",
@@ -255,5 +260,6 @@
   "viewJSONFormat": "View JSON format",
   "viewLess": "view less",
   "viewMore": "view more",
-  "clusteridSearchPlaceholder": "Filter by cluster id"
+  "clusteridSearchPlaceholder": "Filter by cluster id",
+  "yes": "Yes"
 }
