@@ -52,7 +52,6 @@ export const PreviewNamespaceEmptyCard: React.FunctionComponent<
         >
           {t('createPreviewNamespace')}
         </Button>
-        {/* <Button variant="link" onClick={onModalToggle}>{t('createPreviewNamespace')}</Button> */}
       </CardFooter>
     </Card>
   );

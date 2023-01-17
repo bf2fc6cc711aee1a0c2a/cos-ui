@@ -38,7 +38,7 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  ToolbarToggleGroup, // Tooltip,
+  ToolbarToggleGroup,
   Dropdown,
   DropdownToggle,
   DropdownPosition,
@@ -46,7 +46,12 @@ import {
   ToolbarFilter,
   Gallery,
 } from '@patternfly/react-core';
-import { ClockIcon, FilterIcon, SearchIcon } from '@patternfly/react-icons';
+import {
+  ClockIcon,
+  ExternalLinkSquareAltIcon,
+  FilterIcon,
+  SearchIcon,
+} from '@patternfly/react-icons';
 
 import { Trans, useTranslation } from '@rhoas/app-services-ui-components';
 import {
@@ -198,10 +203,12 @@ const DeploymentGallery: FunctionComponent = () => {
               isInline
               component={'a'}
               href={RHOC_SUBSCRIPTION_URL}
+              icon={<ExternalLinkSquareAltIcon />}
+              iconPosition="right"
               target={'_blank'}
               ouiaId={'description-osd-guide-link'}
             >
-              Talk to a Red
+              Talk to a Red Hatter to get a subscription.
             </Button>
           </Trans>
         </>
