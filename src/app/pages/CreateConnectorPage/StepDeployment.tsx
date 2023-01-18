@@ -13,7 +13,6 @@ import { Pagination } from '@app/components/Pagination/Pagination';
 import { RegisterEvalNamespace } from '@app/components/RegisterEvalNamespace/RegisterEvalNamespace';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { PaginatedApiResponse } from '@app/machines/PaginatedResponse.machine';
-import { RHOC_SUBSCRIPTION_URL } from '@constants/constants';
 import { useCos } from '@hooks/useCos';
 import usePrevious from '@hooks/usePrevious';
 import { getPendingTime, warningType } from '@utils/shared';
@@ -202,7 +201,7 @@ const DeploymentGallery: FunctionComponent = () => {
               isSmall
               isInline
               component={'a'}
-              href={RHOC_SUBSCRIPTION_URL}
+              href={t('rhocSubscriptionURL')}
               icon={<ExternalLinkSquareAltIcon />}
               iconPosition="right"
               target={'_blank'}

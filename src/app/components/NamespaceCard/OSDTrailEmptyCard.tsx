@@ -1,4 +1,3 @@
-import { ADDON_INSTALLATION_GUIDE_URL } from '@constants/constants';
 import React from 'react';
 
 import {
@@ -51,7 +50,7 @@ export const OSDTrailEmptyCard: React.FunctionComponent = () => {
           variant={ButtonVariant.link}
           isInline
           target={'_blank'}
-          href={ADDON_INSTALLATION_GUIDE_URL}
+          href={t('addonInstallationGuideURL')}
           component={'a'}
           icon={<ExternalLinkSquareAltIcon />}
           iconPosition="right"
