@@ -5,15 +5,12 @@ import React, { FC, useCallback, useEffect, useState } from 'react';
 
 import {
   AlertVariant,
-  ClipboardCopy,
-  Hint,
-  HintBody,
   PageSection,
   PageSectionVariants,
   Spinner,
 } from '@patternfly/react-core';
 
-import { Trans, useTranslation } from '@rhoas/app-services-ui-components';
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import { KafkaInstance, useAlert } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
@@ -100,26 +97,6 @@ export const OverviewTab: FC<OverviewTabProps> = ({
 
   return (
     <PageSection variant={PageSectionVariants.light}>
-      {connectorData?.status?.state === 'failed' && (
-        <Hint className="pf-u-mb-md">
-          <HintBody>
-            <p>{t('previewModeMsg')}</p>
-            <Trans i18nKey={'supportEmailMsg'}>
-              You can still get help by emailing us at
-              <ClipboardCopy
-                hoverTip="Copy"
-                clickTip="Copied"
-                variant="inline-compact"
-              >
-                rhosak-eval-support@redhat.com
-              </ClipboardCopy>
-              . This mailing list is monitored by the Red Hat OpenShift
-              Application Services team.
-            </Trans>
-          </HintBody>
-        </Hint>
-      )}
-
       <ConnectorInfoTextList
         onDuplicateConnector={onDuplicateConnector}
         name={connectorData?.name}
@@ -131,7 +108,6 @@ export const OverviewTab: FC<OverviewTabProps> = ({
         owner={connectorData?.owner!}
         createdAt={new Date(connectorData?.created_at!)}
         modifiedAt={new Date(connectorData?.modified_at!)}
-        error={connectorData?.status?.error}
       />
     </PageSection>
   );

@@ -1,35 +1,39 @@
-import React from 'react';
+import React, { FC } from 'react';
 
 import { Alert, Button, TextContent, Text } from '@patternfly/react-core';
-import ExternalLinkAltIcon from '@patternfly/react-icons/dist/esm/icons/external-link-alt-icon';
+import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 
 import { Trans, useTranslation } from '@rhoas/app-services-ui-components';
 
-import './CommunicationErrorStatus.css';
+import { SomethingWentWrongInlineProps } from './SomethingWentWrongInline';
+import './SomethingWentWrongInline.css';
 
-export const ExpandableAlerts = () => {
+export const SomethingWentWrongInlineSubscription: FC<
+  SomethingWentWrongInlineProps
+> = ({ errorMessage }) => {
   const { t } = useTranslation('cos-ui');
-
   return (
     <React.Fragment>
       <Alert
         isExpandable
         isInline
         variant="danger"
-        title={t('communicationErrorTitle')}
+        title={t('somethingWentWrongInlineTitle')}
       >
         <TextContent>
-          <Text>{t('communicationErrorDescripton')}</Text>
           <Text>
-            <Trans i18nKey={'communicationErrorMessageSubscripton'}>
-              To get help,
+            {t('somethingWentWrongInlineDescription', { errorMessage })}
+          </Text>
+          <Text>
+            <Trans i18nKey={'somethingWentWrongInlineMessageSubscription'}>
+              To get help,{' '}
               <Button
                 variant="link"
                 icon={<ExternalLinkAltIcon />}
                 iconPosition="right"
                 isInline
               >
-                {t('communicationErrorSupportTicket')}
+                {t('somethingWentWrongInlineSupportTicket')}
               </Button>
             </Trans>
           </Text>

@@ -1,5 +1,6 @@
 import { deleteConnector, startConnector, stopConnector } from '@apis/api';
 import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus';
+import { SomethingWentWrongInline } from '@app/components/SomethingWentWrongInline/SomethingWentWrongInline';
 import { CONNECTOR_DETAILS_TABS } from '@constants/constants';
 import React, { FC, useCallback, useEffect, useReducer } from 'react';
 import { Link, useHistory } from 'react-router-dom';
@@ -159,6 +160,8 @@ export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
     }
   }, [connectorData]);
 
+  const currentState = connectorData.status?.state;
+  const errorMessage = connectorData.status?.error;
   return (
     <PageSection variant={'light'}>
       <Breadcrumb>
@@ -195,6 +198,9 @@ export const ConnectorDetailsHeader: FC<ConnectorDetailsHeaderProps> = ({
           />
         </LevelItem>
       </Level>
+      {currentState === 'failed' && (
+        <SomethingWentWrongInline errorMessage={errorMessage!} />
+      )}
     </PageSection>
   );
 };
