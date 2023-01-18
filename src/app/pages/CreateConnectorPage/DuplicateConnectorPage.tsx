@@ -17,11 +17,8 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   Button,
-  TextContent,
   Modal,
   PageSection,
-  Text,
-  Title,
 } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
@@ -31,6 +28,8 @@ import {
   useConfig,
 } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
+
+import { ConnectorWizardHeader } from './components/ConnectorWizardHeader';
 
 type DuplicateConnectorPageProps = {
   onSave: (name: string) => void;
@@ -96,27 +95,21 @@ export const DuplicateConnectorPage: FunctionComponent<
 
   return (
     <>
-      <PageSection variant={'light'} hasShadowBottom>
+      <PageSection variant={'light'}>
         <Breadcrumb>
           <BreadcrumbItem>
             <Link to={'/'}>{t('connectorsInstances')}</Link>
           </BreadcrumbItem>
-          <BreadcrumbItem isActive>{t('duplicateConnector')}</BreadcrumbItem>
+          <BreadcrumbItem isActive>
+            {t('duplicateConnectorsInstance')}
+          </BreadcrumbItem>
         </Breadcrumb>
-        <TextContent className={'pf-u-pt-md pf-u-pb-md'}>
-          <Title headingLevel="h1">{t('duplicateConnector')}</Title>
-          {connectorData && connectorTypeDetails ? (
-            <Text>
-              <strong>{t('Connector')}: </strong>
-              {connectorTypeDetails.name}
-            </Text>
-          ) : null}
-        </TextContent>
       </PageSection>
       <PageSection
         padding={{ default: 'noPadding' }}
         style={{ zIndex: 0 }}
-        type={'wizard'}
+        type={'default'}
+        variant={'light'}
       >
         {connectorData && connectorTypeDetails ? (
           <CreateConnectorWizardProvider
@@ -132,7 +125,10 @@ export const DuplicateConnectorPage: FunctionComponent<
             duplicateMode={true}
             onSave={onSave}
           >
-            <CreateConnectorWizard onClose={openLeaveConfirm} />
+            <CreateConnectorWizard
+              header={<ConnectorWizardHeader />}
+              onClose={openLeaveConfirm}
+            />
             <Modal
               title={t('leaveDuplicateConnectorConfirmModalTitle')}
               variant={'small'}

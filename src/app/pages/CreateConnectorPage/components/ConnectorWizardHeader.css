@@ -1,0 +1,16 @@
+.pf-c-wizard.cos > .pf-c-wizard__header {
+  background-color: inherit;
+  color: inherit;
+  box-shadow: var(--pf-c-page--section--m-shadow-bottom--BoxShadow);
+  padding-top: 0;
+  margin-top: -18px;
+}
+
+.pf-c-wizard.cos > .pf-c-wizard__header > p.pf-c-wizard__description {
+  background-color: inherit;
+  color: inherit;
+}
+
+.pf-c-wizard.cos > .pf-c-wizard__header .pf-c-wizard__title {
+  font-size: 1.5rem;
+}

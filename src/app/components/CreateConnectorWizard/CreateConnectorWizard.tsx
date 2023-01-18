@@ -22,7 +22,7 @@ import {
   SELECT_KAFKA_INSTANCE,
   SELECT_NAMESPACE,
 } from '@constants/constants';
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { FunctionComponent, ReactNode, useCallback } from 'react';
 
 import { useSelector, useActor } from '@xstate/react';
 
@@ -150,11 +150,12 @@ function useErrorHandlingStep() {
 
 export type CreateConnectorWizardProps = {
   onClose: () => void;
+  header: ReactNode;
 };
 
 export const CreateConnectorWizard: FunctionComponent<
   CreateConnectorWizardProps
-> = ({ onClose }) => {
+> = ({ header, onClose }) => {
   const { t } = useTranslation();
   const service = useCreateConnectorWizardService();
   const [state, send] = useActor(service);
@@ -367,6 +368,7 @@ export const CreateConnectorWizard: FunctionComponent<
       goToStepById={goToStepById}
       goToStepByName={goToStepByName}
       hasNoBodyPadding={true}
+      header={header}
     />
   );
 };

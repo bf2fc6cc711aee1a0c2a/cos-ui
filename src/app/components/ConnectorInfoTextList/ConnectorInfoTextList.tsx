@@ -128,7 +128,7 @@ export const ConnectorInfoTextList: FunctionComponent<
                         variant="link"
                         onClick={() => onDuplicateConnector(id)}
                       >
-                        {t('duplicateConnector')}
+                        {t('duplicateConnectorsInstance')}
                       </Button>
                       <Popover
                         aria-label="Duplicate button helper"

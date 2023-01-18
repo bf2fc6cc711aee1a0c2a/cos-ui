@@ -8,7 +8,6 @@ import {
   ModalVariant,
   PickOptional,
   WizardContextProvider,
-  WizardHeader,
   WizardNav,
   WizardNavItem,
   WizardNavItemProps,
@@ -68,14 +67,6 @@ export interface WizardProps extends HTMLProps<HTMLDivElement> {
   width?: number | string;
   /** Custom height of the wizard */
   height?: number | string;
-  /** The wizard title to display if header is desired */
-  title?: string;
-  /** An optional id for the title */
-  titleId?: string;
-  /** An optional id for the description */
-  descriptionId?: string;
-  /** The wizard description */
-  description?: ReactNode;
   /** Flag indicating whether the close button should be in the header */
   hideClose?: boolean;
   /** Callback function to close the wizard */
@@ -98,6 +89,8 @@ export interface WizardProps extends HTMLProps<HTMLDivElement> {
   mainAriaLabelledBy?: string;
   /** Can remove the default padding around the main body content by setting this to true */
   hasNoBodyPadding?: boolean;
+
+  header?: ReactNode;
   /** (Use to control the footer) Passing in a footer component lets you control the buttons yourself */
   footer?: ReactNode;
   /** (Unused if footer is controlled) Callback function to save at the end of the wizard, if not specified uses onClose */
@@ -133,10 +126,7 @@ function toOUIAId(victim: string): string {
 
 export class UncontrolledWizard extends Component<WizardProps, WizardState> {
   static displayName = 'Wizard';
-  private static currentId = 0;
   static defaultProps: PickOptional<WizardProps> = {
-    title: undefined,
-    description: '',
     className: '',
     nextButtonText: 'Next',
     backButtonText: 'Back',
@@ -155,16 +145,9 @@ export class UncontrolledWizard extends Component<WizardProps, WizardState> {
     appendTo: undefined,
     isOpen: undefined,
   };
-  private titleId: string;
-  private descriptionId: string;
 
   constructor(props: WizardProps) {
     super(props);
-    const newId = UncontrolledWizard.currentId++;
-    this.titleId = props.titleId || `pf-wizard-title-${newId}`;
-    this.descriptionId =
-      props.descriptionId || `pf-wizard-description-${newId}`;
-
     this.state = {
       isNavOpen: false,
     };
@@ -239,8 +222,6 @@ export class UncontrolledWizard extends Component<WizardProps, WizardState> {
     const {
       width,
       height,
-      title,
-      description,
       onClose,
       onSave,
       onBack,
@@ -262,11 +243,10 @@ export class UncontrolledWizard extends Component<WizardProps, WizardState> {
       mainAriaLabel,
       mainAriaLabelledBy,
       hasNoBodyPadding,
+      header,
       footer,
       appendTo,
       isOpen,
-      titleId,
-      descriptionId,
       ...rest
     } = this.props;
     const flattenedSteps = this.getFlattenedSteps();
@@ -283,8 +263,7 @@ export class UncontrolledWizard extends Component<WizardProps, WizardState> {
       const wizNavAProps = {
         isOpen: isWizardNavOpen,
         'aria-label': navAriaLabel,
-        'aria-labelledby':
-          (title || navAriaLabelledBy) && (navAriaLabelledBy || this.titleId),
+        'aria-labelledby': navAriaLabelledBy,
       };
       return (
         <WizardNav {...wizNavAProps}>
@@ -394,24 +373,11 @@ export class UncontrolledWizard extends Component<WizardProps, WizardState> {
           )}
           style={Object.keys(divStyles).length ? divStyles : undefined}
         >
-          {title && (
-            <WizardHeader
-              titleId={this.titleId}
-              descriptionId={this.descriptionId}
-              onClose={onClose}
-              title={title}
-              description={description}
-              closeButtonAriaLabel={closeButtonAriaLabel}
-              hideClose={hideClose}
-            />
-          )}
+          {header ? header : ''}
           <WizardToggle
             mainAriaLabel={mainAriaLabel}
             isInPage={isOpen === undefined}
-            mainAriaLabelledBy={
-              (title || mainAriaLabelledBy) &&
-              (mainAriaLabelledBy || this.titleId)
-            }
+            mainAriaLabelledBy={mainAriaLabelledBy}
             isNavOpen={this.state.isNavOpen}
             onNavToggle={(isNavOpen) => this.setState({ isNavOpen })}
             nav={nav}
@@ -469,8 +435,6 @@ export class UncontrolledWizard extends Component<WizardProps, WizardState> {
           width={width !== null ? width : undefined}
           isOpen={isOpen}
           variant={ModalVariant.large}
-          aria-labelledby={this.titleId}
-          aria-describedby={this.descriptionId}
           showClose={false}
           hasNoBodyWrapper
         >
