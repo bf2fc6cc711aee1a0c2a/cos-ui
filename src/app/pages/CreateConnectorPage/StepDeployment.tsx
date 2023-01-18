@@ -296,6 +296,8 @@ const DeploymentGallery: FunctionComponent = () => {
                           getToken={getToken}
                         />
                       ))}
+                  </Gallery>
+                  <Gallery hasGutter className="pf-u-mt-md">
                     <ROSAEmptyCard />
                     <OSDTrailEmptyCard />
                     {!evalInstance && (

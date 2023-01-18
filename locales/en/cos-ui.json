@@ -84,7 +84,7 @@
   "createConnector": "Create Connector",
   "createConnectorsInstance": "Create Connectors instance",
   "created": "Created",
-  "createOSDTrail": "Create a namespace on an OpenShift Dedicated trial cluster",
+  "createOSDTrail": "Create a namespace on an OSD trial cluster",
   "createKafkaInstance": "Create Kafka instance",
   "createPreviewNamespace": "Create a preview namespace",
   "createServiceAccount": "Create service account",
