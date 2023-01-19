@@ -615,7 +615,7 @@ export const fetchConnectorTypeLabels = ({
       name && name.length > 0 ? ` name ILIKE '%${name}%'` : undefined;
     const pricingTierSearch =
       pricing_tier && pricing_tier.length > 0
-        ? ` pricing_tier ILIKE '%${pricing_tier}'%`
+        ? ` pricing_tier ILIKE '%${pricing_tier}%'`
         : undefined;
     // avoid the aggregated query if there's only one label to look for
     const labelSearch = ((label: string[]) => {
