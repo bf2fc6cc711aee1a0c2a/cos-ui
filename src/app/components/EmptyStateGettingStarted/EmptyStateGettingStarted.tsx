@@ -37,7 +37,7 @@ export const EmptyStateGettingStarted: FunctionComponent<
     >
       <EmptyStateIcon icon={PlusCircleIcon} />
       <Title headingLevel={'h1'} size={TitleSizes['xl']}>
-        {t('noConnectorInstances')}
+        {t('noConnectorsInstances')}
       </Title>
       <EmptyStateBody>
         <Text component={TextVariants.p} className="pf-u-pb-md">
