@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 
 import {
   DataListItem,
@@ -46,6 +46,7 @@ export const ConnectorSelectionListItem: FC<
   ConnectorSelectionListItemProps
 > = ({ id, labels = [], title, version, description, pricingTier, style }) => {
   const { t } = useTranslation();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const displayLabels = labels
     .filter(
       (label) =>
@@ -90,11 +91,13 @@ export const ConnectorSelectionListItem: FC<
                         {title}
                       </strong>
                     </FlexItem>
-                    <FlexItem>
+                    <FlexItem onClick={(_) => setIsOpen(!isOpen)}>
                       <Popover
                         position="right"
                         aria-label={t('ConnectorHelpAndGuidances')}
                         bodyContent={description}
+                        isVisible={isOpen}
+                        shouldClose={() => setIsOpen(false)}
                       >
                         <OutlinedQuestionCircleIcon
                           className="connector-selection-list-item__help-icon"
