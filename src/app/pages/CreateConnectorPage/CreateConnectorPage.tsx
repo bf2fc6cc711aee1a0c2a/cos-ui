@@ -9,14 +9,14 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   Button,
-  Level,
   Modal,
   PageSection,
-  Title,
 } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 import { useConfig } from '@rhoas/app-services-ui-shared';
+
+import { ConnectorWizardHeader } from './components/ConnectorWizardHeader';
 
 export type CreateConnectorPageProps = {
   onSave: (name: string) => void;
@@ -43,7 +43,7 @@ export const CreateConnectorPage: FunctionComponent<
         }
         onSave={onSave}
       >
-        <PageSection variant={'light'} hasShadowBottom>
+        <PageSection variant={'light'}>
           <Breadcrumb>
             <BreadcrumbItem>
               <Link to={'/'}>{t('connectorsInstances')}</Link>
@@ -52,16 +52,17 @@ export const CreateConnectorPage: FunctionComponent<
               {t('createAConnectorsInstance')}
             </BreadcrumbItem>
           </Breadcrumb>
-          <Level className={'pf-u-pt-md pf-u-pb-md'}>
-            <Title headingLevel="h1">{t('createAConnectorsInstance')}</Title>
-          </Level>
         </PageSection>
         <PageSection
           padding={{ default: 'noPadding' }}
           style={{ zIndex: 0 }}
-          type={'wizard'}
+          type={'default'}
+          variant={'light'}
         >
-          <CreateConnectorWizard onClose={openLeaveConfirm} />
+          <CreateConnectorWizard
+            header={<ConnectorWizardHeader />}
+            onClose={openLeaveConfirm}
+          />
           <Modal
             title={t('leaveCreateConnectorConfirmModalTitle')}
             variant={'small'}
