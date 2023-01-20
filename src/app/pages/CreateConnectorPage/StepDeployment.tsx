@@ -6,7 +6,7 @@ import {
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
 import { Loading } from '@app/components/Loading/Loading';
 import { NamespaceCard } from '@app/components/NamespaceCard/NamespaceCard';
-import { OSDTrailEmptyCard } from '@app/components/NamespaceCard/OSDTrailEmptyCard';
+import { OSDTrialEmptyCard } from '@app/components/NamespaceCard/OSDTrialEmptyCard';
 import { PreviewNamespaceEmptyCard } from '@app/components/NamespaceCard/PreviewNamespaceEmptyCard';
 import { ROSAEmptyCard } from '@app/components/NamespaceCard/ROSAEmptyCard';
 import { Pagination } from '@app/components/Pagination/Pagination';
@@ -232,7 +232,7 @@ const DeploymentGallery: FunctionComponent = () => {
                 <div className={'pf-l-stack__item pf-m-fill'}>
                   <Gallery hasGutter>
                     <ROSAEmptyCard />
-                    <OSDTrailEmptyCard />
+                    <OSDTrialEmptyCard />
                     {!evalInstance && (
                       <PreviewNamespaceEmptyCard
                         onModalToggle={onModalToggle}
@@ -298,7 +298,7 @@ const DeploymentGallery: FunctionComponent = () => {
                   </Gallery>
                   <Gallery hasGutter className="pf-u-mt-md">
                     <ROSAEmptyCard />
-                    <OSDTrailEmptyCard />
+                    <OSDTrialEmptyCard />
                     {!evalInstance && (
                       <PreviewNamespaceEmptyCard
                         onModalToggle={onModalToggle}

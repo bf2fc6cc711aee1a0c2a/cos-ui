@@ -18,7 +18,7 @@ import {
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 
-export const OSDTrailEmptyCard: React.FunctionComponent = () => {
+export const OSDTrialEmptyCard: React.FunctionComponent = () => {
   const { t } = useTranslation();
   return (
     <Card
@@ -41,7 +41,7 @@ export const OSDTrailEmptyCard: React.FunctionComponent = () => {
           </Flex>
         </CardHeader>
         <CardTitle style={{ textAlign: 'center' }}>
-          {t('createOSDTrail')}
+          {t('createOSDTrial')}
         </CardTitle>
       </CardTitle>
       <CardBody>{t('osdAddOnMsg')}</CardBody>
