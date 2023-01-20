@@ -35,7 +35,6 @@ export type ConnectorInfoTextListProps = {
   namespaceData: ConnectorNamespace | ReactNode;
   createdAt: Date;
   modifiedAt: Date;
-  error?: string;
   onDuplicateConnector: (id: string) => void;
 };
 
@@ -51,11 +50,9 @@ export const ConnectorInfoTextList: FunctionComponent<
   namespaceData,
   createdAt,
   modifiedAt,
-  error,
   onDuplicateConnector,
 }) => {
   const { t } = useTranslation();
-  const [failureReasonExpand, setFailureReasonExpand] = React.useState(false);
 
   const getConnectorExpireInlineAlert = (expiration: string): string => {
     const { hours, min } = getPendingTime(new Date(expiration));
@@ -65,30 +62,10 @@ export const ConnectorInfoTextList: FunctionComponent<
     return t('connectorExpireInline', { hours, min });
   };
 
-  const getFailureReason = (value: string): ReactNode => {
-    if ((value as string).length > 200) {
-      return (
-        <>
-          {!failureReasonExpand && (value as string).length > 200
-            ? (value as string).substring(0, 200) + '... '
-            : value}
-
-          <Button
-            onClick={() => setFailureReasonExpand(!failureReasonExpand)}
-            variant={'link'}
-          >
-            {failureReasonExpand ? t('viewLess') : t('viewMore')}
-          </Button>
-        </>
-      );
-    }
-    return value;
-  };
-
-  const textListItem = (
+  const textListItem: (
     title: string,
     value?: string | KafkaInstance | ReactNode
-  ) => (
+  ) => ReactNode = (title, value?) => (
     <>
       {value && (
         <>
@@ -98,8 +75,6 @@ export const ConnectorInfoTextList: FunctionComponent<
           <TextListItem component={TextListItemVariants.dd}>
             {(() => {
               switch (title) {
-                case t('failureReason'):
-                  return getFailureReason(value as string);
                 case t('kafkaInstance'):
                   return (value as KafkaInstance)?.name ? (
                     <Button
@@ -214,7 +189,6 @@ export const ConnectorInfoTextList: FunctionComponent<
                 {t('{{ date, ago }}', { date: modifiedAt })}
               </time>
             )}
-            {textListItem(t('failureReason'), error)}
           </TextList>
         </TextContent>
       </div>
