@@ -28,35 +28,6 @@ export type CommonStepProp = {
   onUpdateConfiguration: (type: string, update: any) => void;
 };
 
-export type SecretPlaceholderProp = {
-  SAPlaceholder: string;
-  onSAPlaceholderChange: (
-    value: string,
-    event: React.FormEvent<HTMLInputElement>
-  ) => void;
-};
-export const SecretPlaceholder: FC<SecretPlaceholderProp> = ({
-  SAPlaceholder,
-  onSAPlaceholderChange,
-}) => {
-  const { t } = useTranslation();
-  return (
-    <FormGroup
-      label={t('clientSecret')}
-      helperText={t('credentialEditFieldHelpText')}
-      fieldId="clientSecretPlaceholder"
-    >
-      <InputGroup>
-        <TextInput
-          value={SAPlaceholder}
-          type="password"
-          onChange={onSAPlaceholderChange}
-          id="connector-sa-secret-placeholder"
-        />
-      </InputGroup>
-    </FormGroup>
-  );
-};
 export const CommonStep: FC<CommonStepProp> = ({
   editMode,
   configuration,
@@ -65,21 +36,18 @@ export const CommonStep: FC<CommonStepProp> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [isSAUpdate, setIsSAUpdate] = React.useState(false);
   const [passwordHidden, setPasswordHidden] = React.useState<boolean>(true);
-  const [SAPlaceholder, setSAPlaceholder] = React.useState<string>('*****');
   const configurationCopy = Object.assign({}, configuration);
-  const { service_account } = configurationCopy;
+  const { name: connectorName, service_account } = configurationCopy;
 
   const onNameChange = (val: any) => {
     onUpdateConfiguration('common', { ...configuration, name: val });
-    val === '' ? changeIsValid(false) : changeIsValid(true);
+    val === '' || service_account.client_id === ''
+      ? changeIsValid(false)
+      : changeIsValid(true);
   };
-  const onSAPlaceholderChange = (placeholder: string) => {
-    setSAPlaceholder(placeholder);
-    if (placeholder === '') changeIsValid(false);
-  };
-  const onSAChange = (clientId: string) => {
+
+  const onSAIDChange = (clientId: string) => {
     onUpdateConfiguration('common', {
       ...configurationCopy,
       service_account: {
@@ -87,15 +55,8 @@ export const CommonStep: FC<CommonStepProp> = ({
         client_secret: service_account.client_secret,
       },
     });
-    !isSAUpdate &&
-      setIsSAUpdate((prev) => {
-        if (!prev) {
-          changeIsValid(false);
-        }
-        return true;
-      });
 
-    if (service_account.client_secret === '' || clientId === '') {
+    if (clientId === '' || connectorName === '') {
       changeIsValid(false);
     } else {
       changeIsValid(true);
@@ -110,22 +71,17 @@ export const CommonStep: FC<CommonStepProp> = ({
         client_secret: secret,
       },
     });
-    if (
-      service_account.client_secret === '' ||
-      secret === '' ||
-      service_account.client_id === ''
-    ) {
-      changeIsValid(false);
-    } else {
-      changeIsValid(true);
-    }
   };
+
   return (
     <StepBodyLayout title={t('core')} description={t('basicStepDescription')}>
       <Form>
         <FormGroup
           label={t('connectorName')}
           isRequired
+          validated={connectorName ? 'default' : 'error'}
+          helperTextInvalid={t('connectorNameIsRequired')}
+          helperTextInvalidIcon={<ExclamationCircleIcon />}
           fieldId="connector-name"
           labelIcon={
             <Popover bodyContent={<p>{t('connectorNamePopoverBody')}</p>}>
@@ -185,7 +141,7 @@ export const CommonStep: FC<CommonStepProp> = ({
             <TextInput
               value={service_account?.client_id}
               validated={service_account?.client_id ? 'default' : 'error'}
-              onChange={onSAChange}
+              onChange={onSAIDChange}
               id="connector-sa-id"
             />
           ) : (
@@ -194,30 +150,17 @@ export const CommonStep: FC<CommonStepProp> = ({
             </ClipboardCopy>
           )}
         </FormGroup>
-        {editMode &&
-          service_account?.client_secret === '' &&
-          SAPlaceholder !== '' && (
-            <SecretPlaceholder
-              SAPlaceholder={SAPlaceholder}
-              onSAPlaceholderChange={onSAPlaceholderChange}
-            />
-          )}
 
-        {editMode && SAPlaceholder === '' && (
+        {editMode ? (
           <FormGroup
             label={t('clientSecret')}
-            isRequired
-            validated={service_account?.client_secret ? 'default' : 'error'}
             helperText={t('credentialEditFieldHelpText')}
-            helperTextInvalid={t('clientSecretRequired')}
-            helperTextInvalidIcon={<ExclamationCircleIcon />}
             fieldId="clientSecret"
           >
             <InputGroup>
               <TextInput
                 value={service_account?.client_secret}
                 type={passwordHidden ? 'password' : 'text'}
-                validated={service_account?.client_secret ? 'default' : 'error'}
                 onChange={onSASecretChange}
                 id="connector-sa-secret"
               />
@@ -230,6 +173,10 @@ export const CommonStep: FC<CommonStepProp> = ({
                 {passwordHidden ? <EyeIcon /> : <EyeSlashIcon />}
               </Button>
             </InputGroup>
+          </FormGroup>
+        ) : (
+          <FormGroup label={t('clientSecret')} fieldId="clientSecret">
+            <Text component={TextVariants.p}>{t('secretValue')}</Text>
           </FormGroup>
         )}
       </Form>
