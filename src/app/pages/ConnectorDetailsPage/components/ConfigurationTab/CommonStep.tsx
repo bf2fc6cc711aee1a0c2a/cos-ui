@@ -42,7 +42,7 @@ export const CommonStep: FC<CommonStepProp> = ({
 
   const onNameChange = (val: any) => {
     onUpdateConfiguration('common', { ...configuration, name: val });
-    val === '' && service_account.client_id === ''
+    val === '' || service_account.client_id === ''
       ? changeIsValid(false)
       : changeIsValid(true);
   };
@@ -79,6 +79,9 @@ export const CommonStep: FC<CommonStepProp> = ({
         <FormGroup
           label={t('connectorName')}
           isRequired
+          validated={connectorName ? 'default' : 'error'}
+          helperTextInvalid={t('connectorNameIsRequired')}
+          helperTextInvalidIcon={<ExclamationCircleIcon />}
           fieldId="connector-name"
           labelIcon={
             <Popover bodyContent={<p>{t('connectorNamePopoverBody')}</p>}>

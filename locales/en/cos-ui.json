@@ -49,6 +49,7 @@
   "connectKafkaWithSA": "Connect to the Kafka instance using this client ID and secret",
   "connector": "Connector",
   "Connector": "Connector",
+  "connectorNameIsRequired": "Connector name is required.",
   "connectorCategory": "Connector category",
   "connectorExpire": "This Connectors instance will expire in {{hours}} hours and {{min}} minutes.",
   "connectorExpiredInline": "Expired.",
