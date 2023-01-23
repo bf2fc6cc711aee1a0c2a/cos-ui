@@ -36,7 +36,6 @@ export const SomethingWentWrongInlineNoSubscription: FC<
                 hoverTip={t('somethingWentWrongInlineHoverTip')}
                 clickTip={t('somethingWentWrongInlineClickTip')}
                 variant="inline-compact"
-                isCode
               >
                 {t('somethingWentWrongInlineEmail')}
               </ClipboardCopy>
