@@ -170,7 +170,7 @@ export const StepCoreConfigurationInner: FC<
                       isSmall
                       isInline
                       component={'a'}
-                      href={t('createServiceAccountForKafkaGuideLink')}
+                      href={t('setPermissionsServiceAccountForKafkaGuideLink')}
                       target={'_blank'}
                       ouiaId={'description-service-account-guide-link'}
                     >
