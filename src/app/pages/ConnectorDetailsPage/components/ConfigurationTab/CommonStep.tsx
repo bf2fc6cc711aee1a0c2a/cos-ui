@@ -173,7 +173,7 @@ export const CommonStep: FC<CommonStepProp> = ({
           </FormGroup>
         ) : (
           <FormGroup label={t('clientSecret')} fieldId="clientSecret">
-            <Text component={TextVariants.p}>**************************</Text>
+            <Text component={TextVariants.p}>{t('secretValue')}</Text>
           </FormGroup>
         )}
       </Form>
