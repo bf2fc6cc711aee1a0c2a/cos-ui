@@ -16,7 +16,10 @@ import {
   TextContent,
   TextVariants,
 } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import {
+  ExternalLinkAltIcon,
+  OutlinedQuestionCircleIcon,
+} from '@patternfly/react-icons';
 
 import {
   Loading,
@@ -159,11 +162,13 @@ export const ConnectorSelectionListFilterPanel: FC<
                             <Button
                               component={'a'}
                               variant={ButtonVariant.link}
-                              isSmall
                               isInline
+                              icon={<ExternalLinkAltIcon />}
+                              iconPosition="right"
                               href={t('tierPopoverHelpDescriptionLink')}
+                              target={'_blank'}
                             >
-                              Contact us
+                              Talk to a Red Hatter
                             </Button>{' '}
                             to learn about the subscription options available
                             for using this service in production.
