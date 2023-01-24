@@ -26,7 +26,6 @@ import { useTranslation } from '@rhoas/app-services-ui-components';
 import {
   ConnectorNamespace,
   ConnectorType,
-  ConnectorTypeAllOf,
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
@@ -132,8 +131,7 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
   const config = JSON.parse(configString);
   const connector = JSON.parse(configString).connector;
   const kafkaTopic = JSON.parse(configString).kafka;
-  const schema: Record<string, any> = (connectorType as ConnectorTypeAllOf)
-    .schema!;
+  const schema: Record<string, any> = connectorType.schema!;
   const dataToHide = getPasswordType(schema).map((item) =>
     item.replace(/\./g, '_')
   );
@@ -204,7 +202,7 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
                 {t('connectorCategory')}
               </DescriptionListTerm>
               <DescriptionListDescription>
-                {(connectorType as ConnectorTypeAllOf).description}
+                {connectorType.description}
               </DescriptionListDescription>
             </DescriptionListGroup>
             <DescriptionListGroup>
@@ -233,9 +231,9 @@ export const StepReviewComponent: React.FC<StepReviewComponentProps> = ({
             <DescriptionListGroup>
               <DescriptionListTerm>{t('type')}</DescriptionListTerm>
               <DescriptionListDescription>
-                {(connectorType as ConnectorTypeAllOf).labels?.map(
-                  (type) => type
-                )}
+                {connectorType.labels
+                  ?.filter((label) => label === 'source' || label == 'sink')
+                  .pop()}
               </DescriptionListDescription>
             </DescriptionListGroup>
             {userServiceAccount?.clientId && (
