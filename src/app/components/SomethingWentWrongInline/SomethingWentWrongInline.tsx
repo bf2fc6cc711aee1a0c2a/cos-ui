@@ -6,6 +6,7 @@ import {
   ClipboardCopy,
   TextContent,
   Text,
+  ButtonVariant,
 } from '@patternfly/react-core';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 
@@ -39,12 +40,15 @@ export const SomethingWentWrongInline: FC<SomethingWentWrongInlineProps> = ({
             >
               To get help, users with a subscription can{' '}
               <Button
-                variant="link"
+                component={'a'}
+                variant={ButtonVariant.link}
                 icon={<ExternalLinkAltIcon />}
                 iconPosition="right"
                 isInline
+                href={t('supportURL')}
+                target={'_blank'}
               >
-                beans
+                open a support ticket
                 {t('somethingWentWrongInlineSupportTicket')}
               </Button>
             </Trans>
