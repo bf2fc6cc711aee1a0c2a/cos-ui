@@ -209,7 +209,7 @@ export const ConnectorSelectionListFilterPanel: FC<
                 onClick={() => onChangeLabelFilter(selectedTypeLabels)}
                 title={t('All Items')}
               />
-              {categoryLabels!.map(({ label, count }) => (
+              {categoryLabels!.map(({ label }) => (
                 <VerticalTabsTab
                   key={label}
                   active={
@@ -219,7 +219,7 @@ export const ConnectorSelectionListFilterPanel: FC<
                   onClick={() =>
                     onChangeLabelFilter([label, ...selectedTypeLabels])
                   }
-                  title={`${t(label)} (${count})`}
+                  title={t(label)}
                 />
               ))}
             </VerticalTabs>
