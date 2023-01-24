@@ -256,6 +256,8 @@
   "stopInstance": "Stop instance",
   "supportEmailMsg": " You can still get help by emailing us at <1> rhosak-eval-support@redhat.com </1>. This mailing list is monitored by the Red Hat OpenShift Application Services team.",
   "Tier": "Tier",
+  "tierPopoverHelpDescription": "Your subscription determines which tiers are available for production. Tiers not available in your subscription can also be created as a trial. <2>Contact us</2> to learn about the subscription options available for using this service in production.",
+  "tierPopoverHelpDescriptionLink": "https://www.redhat.com/en/technologies/cloud-computing/openshift/connectors",
   "timeCreated": "Time Created",
   "timeUpdated": "Time Updated",
   "topic": "Topic",

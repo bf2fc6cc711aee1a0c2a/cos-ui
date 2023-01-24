@@ -9,6 +9,8 @@ import {
   VerticalTabsTab,
 } from '@patternfly/react-catalog-view-extension';
 import {
+  Button,
+  ButtonVariant,
   Popover,
   Text,
   TextContent,
@@ -16,7 +18,11 @@ import {
 } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 
-import { Loading, useTranslation } from '@rhoas/app-services-ui-components';
+import {
+  Loading,
+  Trans,
+  useTranslation,
+} from '@rhoas/app-services-ui-components';
 
 import './ConnectorSelectionListFilterPanel.css';
 import { ConnectorTypeLabelCount } from './typeExtensions';
@@ -145,9 +151,24 @@ export const ConnectorSelectionListFilterPanel: FC<
                     position="right"
                     bodyContent={
                       <TextContent>
-                        <Text component={TextVariants.h5}>{t('TODO')}</Text>
-                        <Text component={TextVariants.h6}>{t('TODO')}</Text>
-                        <Text component={TextVariants.p}>{t('TODO')}</Text>
+                        <Text component={TextVariants.p}>
+                          <Trans i18nKey={'tierPopoverHelpDescription'}>
+                            Your subscription determines which tiers are
+                            available for production. Tiers not available in
+                            your subscription can also be created as a trial.{' '}
+                            <Button
+                              component={'a'}
+                              variant={ButtonVariant.link}
+                              isSmall
+                              isInline
+                              href={t('tierPopoverHelpDescriptionLink')}
+                            >
+                              Contact us
+                            </Button>{' '}
+                            to learn about the subscription options available
+                            for using this service in production.
+                          </Trans>
+                        </Text>
                       </TextContent>
                     }
                   >
