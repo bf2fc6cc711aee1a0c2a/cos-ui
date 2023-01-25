@@ -9,14 +9,10 @@ import {
   ToolbarToggleGroup,
   TextContent,
   TextVariants,
-  SelectVariant,
   ToolbarGroup,
-  Select,
-  SelectOption,
-  SelectOptionObject,
   SearchInput,
 } from '@patternfly/react-core';
-import { ArrowsAltVIcon } from '@patternfly/react-icons';
+import { FilterIcon } from '@patternfly/react-icons';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 
@@ -37,22 +33,15 @@ export type ConnectorSelectionListToolbarProps = {
 export const ConnectorSelectionListToolbar: FC<
   ConnectorSelectionListToolbarProps
 > = ({
-  currentSort,
   currentCategory,
-  sortInputEntries,
   loading,
   total,
   searchFieldPlaceholder,
   searchFieldValue,
   onChangeSearchField,
-  onChangeSort,
 }) => {
   const { t } = useTranslation();
   const [currentSearch, setCurrentSearch] = useState(searchFieldValue);
-  const [isSortOpen, setIsSortOpen] = useState(false);
-  const primarySort = [
-    Object.keys(currentSort || {})[0] || sortInputEntries[0].value,
-  ];
   const toggleGroupItems = (
     <>
       <ToolbarGroup variant={'button-group'}>
@@ -84,37 +73,11 @@ export const ConnectorSelectionListToolbar: FC<
           />
         </ToolbarItem>
       </ToolbarGroup>
-      <ToolbarGroup variant={'filter-group'}>
-        <ToolbarItem>
-          <Select
-            isOpen={isSortOpen}
-            variant={SelectVariant.single}
-            aria-label={'sorting control'}
-            onToggle={setIsSortOpen}
-            onSelect={(_event, selection: SelectOptionObject | string) => {
-              if (typeof selection === 'string') {
-                onChangeSort(selection);
-              } else {
-                onChangeSort((selection as SelectOptionObject).toString());
-              }
-              setIsSortOpen(false);
-            }}
-            selections={primarySort}
-            isDisabled={loading}
-          >
-            {sortInputEntries.map(({ value, label }, index) => (
-              <SelectOption key={index} value={value}>
-                {t(label)}
-              </SelectOption>
-            ))}
-          </Select>
-        </ToolbarItem>
-      </ToolbarGroup>
     </>
   );
   const toolbarItems = (
     <>
-      <ToolbarToggleGroup toggleIcon={<ArrowsAltVIcon />} breakpoint="xl">
+      <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
         {toggleGroupItems}
       </ToolbarToggleGroup>
       {!loading && (

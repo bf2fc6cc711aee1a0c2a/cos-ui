@@ -50,23 +50,13 @@ export const ConnectorSelectionListItem: FC<
   const displayLabels = labels
     .filter(
       (label) =>
-        label !== 'source' && label !== 'sink' && label.startsWith('category-')
+        label !== 'source' &&
+        label !== 'sink' &&
+        label !== 'category-featured' &&
+        label.startsWith('category-')
     )
-    .sort((a, b) =>
-      a === 'category-featured'
-        ? 1
-        : a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase())
-    )
-    .map((label) =>
-      label === 'category-featured' ? (
-        <Label key={label}>
-          <OutlinedStarIcon />
-          &nbsp;{t(label)}
-        </Label>
-      ) : (
-        <Label key={label}>{t(label)}</Label>
-      )
-    );
+    .sort((a, b) => a.toLocaleLowerCase().localeCompare(b.toLocaleLowerCase()))
+    .map((label) => <Label key={label}>{t(label)}</Label>);
   return (
     <DataListItem aria-labelledby={id} id={id} style={{ ...style }}>
       <DataListItemRow>
@@ -110,10 +100,20 @@ export const ConnectorSelectionListItem: FC<
                 <FlexItem>
                   <LabelGroup numLabels={labels.length + 1}>
                     {labels.includes('source') ? (
-                      <Label color="blue">Source</Label>
+                      <Label key="source" color="blue">
+                        Source
+                      </Label>
                     ) : (
-                      <Label color="green">Sink</Label>
+                      <Label key="sink" color="green">
+                        Sink
+                      </Label>
                     )}
+                    {labels.includes('category-featured') ? (
+                      <Label key={'category-featured'}>
+                        <OutlinedStarIcon />
+                        &nbsp;{t('category-featured')}
+                      </Label>
+                    ) : undefined}
                     {displayLabels}
                   </LabelGroup>
                 </FlexItem>
