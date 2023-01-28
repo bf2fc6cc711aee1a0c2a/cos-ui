@@ -20,7 +20,7 @@
     "@rhoas/connector-management-sdk": "0.52.0",
     "@rhoas/kafka-management-sdk": "0.52.0",
     "@stoplight/json-ref-resolver": "3.1.5",
-    "@xstate/react": "3.0.2",
+    "@xstate/react": "3.1.0",
     "@xstate/test": "0.5.1",
     "ajv": "8.12.0",
     "axios": "0.27.2",
@@ -39,7 +39,7 @@
     "uniforms": "3.10.2",
     "uniforms-bridge-json-schema": "3.10.2",
     "uniforms-patternfly": "4.7.9",
-    "xstate": "4.35.2"
+    "xstate": "4.35.3"
   },
   "devDependencies": {
     "@babel/core": "7.20.12",
@@ -73,7 +73,7 @@
     "@types/testing-library__jest-dom": "5.14.5",
     "@typescript-eslint/eslint-plugin": "5.49.0",
     "@typescript-eslint/parser": "5.49.0",
-    "@xstate/inspect": "0.7.0",
+    "@xstate/inspect": "0.7.1",
     "autoprefixer": "10.4.13",
     "babel-eslint": "10.1.0",
     "babel-loader": "8.3.0",
