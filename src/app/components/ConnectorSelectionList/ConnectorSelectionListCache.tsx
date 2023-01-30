@@ -5,6 +5,7 @@ import {
 } from '@apis/api';
 import React, { FC, createContext, useContext } from 'react';
 
+import { useConnectorSelectionListCacheStorage } from './ConnectorSelectionListCacheStorage';
 import { FeaturedConnectorType } from './typeExtensions';
 
 export type ConnectorSelectionListCacheContextType = {
@@ -47,18 +48,12 @@ export const ConnectorSelectionListCacheProvider: FC<
   total,
   children,
 }) => {
-  const loadedConnectorTypesMap: {
-    [key: number]: FeaturedConnectorType | boolean;
-  } = Array.from({ length: total - 1 })
-    .map((_, index) => ({ [index]: false }))
-    .reduce((prev, current) => ({ ...prev, ...current }), {});
-  if (typeof initialSet !== 'undefined' && initialSet !== null) {
-    initialSet.forEach(
-      (item, index) => (loadedConnectorTypesMap[index] = item)
-    );
-  }
+  const loadedConnectorTypesMap = useConnectorSelectionListCacheStorage();
+  loadedConnectorTypesMap.init(initialSet || [], total);
+
   const isRowLoaded = ({ index }: { index: number }): boolean =>
-    !!loadedConnectorTypesMap[index];
+    !!loadedConnectorTypesMap.get(index);
+
   const loadMoreRows = ({
     startIndex,
     stopIndex,
@@ -84,8 +79,10 @@ export const ConnectorSelectionListCacheProvider: FC<
             const offset = (page - 1) * size;
             if (items) {
               items.forEach((item, index) => {
-                loadedConnectorTypesMap[offset + index] =
-                  item as FeaturedConnectorType;
+                loadedConnectorTypesMap.put(
+                  offset + index,
+                  item as FeaturedConnectorType
+                );
               });
             }
             if (pageIndex === pageIndices.length - 1) {
@@ -101,11 +98,11 @@ export const ConnectorSelectionListCacheProvider: FC<
     });
   };
   const getRow = ({ index }: { index: number }) =>
-    loadedConnectorTypesMap[index];
+    loadedConnectorTypesMap.get(index);
   const getRowById = ({ id }: { id: string }) =>
-    Object.values(loadedConnectorTypesMap).find(
+    loadedConnectorTypesMap.find(
       (connector) => typeof connector !== 'boolean' && connector!.id === id
-    ) || false;
+    );
   return (
     <ConnectorSelectionListCacheContext.Provider
       value={{
@@ -125,7 +122,7 @@ export const useConnectorSelectionListCache =
     const service = useContext(ConnectorSelectionListCacheContext);
     if (!service) {
       throw new Error(
-        `useConnectorTypesGalleryCache() must be used in a child of <ConnectorTypesGalleryCacheContextProvider>`
+        `useConnectorSelectionListCache() must be used in a child of <ConnectorSelectionListCacheContextProvider>`
       );
     }
     return service;
