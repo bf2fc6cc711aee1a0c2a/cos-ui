@@ -104,6 +104,32 @@ const ConnectedJsonSchemaConfigurator: FunctionComponent<{
   );
 };
 
+export const ConfiguratorStepDescription: FunctionComponent<{
+  actor: ConfiguratorActorRef;
+}> = ({ actor }) => {
+  const { t } = useTranslation();
+  let {
+    activeStep,
+    configuration: _configuration,
+    connector: _connector,
+  } = useSelector(
+    actor,
+    useCallback(
+      (state: typeof actor.state) => ({
+        connector: state.context.connector,
+        activeStep: state.context.activeStep,
+        configuration: state.context.configuration,
+      }),
+      [actor]
+    )
+  );
+  const configuratorStepDescriptionText =
+    activeStep === 1
+      ? t('debeziumFilterStepDescription')
+      : t('configurationStepDescription');
+  return <>{configuratorStepDescriptionText}</>;
+};
+
 export type ConfiguratorStepProps = {
   Configurator: ComponentType<ConnectorConfiguratorProps> | false;
 };
@@ -155,7 +181,13 @@ export const ConfiguratorStep: FunctionComponent = () => {
           ? t(configurationSteps[activeConfigurationStep])
           : t('connectorSpecific')
       }
-      description={t('configurationStepDescription')}
+      description={
+        hasCustomConfigurator ? (
+          <ConfiguratorStepDescription actor={configuratorRef} />
+        ) : (
+          t('configurationStepDescription')
+        )
+      }
     >
       {(() => {
         switch (true) {
@@ -173,7 +205,7 @@ export const ConfiguratorStep: FunctionComponent = () => {
               <EmptyState>
                 <EmptyStateIcon icon={ExclamationCircleIcon} />
                 <Title size="lg" headingLevel="h4">
-                  Error message
+                  {t('errorMessage')}
                 </Title>
               </EmptyState>
             );
