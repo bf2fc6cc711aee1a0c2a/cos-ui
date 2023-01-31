@@ -19,6 +19,7 @@ import {
   ObjectReference,
 } from '@rhoas/connector-management-sdk';
 
+import { useConnectorSelectionListCacheStorage } from './ConnectorSelectionListCacheStorage';
 import { ConnectorSelectionListLayout } from './ConnectorSelectionListLayout';
 import {
   ConnectorTypeLabelCount,
@@ -46,6 +47,7 @@ export const ConnectorSelectionList: FC<ConnectorSelectionListProps> = ({
   renderSelector,
 }) => {
   const { connectorsApiBasePath, getToken } = useCos();
+  const { clear: clearCache } = useConnectorSelectionListCacheStorage();
   const [initialSet, setInitialSet] = useState<
     Array<FeaturedConnectorType> | undefined
   >(undefined);
@@ -174,40 +176,44 @@ export const ConnectorSelectionList: FC<ConnectorSelectionListProps> = ({
     (name: string) => {
       setPagination({ page: 1, total: 0 });
       setInitialSet(undefined);
+      clearCache();
       setSearch({ ...search, name });
     },
-    [setSearch, search, setInitialSet]
+    [clearCache, setSearch, search, setInitialSet]
   );
 
   const doSetPricingTierSearch = useCallback(
     (pricingTier: string) => {
       setPagination({ page: 1, total: 0 });
       setInitialSet(undefined);
+      clearCache();
       // this set timeout ensures the pricing tier filter checkboxes feel responsive to the user
       setTimeout(() => setSearch({ ...search, pricing_tier: pricingTier }), 0);
     },
-    [setSearch, search, setInitialSet]
+    [clearCache, setSearch, search, setInitialSet]
   );
 
   const doSetLabelSearch = useCallback(
     (label: Array<string>) => {
       setPagination({ page: 1, total: 0 });
       setInitialSet(undefined);
+      clearCache();
       // this set timeout ensures the source/sink checkboxes feel responsive to the user
       setTimeout(() => setSearch({ ...search, label }), 0);
     },
-    [setSearch, search, setInitialSet]
+    [clearCache, setSearch, search, setInitialSet]
   );
 
   const doResetAllFilters = useCallback(() => {
     setPagination({ page: 1, total: 0 });
     setInitialSet(undefined);
+    clearCache();
     setSearch({
       name: '',
       label: [],
       pricing_tier: '',
     });
-  }, [setSearch, setInitialSet]);
+  }, [clearCache, setSearch, setInitialSet]);
 
   const sortInputEntries = [
     {

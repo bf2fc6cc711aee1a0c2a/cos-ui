@@ -10,6 +10,7 @@ import {
   ConnectorSelectionList,
   ConnectorSelectionListInnerProps,
 } from './ConnectorSelectionList';
+import { ConnectorSelectionListCacheStorageProvider } from './ConnectorSelectionListCacheStorage';
 import { FeaturedConnectorType } from './typeExtensions';
 
 const API_HOST = 'https://dummy.server';
@@ -39,7 +40,9 @@ export default {
             connectorsApiBasePath={API_HOST}
             kafkaManagementApiBasePath={API_HOST}
           >
-            <Story />
+            <ConnectorSelectionListCacheStorageProvider>
+              <Story />
+            </ConnectorSelectionListCacheStorageProvider>
           </CosContextProvider>
         </StepBodyLayout>
       </>

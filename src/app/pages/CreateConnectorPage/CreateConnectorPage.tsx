@@ -1,3 +1,4 @@
+import { ConnectorSelectionListCacheStorageProvider } from '@app/components/ConnectorSelectionList/ConnectorSelectionListCacheStorage';
 import { CreateConnectorWizard } from '@app/components/CreateConnectorWizard/CreateConnectorWizard';
 import { CreateConnectorWizardProvider } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { useCos } from '@hooks/useCos';
@@ -59,26 +60,28 @@ export const CreateConnectorPage: FunctionComponent<
           type={'default'}
           variant={'light'}
         >
-          <CreateConnectorWizard
-            header={<ConnectorWizardHeader />}
-            onClose={openLeaveConfirm}
-          />
-          <Modal
-            title={t('leaveCreateConnectorConfirmModalTitle')}
-            variant={'small'}
-            isOpen={askForLeaveConfirm}
-            onClose={closeLeaveConfirm}
-            actions={[
-              <Button key="confirm" variant="primary" onClick={onClose}>
-                Confirm
-              </Button>,
-              <Button key="cancel" variant="link" onClick={closeLeaveConfirm}>
-                Cancel
-              </Button>,
-            ]}
-          >
-            {t('leaveCreateConnectorConfirmModalDescription')}
-          </Modal>
+          <ConnectorSelectionListCacheStorageProvider>
+            <CreateConnectorWizard
+              header={<ConnectorWizardHeader />}
+              onClose={openLeaveConfirm}
+            />
+            <Modal
+              title={t('leaveCreateConnectorConfirmModalTitle')}
+              variant={'small'}
+              isOpen={askForLeaveConfirm}
+              onClose={closeLeaveConfirm}
+              actions={[
+                <Button key="confirm" variant="primary" onClick={onClose}>
+                  {t('Confirm')}
+                </Button>,
+                <Button key="cancel" variant="link" onClick={closeLeaveConfirm}>
+                  {t('Cancel')}
+                </Button>,
+              ]}
+            >
+              {t('leaveCreateConnectorConfirmModalDescription')}
+            </Modal>
+          </ConnectorSelectionListCacheStorageProvider>
         </PageSection>
       </CreateConnectorWizardProvider>
     </>
