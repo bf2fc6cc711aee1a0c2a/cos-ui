@@ -104,7 +104,7 @@ const ConnectedJsonSchemaConfigurator: FunctionComponent<{
   );
 };
 
-export const ConfiguratorStepDescription: FunctionComponent<{
+export const ConfiguratorCustomStepDescription: FunctionComponent<{
   actor: ConfiguratorActorRef;
 }> = ({ actor }) => {
   const { t } = useTranslation();
@@ -183,7 +183,7 @@ export const ConfiguratorStep: FunctionComponent = () => {
       }
       description={
         hasCustomConfigurator ? (
-          <ConfiguratorStepDescription actor={configuratorRef} />
+          <ConfiguratorCustomStepDescription actor={configuratorRef} />
         ) : (
           t('configurationStepDescription')
         )
