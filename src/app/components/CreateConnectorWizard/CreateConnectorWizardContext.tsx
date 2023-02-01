@@ -14,6 +14,7 @@ import {
   PaginatedApiRequest,
   PlaceholderOrderBy,
 } from '@app/machines/PaginatedResponse.machine';
+import { ConfiguratorActorRef } from '@app/machines/StepConfigurator.machine';
 import {
   ConnectorConfiguratorResponse,
   configuratorLoaderMachine,
@@ -246,6 +247,7 @@ export const useCreateConnectorWizard = (): {
   kafkaRef: KafkaMachineActorRef;
   namespaceRef: NamespaceMachineActorRef;
   coreConfigurationRef: CoreConfigurationActorRef;
+  configuratorRef: ConfiguratorActorRef;
   errorRef: ErrorHandlingMachineActorRef;
   reviewRef: ReviewMachineActorRef;
 } => {
@@ -261,6 +263,7 @@ export const useCreateConnectorWizard = (): {
           .selectNamespaceRef as NamespaceMachineActorRef,
         coreConfigurationRef: state.children
           .coreConfigurationRef as CoreConfigurationActorRef,
+        configuratorRef: state.children.configuratorRef as ConfiguratorActorRef,
         errorRef: state.children.errorRef as ErrorHandlingMachineActorRef,
         reviewRef: state.children.reviewRef as ReviewMachineActorRef,
       }),
@@ -518,6 +521,26 @@ export const useCoreConfigurationMachine = () => {
     onSetName,
     onSetServiceAccount,
     duplicateMode,
+  };
+};
+
+export const useConfiguratorMachine = () => {
+  const { configuratorRef } = useCreateConnectorWizard();
+  const { activeStep, configuration, connector } = useSelector(
+    configuratorRef,
+    useCallback(
+      (state: typeof configuratorRef.state) => ({
+        connector: state.context.connector,
+        activeStep: state.context.activeStep,
+        configuration: state.context.configuration,
+      }),
+      [configuratorRef]
+    )
+  );
+  return {
+    activeStep,
+    configuration,
+    connector,
   };
 };
 

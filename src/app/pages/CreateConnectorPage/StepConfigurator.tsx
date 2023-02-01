@@ -1,4 +1,7 @@
-import { useCreateConnectorWizardService } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
+import {
+  useConfiguratorMachine,
+  useCreateConnectorWizardService,
+} from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { JsonSchemaConfigurator } from '@app/components/JsonSchemaConfigurator/JsonSchemaConfigurator';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { ConfiguratorActorRef } from '@app/machines/StepConfigurator.machine';
@@ -33,17 +36,8 @@ const ConnectedCustomConfigurator: FunctionComponent<{
   actor: ConfiguratorActorRef;
   duplicateMode: boolean | undefined;
 }> = ({ actor, Configurator, duplicateMode }) => {
-  let { activeStep, configuration, connector } = useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => ({
-        connector: state.context.connector,
-        activeStep: state.context.activeStep,
-        configuration: state.context.configuration,
-      }),
-      [actor]
-    )
-  );
+  let { activeStep, configuration, connector } = useConfiguratorMachine();
+
   if (duplicateMode) {
     let combineConfiguration = {};
     if (configuration instanceof Map) {
@@ -76,16 +70,7 @@ const ConnectedJsonSchemaConfigurator: FunctionComponent<{
   actor: ConfiguratorActorRef;
   duplicateMode: boolean | undefined;
 }> = ({ actor, duplicateMode }) => {
-  const { configuration, connector } = useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => ({
-        connector: state.context.connector,
-        configuration: state.context.configuration,
-      }),
-      [actor]
-    )
-  );
+  const { configuration, connector } = useConfiguratorMachine();
   const schema = (connector as ConnectorTypeAllOf).schema!;
   const initialConfiguration = patchConfigurationObject(schema, {} as any);
   return (
@@ -104,25 +89,9 @@ const ConnectedJsonSchemaConfigurator: FunctionComponent<{
   );
 };
 
-export const ConfiguratorCustomStepDescription: FunctionComponent<{
-  actor: ConfiguratorActorRef;
-}> = ({ actor }) => {
+export const ConfiguratorCustomStepDescription: FunctionComponent = () => {
   const { t } = useTranslation();
-  let {
-    activeStep,
-    configuration: _configuration,
-    connector: _connector,
-  } = useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => ({
-        connector: state.context.connector,
-        activeStep: state.context.activeStep,
-        configuration: state.context.configuration,
-      }),
-      [actor]
-    )
-  );
+  const { activeStep } = useConfiguratorMachine();
   const configuratorStepDescriptionText =
     activeStep === 1
       ? t('debeziumFilterStepDescription')
@@ -183,7 +152,7 @@ export const ConfiguratorStep: FunctionComponent = () => {
       }
       description={
         hasCustomConfigurator ? (
-          <ConfiguratorCustomStepDescription actor={configuratorRef} />
+          <ConfiguratorCustomStepDescription />
         ) : (
           t('configurationStepDescription')
         )
