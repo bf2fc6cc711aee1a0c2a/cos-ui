@@ -90,7 +90,8 @@ export const ErrorHandler: React.FunctionComponent<ErrorHandlerProps> = ({
                     helperText={t('deadLetterTopicHelper')}
                     labelIcon={
                       <Popover
-                        bodyContent={<div>{t('deadLetterQueueHelper')}</div>}
+                        headerContent={t('deadLetterQueueTopic')}
+                        bodyContent={t('deadLetterQueueHelper')}
                       >
                         <button
                           type="button"
