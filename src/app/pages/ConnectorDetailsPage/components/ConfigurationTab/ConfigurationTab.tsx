@@ -1,5 +1,6 @@
 import { updateConnector } from '@apis/api';
 import { Loading } from '@app/components/Loading/Loading';
+import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { StepErrorBoundary } from '@app/components/StepErrorBoundary/StepErrorBoundary';
 import {
   ConfigurationMode,
@@ -9,6 +10,7 @@ import { useCos } from '@hooks/useCos';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
 import {
   clearEmptyObjectValues,
+  getFilterList,
   mapToObject,
   toHtmlSafeId,
 } from '@utils/shared';
@@ -26,8 +28,6 @@ import {
   Tab,
   Tabs,
   TabTitleText,
-  Title,
-  TitleSizes,
 } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
@@ -328,16 +328,23 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
                   </StepErrorBoundary>
                 )}
                 {connectorData.connector_type_id.includes('debezium') &&
-                  configurator?.Configurator && (
+                  configurator?.Configurator &&
+                  activeTabKey !== 0 && (
                     <StepErrorBoundary>
-                      <>
-                        <Title
-                          headingLevel="h3"
-                          size={TitleSizes['2xl']}
-                          className={'pf-u-pr-md pf-u-pb-md'}
-                        >
-                          {configurator?.steps[(activeTabKey as number) - 1]}
-                        </Title>
+                      <StepBodyLayout
+                        title={
+                          configurator?.steps[(activeTabKey as number) - 1]
+                        }
+                        description={
+                          (activeTabKey as number) === 2
+                            ? t('debeziumFilterStepDescription', {
+                                fields: getFilterList(
+                                  connectorTypeDetails.name!
+                                ),
+                              })
+                            : t('configurationStepDescription')
+                        }
+                      >
                         <React.Suspense fallback={Loading}>
                           <ConnectedCustomConfigurator
                             Configurator={
@@ -350,7 +357,7 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
                             step={activeTabKey as number}
                           />
                         </React.Suspense>
-                      </>
+                      </StepBodyLayout>
                     </StepErrorBoundary>
                   )}
                 {!connectorData.connector_type_id.includes('debezium') &&

@@ -12,6 +12,7 @@ import {
 } from '@app/machines/StepConfiguratorLoader.machine';
 import {
   clearEmptyObjectValues,
+  getFilterList,
   mapToObject,
   patchConfigurationObject,
 } from '@utils/shared';
@@ -91,10 +92,12 @@ const ConnectedJsonSchemaConfigurator: FunctionComponent<{
 
 export const ConfiguratorCustomStepDescription: FunctionComponent = () => {
   const { t } = useTranslation();
-  const { activeStep } = useConfiguratorMachine();
+  const { activeStep, connector } = useConfiguratorMachine();
   const configuratorStepDescriptionText =
     activeStep === 1
-      ? t('debeziumFilterStepDescription')
+      ? t('debeziumFilterStepDescription', {
+          fields: getFilterList(connector.name!),
+        })
       : t('configurationStepDescription');
   return <>{configuratorStepDescriptionText}</>;
 };
