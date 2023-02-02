@@ -81,6 +81,12 @@ export const DialogDeleteConnector: React.FunctionComponent<
             value={nameValue}
             type="text"
             onChange={setNameValue}
+            onKeyUp={(e) => {
+              if (e.key === 'Enter' && canDelete) {
+                onConfirmDelete();
+                e.preventDefault();
+              }
+            }}
             aria-label="name input"
             data-testid={'delete-connector-instance-modal-input'}
           />
