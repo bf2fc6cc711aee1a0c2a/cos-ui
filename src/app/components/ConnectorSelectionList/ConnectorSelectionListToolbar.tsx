@@ -61,7 +61,7 @@ export const ConnectorSelectionListToolbar: FC<
             id="search-by-name"
             type="search"
             aria-label="filter by connector name"
-            onChange={setCurrentSearch}
+            onChange={(_, value) => setCurrentSearch(value)}
             onClear={() => {
               setCurrentSearch('');
               onChangeSearchField('');
