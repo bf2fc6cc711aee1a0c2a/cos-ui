@@ -165,6 +165,7 @@
   "managedConnectors": "Managed connectors",
   "name": "Name",
   "nameSearchPlaceholder": "Filter by name",
+  "connectorSearchPlaceholder": "Filter by connector name",
   "namespace": "Namespace",
   "namespaceDeleting": "Expired | Deleting",
   "namespaceDisabledTooltip": "You can deploy 1 preview namespace at a time. To create a new preview namespace, wait for the expired one to finish deleting.",

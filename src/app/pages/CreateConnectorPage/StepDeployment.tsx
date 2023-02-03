@@ -11,6 +11,7 @@ import { PreviewNamespaceEmptyCard } from '@app/components/NamespaceCard/Preview
 import { ROSAEmptyCard } from '@app/components/NamespaceCard/ROSAEmptyCard';
 import { Pagination } from '@app/components/Pagination/Pagination';
 import { RegisterEvalNamespace } from '@app/components/RegisterEvalNamespace/RegisterEvalNamespace';
+import { SearchFilter } from '@app/components/SearchFilter/SearchFilter';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { PaginatedApiResponse } from '@app/machines/PaginatedResponse.machine';
 import { useCos } from '@hooks/useCos';
@@ -54,8 +55,6 @@ import {
   ConnectorClusterList,
   ConnectorNamespace,
 } from '@rhoas/connector-management-sdk';
-
-import { SearchFilter } from './components/SearchFilter';
 
 export function SelectNamespace() {
   const isReady = useNamespaceMachineIsReady();
@@ -425,7 +424,6 @@ const DeploymentToolbar: FunctionComponent = () => {
       >
         {selectedCategory === t('name') && (
           <SearchFilter
-            filterSelected={selectedCategory}
             placeholder={t('nameSearchPlaceholder')}
             onChangeSearchField={onChangeNameSearchField}
             SearchFieldName={'name'}
@@ -439,7 +437,6 @@ const DeploymentToolbar: FunctionComponent = () => {
       >
         {selectedCategory === t('clusterId') && (
           <SearchFilter
-            filterSelected={selectedCategory}
             placeholder={t('clusteridSearchPlaceholder')}
             onChangeSearchField={onChangeClusterSearchField}
             SearchFieldName={t('clusterId')}

@@ -14,7 +14,6 @@ import {
 import SearchIcon from '@patternfly/react-icons/dist/js/icons/search-icon';
 
 export type FilterProps = {
-  filterSelected?: string;
   placeholder: string;
   onChangeSearchField: (value: string) => void;
   SearchFieldName: string;
@@ -34,6 +33,7 @@ export const SearchFilter: FunctionComponent<FilterProps> = ({
     setCurrentSearch(currentSearch);
     setValid(validateSearchField(currentSearch));
   };
+
   const onFilter = () => {
     if (currentSearch && currentSearch.trim() != '') {
       if (validateSearchField(currentSearch)) {
@@ -44,11 +44,13 @@ export const SearchFilter: FunctionComponent<FilterProps> = ({
       }
     }
   };
+
   const onKeyPress: TextInputProps['onKeyPress'] = (event) => {
     if (event.key === 'Enter') {
       onFilter();
     }
   };
+
   const FilterTooltip: FunctionComponent = () => {
     if (!valid) {
       return (
@@ -61,6 +63,7 @@ export const SearchFilter: FunctionComponent<FilterProps> = ({
     }
     return <></>;
   };
+
   return (
     <InputGroup>
       <TextInput
@@ -78,7 +81,7 @@ export const SearchFilter: FunctionComponent<FilterProps> = ({
       <Button
         variant={ButtonVariant.control}
         isDisabled={!valid}
-        onClick={() => onFilter()}
+        onClick={onFilter}
         aria-label="Search"
       >
         <SearchIcon />

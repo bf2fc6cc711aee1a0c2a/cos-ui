@@ -14,6 +14,7 @@ import React, {
   useState,
 } from 'react';
 
+import { useTranslation } from '@rhoas/app-services-ui-components';
 import {
   ConnectorTypeAllOf,
   ObjectReference,
@@ -47,6 +48,7 @@ export const ConnectorSelectionList: FC<ConnectorSelectionListProps> = ({
   renderSelector,
 }) => {
   const { connectorsApiBasePath, getToken } = useCos();
+  const { t } = useTranslation();
   const { clear: clearCache } = useConnectorSelectionListCacheStorage();
   const [initialSet, setInitialSet] = useState<
     Array<FeaturedConnectorType> | undefined
@@ -247,7 +249,7 @@ export const ConnectorSelectionList: FC<ConnectorSelectionListProps> = ({
         noFilterResults={initialSet === null}
         orderBy={orderBy}
         search={search}
-        searchFieldPlaceholder={'Search'}
+        searchFieldPlaceholder={t('connectorSearchPlaceholder')}
         searchFieldValue={name || ''}
         selectedCategories={label || []}
         selectedPricingTier={pricingTier || ''}

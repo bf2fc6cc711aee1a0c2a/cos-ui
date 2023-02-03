@@ -1,6 +1,6 @@
 import { ConnectorTypesOrderBy } from '@apis/api';
-import { ConnectorFilter } from '@app/pages/CreateConnectorPage/components/ConnectorFilter';
-import React, { FC } from 'react';
+import { SearchFilter } from '@app/components/SearchFilter/SearchFilter';
+import React, { FC, useCallback } from 'react';
 
 import {
   Text,
@@ -11,6 +11,7 @@ import {
   TextContent,
   TextVariants,
   ToolbarGroup,
+  ToolbarFilter,
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
 
@@ -41,6 +42,11 @@ export const ConnectorSelectionListToolbar: FC<
   onChangeSearchField,
 }) => {
   const { t } = useTranslation();
+  const clearAllFilters = useCallback(() => onChangeSearchField(''), []);
+
+  const onDeleteQueryGroup = (_: string) => {
+    onChangeSearchField('');
+  };
   const toggleGroupItems = (
     <>
       <ToolbarGroup variant={'button-group'}>
@@ -55,13 +61,17 @@ export const ConnectorSelectionListToolbar: FC<
           </TextContent>
         </ToolbarItem>
         <ToolbarItem variant={'search-filter'}>
-          <ConnectorFilter
-            onChangeSearchField={onChangeSearchField}
-            loading={loading}
-            searchFieldPlaceholder={searchFieldPlaceholder}
-            total={total}
-            searchFieldValue={searchFieldValue}
-          />
+          <ToolbarFilter
+            chips={searchFieldValue ? [searchFieldValue] : []}
+            deleteChip={() => onDeleteQueryGroup(searchFieldValue)}
+            categoryName={t('connector')}
+          >
+            <SearchFilter
+              onChangeSearchField={onChangeSearchField}
+              placeholder={searchFieldPlaceholder}
+              SearchFieldName={'connector'}
+            />
+          </ToolbarFilter>
         </ToolbarItem>
       </ToolbarGroup>
     </>
@@ -83,7 +93,11 @@ export const ConnectorSelectionListToolbar: FC<
     </>
   );
   return (
-    <Toolbar id="toolbar-group-types" collapseListedFiltersBreakpoint="xl">
+    <Toolbar
+      id="toolbar-group-types"
+      collapseListedFiltersBreakpoint="xl"
+      clearAllFilters={clearAllFilters}
+    >
       <ToolbarContent className={'pf-m-no-padding'}>
         {toolbarItems}
       </ToolbarContent>

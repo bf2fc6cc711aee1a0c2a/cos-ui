@@ -7,6 +7,7 @@ import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFou
 import { KafkaCard } from '@app/components/KafkaCard/KafkaCard';
 import { Loading } from '@app/components/Loading/Loading';
 import { Pagination } from '@app/components/Pagination/Pagination';
+import { SearchFilter } from '@app/components/SearchFilter/SearchFilter';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import _ from 'lodash';
 import React, {
@@ -41,8 +42,6 @@ import {
 import { FilterIcon } from '@patternfly/react-icons';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-
-import { SearchFilter } from './components/SearchFilter';
 
 export const SelectKafkaInstance: FunctionComponent = () => {
   const isReady = useKafkasMachineIsReady();
@@ -411,7 +410,6 @@ const KafkaToolbar: FunctionComponent = () => {
           {selectedCategory === t('name') && (
             <ToolbarItem>
               <SearchFilter
-                filterSelected={selectedCategory}
                 placeholder={t('nameSearchPlaceholder')}
                 onChangeSearchField={onChangeNameSearchField}
                 SearchFieldName={'name'}
@@ -428,7 +426,6 @@ const KafkaToolbar: FunctionComponent = () => {
           {selectedCategory === t('owner') && (
             <ToolbarItem>
               <SearchFilter
-                filterSelected={selectedCategory}
                 placeholder={t('ownerSearchPlaceholder')}
                 onChangeSearchField={onChangeOwnerSearchField}
                 SearchFieldName={'owner'}
