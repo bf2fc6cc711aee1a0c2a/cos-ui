@@ -1,5 +1,6 @@
 import { ConnectorTypesOrderBy } from '@apis/api';
-import React, { FC, useState } from 'react';
+import { ConnectorFilter } from '@app/pages/CreateConnectorPage/components/ConnectorFilter';
+import React, { FC } from 'react';
 
 import {
   Text,
@@ -10,7 +11,6 @@ import {
   TextContent,
   TextVariants,
   ToolbarGroup,
-  SearchInput,
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
 
@@ -41,7 +41,6 @@ export const ConnectorSelectionListToolbar: FC<
   onChangeSearchField,
 }) => {
   const { t } = useTranslation();
-  const [currentSearch, setCurrentSearch] = useState(searchFieldValue);
   const toggleGroupItems = (
     <>
       <ToolbarGroup variant={'button-group'}>
@@ -56,20 +55,12 @@ export const ConnectorSelectionListToolbar: FC<
           </TextContent>
         </ToolbarItem>
         <ToolbarItem variant={'search-filter'}>
-          <SearchInput
-            name="search-by-name"
-            id="search-by-name"
-            type="search"
-            aria-label="filter by connector name"
-            onChange={(_, value) => setCurrentSearch(value)}
-            onClear={() => {
-              setCurrentSearch('');
-              onChangeSearchField('');
-            }}
-            value={searchFieldValue}
-            onSearch={() => onChangeSearchField(currentSearch)}
-            placeholder={searchFieldPlaceholder}
-            isDisabled={loading}
+          <ConnectorFilter
+            onChangeSearchField={onChangeSearchField}
+            loading={loading}
+            searchFieldPlaceholder={searchFieldPlaceholder}
+            total={total}
+            searchFieldValue={searchFieldValue}
           />
         </ToolbarItem>
       </ToolbarGroup>
