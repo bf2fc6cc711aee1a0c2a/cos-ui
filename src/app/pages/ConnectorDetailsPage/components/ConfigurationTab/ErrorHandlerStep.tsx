@@ -12,10 +12,12 @@ import {
   FormGroup,
   Grid,
   GridItem,
+  Popover,
   Text,
   TextContent,
   TextVariants,
 } from '@patternfly/react-core';
+import { HelpIcon } from '@patternfly/react-icons';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 import { Connector } from '@rhoas/connector-management-sdk';
@@ -120,6 +122,11 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
     .sort()
     .reverse();
 
+  const {
+    errorHandler: i18nErrorHandlerName,
+    description: i18nErrorHandlerDescription,
+  } = returnErrorHandlersNames(errorHandler);
+
   return (
     <StepBodyLayout
       title={t('errorHandling')}
@@ -142,13 +149,26 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
                 isRequired
                 fieldId="error-handler_strategy"
                 className="error-handler_strategy"
+                labelIcon={
+                  <Popover
+                    headerContent={`${t(
+                      'errorHandlingMethod'
+                    )}: ${i18nErrorHandlerName}`}
+                    bodyContent={i18nErrorHandlerDescription}
+                  >
+                    <button
+                      type="button"
+                      onClick={(e) => e.preventDefault()}
+                      className="pf-c-form__group-label-help"
+                    >
+                      <HelpIcon noVerticalAlign />
+                    </button>
+                  </Popover>
+                }
               >
                 <TextContent>
                   <Text component={TextVariants.p} className="pf-u-m-0">
-                    {returnErrorHandlersNames(errorHandler).errorHandler}
-                  </Text>
-                  <Text component={TextVariants.small}>
-                    {returnErrorHandlersNames(errorHandler).description}
+                    {i18nErrorHandlerName}
                   </Text>
                 </TextContent>
               </FormGroup>
@@ -157,6 +177,22 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
                   label={t('deadLetterQueueTopic')}
                   isRequired
                   fieldId="topic"
+                  labelIcon={
+                    <Popover
+                      headerContent={t('deadLetterQueueTopic')}
+                      bodyContent={t('deadLetterQueueHelper')}
+                    >
+                      <button
+                        type="button"
+                        aria-label={t('deadLetterTopicHelper')}
+                        onClick={(e) => e.preventDefault()}
+                        aria-describedby="Dead letter queue topic"
+                        className="pf-c-form__group-label-help"
+                      >
+                        <HelpIcon noVerticalAlign />
+                      </button>
+                    </Popover>
+                  }
                 >
                   {kafkaId ? (
                     <Button
