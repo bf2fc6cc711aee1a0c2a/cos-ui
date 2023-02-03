@@ -7,6 +7,7 @@ import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFou
 import { KafkaCard } from '@app/components/KafkaCard/KafkaCard';
 import { Loading } from '@app/components/Loading/Loading';
 import { Pagination } from '@app/components/Pagination/Pagination';
+import { SearchFilter } from '@app/components/SearchFilter/SearchFilter';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import _ from 'lodash';
 import React, {
@@ -18,7 +19,6 @@ import React, {
   useState,
 } from 'react';
 import { stringToChip } from 'src/utils/stringToChip';
-import { useDebounce } from 'src/utils/useDebounce';
 
 import {
   Alert,
@@ -28,10 +28,8 @@ import {
   DropdownPosition,
   DropdownToggle,
   Gallery,
-  InputGroup,
   Select,
   SelectOption,
-  TextInput,
   Toolbar,
   ToolbarChip,
   ToolbarChipGroup,
@@ -41,7 +39,7 @@ import {
   ToolbarItem,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
-import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
+import { FilterIcon } from '@patternfly/react-icons';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 
@@ -181,8 +179,6 @@ const KafkaToolbar: FunctionComponent = () => {
     []
   );
 
-  const debouncedOnQuery = useDebounce(runQuery, 1000);
-
   const {
     name,
     owner,
@@ -199,7 +195,11 @@ const KafkaToolbar: FunctionComponent = () => {
   const nameInputRef = useRef<HTMLInputElement | null>(null);
   const ownerInputRef = useRef<HTMLInputElement | null>(null);
 
-  const onSelectFilter = (category: string, values: string[], value: string) =>
+  const onSelectFilter = (
+    category: string,
+    values: string[],
+    value: string
+  ) => {
     runQuery({
       ...request,
       search: {
@@ -209,6 +209,7 @@ const KafkaToolbar: FunctionComponent = () => {
           : [...(values || []), value],
       },
     });
+  };
 
   const onSelectStatus = (
     _category: string | ToolbarChipGroup,
@@ -307,6 +308,29 @@ const KafkaToolbar: FunctionComponent = () => {
     </ToolbarItem>
   );
 
+  const onChangeNameSearchField = (name?: string) => {
+    runQuery({
+      size: request.size,
+      page: 1,
+      orderBy: request.orderBy,
+      search: {
+        ...request.search,
+        name,
+      },
+    });
+  };
+  const onChangeOwnerSearchField = (owner?: string) => {
+    runQuery({
+      size: request.size,
+      page: 1,
+      orderBy: request.orderBy,
+      search: {
+        ...request.search,
+        owner,
+      },
+    });
+  };
+
   const toggleGroupItems = (
     <>
       <ToolbarGroup variant="filter-group">
@@ -385,44 +409,11 @@ const KafkaToolbar: FunctionComponent = () => {
         >
           {selectedCategory === t('name') && (
             <ToolbarItem>
-              <InputGroup>
-                <TextInput
-                  name={t('name')}
-                  id={t('name')}
-                  type="search"
-                  placeholder={t('nameSearchPlaceholder')}
-                  aria-label={t('nameSearchPlaceholder')}
-                  onChange={(name) =>
-                    debouncedOnQuery({
-                      size: request.size,
-                      page: 1,
-                      orderBy: request.orderBy,
-                      search: {
-                        ...request.search,
-                        name,
-                      },
-                    })
-                  }
-                  ref={nameInputRef}
-                />
-                <Button
-                  variant={'control'}
-                  aria-label="search button for name input"
-                  onClick={() =>
-                    runQuery({
-                      size: request.size,
-                      page: 1,
-                      orderBy: request.orderBy,
-                      search: {
-                        ...request.search,
-                        name: nameInputRef.current?.value || '',
-                      },
-                    })
-                  }
-                >
-                  <SearchIcon />
-                </Button>
-              </InputGroup>
+              <SearchFilter
+                placeholder={t('nameSearchPlaceholder')}
+                onChangeSearchField={onChangeNameSearchField}
+                SearchFieldName={'name'}
+              />
             </ToolbarItem>
           )}
         </ToolbarFilter>
@@ -434,44 +425,11 @@ const KafkaToolbar: FunctionComponent = () => {
         >
           {selectedCategory === t('owner') && (
             <ToolbarItem>
-              <InputGroup>
-                <TextInput
-                  name={t('owner')}
-                  id={t('owner')}
-                  type="search"
-                  placeholder={t('ownerSearchPlaceholder')}
-                  aria-label={t('ownerSearchPlaceholder')}
-                  onChange={(owner) =>
-                    debouncedOnQuery({
-                      size: request.size,
-                      page: 1,
-                      orderBy: request.orderBy,
-                      search: {
-                        ...request.search,
-                        owner,
-                      },
-                    })
-                  }
-                  ref={ownerInputRef}
-                />
-                <Button
-                  variant={'control'}
-                  aria-label="search button for owner input"
-                  onClick={() =>
-                    runQuery({
-                      size: request.size,
-                      page: 1,
-                      orderBy: request.orderBy,
-                      search: {
-                        ...request.search,
-                        owner: ownerInputRef.current?.value || '',
-                      },
-                    })
-                  }
-                >
-                  <SearchIcon />
-                </Button>
-              </InputGroup>
+              <SearchFilter
+                placeholder={t('ownerSearchPlaceholder')}
+                onChangeSearchField={onChangeOwnerSearchField}
+                SearchFieldName={'owner'}
+              />
             </ToolbarItem>
           )}
         </ToolbarFilter>

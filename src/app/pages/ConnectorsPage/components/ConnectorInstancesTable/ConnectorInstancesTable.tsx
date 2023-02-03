@@ -2,6 +2,7 @@ import { ConnectorsOrderBy } from '@apis/api';
 import { EmptyStateGettingStarted } from '@app/components/EmptyStateGettingStarted/EmptyStateGettingStarted';
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
 import { ConnectorMachineActorRef } from '@app/machines/Connector.machine';
+import { validateSearchField } from '@utils/shared';
 import React, { FunctionComponent } from 'react';
 import { NavLink } from 'react-router-dom';
 
@@ -137,7 +138,7 @@ export const ConnectorInstancesTable: FunctionComponent<
               onSearch: onSearchName,
               onRemoveChip: onRemoveNameChip,
               onRemoveGroup: onRemoveNameChipGroup,
-              validate: (_val) => true,
+              validate: (value) => validateSearchField(value),
               errorMessage: t('input_field_invalid_message'),
             },
           }}

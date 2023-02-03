@@ -11,6 +11,7 @@ import { PreviewNamespaceEmptyCard } from '@app/components/NamespaceCard/Preview
 import { ROSAEmptyCard } from '@app/components/NamespaceCard/ROSAEmptyCard';
 import { Pagination } from '@app/components/Pagination/Pagination';
 import { RegisterEvalNamespace } from '@app/components/RegisterEvalNamespace/RegisterEvalNamespace';
+import { SearchFilter } from '@app/components/SearchFilter/SearchFilter';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { PaginatedApiResponse } from '@app/machines/PaginatedResponse.machine';
 import { useCos } from '@hooks/useCos';
@@ -31,8 +32,6 @@ import {
   Alert,
   Button,
   ButtonVariant,
-  InputGroup,
-  TextInput,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -49,7 +48,6 @@ import {
   ClockIcon,
   ExternalLinkSquareAltIcon,
   FilterIcon,
-  SearchIcon,
 } from '@patternfly/react-icons';
 
 import { Trans, useTranslation } from '@rhoas/app-services-ui-components';
@@ -364,6 +362,29 @@ const DeploymentToolbar: FunctionComponent = () => {
     []
   );
 
+  const onChangeNameSearchField = (name?: string) => {
+    debouncedOnQuery({
+      size: request.size,
+      page: 1,
+      orderBy: request.orderBy,
+      search: {
+        ...request.search,
+        name,
+      },
+    });
+  };
+
+  const onChangeClusterSearchField = (cluster_id?: string) => {
+    debouncedOnQuery({
+      size: request.size,
+      page: 1,
+      orderBy: request.orderBy,
+      search: {
+        ...request.search,
+        cluster_id,
+      },
+    });
+  };
   useEffect(() => {
     if (nameInputRef.current) {
       nameInputRef.current.value = name || '';
@@ -402,35 +423,11 @@ const DeploymentToolbar: FunctionComponent = () => {
         categoryName={t('name')}
       >
         {selectedCategory === t('name') && (
-          <ToolbarItem>
-            <InputGroup>
-              <TextInput
-                name={t('name')}
-                id={t('name')}
-                type="search"
-                placeholder={t('nameSearchPlaceholder')}
-                aria-label={t('nameSearchPlaceholder')}
-                onChange={(name) =>
-                  debouncedOnQuery({
-                    size: request.size,
-                    page: 1,
-                    orderBy: request.orderBy,
-                    search: {
-                      ...request.search,
-                      name,
-                    },
-                  })
-                }
-                ref={nameInputRef}
-              />
-              <Button
-                variant={'control'}
-                aria-label="search button for search input"
-              >
-                <SearchIcon />
-              </Button>
-            </InputGroup>
-          </ToolbarItem>
+          <SearchFilter
+            placeholder={t('nameSearchPlaceholder')}
+            onChangeSearchField={onChangeNameSearchField}
+            SearchFieldName={'name'}
+          />
         )}
       </ToolbarFilter>
       <ToolbarFilter
@@ -439,35 +436,11 @@ const DeploymentToolbar: FunctionComponent = () => {
         categoryName={t('clusterId')}
       >
         {selectedCategory === t('clusterId') && (
-          <ToolbarItem>
-            <InputGroup>
-              <TextInput
-                name={t('clusterId')}
-                id={t('clusterId')}
-                type="search"
-                placeholder={t('clusteridSearchPlaceholder')}
-                aria-label={t('clusteridSearchPlaceholder')}
-                onChange={(cluster_id) =>
-                  debouncedOnQuery({
-                    size: request.size,
-                    page: 1,
-                    orderBy: request.orderBy,
-                    search: {
-                      ...request.search,
-                      cluster_id,
-                    },
-                  })
-                }
-                ref={clusterIdInputRef}
-              />
-              <Button
-                variant={'control'}
-                aria-label="search button for search input"
-              >
-                <SearchIcon />
-              </Button>
-            </InputGroup>
-          </ToolbarItem>
+          <SearchFilter
+            placeholder={t('clusteridSearchPlaceholder')}
+            onChangeSearchField={onChangeClusterSearchField}
+            SearchFieldName={t('clusterId')}
+          />
         )}
       </ToolbarFilter>
     </ToolbarGroup>

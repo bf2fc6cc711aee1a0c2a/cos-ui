@@ -85,7 +85,7 @@ const testMachine = createMachine({
     selectNamespaceEmptyState: {
       meta: {
         noCoverage: true,
-        // No card of any namespace type does not exist 
+        // No card of any namespace type does not exist
         test: () => cy.findByText('Owner').should('not.exist'),
       },
     },
@@ -191,7 +191,7 @@ describe('Connector creation', () => {
         cy.findByText('Next').click();
       },
       CLICK_CONNECTOR: () => {
-        cy.findByLabelText('filter by connector name').type('telegram');
+        cy.findByLabelText('Filter by connector name').type('telegram');
         cy.findByText('Telegram source').click({ force: true });
         cy.contains('Connector: Telegram source').should('exist');
         cy.findByText('Next').click();
@@ -208,7 +208,9 @@ describe('Connector creation', () => {
         cy.findByLabelText('Connectors instance name *').type('my-connector');
         cy.findByLabelText('Client ID *').type('client-id');
         cy.findByLabelText('Client secret *').type('client-secret');
-        cy.findByLabelText('I have set the Kafka instance to allow access for this service account.*').click();
+        cy.findByLabelText(
+          'I have set the Kafka instance to allow access for this service account.*'
+        ).click();
         cy.findByText('Next').should('be.enabled').click();
       },
 
@@ -301,7 +303,7 @@ describe('Connector creation', () => {
       })
     ).withEvents({
       CLICK_CONNECTOR: () => {
-        cy.findByLabelText('filter by connector name').type('telegram');
+        cy.findByLabelText('Filter by connector name').type('telegram');
         cy.findByText('Telegram source').click({ force: true });
         cy.contains('Connector: Telegram source').should('exist');
         cy.findByText('Next').click();
@@ -334,7 +336,7 @@ describe('Connector creation', () => {
       })
     ).withEvents({
       CLICK_CONNECTOR: () => {
-        cy.findByLabelText('filter by connector name').type('telegram');
+        cy.findByLabelText('Filter by connector name').type('telegram');
         cy.findByText('Telegram source').click({ force: true });
         cy.contains('Connector: Telegram source').should('exist');
         cy.findByText('Next').click();

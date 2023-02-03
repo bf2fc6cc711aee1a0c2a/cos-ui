@@ -17,6 +17,15 @@ export const toHtmlSafeId = (
     .toLowerCase()}${suffix ? suffix : ''}`;
 };
 
+export const validateSearchField = (value?: string) => {
+  return value ? /^([a-zA-Z0-9-_%]*[a-zA-Z0-9-_%])?$/.test(value.trim()) : true;
+};
+
+export const validateConnectorSearchField = (value?: string) => {
+  return value
+    ? /^([a-zA-Z0-9-_% ]*[a-zA-Z0-9-_% ])?$/.test(value.trim())
+    : true;
+};
 export const mapToObject = (inputMap: Map<string, unknown>): object => {
   const obj = {} as { [key: string]: unknown };
   inputMap.forEach((value, key) => {
