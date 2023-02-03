@@ -195,3 +195,18 @@ export const applyClientSideFormCustomizations = (properties: any) => {
   };
   return organizedProperties;
 };
+
+export const DBFilters: Record<string, string[]> = {
+  mongodb: ['databases', 'collections', 'fields'],
+  mysql: ['databases', 'tables', 'columns'],
+  postgresql: ['schemas', 'tables', 'columns'],
+  sqlserver: ['schemas', 'tables', 'columns'],
+};
+export const getFilterList = (connectorName: string) => {
+  const database = connectorName.split(' ')[1].toLowerCase();
+  return (
+    DBFilters[database].slice(0, -1).join(', ') +
+    ' or ' +
+    DBFilters.mongodb.slice(-1)
+  );
+};

@@ -1,4 +1,7 @@
-import { useCreateConnectorWizardService } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
+import {
+  useConfiguratorMachine,
+  useCreateConnectorWizardService,
+} from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { JsonSchemaConfigurator } from '@app/components/JsonSchemaConfigurator/JsonSchemaConfigurator';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { ConfiguratorActorRef } from '@app/machines/StepConfigurator.machine';
@@ -9,6 +12,7 @@ import {
 } from '@app/machines/StepConfiguratorLoader.machine';
 import {
   clearEmptyObjectValues,
+  getFilterList,
   mapToObject,
   patchConfigurationObject,
 } from '@utils/shared';
@@ -33,17 +37,8 @@ const ConnectedCustomConfigurator: FunctionComponent<{
   actor: ConfiguratorActorRef;
   duplicateMode: boolean | undefined;
 }> = ({ actor, Configurator, duplicateMode }) => {
-  let { activeStep, configuration, connector } = useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => ({
-        connector: state.context.connector,
-        activeStep: state.context.activeStep,
-        configuration: state.context.configuration,
-      }),
-      [actor]
-    )
-  );
+  let { activeStep, configuration, connector } = useConfiguratorMachine();
+
   if (duplicateMode) {
     let combineConfiguration = {};
     if (configuration instanceof Map) {
@@ -76,16 +71,7 @@ const ConnectedJsonSchemaConfigurator: FunctionComponent<{
   actor: ConfiguratorActorRef;
   duplicateMode: boolean | undefined;
 }> = ({ actor, duplicateMode }) => {
-  const { configuration, connector } = useSelector(
-    actor,
-    useCallback(
-      (state: typeof actor.state) => ({
-        connector: state.context.connector,
-        configuration: state.context.configuration,
-      }),
-      [actor]
-    )
-  );
+  const { configuration, connector } = useConfiguratorMachine();
   const schema = (connector as ConnectorTypeAllOf).schema!;
   const initialConfiguration = patchConfigurationObject(schema, {} as any);
   return (
@@ -102,6 +88,18 @@ const ConnectedJsonSchemaConfigurator: FunctionComponent<{
       }
     />
   );
+};
+
+export const ConfiguratorCustomStepDescription: FunctionComponent = () => {
+  const { t } = useTranslation();
+  const { activeStep, connector } = useConfiguratorMachine();
+  const configuratorStepDescriptionText =
+    activeStep === 1
+      ? t('debeziumFilterStepDescription', {
+          fields: getFilterList(connector.name!),
+        })
+      : t('configurationStepDescription');
+  return <>{configuratorStepDescriptionText}</>;
 };
 
 export type ConfiguratorStepProps = {
@@ -155,7 +153,13 @@ export const ConfiguratorStep: FunctionComponent = () => {
           ? t(configurationSteps[activeConfigurationStep])
           : t('connectorSpecific')
       }
-      description={t('configurationStepDescription')}
+      description={
+        hasCustomConfigurator ? (
+          <ConfiguratorCustomStepDescription />
+        ) : (
+          t('configurationStepDescription')
+        )
+      }
     >
       {(() => {
         switch (true) {
@@ -173,7 +177,7 @@ export const ConfiguratorStep: FunctionComponent = () => {
               <EmptyState>
                 <EmptyStateIcon icon={ExclamationCircleIcon} />
                 <Title size="lg" headingLevel="h4">
-                  Error message
+                  {t('errorMessage')}
                 </Title>
               </EmptyState>
             );
