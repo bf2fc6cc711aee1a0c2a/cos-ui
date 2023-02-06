@@ -1,4 +1,3 @@
-import { validateSearchField } from '@utils/shared';
 import React, { FunctionComponent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,12 +16,14 @@ export type FilterProps = {
   placeholder: string;
   onChangeSearchField: (value: string) => void;
   SearchFieldName: string;
+  validateFilterRegex: (value?: string) => boolean;
 };
 
 export const SearchFilter: FunctionComponent<FilterProps> = ({
   placeholder,
   onChangeSearchField,
   SearchFieldName,
+  validateFilterRegex,
 }) => {
   const { t } = useTranslation();
   const [valid, setValid] = useState<boolean>(true);
@@ -31,12 +32,12 @@ export const SearchFilter: FunctionComponent<FilterProps> = ({
 
   const onChange = (currentSearch?: string) => {
     setCurrentSearch(currentSearch);
-    setValid(validateSearchField(currentSearch));
+    setValid(validateFilterRegex(currentSearch));
   };
 
   const onFilter = () => {
     if (currentSearch && currentSearch.trim() != '') {
-      if (validateSearchField(currentSearch)) {
+      if (validateFilterRegex(currentSearch)) {
         onChangeSearchField(currentSearch);
         setCurrentSearch('');
       } else {

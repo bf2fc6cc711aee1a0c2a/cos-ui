@@ -17,6 +17,7 @@ import { PaginatedApiResponse } from '@app/machines/PaginatedResponse.machine';
 import { useCos } from '@hooks/useCos';
 import usePrevious from '@hooks/usePrevious';
 import { getPendingTime, warningType } from '@utils/shared';
+import { validateSearchField } from '@utils/shared';
 import { useDebounce } from '@utils/useDebounce';
 import { has, isEqual, cloneDeep } from 'lodash';
 import React, {
@@ -427,6 +428,7 @@ const DeploymentToolbar: FunctionComponent = () => {
             placeholder={t('nameSearchPlaceholder')}
             onChangeSearchField={onChangeNameSearchField}
             SearchFieldName={'name'}
+            validateFilterRegex={validateSearchField}
           />
         )}
       </ToolbarFilter>
@@ -440,6 +442,7 @@ const DeploymentToolbar: FunctionComponent = () => {
             placeholder={t('clusteridSearchPlaceholder')}
             onChangeSearchField={onChangeClusterSearchField}
             SearchFieldName={t('clusterId')}
+            validateFilterRegex={validateSearchField}
           />
         )}
       </ToolbarFilter>
