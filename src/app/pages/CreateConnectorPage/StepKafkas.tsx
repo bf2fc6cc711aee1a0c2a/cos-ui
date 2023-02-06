@@ -9,6 +9,7 @@ import { Loading } from '@app/components/Loading/Loading';
 import { Pagination } from '@app/components/Pagination/Pagination';
 import { SearchFilter } from '@app/components/SearchFilter/SearchFilter';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
+import { validateSearchField } from '@utils/shared';
 import _ from 'lodash';
 import React, {
   FunctionComponent,
@@ -413,6 +414,7 @@ const KafkaToolbar: FunctionComponent = () => {
                 placeholder={t('nameSearchPlaceholder')}
                 onChangeSearchField={onChangeNameSearchField}
                 SearchFieldName={'name'}
+                validateFilterRegex={validateSearchField}
               />
             </ToolbarItem>
           )}
@@ -429,6 +431,7 @@ const KafkaToolbar: FunctionComponent = () => {
                 placeholder={t('ownerSearchPlaceholder')}
                 onChangeSearchField={onChangeOwnerSearchField}
                 SearchFieldName={'owner'}
+                validateFilterRegex={validateSearchField}
               />
             </ToolbarItem>
           )}

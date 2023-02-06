@@ -1,5 +1,6 @@
 import { ConnectorTypesOrderBy } from '@apis/api';
 import { SearchFilter } from '@app/components/SearchFilter/SearchFilter';
+import { validateConnectorSearchField } from '@utils/shared';
 import React, { FC, useCallback } from 'react';
 
 import {
@@ -70,6 +71,7 @@ export const ConnectorSelectionListToolbar: FC<
               onChangeSearchField={onChangeSearchField}
               placeholder={searchFieldPlaceholder}
               SearchFieldName={'connector'}
+              validateFilterRegex={validateConnectorSearchField}
             />
           </ToolbarFilter>
         </ToolbarItem>
