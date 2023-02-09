@@ -20,7 +20,6 @@ import { KafkaInstance } from '@rhoas/app-services-ui-shared';
 import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 import { ConnectorInfoTextList } from '../../../../components/ConnectorInfoTextList/ConnectorInfoTextList';
-import { ConnectorDrawerMessageStatistics } from './ConnectorDrawerMessageStatistics';
 
 export type ConnectorDrawerContentProps = {
   createdAt: string;
@@ -79,13 +78,6 @@ export const ConnectorDrawerContent: FunctionComponent<ConnectorDrawerContentPro
         )}
         <Tabs activeKey={activeTabKey} onSelect={selectActiveKey}>
           <Tab eventKey={0} title={<TabTitleText>{t('details')}</TabTitleText>}>
-            <ConnectorDrawerMessageStatistics
-              expireTime="23 hours 37 minutes"
-              numberSent="1600"
-              numberNotSent="12"
-              errorHandlingMethodInfo={t('deadLetterQueue')}
-              deadLetterQueueTopicInfo="my-topic-2"
-            />
             <ConnectorInfoTextList
               bootstrapServer={kafkaBootstrapServer}
               createdAt={new Date(createdAt)}

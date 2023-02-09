@@ -16,16 +16,3 @@
 .pf-u-icon-color-red {
   color: var(--pf-global--danger-color--100);
 }
-
-.pf-c-card__body.sent-spacing {
-  padding-left: 7%;
-}
-
-.pf-c-card__footer.processed-messages-info {
-  color: var(--pf-global--Color--200);
-  padding-left: 7%;
-}
-
-.pf-c-alert.alert-spacing {
-  padding-top: 50% !important;
-}
