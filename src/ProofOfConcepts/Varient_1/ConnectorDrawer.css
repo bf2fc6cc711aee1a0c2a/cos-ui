@@ -18,12 +18,11 @@
 }
 
 .pf-c-card__body.sent-spacing {
-  padding-left: 7%;
+  padding-left: var(--pf-global--spacer--md);
 }
 
-.pf-c-card__footer.processed-messages-info {
+.pf-c-card__footer.grey-text {
   color: var(--pf-global--Color--200);
-  padding-left: 7%;
 }
 
 .pf-c-alert.alert-spacing {

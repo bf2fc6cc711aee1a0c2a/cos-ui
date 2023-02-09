@@ -19,7 +19,7 @@ import { Trans, useTranslation } from '@rhoas/app-services-ui-components';
 import { KafkaInstance } from '@rhoas/app-services-ui-shared';
 import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
-import { ConnectorInfoTextList } from '../../../../components/ConnectorInfoTextList/ConnectorInfoTextList';
+import { ConnectorInfoTextList } from '../../app/components/ConnectorInfoTextList/ConnectorInfoTextList';
 import { ConnectorDrawerMessageStatistics } from './ConnectorDrawerMessageStatistics';
 
 export type ConnectorDrawerContentProps = {
