@@ -1,0 +1,206 @@
+{
+  "channels": {
+    "stable": {
+      "shard_metadata": {
+        "annotations": {
+          "trait.camel.apache.org/container.request-cpu": "0.20",
+          "trait.camel.apache.org/container.request-memory": "128M",
+          "trait.camel.apache.org/deployment.progress-deadline-seconds": "30"
+        },
+        "connector_image": "quay.io/rhoas/cos-connector-sftp:main-f5f1f4b5a6e078b016886b292e81a19aad588cdd",
+        "connector_revision": 82,
+        "connector_type": "sink",
+        "consumes": "application/octet-stream",
+        "error_handler_strategy": "stop",
+        "kamelets": {
+          "adapter": {
+            "name": "sftp-sink",
+            "prefix": "sftp"
+          },
+          "kafka": {
+            "name": "cos-kafka-source",
+            "prefix": "kafka"
+          }
+        },
+        "operators": [
+          {
+            "type": "camel-connector-operator",
+            "version": "[1.0.0,2.0.0)"
+          }
+        ],
+        "produces": "application/octet-stream"
+      }
+    }
+  },
+  "connector_type": {
+    "capabilities": ["data_shape", "error_handler", "processors"],
+    "channels": ["stable"],
+    "description": "Send data to an SFTP Server.",
+    "icon_href": "TODO",
+    "id": "sftp_sink_0.1",
+    "kind": "ConnectorType",
+    "labels": ["sink"],
+    "name": "SFTP sink",
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sftp_connection_host",
+        "sftp_connection_port",
+        "sftp_username",
+        "sftp_password",
+        "sftp_directory_name",
+        "kafka_topic"
+      ],
+      "properties": {
+        "sftp_connection_host": {
+          "title": "Connection Host",
+          "description": "The hostname of the FTP server",
+          "type": "string"
+        },
+        "sftp_connection_port": {
+          "title": "Connection Port",
+          "description": "The port of the FTP server",
+          "type": "string",
+          "default": "22"
+        },
+        "sftp_username": {
+          "title": "Username",
+          "description": "The username to access the FTP server.",
+          "type": "string",
+          "x-group": "credentials"
+        },
+        "sftp_password": {
+          "title": "Password",
+          "x-group": "credentials",
+          "oneOf": [
+            {
+              "title": "Password",
+              "description": "The password to access the FTP server.",
+              "type": "string",
+              "format": "password"
+            },
+            {
+              "description": "An opaque reference to the sftp_password",
+              "type": "object",
+              "properties": {}
+            }
+          ]
+        },
+        "sftp_directory_name": {
+          "title": "Directory Name",
+          "description": "The starting directory.",
+          "type": "string"
+        },
+        "sftp_passive_mode": {
+          "title": "Passive Mode",
+          "description": "Specifies to use passive mode connection.",
+          "type": "boolean",
+          "default": false
+        },
+        "sftp_file_exist": {
+          "title": "File Existence",
+          "description": "How to behave in case of file already existent. There are 4 enums. Possible values are Override, Append, Fail, or Ignore.",
+          "type": "string",
+          "default": "Override"
+        },
+        "kafka_topic": {
+          "title": "Topic Names",
+          "description": "A comma-separated list of Kafka topic names.",
+          "type": "string"
+        },
+        "data_shape": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "consumes": {
+              "$ref": "#/$defs/data_shape/consumes"
+            }
+          }
+        },
+        "error_handler": {
+          "type": "object",
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["log"],
+              "properties": {
+                "log": {
+                  "$ref": "#/$defs/error_handler/log"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["stop"],
+              "properties": {
+                "stop": {
+                  "$ref": "#/$defs/error_handler/stop"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["dead_letter_queue"],
+              "properties": {
+                "dead_letter_queue": {
+                  "$ref": "#/$defs/error_handler/dead_letter_queue"
+                }
+              }
+            }
+          ],
+          "default": {
+            "stop": {}
+          }
+        },
+        "processors": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "$defs": {
+        "data_shape": {
+          "consumes": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["format"],
+            "properties": {
+              "format": {
+                "type": "string",
+                "description": "The format of the data that Kafka sends to the sink connector.",
+                "default": "application/octet-stream",
+                "enum": ["application/octet-stream"]
+              }
+            }
+          }
+        },
+        "error_handler": {
+          "log": {
+            "type": "object",
+            "additionalProperties": false
+          },
+          "stop": {
+            "type": "object",
+            "additionalProperties": false
+          },
+          "dead_letter_queue": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["topic"],
+            "properties": {
+              "topic": {
+                "type": "string",
+                "title": "Dead Letter Topic Name",
+                "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error."
+              }
+            }
+          }
+        }
+      }
+    },
+    "version": "0.1"
+  }
+}
