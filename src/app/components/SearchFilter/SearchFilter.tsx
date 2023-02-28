@@ -1,5 +1,4 @@
 import React, { FunctionComponent, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
   Button,
@@ -11,6 +10,8 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import SearchIcon from '@patternfly/react-icons/dist/js/icons/search-icon';
+
+import { useTranslation } from '@rhoas/app-services-ui-components';
 
 export type FilterProps = {
   placeholder: string;
@@ -27,10 +28,10 @@ export const SearchFilter: FunctionComponent<FilterProps> = ({
 }) => {
   const { t } = useTranslation();
   const [valid, setValid] = useState<boolean>(true);
-  const [currentSearch, setCurrentSearch] = useState<string | undefined>();
+  const [currentSearch, setCurrentSearch] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const onChange = (currentSearch?: string) => {
+  const onChange = (currentSearch: string) => {
     setCurrentSearch(currentSearch);
     setValid(validateFilterRegex(currentSearch));
   };
