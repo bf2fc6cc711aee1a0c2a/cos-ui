@@ -179,18 +179,62 @@ describe('Connectors page', () => {
     cy.findAllByText('Something went wrong').should('have.length', 0);
   });
 
-  xit('can search for a connector', () => {
+  it('can search for a connector', () => {
     cy.clock();
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'connectorsPolling.json',
     }).as('connectors');
     cy.visit(Cypress.env('homepage'));
+    cy.tick(1000);
     cy.wait('@connectors');
+
+    cy.get('table').findByText('dbz-pg-lb').should('exist');
+    cy.get('table').findAllByText('dbz-postgres-conn').should('exist');
+
+    cy.intercept(
+      `${Cypress.env(
+        'connectorsApiPath'
+      )}%28+name+ILIKE+%27%25dbz-postgres-conn%25%27%29`,
+      {
+        fixture: 'connectors.json',
+      }
+    ).as('connectorsSearch');
+
+    cy.findAllByLabelText('Filter by name').eq(0).type('dbz-postgres-conn');
+    cy.findAllByLabelText('Search').eq(0).click();
+
+    cy.wait('@connectorsSearch');
+    cy.get('table').findByText('dbz-pg-lb').should('have.length', 0);
+    cy.get('table').findAllByText('dbz-postgres-conn').should('exist');
+  });
+
+  it('will show "No results" when pages greater than 1 return no items', () => {
+    cy.clock();
+    cy.intercept(Cypress.env('connectorsApiPath'), {
+      fixture: 'connectorsMany.json',
+    }).as('connectors');
+    cy.visit(Cypress.env('homepage'));
     cy.tick(1000);
-    cy.findByLabelText('filter by connector name').type('dbz-pg-lb');
-    cy.findByLabelText('search button for search input').click();
-    cy.tick(1000);
-    cy.findByText('dbz-pg-lb').should('exist');
-    cy.findAllByText('dbz-postgres-conn').should('have.length', 0);
+    cy.wait('@connectors');
+
+    cy.findByText('Managed connectors').should('exist');
+    cy.findByText('dbz-postgres-conn').should('have.length', 1);
+
+    // simulating retrieval of a page with no items
+    cy.intercept(
+      `${Cypress.env(
+        'connectorsApiPathNoQueryParams'
+      )}?page=2&size=20&orderBy=&search=`,
+      {
+        fixture: 'connectorsEmptyPage.json',
+      }
+    ).as('connectorsEmptyPage');
+
+    cy.findAllByLabelText('Go to next page').eq(0).click();
+
+    cy.wait('@connectorsEmptyPage');
+    cy.get('table').findByText('dbz-postgres-conn').should('have.length', 0);
+    // the "No results" message is shown for the current page
+    cy.findAllByText('No results found').should('exist');
   });
 });
