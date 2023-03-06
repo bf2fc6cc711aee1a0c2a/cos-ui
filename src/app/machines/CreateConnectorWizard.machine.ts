@@ -137,6 +137,7 @@ const isErrorHandlerConfigured: WizardGuard = (context, _event) => {
   // Currently the error_handler field is only for Camel based connectors, for
   // now we'll short circuit this for Debezium based connectors
   if (
+    context.activeConfigurationStep! > 0 &&
     context.selectedConnector &&
     context.selectedConnector!.labels &&
     context.selectedConnector!.labels!.find((val) =>
