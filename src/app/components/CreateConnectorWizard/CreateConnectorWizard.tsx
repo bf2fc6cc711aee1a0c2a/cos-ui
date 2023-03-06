@@ -153,9 +153,10 @@ export type CreateConnectorWizardProps = {
   header: ReactNode;
 };
 
-export const CreateConnectorWizard: FunctionComponent<
-  CreateConnectorWizardProps
-> = ({ header, onClose }) => {
+export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps> = ({
+  header,
+  onClose,
+}) => {
   const { t } = useTranslation();
   const service = useCreateConnectorWizardService();
   const [state, send] = useActor(service);
@@ -299,7 +300,7 @@ export const CreateConnectorWizard: FunctionComponent<
         creationWizardMachine.transition(state, 'jumpToReviewConfiguration')
           .changed || state.matches('reviewConfiguration'),
       enableNext: creationWizardMachine.transition(state, 'next').changed,
-      nextButtonText: t('createConnector'),
+      nextButtonText: t('createConnectorsInstance'),
     },
   ];
 

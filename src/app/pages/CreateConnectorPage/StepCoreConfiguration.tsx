@@ -60,9 +60,7 @@ export type StepCoreConfigurationInnerProps = {
   onSetServiceAccount: (serviceAccount: UserProvidedServiceAccount) => void;
 };
 
-export const StepCoreConfigurationInner: FC<
-  StepCoreConfigurationInnerProps
-> = ({
+export const StepCoreConfigurationInner: FC<StepCoreConfigurationInnerProps> = ({
   duplicateMode,
   name = '',
   serviceAccount = { clientId: '', clientSecret: '' },
@@ -102,7 +100,7 @@ export const StepCoreConfigurationInner: FC<
                   component={TextVariants.small}
                   className={'step-common_service_account-desc'}
                 >
-                  {t('serviceAccountDescText')}
+                  <Trans i18nKey={'serviceAccountDescText'}></Trans>
                 </Text>
               </TextContent>
               <Button
