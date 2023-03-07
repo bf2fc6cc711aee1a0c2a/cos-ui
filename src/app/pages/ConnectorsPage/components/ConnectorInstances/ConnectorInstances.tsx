@@ -111,7 +111,9 @@ export const ConnectorInstances: FunctionComponent<ConnectorInstancesProps> = ({
   );
 
   const onRemoveGroup = onClearAllFilters;
-  const isFiltered = namesChips.length > 0;
+  // isFiltered determines if the TableView component will show the "no results" block
+  // instead of the "empty state" when no items are present. See MGDCTRS-1623 for more details.
+  const isFiltered = namesChips.length > 0 || page > 1;
 
   const [[activeSortColumn, activeSortDirection]] = Object.entries(
     orderBy || { name: 'asc' }

@@ -8,6 +8,8 @@ export default defineConfig({
       wizard: '/create-connector',
       connectorsApiPath:
         '/localhost/api/connector_mgmt/v1/kafka_connectors?page=1&size=20&orderBy=&search=',
+      connectorsApiPathNoQueryParams:
+        '/localhost/api/connector_mgmt/v1/kafka_connectors',
       connectorsActionApiPath:
         '/localhost/api/connector_mgmt/v1/kafka_connectors/',
       connectorTypesApiPath:
