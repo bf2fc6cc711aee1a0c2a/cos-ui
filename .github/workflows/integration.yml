@@ -7,32 +7,34 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node: ["16.6.2"]
+        node: ['16.16.0']
         os: [ubuntu-latest]
+        
+    env:
+      CYPRESS_CACHE_FOLDER: '.cache/cypress_install'
 
     # Cypress Docker image with Chrome v78
     # and Firefox v70 pre-installed
     container: cypress/browsers:latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Use Node ${{ matrix.node }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
 
       - name: Cache node modules
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
-          cache-name: cache-node-modules-v2
+          cache-name: cache-node-modules-v3
         with:
           path: |
             .npm
-            .cache/Cypress
+            ${{ env.CYPRESS_CACHE_FOLDER }}
             node_modules
-            */*/node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
@@ -42,7 +44,7 @@ jobs:
       - name: Install dependencies if needed.
         if: steps.npm-cache.outputs.cache-hit != 'true'
         env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
+          NODE_OPTIONS: '--max_old_space_size=4096'
         run: npm ci
 
       - name: Cypress run
@@ -51,11 +53,11 @@ jobs:
           # we have already installed everything
           install: false
           start: npm run start:e2e
-          wait-on: "http://localhost:3001"
+          wait-on: 'http://localhost:3001'
           wait-on-timeout: 120
 
       - name: upload Cypress screenshots for failed tests
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: cypress-screenshots
@@ -63,7 +65,7 @@ jobs:
 
       # Test run video was always captured, so this action uses "always()" condition
       - name: upload Cypress test run video
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: cypress-videos
