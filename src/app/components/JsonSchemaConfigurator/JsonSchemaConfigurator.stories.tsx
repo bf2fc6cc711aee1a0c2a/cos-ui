@@ -11,6 +11,8 @@ import aws_s3_source from '../../../../cypress/fixtures/connectors/aws_s3_source
 import aws_sns_sink from '../../../../cypress/fixtures/connectors/aws_sns_sink_0.1.json';
 import aws_sqs_sink from '../../../../cypress/fixtures/connectors/aws_sqs_sink_0.1.json';
 import aws_sqs_source from '../../../../cypress/fixtures/connectors/aws_sqs_source_0.1.json';
+import ftps_sink from '../../../../cypress/fixtures/connectors/ftps_sink_0.1.json';
+import ftps_source from '../../../../cypress/fixtures/connectors/ftps_source_0.1.json';
 import http_sink from '../../../../cypress/fixtures/connectors/http_sink_0.1.json';
 import injector_source from '../../../../cypress/fixtures/connectors/injector_source_0.1.json';
 import log_sink from '../../../../cypress/fixtures/connectors/log_sink_0.1.json';
@@ -22,6 +24,8 @@ import mysql_sink from '../../../../cypress/fixtures/connectors/mysql_sink_0.1.j
 import mysql_source from '../../../../cypress/fixtures/connectors/mysql_source_0.1.json';
 import postgresql_sink from '../../../../cypress/fixtures/connectors/postgresql_sink_0.1.json';
 import postgresql_source from '../../../../cypress/fixtures/connectors/postgresql_source_0.1.json';
+import sftp_sink from '../../../../cypress/fixtures/connectors/sftp_sink_0.1.json';
+import sftp_source from '../../../../cypress/fixtures/connectors/sftp_source_0.1.json';
 import sqlserver_sink from '../../../../cypress/fixtures/connectors/sqlserver_sink_0.1.json';
 import sqlserver_source from '../../../../cypress/fixtures/connectors/sqlserver_source_0.1.json';
 import { StepBodyLayout } from '../StepBodyLayout/StepBodyLayout';
@@ -104,6 +108,18 @@ Aws_sqs_source.parameters = {
     aws_sqs_source: { aws_sqs_source },
   },
 };
+export const FTPS_sink = Template.bind({});
+FTPS_sink.parameters = {
+  fixtures: {
+    ftps_sink: { ftps_sink },
+  },
+};
+export const FTPS_source = Template.bind({});
+FTPS_source.parameters = {
+  fixtures: {
+    ftps_source: { ftps_source },
+  },
+};
 export const Http_sink = Template.bind({});
 Http_sink.parameters = {
   fixtures: {
@@ -180,5 +196,17 @@ export const Sqlserver_source = Template.bind({});
 Sqlserver_source.parameters = {
   fixtures: {
     sqlserver_source: { sqlserver_source },
+  },
+};
+export const SFTP_sink = Template.bind({});
+SFTP_sink.parameters = {
+  fixtures: {
+    sftp_sink: { sftp_sink },
+  },
+};
+export const SFTP_source = Template.bind({});
+SFTP_source.parameters = {
+  fixtures: {
+    sftp_source: { sftp_source },
   },
 };

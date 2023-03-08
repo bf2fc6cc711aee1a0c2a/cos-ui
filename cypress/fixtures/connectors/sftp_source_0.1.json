@@ -1,0 +1,218 @@
+{
+  "channels": {
+    "stable": {
+      "shard_metadata": {
+        "annotations": {
+          "trait.camel.apache.org/container.request-cpu": "0.20",
+          "trait.camel.apache.org/container.request-memory": "128M",
+          "trait.camel.apache.org/deployment.progress-deadline-seconds": "30"
+        },
+        "connector_image": "quay.io/rhoas/cos-connector-sftp:main-f5f1f4b5a6e078b016886b292e81a19aad588cdd",
+        "connector_revision": 82,
+        "connector_type": "source",
+        "consumes": "application/octet-stream",
+        "error_handler_strategy": "stop",
+        "kamelets": {
+          "adapter": {
+            "name": "sftp-source",
+            "prefix": "sftp"
+          },
+          "kafka": {
+            "name": "cos-kafka-sink",
+            "prefix": "kafka"
+          }
+        },
+        "operators": [
+          {
+            "type": "camel-connector-operator",
+            "version": "[1.0.0,2.0.0)"
+          }
+        ],
+        "produces": "application/octet-stream"
+      }
+    }
+  },
+  "connector_type": {
+    "capabilities": ["data_shape", "error_handler", "processors"],
+    "channels": ["stable"],
+    "description": "Retrieve data from an SFTP Server.",
+    "icon_href": "TODO",
+    "id": "sftp_source_0.1",
+    "kind": "ConnectorType",
+    "labels": ["source"],
+    "name": "SFTP source",
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sftp_connection_host",
+        "sftp_connection_port",
+        "sftp_username",
+        "sftp_password",
+        "sftp_directory_name",
+        "kafka_topic"
+      ],
+      "properties": {
+        "sftp_connection_host": {
+          "title": "Connection Host",
+          "description": "The hostname of the SFTP server.",
+          "type": "string"
+        },
+        "sftp_connection_port": {
+          "title": "Connection Port",
+          "description": "The port of the FTP server.",
+          "type": "string",
+          "default": "22"
+        },
+        "sftp_username": {
+          "title": "Username",
+          "description": "The username to access the SFTP server.",
+          "type": "string",
+          "x-group": "credentials"
+        },
+        "sftp_password": {
+          "title": "Password",
+          "x-group": "credentials",
+          "oneOf": [
+            {
+              "title": "Password",
+              "description": "The password to access the SFTP server.",
+              "type": "string",
+              "format": "password"
+            },
+            {
+              "description": "An opaque reference to the sftp_password",
+              "type": "object",
+              "properties": {}
+            }
+          ]
+        },
+        "sftp_directory_name": {
+          "title": "Directory Name",
+          "description": "The starting directory.",
+          "type": "string"
+        },
+        "sftp_passive_mode": {
+          "title": "Passive Mode",
+          "description": "Sets the passive mode connection.",
+          "type": "boolean",
+          "default": false
+        },
+        "sftp_recursive": {
+          "title": "Recursive",
+          "description": "If a directory, look for files in all sub-directories as well.",
+          "type": "boolean",
+          "default": false
+        },
+        "sftp_idempotent": {
+          "title": "Idempotency",
+          "description": "Skip already-processed files.",
+          "type": "boolean",
+          "default": true
+        },
+        "sftp_ignore_file_not_found_or_permission_error": {
+          "title": "Ignore File Not Found Or Permission Error",
+          "description": "Whether to ignore when (trying to list files in directories or when downloading a file), which does not exist or due to permission error. By default when a directory or file does not exists or insufficient permission, then an exception is thrown. Setting this option to true allows to ignore that instead.",
+          "type": "boolean",
+          "default": false
+        },
+        "kafka_topic": {
+          "title": "Topic Name",
+          "description": "The name of the Kafka Topic to use.",
+          "type": "string"
+        },
+        "data_shape": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "produces": {
+              "$ref": "#/$defs/data_shape/produces"
+            }
+          }
+        },
+        "error_handler": {
+          "type": "object",
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["log"],
+              "properties": {
+                "log": {
+                  "$ref": "#/$defs/error_handler/log"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["stop"],
+              "properties": {
+                "stop": {
+                  "$ref": "#/$defs/error_handler/stop"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["dead_letter_queue"],
+              "properties": {
+                "dead_letter_queue": {
+                  "$ref": "#/$defs/error_handler/dead_letter_queue"
+                }
+              }
+            }
+          ],
+          "default": {
+            "stop": {}
+          }
+        },
+        "processors": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "$defs": {
+        "data_shape": {
+          "produces": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["format"],
+            "properties": {
+              "format": {
+                "type": "string",
+                "description": "The format of the data that the source connector sends to Kafka.",
+                "default": "application/octet-stream",
+                "enum": ["application/octet-stream"]
+              }
+            }
+          }
+        },
+        "error_handler": {
+          "log": {
+            "type": "object",
+            "additionalProperties": false
+          },
+          "stop": {
+            "type": "object",
+            "additionalProperties": false
+          },
+          "dead_letter_queue": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["topic"],
+            "properties": {
+              "topic": {
+                "type": "string",
+                "title": "Dead Letter Topic Name",
+                "description": "The name of the Kafka topic that serves as a destination for messages which were not processed correctly due to an error."
+              }
+            }
+          }
+        }
+      }
+    },
+    "version": "0.1"
+  }
+}
