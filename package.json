@@ -74,7 +74,7 @@
     "@typescript-eslint/eslint-plugin": "5.54.1",
     "@typescript-eslint/parser": "5.54.1",
     "@xstate/inspect": "0.8.0",
-    "autoprefixer": "10.4.13",
+    "autoprefixer": "10.4.14",
     "babel-eslint": "10.1.0",
     "babel-loader": "8.3.0",
     "bundle-loader": "0.5.6",
