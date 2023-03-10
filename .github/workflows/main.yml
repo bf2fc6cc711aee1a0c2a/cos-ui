@@ -7,29 +7,31 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node: ['16.6.2']
+        node: ['16.16.0']
         os: [ubuntu-latest]
+
+    env:
+      CYPRESS_CACHE_FOLDER: '.cache/cypress_install'
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Use Node ${{ matrix.node }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
 
       - name: Cache node modules
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
-            cache-name: cache-node-modules-v2
+            cache-name: cache-node-modules-v3
         with:
             path: |
                 ~/.npm
-                ~/.cache/Cypress
+                ${{ env.CYPRESS_CACHE_FOLDER }}
                 node_modules
-                */*/node_modules
             key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
             restore-keys: |
                 ${{ runner.os }}-build-${{ env.cache-name }}-
