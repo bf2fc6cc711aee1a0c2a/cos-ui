@@ -60,7 +60,9 @@ export type StepCoreConfigurationInnerProps = {
   onSetServiceAccount: (serviceAccount: UserProvidedServiceAccount) => void;
 };
 
-export const StepCoreConfigurationInner: FC<StepCoreConfigurationInnerProps> = ({
+export const StepCoreConfigurationInner: FC<
+  StepCoreConfigurationInnerProps
+> = ({
   duplicateMode,
   name = '',
   serviceAccount = { clientId: '', clientSecret: '' },
@@ -100,7 +102,19 @@ export const StepCoreConfigurationInner: FC<StepCoreConfigurationInnerProps> = (
                   component={TextVariants.small}
                   className={'step-common_service_account-desc'}
                 >
-                  <Trans i18nKey={'serviceAccountDescText'}></Trans>
+                  {t('serviceAccountDesc_intro')}
+                </Text>
+                <Text
+                  component={TextVariants.small}
+                  className={'step-common_service_account-desc'}
+                >
+                  {t('serviceAccountDesc_credentials')}
+                </Text>
+                <Text
+                  component={TextVariants.small}
+                  className={'step-common_service_account-desc'}
+                >
+                  {t('serviceAccountDesc_accessKafkaInstance')}
                 </Text>
               </TextContent>
               <Button

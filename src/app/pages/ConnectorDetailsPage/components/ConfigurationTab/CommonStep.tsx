@@ -112,7 +112,15 @@ export const CommonStep: FC<CommonStepProp> = ({
           isRequired
           fieldId="service-account"
           labelIcon={
-            <Popover bodyContent={<p>{t('serviceAccountDescText')}</p>}>
+            <Popover
+              bodyContent={
+                <>
+                  <p>{t('serviceAccountDesc_intro')}</p>
+                  <p>{t('serviceAccountDesc_credentials')}</p>
+                  <p>{t('serviceAccountDesc_accessKafkaInstance')}</p>
+                </>
+              }
+            >
               <button
                 type="button"
                 aria-label="More info for name field."

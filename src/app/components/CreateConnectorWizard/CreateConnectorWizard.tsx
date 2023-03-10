@@ -153,10 +153,9 @@ export type CreateConnectorWizardProps = {
   header: ReactNode;
 };
 
-export const CreateConnectorWizard: FunctionComponent<CreateConnectorWizardProps> = ({
-  header,
-  onClose,
-}) => {
+export const CreateConnectorWizard: FunctionComponent<
+  CreateConnectorWizardProps
+> = ({ header, onClose }) => {
   const { t } = useTranslation();
   const service = useCreateConnectorWizardService();
   const [state, send] = useActor(service);
