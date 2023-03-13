@@ -102,7 +102,19 @@ export const StepCoreConfigurationInner: FC<
                   component={TextVariants.small}
                   className={'step-common_service_account-desc'}
                 >
-                  {t('serviceAccountDescText')}
+                  {t('serviceAccountDesc_intro')}
+                </Text>
+                <Text
+                  component={TextVariants.small}
+                  className={'step-common_service_account-desc'}
+                >
+                  {t('serviceAccountDesc_credentials')}
+                </Text>
+                <Text
+                  component={TextVariants.small}
+                  className={'step-common_service_account-desc'}
+                >
+                  {t('serviceAccountDesc_accessKafkaInstance')}
                 </Text>
               </TextContent>
               <Button

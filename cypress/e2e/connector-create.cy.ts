@@ -209,7 +209,7 @@ describe('Connector creation', () => {
         cy.findByLabelText('Client ID *').type('client-id');
         cy.findByLabelText('Client secret *').type('client-secret');
         cy.findByLabelText(
-          'I have set the Kafka instance to allow access for this service account.*'
+          'I have set permissions for the service account in the Kafka instance*'
         ).click();
         cy.findByText('Next').should('be.enabled').click();
       },
@@ -223,7 +223,7 @@ describe('Connector creation', () => {
         cy.findByText('Next').should('be.enabled').click();
       },
       SAVE_CONNECTOR: () => {
-        cy.findByRole('button', { name: 'Create Connector' })
+        cy.findByRole('button', { name: 'Create Connectors instance' })
           .should('be.enabled')
           .click();
         cy.wait('@connectorCreation')

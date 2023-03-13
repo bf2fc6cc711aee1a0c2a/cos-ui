@@ -299,7 +299,7 @@ export const CreateConnectorWizard: FunctionComponent<
         creationWizardMachine.transition(state, 'jumpToReviewConfiguration')
           .changed || state.matches('reviewConfiguration'),
       enableNext: creationWizardMachine.transition(state, 'next').changed,
-      nextButtonText: t('createConnector'),
+      nextButtonText: t('createConnectorsInstance'),
     },
   ];
 
