@@ -9,6 +9,7 @@ import {
   InputGroup,
   Popover,
   Text,
+  TextContent,
   TextInput,
   TextVariants,
 } from '@patternfly/react-core';
@@ -114,11 +115,26 @@ export const CommonStep: FC<CommonStepProp> = ({
           labelIcon={
             <Popover
               bodyContent={
-                <>
-                  <p>{t('serviceAccountDesc_intro')}</p>
-                  <p>{t('serviceAccountDesc_credentials')}</p>
-                  <p>{t('serviceAccountDesc_accessKafkaInstance')}</p>
-                </>
+                <TextContent>
+                  <Text
+                    component={TextVariants.small}
+                    className="pf-u-color-100"
+                  >
+                    {t('serviceAccountDesc_intro')}
+                  </Text>
+                  <Text
+                    component={TextVariants.small}
+                    className="pf-u-color-100"
+                  >
+                    {t('serviceAccountDesc_credentials')}
+                  </Text>
+                  <Text
+                    component={TextVariants.small}
+                    className="pf-u-color-100"
+                  >
+                    {t('serviceAccountDesc_accessKafkaInstance')}
+                  </Text>
+                </TextContent>
               }
             >
               <button
