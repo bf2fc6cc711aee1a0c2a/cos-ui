@@ -5,10 +5,9 @@ import {
 } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFound/EmptyStateNoMatchesFound';
 import { Loading } from '@app/components/Loading/Loading';
+import { CreateNamespaceCard } from '@app/components/NamespaceCard/CreateNamespaceCard';
+import { CreatePreviewNamespaceCard } from '@app/components/NamespaceCard/CreatePreviewNamespaceCard';
 import { NamespaceCard } from '@app/components/NamespaceCard/NamespaceCard';
-import { OSDTrialEmptyCard } from '@app/components/NamespaceCard/OSDTrialEmptyCard';
-import { PreviewNamespaceEmptyCard } from '@app/components/NamespaceCard/PreviewNamespaceEmptyCard';
-import { ROSAEmptyCard } from '@app/components/NamespaceCard/ROSAEmptyCard';
 import { Pagination } from '@app/components/Pagination/Pagination';
 import { RegisterEvalNamespace } from '@app/components/RegisterEvalNamespace/RegisterEvalNamespace';
 import { SearchFilter } from '@app/components/SearchFilter/SearchFilter';
@@ -31,8 +30,6 @@ import React, {
 
 import {
   Alert,
-  Button,
-  ButtonVariant,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -44,10 +41,12 @@ import {
   DropdownItem,
   ToolbarFilter,
   Gallery,
+  Button,
+  ButtonVariant,
 } from '@patternfly/react-core';
 import {
   ClockIcon,
-  ExternalLinkSquareAltIcon,
+  ExternalLinkAltIcon,
   FilterIcon,
 } from '@patternfly/react-icons';
 
@@ -56,6 +55,8 @@ import {
   ConnectorClusterList,
   ConnectorNamespace,
 } from '@rhoas/connector-management-sdk';
+
+import './StepDeployment.css';
 
 export function SelectNamespace() {
   const isReady = useNamespaceMachineIsReady();
@@ -189,27 +190,37 @@ const DeploymentGallery: FunctionComponent = () => {
     <StepBodyLayout
       title={t('deployment')}
       description={
-        <>
-          {t('deploymentStepDetail')}
-          <br />
-          <Trans i18nKey={'deploymentStepDescription'}>
-            Alternatively, a Red Hat OpenShift Service on AWS (ROSA) cluster is
-            an option that is available with a subscription.{' '}
-            <Button
-              variant={ButtonVariant.link}
-              isSmall
-              isInline
-              component={'a'}
-              href={t('rhocSubscriptionURL')}
-              icon={<ExternalLinkSquareAltIcon />}
-              iconPosition="right"
-              target={'_blank'}
-              ouiaId={'description-osd-guide-link'}
-            >
-              Talk to a Red Hatter to get a subscription.
-            </Button>
-          </Trans>
-        </>
+        <Trans i18nKey={'deploymentStepDescription'}>
+          Select a Connectors namespace to host your Connectors instance. Some
+          namespace options are available for previewing the service with or
+          without a subscription.
+          <Button
+            component={'a'}
+            href={t('addonInstallationGuideURL')}
+            icon={<ExternalLinkAltIcon />}
+            iconPosition="right"
+            isInline
+            isSmall
+            target={'_blank'}
+            variant={ButtonVariant.link}
+          >
+            Learn more
+          </Button>
+          about your namespace options, or
+          <Button
+            component={'a'}
+            href={t('rhocSubscriptionURL')}
+            icon={<ExternalLinkAltIcon />}
+            iconPosition="right"
+            isInline
+            isSmall
+            ouiaId={'description-osd-guide-link'}
+            target={'_blank'}
+            variant={ButtonVariant.link}
+          >
+            talk to a Red Hatter to get a subscription.
+          </Button>
+        </Trans>
       }
     >
       {(() => {
@@ -230,10 +241,10 @@ const DeploymentGallery: FunctionComponent = () => {
               <>
                 <div className={'pf-l-stack__item pf-m-fill'}>
                   <Gallery hasGutter>
-                    <ROSAEmptyCard />
-                    <OSDTrialEmptyCard />
+                    <CreateNamespaceCard className="step-deployment__card" />
                     {!evalInstance && (
-                      <PreviewNamespaceEmptyCard
+                      <CreatePreviewNamespaceCard
+                        className="step-deployment__card"
                         onModalToggle={onModalToggle}
                       />
                     )}
@@ -296,10 +307,10 @@ const DeploymentGallery: FunctionComponent = () => {
                       ))}
                   </Gallery>
                   <Gallery hasGutter className="pf-u-mt-md">
-                    <ROSAEmptyCard />
-                    <OSDTrialEmptyCard />
+                    <CreateNamespaceCard className={'step-deployment__card'} />
                     {!evalInstance && (
-                      <PreviewNamespaceEmptyCard
+                      <CreatePreviewNamespaceCard
+                        className={'step-deployment__card'}
                         onModalToggle={onModalToggle}
                       />
                     )}
