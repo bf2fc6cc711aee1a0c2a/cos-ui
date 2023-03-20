@@ -9,23 +9,14 @@ import {
   VerticalTabsTab,
 } from '@patternfly/react-catalog-view-extension';
 import {
-  Button,
-  ButtonVariant,
   Popover,
   Text,
   TextContent,
   TextVariants,
 } from '@patternfly/react-core';
-import {
-  ExternalLinkAltIcon,
-  OutlinedQuestionCircleIcon,
-} from '@patternfly/react-icons';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 
-import {
-  Loading,
-  Trans,
-  useTranslation,
-} from '@rhoas/app-services-ui-components';
+import { Loading, useTranslation } from '@rhoas/app-services-ui-components';
 
 import './ConnectorSelectionListFilterPanel.css';
 import { ConnectorTypeLabelCount } from './typeExtensions';
@@ -51,8 +42,6 @@ export const ConnectorSelectionListFilterPanel: FC<
   labels,
   selectedCategories = [],
   onChangeLabelFilter,
-  selectedPricingTier,
-  onChangePricingTierFilter,
   onAdjustViewportHeight,
 }) => {
   const { t } = useTranslation();
@@ -145,6 +134,7 @@ export const ConnectorSelectionListFilterPanel: FC<
                 {t('Sink')}
               </FilterSidePanelCategoryItem>
             </FilterSidePanelCategory>
+            {/*
             <FilterSidePanelCategory
               key={'subscription-tier'}
               title={
@@ -196,6 +186,7 @@ export const ConnectorSelectionListFilterPanel: FC<
                 </FilterSidePanelCategoryItem>
               ))}
             </FilterSidePanelCategory>
+            */}
           </>
         )}
         <FilterSidePanelCategory key={'category-nav'}>

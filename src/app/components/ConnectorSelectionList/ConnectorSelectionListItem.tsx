@@ -44,7 +44,7 @@ export type ConnectorSelectionListItemProps = {
 
 export const ConnectorSelectionListItem: FC<
   ConnectorSelectionListItemProps
-> = ({ id, labels = [], title, version, description, pricingTier, style }) => {
+> = ({ id, labels = [], title, version, description, style }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const displayLabels = labels
@@ -140,11 +140,14 @@ export const ConnectorSelectionListItem: FC<
                 </DescriptionListGroup>
               </DescriptionList>
             </StackItem>
+            {/*
+            
             <StackItem key={'tier'}>
               <LabelGroup>
                 {pricingTier !== '' && <Label>{t(pricingTier)}</Label>}
               </LabelGroup>
             </StackItem>
+          */}
           </Stack>
         </DataListAction>
       </DataListItemRow>
