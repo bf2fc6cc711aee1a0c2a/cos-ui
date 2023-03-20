@@ -8,11 +8,3 @@
   padding-top: var(--pf-global--spacer--lg);
   padding-bottom: var(--pf-global--spacer--lg);
 }
-
-.pf-u-icon-color-green {
-  color: var(--pf-global--success-color--100);
-}
-
-.pf-u-icon-color-red {
-  color: var(--pf-global--danger-color--100);
-}
