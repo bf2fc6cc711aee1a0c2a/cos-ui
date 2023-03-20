@@ -1,21 +1,22 @@
-import { ComponentStory, ComponentMeta } from "@storybook/react";
-import React from "react";
+import { ComponentStory, ComponentMeta } from '@storybook/react';
+import React from 'react';
+
 import {
   Drawer,
   DrawerContent,
   DrawerPanelBody,
   DrawerPanelContent,
-} from "@patternfly/react-core";
+} from '@patternfly/react-core';
 
-import { ConnectorDrawer } from "./ConnectorDrawer";
+import { ConnectorDrawer } from './ConnectorDrawer';
 
 export default {
-  title: "POC-Connectors Message Drawer/Split Full Example",
+  title: 'POC-Connectors Message Drawer/Split Full Example',
   component: ConnectorDrawer,
-  args: { sent: "1600", notSent: "12" },
+  args: { sent: '1600', notSent: '12' },
   parameters: {
     backgrounds: {
-      default: "white",
+      default: 'white',
     },
   },
   decorators: [

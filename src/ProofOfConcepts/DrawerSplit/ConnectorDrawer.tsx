@@ -1,5 +1,5 @@
-import React from "react";
-import { FunctionComponent } from "react";
+import React from 'react';
+import { FunctionComponent } from 'react';
 
 import {
   DescriptionList,
@@ -14,13 +14,14 @@ import {
   Text,
   TextContent,
   TextVariants,
-} from "@patternfly/react-core";
+} from '@patternfly/react-core';
+import { OutlinedClockIcon, CheckCircleIcon } from '@patternfly/react-icons';
 import {
   global_warning_color_100,
   global_success_color_100,
-} from "@patternfly/react-tokens";
-import { OutlinedClockIcon, CheckCircleIcon } from "@patternfly/react-icons";
-import { ConnectorDrawerMessageStatistics } from "./ConnectorDrawerMessageStatistics";
+} from '@patternfly/react-tokens';
+
+import { ConnectorDrawerMessageStatistics } from './ConnectorDrawerMessageStatistics';
 
 export type ConnectorDrawerProps = {
   sent: string;
@@ -32,10 +33,10 @@ export const ConnectorDrawer: FunctionComponent<ConnectorDrawerProps> = ({
   notSent,
 }) => {
   return (
-    <Flex direction={{ default: "column" }}>
+    <Flex direction={{ default: 'column' }}>
       <TextContent>
         <Text component={TextVariants.small}>Connector Name</Text>
-        <Flex direction={{ default: "row" }}>
+        <Flex direction={{ default: 'row' }}>
           <Text component={TextVariants.h2}>w-1jk-987yubhjudd2121</Text>
           <FlexItem>
             <CheckCircleIcon color={global_success_color_100.value} />
