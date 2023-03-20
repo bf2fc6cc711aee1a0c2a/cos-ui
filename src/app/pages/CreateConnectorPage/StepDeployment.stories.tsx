@@ -92,7 +92,7 @@ const previewObject = {
     version: '745023',
     connectors_deployed: 0,
   },
-}
+};
 
 const responseWithPreview = _.cloneDeep(response);
 responseWithPreview.items.push(previewObject);
@@ -169,6 +169,3 @@ WithNamespaceSelected.args = {
   response: response,
   selectedId: 'cc6ae6o7764p8lrcfbk0',
 };
-
-
-

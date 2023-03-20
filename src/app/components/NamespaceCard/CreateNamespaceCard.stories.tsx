@@ -1,6 +1,7 @@
-import { Gallery } from '@patternfly/react-core';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
+
+import { Gallery } from '@patternfly/react-core';
 
 import { CreateNamespaceCard } from './CreateNamespaceCard';
 
@@ -18,6 +19,6 @@ export default {
   ],
 } as ComponentMeta<typeof CreateNamespaceCard>;
 
-export const CreateNamespace: ComponentStory<typeof CreateNamespaceCard> = () => (
-  <CreateNamespaceCard />
-);
+export const CreateNamespace: ComponentStory<
+  typeof CreateNamespaceCard
+> = () => <CreateNamespaceCard />;

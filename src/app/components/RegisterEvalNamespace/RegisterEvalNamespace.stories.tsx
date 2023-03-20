@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
-import { CosContextProvider } from '../../../hooks/useCos';
 
+import { CosContextProvider } from '../../../hooks/useCos';
 import { AlertsProvider } from '../Alerts/Alerts';
 import { RegisterEvalNamespace } from './RegisterEvalNamespace';
 
@@ -12,7 +12,7 @@ export default {
   component: RegisterEvalNamespace,
   decorators: [
     (Story) => (
-        <>
+      <>
         <CosContextProvider
           getToken={() => Promise.resolve('')}
           connectorsApiBasePath={API_HOST}
