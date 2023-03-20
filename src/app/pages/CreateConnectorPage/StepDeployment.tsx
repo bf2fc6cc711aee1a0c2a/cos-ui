@@ -1,4 +1,4 @@
-import { getClusters } from '@apis/api';
+import { ConnectorNamespaceSearch, getClusters } from '@apis/api';
 import {
   useNamespaceMachineIsReady,
   useNamespaceMachine,
@@ -8,41 +8,47 @@ import { Loading } from '@app/components/Loading/Loading';
 import { CreateNamespaceCard } from '@app/components/NamespaceCard/CreateNamespaceCard';
 import { CreatePreviewNamespaceCard } from '@app/components/NamespaceCard/CreatePreviewNamespaceCard';
 import { NamespaceCard } from '@app/components/NamespaceCard/NamespaceCard';
-import { Pagination } from '@app/components/Pagination/Pagination';
 import { RegisterEvalNamespace } from '@app/components/RegisterEvalNamespace/RegisterEvalNamespace';
 import { SearchFilter } from '@app/components/SearchFilter/SearchFilter';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
-import { PaginatedApiResponse } from '@app/machines/PaginatedResponse.machine';
+import {
+  PaginatedApiRequest,
+  PaginatedApiResponse,
+} from '@app/machines/PaginatedResponse.machine';
 import { useCos } from '@hooks/useCos';
 import usePrevious from '@hooks/usePrevious';
-import { getPendingTime, warningType } from '@utils/shared';
-import { validateSearchField } from '@utils/shared';
+import {
+  getPendingTime,
+  validateSearchField,
+  warningType,
+} from '@utils/shared';
 import { useDebounce } from '@utils/useDebounce';
 import { has, isEqual, cloneDeep } from 'lodash';
 import React, {
   FunctionComponent,
+  SyntheticEvent,
   useCallback,
   useEffect,
   useRef,
   useState,
-  SyntheticEvent,
 } from 'react';
 
 import {
   Alert,
-  Toolbar,
-  ToolbarContent,
-  ToolbarGroup,
-  ToolbarItem,
-  ToolbarToggleGroup,
-  Dropdown,
-  DropdownToggle,
-  DropdownPosition,
-  DropdownItem,
-  ToolbarFilter,
   Gallery,
   Button,
   ButtonVariant,
+  Dropdown,
+  DropdownItem,
+  DropdownPosition,
+  DropdownToggle,
+  Pagination,
+  Toolbar,
+  ToolbarContent,
+  ToolbarFilter,
+  ToolbarGroup,
+  ToolbarItem,
+  ToolbarToggleGroup,
 } from '@patternfly/react-core';
 import {
   ClockIcon,
@@ -61,26 +67,13 @@ import './StepDeployment.css';
 export function SelectNamespace() {
   const isReady = useNamespaceMachineIsReady();
 
-  return isReady ? <DeploymentGallery /> : null;
+  return isReady ? <DeploymentStep /> : null;
 }
 
-export type ConnectorNamespaceWithCluster = {
-  clusterName?: string | undefined;
-} & ConnectorNamespace;
-
-const DeploymentGallery: FunctionComponent = () => {
-  const { t } = useTranslation();
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [evalInstance, setEvalInstance] = useState<
-    ConnectorNamespace | undefined
-  >();
-  const [updateResponse, setUpdateResponse] = useState<
-    PaginatedApiResponse<ConnectorNamespaceWithCluster> | undefined
-  >();
-  const [namespaceExpired, setNamespaceExpired] = useState<boolean>(false);
-
+export const DeploymentStep: FunctionComponent = () => {
   const {
     response,
+    request,
     selectedId,
     duplicateMode,
     loading,
@@ -91,8 +84,74 @@ const DeploymentGallery: FunctionComponent = () => {
     onSelect,
     onDeselect,
     onRefresh,
-    runQuery: onQuery,
+    runQuery,
   } = useNamespaceMachine();
+
+  return (
+    <DeploymentGallery
+      response={response}
+      request={request}
+      selectedId={selectedId}
+      duplicateMode={duplicateMode}
+      loading={loading}
+      error={error}
+      noResults={noResults}
+      queryEmpty={queryEmpty}
+      firstRequest={firstRequest}
+      onSelect={onSelect}
+      onDeselect={onDeselect}
+      onRefresh={onRefresh}
+      runQuery={runQuery}
+    />
+  );
+};
+
+export type ConnectorNamespaceWithCluster = {
+  clusterName?: string | undefined;
+} & ConnectorNamespace;
+
+export type DeploymentGalleryProps = {
+  response: PaginatedApiResponse<ConnectorNamespace> | undefined;
+  request: PaginatedApiRequest<object, ConnectorNamespaceSearch>;
+  selectedId: string | undefined;
+  duplicateMode: boolean | undefined;
+  loading: boolean;
+  error: boolean;
+  noResults: boolean;
+  queryEmpty: boolean;
+  firstRequest: boolean;
+  onSelect: (selectedNamespace: string) => void;
+  onDeselect: () => void;
+  onRefresh: () => void;
+  runQuery: (
+    request: PaginatedApiRequest<object, ConnectorNamespaceSearch>
+  ) => void;
+};
+
+export const DeploymentGallery: FunctionComponent<DeploymentGalleryProps> = ({
+  response,
+  request,
+  selectedId,
+  duplicateMode,
+  loading,
+  error,
+  noResults,
+  queryEmpty,
+  firstRequest,
+  onSelect,
+  onDeselect,
+  onRefresh,
+  runQuery: onQuery,
+}) => {
+  const { t } = useTranslation();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [evalInstance, setEvalInstance] = useState<
+    ConnectorNamespace | undefined
+  >();
+  const [updateResponse, setUpdateResponse] = useState<
+    PaginatedApiResponse<ConnectorNamespaceWithCluster> | undefined
+  >();
+  const [namespaceExpired, setNamespaceExpired] = useState<boolean>(false);
   const onModalToggle = useCallback(() => {
     setIsModalOpen((prev) => !prev);
   }, []);
@@ -230,7 +289,11 @@ const DeploymentGallery: FunctionComponent = () => {
           case queryEmpty:
             return (
               <>
-                <DeploymentToolbar />
+                <DeploymentToolbar
+                  response={response}
+                  request={request}
+                  runQuery={onQuery}
+                />
                 <EmptyStateNoMatchesFound
                   onClear={() => onQuery({ page: 1, size: 10 })}
                 />
@@ -255,14 +318,22 @@ const DeploymentGallery: FunctionComponent = () => {
           case loading:
             return (
               <>
-                <DeploymentToolbar />
+                <DeploymentToolbar
+                  response={response}
+                  request={request}
+                  runQuery={onQuery}
+                />
                 <Loading />
               </>
             );
           default:
             return (
               <>
-                <DeploymentToolbar />
+                <DeploymentToolbar
+                  response={response}
+                  request={request}
+                  runQuery={onQuery}
+                />
                 <div className={'pf-l-stack__item pf-m-fill'}>
                   {duplicateMode && namespaceExpired && (
                     <Alert
@@ -298,11 +369,8 @@ const DeploymentGallery: FunctionComponent = () => {
                           owner={i.owner!}
                           clusterId={i.cluster_id}
                           clusterName={i.clusterName || ''}
-                          createdAt={i.created_at || ''}
                           selectedNamespace={selectedId || ''}
                           onSelect={onSelect}
-                          connectorsApiBasePath={connectorsApiBasePath}
-                          getToken={getToken}
                         />
                       ))}
                   </Gallery>
@@ -329,9 +397,17 @@ const DeploymentGallery: FunctionComponent = () => {
   );
 };
 
-const DeploymentToolbar: FunctionComponent = () => {
+export type DeploymentToolbarProps = {
+  response: any;
+  request: any;
+  runQuery: (request: any) => void;
+};
+export const DeploymentToolbar: FunctionComponent<DeploymentToolbarProps> = ({
+  response,
+  request,
+  runQuery,
+}) => {
   const { t } = useTranslation();
-  const { request, runQuery } = useNamespaceMachine();
 
   const nameInputRef = useRef<HTMLInputElement | null>(null);
   const clusterIdInputRef = useRef<HTMLInputElement | null>(null);
@@ -465,7 +541,19 @@ const DeploymentToolbar: FunctionComponent = () => {
         {toggleGroupItems}
       </ToolbarToggleGroup>
       <ToolbarItem variant="pagination" alignment={{ default: 'alignRight' }}>
-        <NamespacePagination isCompact />
+        <Pagination
+          itemCount={response?.total || 0}
+          page={request.page}
+          perPage={request.size}
+          onChange={(event) =>
+            runQuery({
+              ...event,
+              orderBy: request.orderBy,
+              search: request.search,
+            })
+          }
+          isCompact
+        />
       </ToolbarItem>
     </>
   );
@@ -481,25 +569,6 @@ const DeploymentToolbar: FunctionComponent = () => {
   );
 };
 
-type NamespacePaginationProps = {
-  isCompact?: boolean;
-};
-const NamespacePagination: FunctionComponent<NamespacePaginationProps> = ({
-  isCompact = false,
-}) => {
-  const { request, response, runQuery } = useNamespaceMachine();
-  return (
-    <Pagination
-      itemCount={response?.total || 0}
-      page={request.page}
-      perPage={request.size}
-      onChange={(event) =>
-        runQuery({ ...event, orderBy: request.orderBy, search: request.search })
-      }
-      isCompact={isCompact}
-    />
-  );
-};
 type KeyValueOptions = {
   value: string;
   label: string;

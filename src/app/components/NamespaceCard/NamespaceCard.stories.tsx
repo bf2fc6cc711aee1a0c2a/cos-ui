@@ -9,45 +9,64 @@ import { ConnectorNamespaceState } from '@rhoas/connector-management-sdk';
 import { ConnectorTypeCard } from '../ConnectorTypeCard/ConnectorTypeCard';
 import { NamespaceCard } from './NamespaceCard';
 
-const API_HOST = 'https://dummy.server';
-const CLUSTER_ID = 'cc6ae6o7764p8lrcfbj0';
-
 export default {
-  title: 'Wizard Step 3/Components/Namespace cards',
+  title: 'Wizard Step 3/Cards/NamespaceCards',
   component: NamespaceCard,
-  decorators: [(Story) => <Story />],
+  decorators: [
+    (Story) => (
+      <div className={'pf-l-stack__item pf-m-fill'}>
+        <Gallery hasGutter>
+          <Story />
+        </Gallery>
+      </div>
+    ),
+  ],
   args: {
     state: ConnectorNamespaceState.Ready,
-    id: CLUSTER_ID,
+    id: 'cdc626c1u302el1rp090',
     name: 'default-connector-namespace',
     clusterId: 'ca34tqpnnj5k851srhjg',
-    createdAt: '2021-09-01T12:00:00Z',
+    clusterName: 'rhoc-stage',
     selectedNamespace: '',
     onSelect: () => {},
-    connectorsApiBasePath: API_HOST,
-    getToken: () => Promise.resolve(''),
+    isEval: false,
+    owner: 'ishukla_kafka_supporting',
   },
 } as ComponentMeta<typeof ConnectorTypeCard>;
 
 const Template: ComponentStory<typeof NamespaceCard> = (args) => (
-  <Gallery hasGutter>
-    <NamespaceCard {...args} />
-  </Gallery>
+  <NamespaceCard {...args} />
 );
 
-export const NamespaceCardReady = Template.bind({});
+export const Namespace = Template.bind({});
 
-export const NamespaceCardProvisioning = Template.bind({});
-NamespaceCardProvisioning.args = {
+export const SelectedNamespace = Template.bind({});
+SelectedNamespace.args = {
+  selectedNamespace: 'cdc626c1u302el1rp090',
+};
+
+export const NamespaceProvisioning = Template.bind({});
+NamespaceProvisioning.args = {
   state: ConnectorNamespaceState.Disconnected,
-} as ComponentMeta<typeof NamespaceCard>;
+};
 
-export const NamespaceCardDeleting = Template.bind({});
-NamespaceCardDeleting.args = {
+export const NamespaceDeleting = Template.bind({});
+NamespaceDeleting.args = {
   state: ConnectorNamespaceState.Deleting,
-} as ComponentMeta<typeof NamespaceCard>;
+};
 
-export const NamespaceCardDeleted = Template.bind({});
-NamespaceCardDeleted.args = {
+export const NamespaceDeleted = Template.bind({});
+NamespaceDeleted.args = {
   state: ConnectorNamespaceState.Deleted,
-} as ComponentMeta<typeof NamespaceCard>;
+};
+
+export const PreviewNamespace = Template.bind({});
+PreviewNamespace.args = {
+  isEval: true,
+};
+
+export const PreviewNamespaceProvisioning = Template.bind({});
+PreviewNamespaceProvisioning.args = {
+  isEval: true,
+  state: ConnectorNamespaceState.Disconnected,
+};
