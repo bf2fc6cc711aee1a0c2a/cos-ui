@@ -1,71 +1,87 @@
-import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus';
-import React, { FunctionComponent, ReactNode } from 'react';
+import React from "react";
+import { FunctionComponent } from "react";
 
 import {
-  Drawer,
-  DrawerContent,
-  DrawerPanelContent,
-} from '@patternfly/react-core';
-
-import { Connector } from '@rhoas/connector-management-sdk';
-
-import './ConnectorDrawer.css';
-import { ConnectorDrawerData } from './ConnectorDrawerData';
-import { DrawerHeader } from './DrawerHeader';
+  DescriptionList,
+  DescriptionListTerm,
+  DescriptionListGroup,
+  DescriptionListDescription,
+  Flex,
+  FlexItem,
+  Tab,
+  Tabs,
+  TabTitleText,
+  Text,
+  TextContent,
+  TextVariants,
+} from "@patternfly/react-core";
+import {
+  global_warning_color_100,
+  global_success_color_100,
+} from "@patternfly/react-tokens";
+import { OutlinedClockIcon, CheckCircleIcon } from "@patternfly/react-icons";
+import { ConnectorDrawerMessageStatistics } from "./ConnectorDrawerMessageStatistics";
 
 export type ConnectorDrawerProps = {
-  connector: Connector | undefined;
-  children: ReactNode;
-  actionsMenu: ReactNode;
-  onClose: () => void;
-  onDuplicateConnector: (id: string) => void;
+  sent: string;
+  notSent: string;
 };
 
 export const ConnectorDrawer: FunctionComponent<ConnectorDrawerProps> = ({
-  connector,
-  actionsMenu,
-  children,
-  onClose,
-  onDuplicateConnector,
+  sent,
+  notSent,
 }) => {
   return (
-    <Drawer isExpanded={typeof connector !== 'undefined'}>
-      <DrawerContent
-        panelContent={
-          typeof connector !== 'undefined' && (
-            <DrawerPanelContent widths={{ default: 'width_50' }}>
-              <DrawerHeader
-                drawerHeading={connector.name}
-                status={
-                  <ConnectorStatus
-                    desiredState={connector.desired_state}
-                    name={connector.name}
-                    state={connector.status?.state!}
-                  />
-                }
-                actionsMenu={actionsMenu}
-                onClose={onClose}
-              />
-              <ConnectorDrawerData
-                createdAt={connector.created_at!}
-                currentState={connector.status?.state!}
-                errorStateMessage={connector.status?.error}
-                id={connector.id!}
-                kafkaBootstrapServer={connector.kafka.url}
-                kafkaInstanceId={connector.kafka.id}
-                modifiedAt={connector.modified_at!}
-                name={connector.name}
-                namespaceId={connector.namespace_id}
-                onClose={onClose}
-                onDuplicateConnector={onDuplicateConnector}
-                owner={connector.owner!}
-              />
-            </DrawerPanelContent>
-          )
-        }
-      >
-        {children}
-      </DrawerContent>
-    </Drawer>
+    <Flex direction={{ default: "column" }}>
+      <TextContent>
+        <Text component={TextVariants.small}>Connector Name</Text>
+        <Flex direction={{ default: "row" }}>
+          <Text component={TextVariants.h2}>w-1jk-987yubhjudd2121</Text>
+          <FlexItem>
+            <CheckCircleIcon color={global_success_color_100.value} />
+          </FlexItem>
+          <FlexItem>Ready</FlexItem>
+        </Flex>
+      </TextContent>
+      <Tabs>
+        <Tab eventKey={0} title={<TabTitleText>Details</TabTitleText>}>
+          <ConnectorDrawerMessageStatistics sent={sent} notSent={notSent} />
+          <FlexItem>
+            <DescriptionList isHorizontal>
+              <DescriptionListGroup>
+                <DescriptionListTerm>Connector</DescriptionListTerm>
+                <DescriptionListDescription>
+                  4980-9c9c-48285f163
+                </DescriptionListDescription>
+                <DescriptionListTerm>Connector ID</DescriptionListTerm>
+                <DescriptionListDescription>
+                  ccp6jj6qe20inajk5090
+                </DescriptionListDescription>
+                <DescriptionListTerm>Bootstrap server</DescriptionListTerm>
+                <DescriptionListDescription>
+                  cestay-ins-ccor--pa-bavtg--g-
+                </DescriptionListDescription>
+                <DescriptionListTerm>Kafka instance</DescriptionListTerm>
+                <DescriptionListDescription className="pf-u-link-color">
+                  MK-instance-test
+                </DescriptionListDescription>
+                <DescriptionListTerm>Namespace</DescriptionListTerm>
+                <DescriptionListDescription>
+                  Redhat-eval-namespace
+                  <TextContent>
+                    <Text className="text-color">
+                      <OutlinedClockIcon
+                        color={global_warning_color_100.value}
+                      />
+                      Expire in 23 hours 37 minutes
+                    </Text>
+                  </TextContent>
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+            </DescriptionList>
+          </FlexItem>
+        </Tab>
+      </Tabs>
+    </Flex>
   );
 };
