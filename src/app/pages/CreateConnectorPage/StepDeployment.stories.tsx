@@ -1,4 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { subDays, subMinutes } from 'date-fns';
+import { subHours } from 'date-fns/esm';
 import _ from 'lodash';
 import React from 'react';
 
@@ -82,7 +84,7 @@ const previewObject = {
     cpu_limits: '2',
   },
   cluster_id: 'cc6ae6o7764p8lrcfbj0',
-  expiration: '2023-03-22T04:59:05.469706Z',
+  expiration: subHours(new Date(), -36).toISOString(),
   tenant: {
     kind: 'user',
     id: 'ishukla_kafka_supporting',
@@ -96,6 +98,18 @@ const previewObject = {
 
 const responseWithPreview = _.cloneDeep(response);
 responseWithPreview.items.push(previewObject);
+
+const responseWithPreviewWarning = _.cloneDeep(response);
+responseWithPreviewWarning.items.push({
+  ...previewObject,
+  ...{ expiration: subHours(new Date(), -12).toISOString() },
+});
+
+const responseWithPreviewDanger = _.cloneDeep(response);
+responseWithPreviewDanger.items.push({
+  ...previewObject,
+  ...{ expiration: subHours(new Date(), -1).toISOString() },
+});
 
 export default {
   title: 'Wizard Step 3/DeploymentStep',
@@ -158,9 +172,21 @@ WithPreviewNamespace.args = {
   response: responseWithPreview,
 };
 
-export const WithPreviewNamespaceSelected = Template.bind({});
-WithPreviewNamespaceSelected.args = {
+export const WithPreviewNamespaceSelectedInfoAlert = Template.bind({});
+WithPreviewNamespaceSelectedInfoAlert.args = {
   response: responseWithPreview,
+  selectedId: 'cgbug6ebk4qjq2bti1j0',
+};
+
+export const WithPreviewNamespaceSelectedWarningAlert = Template.bind({});
+WithPreviewNamespaceSelectedWarningAlert.args = {
+  response: responseWithPreviewWarning,
+  selectedId: 'cgbug6ebk4qjq2bti1j0',
+};
+
+export const WithPreviewNamespaceSelectedDangerAlert = Template.bind({});
+WithPreviewNamespaceSelectedDangerAlert.args = {
+  response: responseWithPreviewDanger,
   selectedId: 'cgbug6ebk4qjq2bti1j0',
 };
 
