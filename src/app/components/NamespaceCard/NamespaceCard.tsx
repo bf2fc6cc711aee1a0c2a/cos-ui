@@ -29,11 +29,8 @@ type NamespaceCardProps = {
   owner: string;
   clusterId: string;
   clusterName: string;
-  createdAt: string;
   selectedNamespace: string;
   onSelect: (selectedNamespace: string) => void;
-  connectorsApiBasePath: string;
-  getToken: () => Promise<string>;
 };
 
 export const NamespaceCard: React.FunctionComponent<NamespaceCardProps> = ({
