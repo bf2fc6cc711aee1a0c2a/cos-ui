@@ -1,5 +1,4 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
-import { subDays, subMinutes } from 'date-fns';
 import { subHours } from 'date-fns/esm';
 import _ from 'lodash';
 import React from 'react';
