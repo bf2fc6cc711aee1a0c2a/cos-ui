@@ -15,7 +15,7 @@
     "@patternfly/react-table": "4.113.0",
     "@patternfly/react-virtualized-extension": "4.88.115",
     "@redhat-cloud-services/frontend-components": "3.9.34",
-    "@rhoas/app-services-ui-components": "2.20.8",
+    "@rhoas/app-services-ui-components": "2.20.9",
     "@rhoas/app-services-ui-shared": "0.16.6",
     "@rhoas/connector-management-sdk": "0.55.1",
     "@rhoas/kafka-management-sdk": "0.55.1",
