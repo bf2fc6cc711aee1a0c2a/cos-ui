@@ -8,11 +8,8 @@ import { BrowserRouter as Router } from 'react-router-dom';
 
 import { I18nextProvider } from '@rhoas/app-services-ui-components';
 import {
-  Auth,
-  AuthContext,
   Config,
   ConfigContext,
-  useAuth,
   useConfig,
 } from '@rhoas/app-services-ui-shared';
 
@@ -52,41 +49,30 @@ export const AppE2E: FunctionComponent = () => {
     },
   } as Config;
 
-  const authTokenContext = {
-    kas: {
-      getToken: () => Promise.resolve('dummy'),
-    },
-    getUsername: () => Promise.resolve('username'),
-  } as Auth;
-
   return (
-    <AuthContext.Provider value={authTokenContext}>
-      <ConfigContext.Provider value={config}>
-        <I18nextProvider i18n={i18n}>
-          <AlertsProvider>
-            <AnalyticsProvider>
-              <React.Suspense fallback={<Loading />}>
-                <Router>
-                  <AppLayout>
-                    <ConnectedRoutes />
-                  </AppLayout>
-                </Router>
-              </React.Suspense>
-            </AnalyticsProvider>
-          </AlertsProvider>
-        </I18nextProvider>
-      </ConfigContext.Provider>
-    </AuthContext.Provider>
+    <ConfigContext.Provider value={config}>
+      <I18nextProvider i18n={i18n}>
+        <AlertsProvider>
+          <AnalyticsProvider>
+            <React.Suspense fallback={<Loading />}>
+              <Router>
+                <AppLayout>
+                  <ConnectedRoutes />
+                </AppLayout>
+              </Router>
+            </React.Suspense>
+          </AnalyticsProvider>
+        </AlertsProvider>
+      </I18nextProvider>
+    </ConfigContext.Provider>
   );
 };
 
 const ConnectedRoutes = () => {
-  const auth = useAuth();
   const config = useConfig();
-
   return (
     <CosRoutes
-      getToken={async () => (await auth?.kas.getToken()) || ''}
+      getToken={async () => 'dummy'}
       connectorsApiBasePath={config?.cos.apiBasePath || ''}
       // TODO: remove after demo
       kafkaManagementApiBasePath={'localhost'}

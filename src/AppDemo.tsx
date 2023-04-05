@@ -2,6 +2,11 @@ import { AlertsProvider } from '@app/components/Alerts/Alerts';
 import { AppLayout } from '@app/components/AppLayout/AppLayout';
 import { Loading } from '@app/components/Loading/Loading';
 import { AnalyticsProvider } from '@hooks/useAnalytics';
+import {
+  getKeycloakInstance,
+  KeycloakContext,
+  useKeyCloakAuthToken,
+} from '@hooks/useKeycloak';
 import i18n from '@i18n/i18n';
 import Keycloak from 'keycloak-js';
 import React, {
@@ -24,16 +29,10 @@ import { I18nextProvider } from '@rhoas/app-services-ui-components';
 import {
   Config,
   ConfigContext,
-  useAuth,
   useConfig,
 } from '@rhoas/app-services-ui-shared';
 
 import { CosRoutes } from './CosRoutes';
-import {
-  getKeycloakInstance,
-  KeycloakAuthProvider,
-  KeycloakContext,
-} from './Keycloak';
 
 let keycloak: Keycloak.KeycloakInstance | undefined;
 
@@ -113,13 +112,11 @@ export const AppDemo: FunctionComponent = () => {
 
   return (
     <KeycloakContext.Provider value={{ keycloak, profile: keycloak?.profile }}>
-      <KeycloakAuthProvider>
-        <ConnectedAppDemo
-          baseUrl={baseUrl}
-          initialized={initialized}
-          headerTools={environmentDropdown}
-        />
-      </KeycloakAuthProvider>
+      <ConnectedAppDemo
+        baseUrl={baseUrl}
+        initialized={initialized}
+        headerTools={environmentDropdown}
+      />
     </KeycloakContext.Provider>
   );
 };
@@ -168,13 +165,12 @@ const ConnectedAppDemo: FunctionComponent<ConnectedAppDemoProps> = ({
 );
 
 const ConnectedRoutes: FunctionComponent<{}> = () => {
-  const auth = useAuth();
+  const { getKeyCloakToken } = useKeyCloakAuthToken();
   const config = useConfig();
   return (
     <CosRoutes
-      getToken={async () => (await auth?.kas.getToken()) || ''}
+      getToken={async () => (await getKeyCloakToken()) || ''}
       connectorsApiBasePath={config?.cos.apiBasePath || ''}
-      // TODO: remove after demo
       kafkaManagementApiBasePath={'https://api.openshift.com'}
     />
   );

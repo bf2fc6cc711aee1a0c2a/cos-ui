@@ -13,7 +13,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import '@patternfly/react-catalog-view-extension/dist/css/react-catalog-view-extension.css';
 
 import { I18nextProvider } from '@rhoas/app-services-ui-components';
-import { useAuth, useConfig } from '@rhoas/app-services-ui-shared';
+import { useConfig } from '@rhoas/app-services-ui-shared';
 
 import { CosRoutes } from './CosRoutes';
 
@@ -35,7 +35,6 @@ const KAFKA_MANAGEMENT_API_BASE_PATH = 'https://api.openshift.com';
  */
 export const AppFederated: FunctionComponent = () => {
   const config = useConfig();
-  const auth = useAuth();
   const [key, setKey] = useState(0);
   const chrome = useChrome();
   const analytics = chrome.analytics;
@@ -69,7 +68,7 @@ export const AppFederated: FunctionComponent = () => {
             key={key}
           >
             <CosRoutes
-              getToken={async () => (await auth?.kas.getToken()) || ''}
+              getToken={async () => (await chrome.auth.getToken()) || ''}
               connectorsApiBasePath={config?.cos.apiBasePath || ''}
               kafkaManagementApiBasePath={KAFKA_MANAGEMENT_API_BASE_PATH}
             />
