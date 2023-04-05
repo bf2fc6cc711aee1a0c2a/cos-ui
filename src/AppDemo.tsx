@@ -7,7 +7,6 @@ import Keycloak from 'keycloak-js';
 import React, {
   FunctionComponent,
   ReactNode,
-  useCallback,
   useEffect,
   useState,
 } from 'react';
@@ -23,7 +22,6 @@ import {
 
 import { I18nextProvider } from '@rhoas/app-services-ui-components';
 import {
-  BasenameContext,
   Config,
   ConfigContext,
   useAuth,
@@ -66,7 +64,6 @@ export const AppDemo: FunctionComponent = () => {
     (localStorage.getItem('environment') as EnvironmentType) || 'staging';
   const currentEnvironment = environments[storedEnvironmentName];
   const baseUrl = (currentEnvironment || process.env.BASE_PATH)!;
-  const getBasename = useCallback(() => '/', []);
 
   // Initialize the client
   useEffect(() => {
@@ -117,13 +114,11 @@ export const AppDemo: FunctionComponent = () => {
   return (
     <KeycloakContext.Provider value={{ keycloak, profile: keycloak?.profile }}>
       <KeycloakAuthProvider>
-        <BasenameContext.Provider value={{ getBasename }}>
-          <ConnectedAppDemo
-            baseUrl={baseUrl}
-            initialized={initialized}
-            headerTools={environmentDropdown}
-          />
-        </BasenameContext.Provider>
+        <ConnectedAppDemo
+          baseUrl={baseUrl}
+          initialized={initialized}
+          headerTools={environmentDropdown}
+        />
       </KeycloakAuthProvider>
     </KeycloakContext.Provider>
   );

@@ -3,14 +3,13 @@ import { AppLayout } from '@app/components/AppLayout/AppLayout';
 import { Loading } from '@app/components/Loading/Loading';
 import { AnalyticsProvider } from '@hooks/useAnalytics';
 import i18n from '@i18n/i18n';
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { FunctionComponent } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import { I18nextProvider } from '@rhoas/app-services-ui-components';
 import {
   Auth,
   AuthContext,
-  BasenameContext,
   Config,
   ConfigContext,
   useAuth,
@@ -27,8 +26,6 @@ import { CosRoutes } from './CosRoutes';
  * The `baseUrl` for the API is statically set to `localhost`.
  */
 export const AppE2E: FunctionComponent = () => {
-  const getBasename = useCallback(() => '/', []);
-
   const config = {
     cos: {
       apiBasePath: 'localhost',
@@ -64,23 +61,21 @@ export const AppE2E: FunctionComponent = () => {
 
   return (
     <AuthContext.Provider value={authTokenContext}>
-      <BasenameContext.Provider value={{ getBasename }}>
-        <ConfigContext.Provider value={config}>
-          <I18nextProvider i18n={i18n}>
-            <AlertsProvider>
-              <AnalyticsProvider>
-                <React.Suspense fallback={<Loading />}>
-                  <Router>
-                    <AppLayout>
-                      <ConnectedRoutes />
-                    </AppLayout>
-                  </Router>
-                </React.Suspense>
-              </AnalyticsProvider>
-            </AlertsProvider>
-          </I18nextProvider>
-        </ConfigContext.Provider>
-      </BasenameContext.Provider>
+      <ConfigContext.Provider value={config}>
+        <I18nextProvider i18n={i18n}>
+          <AlertsProvider>
+            <AnalyticsProvider>
+              <React.Suspense fallback={<Loading />}>
+                <Router>
+                  <AppLayout>
+                    <ConnectedRoutes />
+                  </AppLayout>
+                </Router>
+              </React.Suspense>
+            </AnalyticsProvider>
+          </AlertsProvider>
+        </I18nextProvider>
+      </ConfigContext.Provider>
     </AuthContext.Provider>
   );
 };
