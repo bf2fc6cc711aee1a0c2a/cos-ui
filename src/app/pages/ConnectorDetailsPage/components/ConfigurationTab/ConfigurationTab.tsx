@@ -10,6 +10,7 @@ import {
   ConfigurationMode,
   ConnectorConfiguratorComponent,
 } from '@app/machines/StepConfiguratorLoader.machine';
+import { useAlert } from '@hooks/useAlert';
 import { useCos } from '@hooks/useCos';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
 import {
@@ -35,11 +36,7 @@ import {
 } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import {
-  KafkaInstance,
-  useAlert,
-  useConfig,
-} from '@rhoas/app-services-ui-shared';
+import { KafkaInstance, useConfig } from '@rhoas/app-services-ui-shared';
 import {
   Connector,
   ConnectorType,

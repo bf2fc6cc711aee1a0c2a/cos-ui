@@ -1,3 +1,4 @@
+import { AlertContext, AlertProps, AlertVariant } from '@hooks/useAlert';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 
 import {
@@ -6,22 +7,18 @@ import {
   AlertActionCloseButton,
 } from '@patternfly/react-core';
 
-import {
-  AlertContext,
-  AlertProps,
-  AlertVariant,
-} from '@rhoas/app-services-ui-shared';
-
 type TimeOut = {
   key: string | undefined;
   timeOut: ReturnType<typeof setTimeout> | undefined;
 };
 
+export type TestAlertProps = AlertProps & { dataTestId?: string };
+
 /**
  * Mocks the behaviour of notifications on console.redhat.com
  */
 export const AlertsProvider: FunctionComponent = ({ children }) => {
-  const [alerts, setAlerts] = useState<AlertProps[]>([]);
+  const [alerts, setAlerts] = useState<TestAlertProps[]>([]);
   const [timers, setTimers] = useState<TimeOut[]>([]);
 
   useEffect(() => {
@@ -75,7 +72,14 @@ export const AlertToastGroup: React.FunctionComponent<AlertToastGroupProps> = ({
   return (
     <AlertGroup isToast>
       {alerts.map(
-        ({ id, variant, title, description, dataTestId, ...rest }) => (
+        ({
+          id,
+          variant,
+          title,
+          description,
+          dataTestId,
+          ...rest
+        }: TestAlertProps) => (
           <Alert
             key={id}
             isLiveRegion

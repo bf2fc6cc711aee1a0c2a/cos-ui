@@ -5,6 +5,7 @@ import {
 } from '@apis/api';
 import { ConnectorInfoTextList } from '@app/components/ConnectorInfoTextList/ConnectorInfoTextList';
 import { ErrorHandlerInfo } from '@app/components/ErrorHandlerInfo/ErrorHandlerInfo';
+import { useAlert } from '@hooks/useAlert';
 import { useCos } from '@hooks/useCos';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 
@@ -19,7 +20,7 @@ import {
 } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { KafkaInstance, useAlert } from '@rhoas/app-services-ui-shared';
+import { KafkaInstance } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 export interface OverviewTabProps {

@@ -1,4 +1,5 @@
 import { getKafkaInstanceById, getNamespace } from '@apis/api';
+import { useAlert } from '@hooks/useAlert';
 import { useCos } from '@hooks/useCos';
 import React, {
   FunctionComponent,
@@ -10,7 +11,7 @@ import React, {
 import { AlertVariant } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { KafkaInstance, useAlert } from '@rhoas/app-services-ui-shared';
+import { KafkaInstance } from '@rhoas/app-services-ui-shared';
 import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
 export type ConnectorDrawerContentProps = {

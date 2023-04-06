@@ -1,8 +1,8 @@
+import { AlertVariant, useAlert } from '@hooks/useAlert';
 import { useCos } from '@hooks/useCos';
 import React, { FunctionComponent, useCallback } from 'react';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { AlertVariant, useAlert } from '@rhoas/app-services-ui-shared';
 
 import { ConnectorsPageProvider } from './ConnectorsPageContext';
 import { ConnectorInstances } from './components/ConnectorInstances/ConnectorInstances';

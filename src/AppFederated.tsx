@@ -1,6 +1,12 @@
 import { Loading } from '@app/components/Loading/Loading';
+import { init } from '@app/store';
+import { AlertContext, AlertProps } from '@hooks/useAlert';
 import { AnalyticsProvider } from '@hooks/useAnalytics';
 import i18n from '@i18n/i18n';
+import NotificationPortal from '@redhat-cloud-services/frontend-components-notifications/NotificationPortal';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
+import { notificationsReducer } from '@redhat-cloud-services/frontend-components-notifications/redux';
+import { getRegistry } from '@redhat-cloud-services/frontend-components-utilities/Registry';
 import useChrome from '@redhat-cloud-services/frontend-components/useChrome';
 import React, {
   FunctionComponent,
@@ -8,7 +14,9 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { Provider, useDispatch } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
+import type { Reducer } from 'redux';
 
 import '@patternfly/react-catalog-view-extension/dist/css/react-catalog-view-extension.css';
 
@@ -33,49 +41,92 @@ const KAFKA_MANAGEMENT_API_BASE_PATH = 'https://api.openshift.com';
  * The auth token and the API basePath will come from the relative context set
  * up in the `application-services-ui` app.
  */
-export const AppFederated: FunctionComponent = () => {
-  const config = useConfig();
+const AppFederatedInner: FunctionComponent = () => {
   const [key, setKey] = useState(0);
-  const chrome = useChrome();
-  const analytics = chrome.analytics;
+  const config = useConfig();
+  const { analytics, auth, isBeta, on } = useChrome();
+  const dispatch = useDispatch();
+
   const bumpKey = useCallback(() => {
     setKey(key + 1);
   }, [key, setKey]);
-  // force our router instance to refresh it's history state when there's a
-  // side navigation event
+
   useEffect(() => {
-    const unregister = chrome
-      ? chrome.on('APP_NAVIGATION', (event) => {
-          if (event.navId === 'connectors') {
-            bumpKey();
-          }
-        })
-      : () => {};
+    // Connect toast notifications
+    const registry = getRegistry();
+    registry.register({
+      notifications: notificationsReducer as Reducer,
+    });
+
+    // force our router instance to refresh it's history state when there's a
+    // side navigation event
+    const unregister = on('APP_NAVIGATION', (event) => {
+      if (event.navId === 'connectors') {
+        bumpKey();
+      }
+    });
     return () => {
       unregister!();
     };
-  });
+  }, [on, bumpKey]);
+
+  // Connect toast notifications to console dot
+  const addAlert = ({
+    title,
+    variant,
+    description,
+    dismissable,
+    id,
+  }: AlertProps) => {
+    console.log(
+      'dispatching addNotification action, title: ',
+      title,
+      ' variant: ',
+      variant,
+      ' description: ',
+      description,
+      ' dismissable: ',
+      dismissable
+    );
+    dispatch(
+      addNotification({
+        title,
+        variant,
+        description,
+        dismissable: dismissable || true,
+        id,
+      })
+    );
+  };
   return (
-    <I18nextProvider i18n={i18n}>
-      <AnalyticsProvider
-        onActivity={(event, properties) =>
-          analytics ? analytics.track(event, properties) : false
-        }
-      >
-        <React.Suspense fallback={<Loading />}>
-          <Router
-            basename={chrome.isBeta() ? PREVIEW_APP_ROUTE : APP_ROUTE}
-            key={key}
-          >
+    <AlertContext.Provider value={{ addAlert }}>
+      <React.Suspense fallback={<Loading />}>
+        <AnalyticsProvider
+          onActivity={(event, properties) =>
+            analytics ? analytics.track(event, properties) : false
+          }
+        >
+          <Router basename={isBeta() ? PREVIEW_APP_ROUTE : APP_ROUTE} key={key}>
+            <NotificationPortal />
             <CosRoutes
-              getToken={async () => (await chrome.auth.getToken()) || ''}
+              getToken={async () => (await auth.getToken()) || ''}
               connectorsApiBasePath={config?.cos.apiBasePath || ''}
               kafkaManagementApiBasePath={KAFKA_MANAGEMENT_API_BASE_PATH}
             />
           </Router>
-        </React.Suspense>
-      </AnalyticsProvider>
-    </I18nextProvider>
+        </AnalyticsProvider>
+      </React.Suspense>
+    </AlertContext.Provider>
+  );
+};
+
+export const AppFederated: FunctionComponent = () => {
+  return (
+    <Provider store={init().getStore()}>
+      <I18nextProvider i18n={i18n}>
+        <AppFederatedInner />
+      </I18nextProvider>
+    </Provider>
   );
 };
 

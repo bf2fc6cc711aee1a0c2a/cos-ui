@@ -21,7 +21,7 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
   const alert = useAlert();
   */
   const history = useHistory();
-  const goToConnectorsList = useCallback(() => history.push('/'), [history]);
+  // const goToConnectorsList = useCallback(() => history.push('/'), [history]);
   const goToCreateConnector = useCallback(
     () => history.push('/create-connector'),
     [history]
@@ -91,7 +91,7 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
         </Route>
         <Route path={'/:id/'}>
           <ConnectorDetailsPage
-            onSave={goToConnectorsList}
+            onSave={() => {}}
             onDuplicateConnector={goToDuplicateConnector}
           />
         </Route>

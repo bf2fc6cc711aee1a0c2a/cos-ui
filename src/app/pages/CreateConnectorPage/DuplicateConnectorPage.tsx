@@ -2,6 +2,7 @@ import { getConnector, getConnectorTypeDetail } from '@apis/api';
 import { CreateConnectorWizard } from '@app/components/CreateConnectorWizard/CreateConnectorWizard';
 import { CreateConnectorWizardProvider } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
 import { Loading } from '@app/components/Loading/Loading';
+import { AlertVariant, useAlert } from '@hooks/useAlert';
 import { useCos } from '@hooks/useCos';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
 import { removeObfuscatedProperties } from '@utils/shared';
@@ -23,11 +24,7 @@ import {
 } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import {
-  AlertVariant,
-  useAlert,
-  useConfig,
-} from '@rhoas/app-services-ui-shared';
+import { useConfig } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
 
 import './CreateConnectorPage.css';
