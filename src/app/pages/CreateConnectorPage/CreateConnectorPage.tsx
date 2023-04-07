@@ -16,7 +16,6 @@ import {
 } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { useConfig } from '@rhoas/app-services-ui-shared';
 
 import './CreateConnectorPage.css';
 import { ConnectorWizardHeader } from './components/ConnectorWizardHeader';
@@ -28,9 +27,12 @@ export type CreateConnectorPageProps = {
 export const CreateConnectorPage: FunctionComponent<
   CreateConnectorPageProps
 > = ({ onSave, onClose }) => {
-  const config = useConfig();
-  const { connectorsApiBasePath, getToken, kafkaManagementApiBasePath } =
-    useCos();
+  const {
+    connectorsApiBasePath,
+    configurators,
+    getToken,
+    kafkaManagementApiBasePath,
+  } = useCos();
   const { t } = useTranslation();
   const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
   const openLeaveConfirm = () => setAskForLeaveConfirm(true);
@@ -42,7 +44,7 @@ export const CreateConnectorPage: FunctionComponent<
         connectorsApiBasePath={connectorsApiBasePath}
         kafkaManagementApiBasePath={kafkaManagementApiBasePath}
         fetchConfigurator={(connector) =>
-          fetchConfigurator(connector, config?.cos.configurators || {})
+          fetchConfigurator(connector, configurators || {})
         }
         onSave={onSave}
       >

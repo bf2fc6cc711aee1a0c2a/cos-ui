@@ -15,7 +15,7 @@ module.exports = merge(common('development'), {
       overlay: false,
       webSocketURL: {
         hostname: 'prod.foo.redhat.com',
-      }
+      },
     },
     historyApiFallback: true,
     hot: true,
@@ -29,9 +29,8 @@ module.exports = merge(common('development'), {
   },
   plugins: [
     new webpack.DefinePlugin({
-      __BASE_PATH__: JSON.stringify(
-        process.env.BASE_PATH || 'https://api.stage.openshift.com'
-      ),
+      'process.env.COS_MGMT_URL': process.env.COS_MGMT_URL,
+      'process.env.KAS_MGMT_URL': process.env.KAS_MGMT_URL,
     }),
     new ReactRefreshWebpackPlugin({
       library: 'cos-ui',

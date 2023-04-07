@@ -24,7 +24,6 @@ import {
 } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { useConfig } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
 
 import './CreateConnectorPage.css';
@@ -39,9 +38,12 @@ export const DuplicateConnectorPage: FunctionComponent<
 > = ({ onSave, onClose }) => {
   const { t } = useTranslation();
   const alert = useAlert();
-  const config = useConfig();
-  const { connectorsApiBasePath, kafkaManagementApiBasePath, getToken } =
-    useCos();
+  const {
+    connectorsApiBasePath,
+    configurators,
+    kafkaManagementApiBasePath,
+    getToken,
+  } = useCos();
   const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
   const openLeaveConfirm = () => setAskForLeaveConfirm(true);
   const closeLeaveConfirm = () => setAskForLeaveConfirm(false);
@@ -120,7 +122,7 @@ export const DuplicateConnectorPage: FunctionComponent<
             connectorsApiBasePath={connectorsApiBasePath}
             kafkaManagementApiBasePath={kafkaManagementApiBasePath}
             fetchConfigurator={(connector) =>
-              fetchConfigurator(connector, config?.cos.configurators || {})
+              fetchConfigurator(connector, configurators || {})
             }
             connectorId={connectorId}
             connectorData={connectorData}

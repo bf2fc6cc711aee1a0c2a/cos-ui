@@ -36,7 +36,7 @@ import {
 } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { KafkaInstance, useConfig } from '@rhoas/app-services-ui-shared';
+import { KafkaInstance } from '@rhoas/app-services-ui-shared';
 import {
   Connector,
   ConnectorType,
@@ -114,9 +114,8 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
 }) => {
   const { t } = useTranslation();
   const alert = useAlert();
-  const config = useConfig();
 
-  const { connectorsApiBasePath, getToken } = useCos();
+  const { connectorsApiBasePath, getToken, configurators } = useCos();
 
   const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
   const [userTouched, setUserTouched] = useState(false);
@@ -240,7 +239,7 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
     try {
       response = await fetchConfigurator(
         connectorTypeDetails,
-        config?.cos.configurators || {}
+        configurators || {}
       );
       setConfigurator(response);
     } catch (err) {

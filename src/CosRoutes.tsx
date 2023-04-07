@@ -3,18 +3,20 @@ import { ConnectorsPage } from '@app/pages/ConnectorsPage/ConnectorsPage';
 import React, { FunctionComponent, useCallback } from 'react';
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
 
-import { CosContextProvider } from './hooks/useCos';
+import { CosContextProvider, RemoteConfigurator } from './hooks/useCos';
 
 type CosRoutesProps = {
   getToken: () => Promise<string>;
   connectorsApiBasePath: string;
   kafkaManagementApiBasePath: string;
+  configurators?: Record<string, RemoteConfigurator>;
 };
 
 export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
   getToken,
   connectorsApiBasePath,
   kafkaManagementApiBasePath,
+  configurators,
 }) => {
   /*
   const { t } = useTranslation();
@@ -62,6 +64,7 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
       getToken={getToken}
       connectorsApiBasePath={connectorsApiBasePath}
       kafkaManagementApiBasePath={kafkaManagementApiBasePath}
+      configurators={configurators}
     >
       <Switch>
         <Route path={'/'} exact>

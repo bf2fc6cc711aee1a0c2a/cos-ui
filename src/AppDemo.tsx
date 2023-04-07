@@ -1,6 +1,12 @@
 import { AlertsProvider } from '@app/components/Alerts/Alerts';
 import { AppLayout } from '@app/components/AppLayout/AppLayout';
 import { Loading } from '@app/components/Loading/Loading';
+import {
+  COS_MANAGEMENT_DEV_BASE_PATH,
+  DEBEZIUM_CONFIGURATOR,
+  PROD_BASE_PATH,
+  STAGE_BASE_PATH,
+} from '@constants/endpoints';
 import { AnalyticsProvider } from '@hooks/useAnalytics';
 import {
   getKeycloakInstance,
@@ -26,11 +32,6 @@ import {
 } from '@patternfly/react-core';
 
 import { I18nextProvider } from '@rhoas/app-services-ui-components';
-import {
-  Config,
-  ConfigContext,
-  useConfig,
-} from '@rhoas/app-services-ui-shared';
 
 import { CosRoutes } from './CosRoutes';
 
@@ -39,9 +40,8 @@ let keycloak: Keycloak.KeycloakInstance | undefined;
 type EnvironmentType = 'staging' | 'development' | 'local';
 const environmentNames = ['staging', 'development', 'local'] as const;
 const environments: { [k in EnvironmentType]: string } = {
-  staging: 'https://wxn4aqqc8bqvxcy6unfe.api.stage.openshift.com',
-  development:
-    'https://cos-fleet-manager-managed-connectors-dev.rhoc-dev-153f1de160110098c1928a6c05e19444-0000.eu-de.containers.appdomain.cloud',
+  staging: STAGE_BASE_PATH,
+  development: COS_MANAGEMENT_DEV_BASE_PATH,
   local: 'http://localhost:8000',
 };
 
@@ -131,47 +131,44 @@ const ConnectedAppDemo: FunctionComponent<ConnectedAppDemoProps> = ({
   headerTools,
   initialized,
 }) => (
-  <ConfigContext.Provider
-    value={
-      {
-        cos: {
-          apiBasePath: baseUrl,
-          configurators: {
-            debezium: {
-              remoteEntry:
-                'https://qaprodauth.cloud.redhat.com/apps/dbz-ui-build/dbz-connector-configurator.remoteEntry.js',
-              scope: 'debezium_ui',
-              module: './config',
-            },
-          } as Record<string, unknown>,
-        },
-      } as Config
-    }
-  >
-    <I18nextProvider i18n={i18n}>
-      <AlertsProvider>
-        <AnalyticsProvider>
-          <React.Suspense fallback={<Loading />}>
-            <Router>
-              <AppLayout headerTools={headerTools}>
-                {initialized ? <ConnectedRoutes /> : <Spinner />}
-              </AppLayout>
-            </Router>
-          </React.Suspense>
-        </AnalyticsProvider>
-      </AlertsProvider>
-    </I18nextProvider>
-  </ConfigContext.Provider>
+  <I18nextProvider i18n={i18n}>
+    <AlertsProvider>
+      <AnalyticsProvider>
+        <React.Suspense fallback={<Loading />}>
+          <Router>
+            <AppLayout headerTools={headerTools}>
+              {initialized ? (
+                <ConnectedRoutes baseUrl={baseUrl} />
+              ) : (
+                <Spinner />
+              )}
+            </AppLayout>
+          </Router>
+        </React.Suspense>
+      </AnalyticsProvider>
+    </AlertsProvider>
+  </I18nextProvider>
 );
 
-const ConnectedRoutes: FunctionComponent<{}> = () => {
+type ConnectedRoutesProps = {
+  baseUrl: string;
+};
+const ConnectedRoutes: FunctionComponent<ConnectedRoutesProps> = ({
+  baseUrl,
+}) => {
   const { getKeyCloakToken } = useKeyCloakAuthToken();
-  const config = useConfig();
   return (
     <CosRoutes
       getToken={async () => (await getKeyCloakToken()) || ''}
-      connectorsApiBasePath={config?.cos.apiBasePath || ''}
-      kafkaManagementApiBasePath={'https://api.openshift.com'}
+      connectorsApiBasePath={baseUrl || ''}
+      kafkaManagementApiBasePath={PROD_BASE_PATH}
+      configurators={{
+        debezium: {
+          remoteEntry: DEBEZIUM_CONFIGURATOR,
+          scope: 'debezium_ui',
+          module: './config',
+        },
+      }}
     />
   );
 };

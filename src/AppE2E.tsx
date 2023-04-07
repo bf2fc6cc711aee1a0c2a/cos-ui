@@ -7,11 +7,6 @@ import React, { FunctionComponent } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import { I18nextProvider } from '@rhoas/app-services-ui-components';
-import {
-  Config,
-  ConfigContext,
-  useConfig,
-} from '@rhoas/app-services-ui-shared';
 
 import { CosRoutes } from './CosRoutes';
 
@@ -23,59 +18,43 @@ import { CosRoutes } from './CosRoutes';
  * The `baseUrl` for the API is statically set to `localhost`.
  */
 export const AppE2E: FunctionComponent = () => {
-  const config = {
-    cos: {
-      apiBasePath: 'localhost',
-      configurators: {
-        'debezium-mongodb-1.9.0.Alpha1': {
-          remoteEntry:
-            'https://qaprodauth.cloud.redhat.com/apps/dbz-ui-build/dbz-connector-configurator.remoteEntry.js',
-          scope: 'debezium_ui',
-          module: './config',
-        },
-        'debezium-mysql-1.9.0.Alpha1': {
-          remoteEntry:
-            'https://qaprodauth.cloud.redhat.com/apps/dbz-ui-build/dbz-connector-configurator.remoteEntry.js',
-          scope: 'debezium_ui',
-          module: './config',
-        },
-        'debezium-postgres-1.9.0.Alpha1': {
-          remoteEntry:
-            'https://qaprodauth.cloud.redhat.com/apps/dbz-ui-build/dbz-connector-configurator.remoteEntry.js',
-          scope: 'debezium_ui',
-          module: './config',
-        },
-      } as Record<string, unknown>,
-    },
-  } as Config;
-
   return (
-    <ConfigContext.Provider value={config}>
-      <I18nextProvider i18n={i18n}>
-        <AlertsProvider>
-          <AnalyticsProvider>
-            <React.Suspense fallback={<Loading />}>
-              <Router>
-                <AppLayout>
-                  <ConnectedRoutes />
-                </AppLayout>
-              </Router>
-            </React.Suspense>
-          </AnalyticsProvider>
-        </AlertsProvider>
-      </I18nextProvider>
-    </ConfigContext.Provider>
-  );
-};
-
-const ConnectedRoutes = () => {
-  const config = useConfig();
-  return (
-    <CosRoutes
-      getToken={async () => 'dummy'}
-      connectorsApiBasePath={config?.cos.apiBasePath || ''}
-      // TODO: remove after demo
-      kafkaManagementApiBasePath={'localhost'}
-    />
+    <I18nextProvider i18n={i18n}>
+      <AlertsProvider>
+        <AnalyticsProvider>
+          <React.Suspense fallback={<Loading />}>
+            <Router>
+              <AppLayout>
+                <CosRoutes
+                  getToken={async () => 'dummy'}
+                  connectorsApiBasePath={'localhost'}
+                  kafkaManagementApiBasePath={'localhost'}
+                  configurators={{
+                    'debezium-mongodb-1.9.0.Alpha1': {
+                      remoteEntry:
+                        'https://qaprodauth.cloud.redhat.com/apps/dbz-ui-build/dbz-connector-configurator.remoteEntry.js',
+                      scope: 'debezium_ui',
+                      module: './config',
+                    },
+                    'debezium-mysql-1.9.0.Alpha1': {
+                      remoteEntry:
+                        'https://qaprodauth.cloud.redhat.com/apps/dbz-ui-build/dbz-connector-configurator.remoteEntry.js',
+                      scope: 'debezium_ui',
+                      module: './config',
+                    },
+                    'debezium-postgres-1.9.0.Alpha1': {
+                      remoteEntry:
+                        'https://qaprodauth.cloud.redhat.com/apps/dbz-ui-build/dbz-connector-configurator.remoteEntry.js',
+                      scope: 'debezium_ui',
+                      module: './config',
+                    },
+                  }}
+                />
+              </AppLayout>
+            </Router>
+          </React.Suspense>
+        </AnalyticsProvider>
+      </AlertsProvider>
+    </I18nextProvider>
   );
 };

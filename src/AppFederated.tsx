@@ -1,5 +1,13 @@
 import { Loading } from '@app/components/Loading/Loading';
 import { init } from '@app/store';
+import {
+  APP_ROUTE,
+  DEBEZIUM_CONFIGURATOR,
+  DEBEZIUM_CONFIGURATOR_PREVIEW,
+  ENDPOINT_MAPPINGS,
+  PREVIEW_APP_ROUTE,
+  PROD_BASE_PATH,
+} from '@constants/endpoints';
 import { AlertContext, AlertProps } from '@hooks/useAlert';
 import { AnalyticsProvider } from '@hooks/useAnalytics';
 import i18n from '@i18n/i18n';
@@ -21,16 +29,8 @@ import type { Reducer } from 'redux';
 import '@patternfly/react-catalog-view-extension/dist/css/react-catalog-view-extension.css';
 
 import { I18nextProvider } from '@rhoas/app-services-ui-components';
-import { useConfig } from '@rhoas/app-services-ui-shared';
 
 import { CosRoutes } from './CosRoutes';
-
-// The route within the console.redhat.com environment that this app sits at
-const APP_ROUTE = '/application-services/connectors';
-// The preview/beta route within console.redhat.com
-const PREVIEW_APP_ROUTE = '/beta/application-services/connectors';
-// The root URL for the kafka management API
-const KAFKA_MANAGEMENT_API_BASE_PATH = 'https://api.openshift.com';
 
 /**
  * Initializes the COS UI without any chrome. This is meant to be used in
@@ -43,7 +43,6 @@ const KAFKA_MANAGEMENT_API_BASE_PATH = 'https://api.openshift.com';
  */
 const AppFederatedInner: FunctionComponent = () => {
   const [key, setKey] = useState(0);
-  const config = useConfig();
   const { analytics, auth, isBeta, on } = useChrome();
   const dispatch = useDispatch();
 
@@ -98,6 +97,14 @@ const AppFederatedInner: FunctionComponent = () => {
       })
     );
   };
+  const { cosManagementApiBasePath, kafkaManagementApiBasePath } =
+    ENDPOINT_MAPPINGS.find(
+      ({ hostnames }: { hostnames: ReadonlyArray<string> }) =>
+        hostnames.includes(window.location.hostname)
+    ) || {
+      cosManagementApiBasePath: PROD_BASE_PATH,
+      kafkaManagementApiBasePath: PROD_BASE_PATH,
+    };
   return (
     <AlertContext.Provider value={{ addAlert }}>
       <React.Suspense fallback={<Loading />}>
@@ -110,8 +117,21 @@ const AppFederatedInner: FunctionComponent = () => {
             <NotificationPortal />
             <CosRoutes
               getToken={async () => (await auth.getToken()) || ''}
-              connectorsApiBasePath={config?.cos.apiBasePath || ''}
-              kafkaManagementApiBasePath={KAFKA_MANAGEMENT_API_BASE_PATH}
+              connectorsApiBasePath={
+                (process.env.COS_MGMT_URL || cosManagementApiBasePath)!
+              }
+              kafkaManagementApiBasePath={
+                (process.env.KAS_MGMT_URL || kafkaManagementApiBasePath)!
+              }
+              configurators={{
+                debezium: {
+                  remoteEntry: isBeta()
+                    ? DEBEZIUM_CONFIGURATOR_PREVIEW
+                    : DEBEZIUM_CONFIGURATOR,
+                  scope: 'debezium_ui',
+                  module: './config',
+                },
+              }}
             />
           </Router>
         </AnalyticsProvider>
