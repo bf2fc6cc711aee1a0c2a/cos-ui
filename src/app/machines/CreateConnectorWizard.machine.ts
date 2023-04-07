@@ -19,6 +19,7 @@ import {
   ERROR_HANDLING,
   REVIEW_CONFIGURATION,
 } from '@constants/constants';
+import { createValidator, CreateValidatorType } from '@utils/createValidator';
 
 import { assign, Event, InterpreterFrom, send } from 'xstate';
 import { createModel } from 'xstate/lib/model';
@@ -51,6 +52,7 @@ export type CreateWizardContextData = {
   topic?: string;
   userServiceAccount: UserProvidedServiceAccount;
   userErrorHandler?: string;
+  configurationValidator?: CreateValidatorType;
 };
 
 /**
@@ -215,6 +217,9 @@ export const creationWizardMachine = model.createMachine(
               activeConfigurationStep: 0,
               isConfigurationValid: false,
               configurationSteps: false,
+              configurationValidator: createValidator(
+                event.data.selectedConnector.schema
+              ),
             })),
           },
           onError: '.error',
@@ -385,6 +390,7 @@ export const creationWizardMachine = model.createMachine(
               sACreated: context.sACreated,
               sAConfiguredConfirmed:
                 context.duplicateMode || context.sAConfiguredConfirmed,
+              validator: context.configurationValidator,
             };
           },
           onDone: {
@@ -471,11 +477,10 @@ export const creationWizardMachine = model.createMachine(
                   name: context.name,
                   steps: context.configurationSteps || ['single step'],
                   activeStep: context.activeConfigurationStep || 0,
-                  isActiveStepValid:
-                    context.duplicateMode ||
-                    context.connectorConfiguration !== false,
+                  isActiveStepValid: context.connectorConfiguration !== false,
                   duplicateMode: context.duplicateMode,
                   connectorData: context.connectorData,
+                  validator: context.configurationValidator,
                 };
               },
               onDone: [

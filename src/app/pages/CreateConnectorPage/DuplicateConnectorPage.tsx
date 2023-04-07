@@ -4,7 +4,7 @@ import { CreateConnectorWizardProvider } from '@app/components/CreateConnectorWi
 import { Loading } from '@app/components/Loading/Loading';
 import { useCos } from '@hooks/useCos';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
-import _ from 'lodash';
+import { removeObfuscatedProperties } from '@utils/shared';
 import React, {
   FunctionComponent,
   useState,
@@ -51,7 +51,11 @@ export const DuplicateConnectorPage: FunctionComponent<
   const { hash } = useLocation();
   const connectorId = hash.split('&')[0].substring(1);
   const getConnectorData = useCallback((data) => {
-    setConnectorData(data as Connector);
+    const connector = {
+      ...data,
+      connector: removeObfuscatedProperties(data.connector),
+    };
+    setConnectorData(connector as Connector);
   }, []);
 
   const [connectorTypeDetails, setConnectorTypeDetails] =

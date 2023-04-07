@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 /**
  * Creates a string suitable as an ID for HTML, OUIA or as a data-testid
  * @param subject
@@ -217,4 +215,28 @@ export const getFilterList = (connectorName: string) => {
     ' or ' +
     DBFilters.mongodb.slice(-1)
   );
+};
+
+/**
+ * Takes a core configuration object of a connector and remove
+ * all properties containing obfuscated values (empty object literal)
+ * @param data the original connector core configuration
+ * @returns the new configuration without secret fields
+ */
+export const removeObfuscatedProperties = (data: {
+  [key: string]: unknown;
+}): { [key: string]: unknown } => {
+  return Object.keys(data).reduce((obj, key) => {
+    const value = data[key];
+    if (
+      !(
+        typeof value === 'object' &&
+        value !== null &&
+        Object.keys(value).length === 0
+      )
+    ) {
+      obj[key] = value;
+    }
+    return obj;
+  }, {} as { [key: string]: unknown });
 };

@@ -526,13 +526,14 @@ export const useCoreConfigurationMachine = () => {
 
 export const useConfiguratorMachine = () => {
   const { configuratorRef } = useCreateConnectorWizard();
-  const { activeStep, configuration, connector } = useSelector(
+  const { activeStep, configuration, connector, validator } = useSelector(
     configuratorRef,
     useCallback(
       (state: typeof configuratorRef.state) => ({
         connector: state.context.connector,
         activeStep: state.context.activeStep,
         configuration: state.context.configuration,
+        validator: state.context.validator,
       }),
       [configuratorRef]
     )
@@ -541,6 +542,7 @@ export const useConfiguratorMachine = () => {
     activeStep,
     configuration,
     connector,
+    validator,
   };
 };
 

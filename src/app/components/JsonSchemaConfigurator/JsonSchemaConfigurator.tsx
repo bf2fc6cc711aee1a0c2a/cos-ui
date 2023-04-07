@@ -1,9 +1,12 @@
-import { createValidator } from '@utils/createValidator';
+import {
+  CreateValidatorType,
+  validateAgainstSchema,
+} from '@utils/createValidator';
 import {
   applyClientSideFormCustomizations,
   clearEmptyObjectValues,
 } from '@utils/shared';
-import { ErrorObject, ValidateFunction } from 'ajv';
+import { ErrorObject } from 'ajv';
 import jsonpointer from 'jsonpointer';
 import { capitalize, forEach } from 'lodash';
 import React, { FunctionComponent, useCallback } from 'react';
@@ -19,25 +22,29 @@ import { CustomJsonSchemaBridge } from './CustomJsonSchemaBridge';
 import './JsonSchemaConfigurator.css';
 import { TypeaheadField } from './TypeaheadField';
 
-export type CreateValidatorType = ReturnType<typeof createValidator>;
-export type ValidatorResultType = ValidateFunction<unknown>['errors'];
-
 type JsonSchemaConfiguratorProps = {
   schema: Record<string, any>;
   configuration: unknown;
   duplicateMode?: boolean;
   editMode?: boolean;
   onChange: (configuration: unknown, isValid: boolean) => void;
+  schemaValidator: CreateValidatorType;
 };
 
 export const JsonSchemaConfigurator: FunctionComponent<
   JsonSchemaConfiguratorProps
-> = ({ schema, configuration, duplicateMode, editMode, onChange }) => {
+> = ({
+  schema,
+  configuration,
+  duplicateMode,
+  editMode,
+  onChange,
+  schemaValidator,
+}) => {
   const { t } = useTranslation();
   schema.type = schema.type || 'object';
   const { required } = schema;
 
-  const schemaValidator = createValidator(schema);
   const bridge = new CustomJsonSchemaBridge(
     schema,
     schemaValidator,
@@ -60,10 +67,10 @@ export const JsonSchemaConfigurator: FunctionComponent<
 
   const onChangeModel = useCallback(
     (model: any) => {
-      const details = filterEdgeCases(required, schemaValidator(model).details);
-      onChange(model, details.length === 0);
+      const isValid = validateAgainstSchema(schemaValidator, schema, model);
+      onChange(model, isValid);
     },
-    [onChange, required, schemaValidator]
+    [onChange, schemaValidator, schema]
   );
 
   // no need to create form elements for error_handler, processors or steps
@@ -89,6 +96,7 @@ export const JsonSchemaConfigurator: FunctionComponent<
     ...otherProperties,
     ...(aws_region && { aws_region }),
   });
+
   return (
     <Grid hasGutter>
       <KameletForm
@@ -173,7 +181,7 @@ function overrideErrorMessages(
  * @param details
  * @returns
  */
-function filterEdgeCases(
+export function filterEdgeCases(
   required: string[],
   details: Array<ErrorObject<string, Record<string, any>, unknown>>
 ) {
