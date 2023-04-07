@@ -16,8 +16,8 @@ import {
 } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { KafkaInstance } from '@rhoas/app-services-ui-shared';
 import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
+import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
 import './ConnectorDrawerContent.css';
 
@@ -27,7 +27,8 @@ export type ConnectorDrawerContentProps = {
   errorHandlerContent?: ReactElement;
   id: string;
   kafkaBootstrapServer: string;
-  kafkaInstanceData: string | KafkaInstance | ReactNode;
+  kafkaInstanceData: string | KafkaRequest | ReactNode;
+  modifiedAt: string;
   name: string;
   namespaceData: ConnectorNamespace | ReactNode;
   onDuplicateConnector: (id: string) => void;

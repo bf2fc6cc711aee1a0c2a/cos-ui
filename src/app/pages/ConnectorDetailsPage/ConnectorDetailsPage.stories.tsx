@@ -3,8 +3,6 @@ import { rest } from 'msw';
 import React from 'react';
 import { MemoryRouter as Router, Route } from 'react-router-dom';
 
-import { ConfigContext } from '@rhoas/app-services-ui-shared';
-
 import { CosContextProvider } from '../../../hooks/useCos';
 import { AlertsProvider } from '../../components/Alerts/Alerts';
 import { ConnectorDetailsPage } from './ConnectorDetailsPage';
@@ -142,30 +140,19 @@ export default {
   component: ConnectorDetailsPage,
   decorators: [
     (Story) => (
-      <ConfigContext.Provider
-        value={
-          {
-            cos: {
-              apiBasePath: API_BASE,
-              configurators: {},
-            },
-          } as any
-        }
+      <CosContextProvider
+        getToken={() => Promise.resolve('')}
+        connectorsApiBasePath={API_BASE}
+        kafkaManagementApiBasePath={API_BASE}
       >
-        <CosContextProvider
-          getToken={() => Promise.resolve('')}
-          connectorsApiBasePath={API_BASE}
-          kafkaManagementApiBasePath={API_BASE}
-        >
-          <Router initialEntries={[`/${CONNECTOR_ID}`]}>
-            <Route path="/:id">
-              <AlertsProvider>
-                <Story />
-              </AlertsProvider>
-            </Route>
-          </Router>
-        </CosContextProvider>
-      </ConfigContext.Provider>
+        <Router initialEntries={[`/${CONNECTOR_ID}`]}>
+          <Route path="/:id">
+            <AlertsProvider>
+              <Story />
+            </AlertsProvider>
+          </Route>
+        </Router>
+      </CosContextProvider>
     ),
   ],
   args: {

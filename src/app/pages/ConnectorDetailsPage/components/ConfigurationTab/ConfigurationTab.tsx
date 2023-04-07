@@ -36,12 +36,12 @@ import {
 } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { KafkaInstance } from '@rhoas/app-services-ui-shared';
 import {
   Connector,
   ConnectorType,
   ConnectorTypeAllOf,
 } from '@rhoas/connector-management-sdk';
+import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
 import { CommonStep } from './CommonStep';
 import { ConfigurationStep } from './ConfigurationStep';
@@ -53,7 +53,7 @@ export type ConfigurationTabProps = {
   editMode: boolean;
   updateEditMode: (editEnable: boolean) => void;
   connectorData: Connector;
-  kafkaInstanceDetails: KafkaInstance | string;
+  kafkaInstanceDetails: KafkaRequest | string;
   connectorTypeDetails: ConnectorType;
 };
 export type connector = {
@@ -380,7 +380,7 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
                         }
                         configuration={errHandlerConfiguration}
                         kafkaId={
-                          (kafkaInstanceDetails as KafkaInstance)?.id || ''
+                          (kafkaInstanceDetails as KafkaRequest)?.id || ''
                         }
                         changeIsValid={setIsEditValid}
                         onUpdateConfiguration={onUpdateConfiguration}
