@@ -34,7 +34,7 @@
     "react-error-boundary": "3.1.4",
     "react-router-dom": "5.2.1",
     "react-viewport-utils": "2.0.2",
-    "react-virtualized": "9.22.3",
+    "react-virtualized": "9.22.4",
     "short-uuid": "4.2.2",
     "uniforms": "3.10.2",
     "uniforms-bridge-json-schema": "3.10.2",
