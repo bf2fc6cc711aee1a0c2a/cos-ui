@@ -19,6 +19,7 @@ import {
   Button,
   Modal,
   PageSection,
+  PageSectionTypes,
 } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
@@ -29,6 +30,7 @@ import {
 } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorTypeAllOf } from '@rhoas/connector-management-sdk';
 
+import './CreateConnectorPage.css';
 import { ConnectorWizardHeader } from './components/ConnectorWizardHeader';
 
 type DuplicateConnectorPageProps = {
@@ -110,9 +112,9 @@ export const DuplicateConnectorPage: FunctionComponent<
         </Breadcrumb>
       </PageSection>
       <PageSection
+        className={'create-connector-page__wizard-page-section'}
         padding={{ default: 'noPadding' }}
-        style={{ zIndex: 0 }}
-        type={'default'}
+        type={PageSectionTypes.wizard}
         variant={'light'}
       >
         {connectorData && connectorTypeDetails ? (
