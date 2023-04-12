@@ -1,5 +1,6 @@
 import { JsonSchemaConfigurator } from '@app/components/JsonSchemaConfigurator/JsonSchemaConfigurator';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
+import { createValidator } from '@utils/createValidator';
 import {
   applyClientSideFormCustomizations,
   clearEmptyObjectValues,
@@ -42,6 +43,8 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
     schema,
     clearEmptyObjectValues(JSON.parse(JSON.stringify(configuration)))
   );
+
+  const validator = createValidator(schema);
 
   const onChange = (config: unknown, isValid: boolean) => {
     onUpdateConfiguration('connector', config);
@@ -119,6 +122,7 @@ export const ConfigurationStep: FC<ConfigurationStepProps> = ({
           configuration={formConfiguration}
           onChange={onChange}
           editMode={true}
+          schemaValidator={validator}
         />
       ) : (
         <Form>

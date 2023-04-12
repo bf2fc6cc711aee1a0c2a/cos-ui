@@ -1,4 +1,8 @@
 import { CONNECTOR_SPECIFIC } from '@constants/constants';
+import {
+  CreateValidatorType,
+  validateAgainstSchema,
+} from '@utils/createValidator';
 
 import { ActorRefFrom, sendParent } from 'xstate';
 import { createModel } from 'xstate/lib/model';
@@ -12,6 +16,7 @@ type Context = {
   isActiveStepValid: boolean;
   configuration: unknown;
   connectorData?: Connector;
+  validator: CreateValidatorType;
 };
 
 const model = createModel(
@@ -26,6 +31,7 @@ const model = createModel(
     activeStep: 0,
     isActiveStepValid: false,
     configuration: undefined,
+    validator: () => ({ details: [] }),
   } as Context,
   {
     events: {
@@ -40,6 +46,8 @@ const model = createModel(
       next: () => ({}),
       prev: () => ({}),
       complete: () => ({}),
+      isValid: () => ({}),
+      isInvalid: () => ({}),
     },
     actions: {
       changedStep: () => ({}),
@@ -72,7 +80,7 @@ const change = model.assign(
 export const configuratorMachine = model.createMachine(
   {
     id: 'configurator',
-    initial: 'configuring',
+    initial: 'pending',
     predictableActionArguments: true,
     context: {
       connector: {
@@ -85,8 +93,36 @@ export const configuratorMachine = model.createMachine(
       activeStep: 0,
       isActiveStepValid: false,
       configuration: undefined,
+      validator: () => ({ details: [] }),
     },
     states: {
+      pending: {
+        invoke: {
+          id: 'validateConfiguration',
+          src: (context) => (callback) => {
+            if (context.configuration === false) {
+              callback('isInvalid');
+            } else {
+              const isConfigValid =
+                context.connector.schema &&
+                validateAgainstSchema(
+                  context.validator,
+                  context.connector.schema,
+                  context.configuration
+                );
+              callback(isConfigValid ? 'isValid' : 'isInvalid');
+            }
+          },
+        },
+        on: {
+          isValid: {
+            target: 'valid',
+          },
+          isInvalid: {
+            target: 'configuring',
+          },
+        },
+      },
       configuring: {
         entry: sendParent((context) => ({
           type: 'isInvalid',

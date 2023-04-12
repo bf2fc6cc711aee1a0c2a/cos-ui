@@ -1,3 +1,4 @@
+import { filterEdgeCases } from '@app/components/JsonSchemaConfigurator/JsonSchemaConfigurator';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -17,3 +18,18 @@ export function createValidator(schema: object) {
       : { details: [] };
   };
 }
+
+export const validateAgainstSchema = (
+  schemaValidator: CreateValidatorType,
+  schema: Record<string, any>,
+  model: unknown
+): boolean => {
+  const { required } = schema;
+  const details = filterEdgeCases(
+    required,
+    schemaValidator(model as object).details
+  );
+  return details.length === 0;
+};
+
+export type CreateValidatorType = ReturnType<typeof createValidator>;

@@ -71,7 +71,7 @@ const ConnectedJsonSchemaConfigurator: FunctionComponent<{
   actor: ConfiguratorActorRef;
   duplicateMode: boolean | undefined;
 }> = ({ actor, duplicateMode }) => {
-  const { configuration, connector } = useConfiguratorMachine();
+  const { configuration, connector, validator } = useConfiguratorMachine();
   const schema = (connector as ConnectorTypeAllOf).schema!;
   const initialConfiguration = patchConfigurationObject(schema, {} as any);
   return (
@@ -86,6 +86,7 @@ const ConnectedJsonSchemaConfigurator: FunctionComponent<{
       onChange={(configuration, isValid) =>
         actor.send({ type: 'change', configuration, isValid })
       }
+      schemaValidator={validator}
     />
   );
 };
