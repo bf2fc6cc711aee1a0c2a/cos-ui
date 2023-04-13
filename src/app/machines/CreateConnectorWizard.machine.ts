@@ -1,4 +1,7 @@
-import { UserProvidedServiceAccount } from '@apis/api';
+import {
+  ConnectorWithErrorHandler,
+  UserProvidedServiceAccount,
+} from '@apis/api';
 import { configuratorMachine } from '@app/machines/StepConfigurator.machine';
 import {
   configuratorLoaderMachine,
@@ -30,8 +33,6 @@ import {
   ConnectorType,
 } from '@rhoas/connector-management-sdk';
 import { KafkaRequest } from '@rhoas/kafka-management-sdk';
-
-import { ConnectorWithErrorHandler } from '../pages/ConnectorDetailsPage/components/ConfigurationTab/ErrorHandlerStep';
 
 /**
  * The data produced by the wizard

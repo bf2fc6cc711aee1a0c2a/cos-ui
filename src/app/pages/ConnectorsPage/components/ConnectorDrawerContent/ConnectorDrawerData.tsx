@@ -7,44 +7,23 @@ import React, {
   useEffect,
 } from 'react';
 
-import { AlertVariant, Spinner } from '@patternfly/react-core';
+import { AlertVariant } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 import { KafkaInstance, useAlert } from '@rhoas/app-services-ui-shared';
 import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
 
-import { ConnectorDrawerContent } from './ConnectorDrawerContent';
-
 export type ConnectorDrawerContentProps = {
-  createdAt: string;
-  currentState: string;
-  errorStateMessage?: string;
-  id: string;
-  kafkaBootstrapServer: string;
   kafkaInstanceId: string;
-  modifiedAt: string;
-  name: string;
   namespaceId: string;
-  onClose: () => void;
-  onDuplicateConnector: (id: string) => void;
-  owner: string;
+  renderData: (
+    namespaceData: ConnectorNamespace | null,
+    kafkaInstanceData: KafkaInstance | string
+  ) => React.ReactElement;
 };
 export const ConnectorDrawerData: FunctionComponent<
   ConnectorDrawerContentProps
-> = ({
-  createdAt,
-  currentState,
-  errorStateMessage,
-  id,
-  kafkaBootstrapServer,
-  kafkaInstanceId,
-  modifiedAt,
-  name,
-  namespaceId,
-  onClose,
-  onDuplicateConnector,
-  owner,
-}) => {
+> = ({ kafkaInstanceId, namespaceId, renderData }) => {
   const { t } = useTranslation();
   const [namespaceData, setNamespaceData] = useState<ConnectorNamespace | null>(
     null
@@ -101,8 +80,14 @@ export const ConnectorDrawerData: FunctionComponent<
       connectorsApiBasePath,
       namespaceId,
     })(getNamespaceData, onError);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [namespaceId]);
+  }, [
+    namespaceId,
+    getNamespaceData,
+    getToken,
+    connectorsApiBasePath,
+    onError,
+    setNamespaceData,
+  ]);
 
   useEffect(() => {
     setKafkaInstanceData('');
@@ -111,28 +96,14 @@ export const ConnectorDrawerData: FunctionComponent<
       kafkaManagementBasePath: kafkaManagementApiBasePath,
       KafkaInstanceId: kafkaInstanceId,
     })(getKIData, onKIError);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [kafkaInstanceId]);
+  }, [
+    kafkaInstanceId,
+    getKIData,
+    getToken,
+    kafkaManagementApiBasePath,
+    onKIError,
+    setKafkaInstanceData,
+  ]);
 
-  React.useEffect(() => {
-    if (currentState == 'deleted') {
-      onClose();
-    }
-  }, [currentState, onClose]);
-
-  return (
-    <ConnectorDrawerContent
-      createdAt={createdAt}
-      currentState={currentState}
-      errorStateMessage={errorStateMessage}
-      id={id}
-      kafkaBootstrapServer={kafkaBootstrapServer}
-      kafkaInstanceData={kafkaInstanceData || <Spinner size="md" />}
-      modifiedAt={modifiedAt}
-      name={name}
-      namespaceData={namespaceData || <Spinner size="md" />}
-      onDuplicateConnector={onDuplicateConnector}
-      owner={owner}
-    />
-  );
+  return renderData(namespaceData, kafkaInstanceData);
 };

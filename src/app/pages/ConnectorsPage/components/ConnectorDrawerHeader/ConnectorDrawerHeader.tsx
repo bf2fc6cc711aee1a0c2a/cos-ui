@@ -15,13 +15,15 @@ import {
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 
+import './ConnectorDrawerHeader.css';
+
 export type DrawerHeaderProps = {
   drawerHeading: string;
   status?: React.ReactNode;
   actionsMenu?: React.ReactNode;
   onClose: () => void;
 };
-export const DrawerHeader: FunctionComponent<DrawerHeaderProps> = ({
+export const ConnectorDrawerHeader: FunctionComponent<DrawerHeaderProps> = ({
   drawerHeading,
   status,
   actionsMenu,

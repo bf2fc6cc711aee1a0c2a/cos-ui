@@ -28,6 +28,29 @@ import {
 
 import { PlaceholderOrderBy } from './../app/machines/PaginatedResponse.machine';
 
+// error_handler does not yet seem to be available in the SDK
+export type LogErrorHandler = {
+  log: object;
+};
+
+export type StopErrorHandler = {
+  stop: object;
+};
+
+export type DLQErrorHandler = {
+  dead_letter_queue: {
+    topic: string;
+  };
+};
+
+export type ErrorHandler = LogErrorHandler | StopErrorHandler | DLQErrorHandler;
+
+// Create an extended connector type that includes this missing attribute
+export type ConnectorWithErrorHandler = Connector & {
+  error_handler: ErrorHandler;
+  [key: string]: any; // workaround to allow indexing by key for now
+};
+
 export enum SortOrderValue {
   asc = 'asc',
   desc = 'desc',

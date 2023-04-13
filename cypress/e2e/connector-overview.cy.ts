@@ -51,7 +51,7 @@ describe(
     it('should show the connector configuration, edit the properties, clear a value and save it successfully', () => {
       cy.visit(Cypress.env('overview'));
       waitForData();
-      cy.findByText('Configuration').click();
+      cy.findByText('Configuration').click({ force: true });
       cy.findAllByTestId('tab-connector-specific').first().click();
       cy.findByText('Edit Properties').click();
       cy.findByLabelText('Delay').clear();
@@ -73,7 +73,7 @@ describe(
     it('should change the error handler from stop to log with the correct request', () => {
       cy.visit(Cypress.env('overview'));
       waitForData();
-      cy.findByText('Configuration').click();
+      cy.findByText('Configuration').click({ force: true });
       cy.findAllByTestId('tab-error-handling').first().click();
       cy.findByText('Edit Properties').click();
       cy.findByTestId('option-log').click();

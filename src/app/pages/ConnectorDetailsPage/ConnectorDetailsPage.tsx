@@ -5,13 +5,7 @@ import { useCos } from '@hooks/useCos';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import {
-  PageSection,
-  Tab,
-  Tabs,
-  TabTitleText,
-  PageSectionVariants,
-} from '@patternfly/react-core';
+import { Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 
@@ -116,11 +110,7 @@ export const ConnectorDetailsPageBody: FC<ConnectorDetailsPageBodyProps> = ({
     return <Loading />;
   }
   return (
-    <PageSection
-      padding={{ default: 'noPadding' }}
-      style={{ zIndex: 0 }}
-      variant={PageSectionVariants.light}
-    >
+    <>
       <ConnectorDetailsHeader
         connectorData={connectorData}
         onDuplicateConnector={onDuplicateConnector}
@@ -131,7 +121,12 @@ export const ConnectorDetailsPageBody: FC<ConnectorDetailsPageBodyProps> = ({
         updateEditMode={updateEditMode}
         editMode={editMode || false}
       />
-      <Tabs activeKey={activeTabKey} onSelect={handleTabClick}>
+      <Tabs
+        className={'pf-u-background-color-100'}
+        usePageInsets
+        activeKey={activeTabKey}
+        onSelect={handleTabClick}
+      >
         <Tab
           key={CONNECTOR_DETAILS_TABS.Overview}
           eventKey={CONNECTOR_DETAILS_TABS.Overview}
@@ -162,7 +157,7 @@ export const ConnectorDetailsPageBody: FC<ConnectorDetailsPageBodyProps> = ({
           )}
         </Tab>
       </Tabs>
-    </PageSection>
+    </>
   );
 };
 

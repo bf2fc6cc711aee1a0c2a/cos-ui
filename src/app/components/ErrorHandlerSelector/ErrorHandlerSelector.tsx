@@ -59,7 +59,9 @@ export const returnErrorHandlersNames = (
   }
 };
 
-export const ErrorHandler: React.FunctionComponent<ErrorHandlerProps> = ({
+export const ErrorHandlerSelector: React.FunctionComponent<
+  ErrorHandlerProps
+> = ({
   errorHandlersList,
   errorHandler,
   topic,

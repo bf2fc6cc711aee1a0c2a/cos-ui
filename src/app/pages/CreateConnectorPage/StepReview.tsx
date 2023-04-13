@@ -1,6 +1,6 @@
 import { UserProvidedServiceAccount } from '@apis/api';
 import { useReviewMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
-import { returnErrorHandlersNames } from '@app/components/ErrorHandler/ErrorHandler';
+import { returnErrorHandlersNames } from '@app/components/ErrorHandlerSelector/ErrorHandlerSelector';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { ViewJSONFormat } from '@app/components/ViewJSONFormat/ViewJSONFormat';
 import { getPasswordType } from '@utils/shared';
