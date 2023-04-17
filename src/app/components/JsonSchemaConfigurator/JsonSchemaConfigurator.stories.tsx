@@ -36,6 +36,7 @@ export default {
   component: JsonSchemaConfigurator,
   args: {
     configuration: {},
+    schemaValidator: () => ({ details: [] }),
   },
   decorators: [
     withFixtures({
