@@ -111,7 +111,7 @@
     "msw": "0.49.3",
     "msw-storybook-addon": "1.8.0",
     "null-loader": "4.0.1",
-    "postcss": "8.4.22",
+    "postcss": "8.4.23",
     "prando": "6.0.1",
     "prettier": "2.8.7",
     "raw-loader": "4.0.2",
@@ -128,7 +128,7 @@
     "tsconfig-paths-webpack-plugin": "3.5.2",
     "typescript": "4.9.5",
     "url-loader": "4.1.1",
-    "webpack": "5.79.0",
+    "webpack": "5.80.0",
     "webpack-cli": "4.10.0",
     "webpack-dev-server": "4.13.3"
   },
