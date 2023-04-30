@@ -24,7 +24,7 @@
     "@xstate/test": "0.5.1",
     "ajv": "8.12.0",
     "axios": "0.27.2",
-    "date-fns": "2.29.3",
+    "date-fns": "2.30.0",
     "i18next": "21.10.0",
     "i18next-http-backend": "1.4.5",
     "jsonpointer": "5.0.1",
