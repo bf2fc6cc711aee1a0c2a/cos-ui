@@ -1,10 +1,15 @@
-import { ConnectorsOrderBy, deleteConnector } from '@apis/api';
+import {
+  ConnectorsOrderBy,
+  ConnectorWithErrorHandler,
+  deleteConnector,
+} from '@apis/api';
+import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus';
 import { DialogDeleteConnector } from '@app/components/DialogDeleteConnector/DialogDeleteConnector';
 import { EmptyStateGenericError } from '@app/components/EmptyStateGenericError/EmptyStateGenericError';
+import { ErrorHandlerInfo } from '@app/components/ErrorHandlerInfo/ErrorHandlerInfo';
 import { Loading } from '@app/components/Loading/Loading';
 import { ConnectorMachineActorRef } from '@app/machines/Connector.machine';
 import { DEFAULT_PAGE_SIZE } from '@app/machines/PaginatedResponse.machine';
-import { ConnectorDrawer } from '@app/pages/ConnectorsPage/components/ConnectorDrawer/ConnectorDrawer';
 import { useCos } from '@hooks/useCos';
 import React, {
   FunctionComponent,
@@ -17,13 +22,24 @@ import {
   QuickStartContext,
   QuickStartContextValues,
 } from '@patternfly/quickstarts';
-import { PageSection } from '@patternfly/react-core';
+import {
+  Divider,
+  Drawer,
+  DrawerContent,
+  DrawerPanelContent,
+  PageSection,
+  Spinner,
+} from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 import { Connector } from '@rhoas/connector-management-sdk';
+import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
 import { useConnectorsMachine } from '../../ConnectorsPageContext';
 import { ConnectorActionsMenu } from '../ConnectorActionsMenu/ConnectorActionsMenu';
+import { ConnectorDrawerContent } from '../ConnectorDrawerContent/ConnectorDrawerContent';
+import { ConnectorDrawerData } from '../ConnectorDrawerContent/ConnectorDrawerData';
+import { ConnectorDrawerHeader } from '../ConnectorDrawerHeader/ConnectorDrawerHeader';
 import { ConnectorInstancesTable } from '../ConnectorInstancesTable/ConnectorInstancesTable';
 import { ConnectorsPageTitle } from '../ConnectorsPageTitle/ConnectorsPageTitle';
 
@@ -143,6 +159,66 @@ export const ConnectorInstances: FunctionComponent<ConnectorInstancesProps> = ({
     });
   };
 
+  const panelContent = (instance: Connector) => (
+    <DrawerPanelContent widths={{ default: 'width_50' }}>
+      <ConnectorDrawerHeader
+        drawerHeading={instance.name}
+        status={
+          <ConnectorStatus
+            desiredState={instance.desired_state}
+            name={instance.name}
+            state={instance.status?.state!}
+          />
+        }
+        actionsMenu={
+          <ConnectorActionsMenu
+            onDuplicateConnector={onDuplicateConnector}
+            onConnectorDetail={onConnectorDetail}
+            onClose={deselectConnector}
+          />
+        }
+        onClose={deselectConnector}
+      />
+      <ConnectorDrawerData
+        kafkaInstanceId={instance.kafka.id}
+        namespaceId={instance.namespace_id}
+        renderData={(namespaceData, kafkaInstanceData) => {
+          return (
+            <ConnectorDrawerContent
+              currentState={instance.status?.state!}
+              errorStateMessage={instance.status?.error}
+              errorHandlerContent={
+                <>
+                  <br />
+                  <ErrorHandlerInfo
+                    isHorizontal
+                    errorHandler={
+                      (instance.connector as ConnectorWithErrorHandler)
+                        .error_handler
+                    }
+                    kafkaId={(kafkaInstanceData as KafkaRequest).id}
+                  />
+                  <br />
+                  <Divider />
+                </>
+              }
+              id={instance.id!}
+              kafkaBootstrapServer={instance.kafka.url}
+              kafkaInstanceData={kafkaInstanceData || <Spinner size="md" />}
+              name={instance.name}
+              namespaceData={namespaceData || <Spinner size="md" />}
+              onDuplicateConnector={onDuplicateConnector}
+            />
+          );
+        }}
+      />
+    </DrawerPanelContent>
+  );
+
+  const isExpanded =
+    typeof selectedConnector !== 'undefined' &&
+    selectedConnector?.status!.state !== 'deleted';
+
   switch (true) {
     case firstRequest:
     case loading:
@@ -151,52 +227,45 @@ export const ConnectorInstances: FunctionComponent<ConnectorInstancesProps> = ({
       return <EmptyStateGenericError />;
     default:
       return (
-        <ConnectorDrawer
-          connector={selectedConnector}
-          onDuplicateConnector={onDuplicateConnector}
-          onClose={deselectConnector}
-          actionsMenu={
-            <ConnectorActionsMenu
-              onDuplicateConnector={onDuplicateConnector}
-              onConnectorDetail={onConnectorDetail}
-              onClose={deselectConnector}
+        <Drawer isExpanded={isExpanded}>
+          <DrawerContent
+            panelContent={isExpanded ? panelContent(selectedConnector!) : <></>}
+          >
+            <PageSection variant={'light'}>
+              <ConnectorsPageTitle />
+            </PageSection>
+            <DialogDeleteConnector
+              connectorName={connectorToDelete?.name}
+              showDialog={showDeleteConnectorConfirm}
+              onCancel={doCancelDeleteConnector}
+              onConfirm={doDeleteConnector}
             />
-          }
-        >
-          <PageSection variant={'light'}>
-            <ConnectorsPageTitle />
-          </PageSection>
-          <DialogDeleteConnector
-            connectorName={connectorToDelete?.name}
-            showDialog={showDeleteConnectorConfirm}
-            onCancel={doCancelDeleteConnector}
-            onConfirm={doDeleteConnector}
-          />
-          <PageSection padding={{ default: 'noPadding' }} variant={'default'}>
-            <ConnectorInstancesTable
-              activeSortColumn={activeSortColumn}
-              activeSortDirection={activeSortDirection as string}
-              isFiltered={isFiltered}
-              itemCount={total || 0}
-              items={items as Array<ConnectorMachineActorRef>}
-              namesChips={namesChips}
-              onClearAllFilters={onClearAllFilters}
-              onConnectorDetail={onConnectorDetail}
-              onCreateConnector={onCreateConnector}
-              onDuplicateConnector={onDuplicateConnector}
-              onHelp={onHelp}
-              onPageChange={onPageChange}
-              onRemoveNameChip={onRemoveChip}
-              onRemoveNameChipGroup={onRemoveGroup}
-              onSearchName={onSearch}
-              onSort={onSort}
-              page={page}
-              selectedConnector={selectedConnector}
-              size={size}
-              onDelete={(row) => openDeleteDialog(row)}
-            />
-          </PageSection>
-        </ConnectorDrawer>
+            <PageSection padding={{ default: 'noPadding' }} variant={'default'}>
+              <ConnectorInstancesTable
+                activeSortColumn={activeSortColumn}
+                activeSortDirection={activeSortDirection as string}
+                isFiltered={isFiltered}
+                itemCount={total || 0}
+                items={items as Array<ConnectorMachineActorRef>}
+                namesChips={namesChips}
+                onClearAllFilters={onClearAllFilters}
+                onConnectorDetail={onConnectorDetail}
+                onCreateConnector={onCreateConnector}
+                onDuplicateConnector={onDuplicateConnector}
+                onHelp={onHelp}
+                onPageChange={onPageChange}
+                onRemoveNameChip={onRemoveChip}
+                onRemoveNameChipGroup={onRemoveGroup}
+                onSearchName={onSearch}
+                onSort={onSort}
+                page={page}
+                selectedConnector={selectedConnector}
+                size={size}
+                onDelete={(row) => openDeleteDialog(row)}
+              />
+            </PageSection>
+          </DrawerContent>
+        </Drawer>
       );
   }
 };

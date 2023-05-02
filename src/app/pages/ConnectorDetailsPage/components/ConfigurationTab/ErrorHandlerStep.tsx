@@ -1,51 +1,13 @@
-import {
-  ErrorHandler,
-  returnErrorHandlersNames,
-} from '@app/components/ErrorHandler/ErrorHandler';
+import { DLQErrorHandler, ErrorHandler } from '@apis/api';
+import { ErrorHandlerInfo } from '@app/components/ErrorHandlerInfo/ErrorHandlerInfo';
+import { ErrorHandlerSelector } from '@app/components/ErrorHandlerSelector/ErrorHandlerSelector';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { ERROR_HANDLING_STRATEGY } from '@constants/constants';
 import React, { FC, useEffect, useState } from 'react';
 
-import {
-  Button,
-  Form,
-  FormGroup,
-  Grid,
-  GridItem,
-  Popover,
-  Text,
-  TextContent,
-  TextVariants,
-} from '@patternfly/react-core';
-import { HelpIcon } from '@patternfly/react-icons';
+import { Grid, GridItem } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { Connector } from '@rhoas/connector-management-sdk';
-
-// error_handler does not yet seem to be available in the SDK
-export type LogErrorHandler = {
-  log: object;
-};
-
-export type StopErrorHandler = {
-  stop: object;
-};
-
-export type DLQErrorHandlerTopic = {
-  topic: string;
-};
-
-export type DLQErrorHandler = {
-  dead_letter_queue: DLQErrorHandlerTopic;
-};
-
-export type ErrorHandler = LogErrorHandler | StopErrorHandler | DLQErrorHandler;
-
-// Create an extended connector type that includes this missing attribute
-export type ConnectorWithErrorHandler = Connector & {
-  error_handler: ErrorHandler;
-  [key: string]: any; // workaround to allow indexing by key for now
-};
 
 export type ErrorHandlerStepProps = {
   editMode: boolean;
@@ -122,11 +84,6 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
     .sort()
     .reverse();
 
-  const {
-    errorHandler: i18nErrorHandlerName,
-    description: i18nErrorHandlerDescription,
-  } = returnErrorHandlersNames(errorHandler);
-
   return (
     <StepBodyLayout
       title={t('errorHandling')}
@@ -135,7 +92,7 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
       <Grid hasGutter>
         <GridItem span={8}>
           {editMode ? (
-            <ErrorHandler
+            <ErrorHandlerSelector
               errorHandlersList={ErrorHandlersList}
               errorHandler={errorHandler}
               topic={topic}
@@ -143,83 +100,11 @@ export const ErrorHandlerStep: FC<ErrorHandlerStepProps> = ({
               selectErrorHandler={selectErrorHandler}
             />
           ) : (
-            <Form>
-              <FormGroup
-                label={t('errorHandlingMethod')}
-                isRequired
-                fieldId="error-handler_strategy"
-                className="error-handler_strategy"
-                labelIcon={
-                  <Popover
-                    headerContent={`${t(
-                      'errorHandlingMethod'
-                    )}: ${i18nErrorHandlerName}`}
-                    bodyContent={i18nErrorHandlerDescription}
-                  >
-                    <button
-                      type="button"
-                      onClick={(e) => e.preventDefault()}
-                      className="pf-c-form__group-label-help"
-                    >
-                      <HelpIcon noVerticalAlign />
-                    </button>
-                  </Popover>
-                }
-              >
-                <TextContent>
-                  <Text component={TextVariants.p} className="pf-u-m-0">
-                    {i18nErrorHandlerName}
-                  </Text>
-                </TextContent>
-              </FormGroup>
-              {errorHandler === ERROR_HANDLING_STRATEGY.DeadLetterQueue && (
-                <FormGroup
-                  label={t('deadLetterQueueTopic')}
-                  isRequired
-                  fieldId="topic"
-                  labelIcon={
-                    <Popover
-                      headerContent={t('deadLetterQueueTopic')}
-                      bodyContent={t('deadLetterQueueHelper')}
-                    >
-                      <button
-                        type="button"
-                        aria-label={t('deadLetterTopicHelper')}
-                        onClick={(e) => e.preventDefault()}
-                        aria-describedby="Dead letter queue topic"
-                        className="pf-c-form__group-label-help"
-                      >
-                        <HelpIcon noVerticalAlign />
-                      </button>
-                    </Popover>
-                  }
-                >
-                  {kafkaId ? (
-                    <Button
-                      className="pf-u-p-0"
-                      variant="link"
-                      onClick={() => {
-                        window.open(
-                          `https://console.redhat.com/application-services/streams/kafkas/${kafkaId}/topics/${topic}`,
-                          '_blank'
-                        );
-                      }}
-                    >
-                      {topic}
-                    </Button>
-                  ) : (
-                    <TextContent>
-                      <Text component={TextVariants.p} className="pf-u-m-0">
-                        {topic}
-                      </Text>
-                      <Text component={TextVariants.small}>
-                        {t('kafkaInstanceExpired')}
-                      </Text>
-                    </TextContent>
-                  )}
-                </FormGroup>
-              )}
-            </Form>
+            <ErrorHandlerInfo
+              asForm
+              errorHandler={configuration!}
+              kafkaId={kafkaId}
+            />
           )}
         </GridItem>
       </Grid>

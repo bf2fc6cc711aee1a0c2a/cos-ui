@@ -1,4 +1,8 @@
-import { updateConnector } from '@apis/api';
+import {
+  ConnectorWithErrorHandler,
+  ErrorHandler,
+  updateConnector,
+} from '@apis/api';
 import { Loading } from '@app/components/Loading/Loading';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { StepErrorBoundary } from '@app/components/StepErrorBoundary/StepErrorBoundary';
@@ -45,11 +49,7 @@ import {
 import { CommonStep } from './CommonStep';
 import { ConfigurationStep } from './ConfigurationStep';
 import './ConfigurationTab.css';
-import {
-  ConnectorWithErrorHandler,
-  ErrorHandler,
-  ErrorHandlerStep,
-} from './ErrorHandlerStep';
+import { ErrorHandlerStep } from './ErrorHandlerStep';
 
 export type ConfigurationTabProps = {
   onSave: () => void;

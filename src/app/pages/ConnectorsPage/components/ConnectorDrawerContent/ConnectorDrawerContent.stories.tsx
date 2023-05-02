@@ -3,10 +3,15 @@ import { subDays, subMinutes } from 'date-fns';
 import { subHours } from 'date-fns/esm';
 import React from 'react';
 
-import { Drawer, DrawerContent, Spinner } from '@patternfly/react-core';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerPanelContent,
+  Spinner,
+} from '@patternfly/react-core';
 
+import { ConnectorDrawerHeader } from '../ConnectorDrawerHeader/ConnectorDrawerHeader';
 import { ConnectorDrawerContent } from './ConnectorDrawerContent';
-import { DrawerHeader } from './DrawerHeader';
 
 const namespace = {
   id: 'c95j6h66ar2c9mtr5vjg',
@@ -67,21 +72,24 @@ const PreviewNamespace = {
 export default {
   title: 'Pages/Connector Instances Page/components/Drawer Content',
   component: ConnectorDrawerContent,
-  /*
   decorators: [
     (Story) => (
-
       <Drawer isExpanded={true}>
-        <DrawerContent panelContent={<Story />} />
+        <DrawerContent
+          panelContent={
+            <DrawerPanelContent widths={{ default: 'width_50' }}>
+              <Story />
+            </DrawerPanelContent>
+          }
+        />
       </Drawer>
     ),
   ],
-  */
 } as ComponentMeta<typeof ConnectorDrawerContent>;
 
 const Template: ComponentStory<typeof ConnectorDrawerContent> = (args) => (
   <>
-    <DrawerHeader
+    <ConnectorDrawerHeader
       drawerHeading={args.name}
       status={<></>}
       actionsMenu={<></>}

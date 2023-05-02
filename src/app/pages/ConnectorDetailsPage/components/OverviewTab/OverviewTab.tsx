@@ -1,12 +1,20 @@
-import { getKafkaInstanceById, getNamespace } from '@apis/api';
+import {
+  ConnectorWithErrorHandler,
+  getKafkaInstanceById,
+  getNamespace,
+} from '@apis/api';
 import { ConnectorInfoTextList } from '@app/components/ConnectorInfoTextList/ConnectorInfoTextList';
+import { ErrorHandlerInfo } from '@app/components/ErrorHandlerInfo/ErrorHandlerInfo';
 import { useCos } from '@hooks/useCos';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 
 import {
   AlertVariant,
+  Card,
+  CardBody,
+  Grid,
+  GridItem,
   PageSection,
-  PageSectionVariants,
   Spinner,
 } from '@patternfly/react-core';
 
@@ -96,19 +104,40 @@ export const OverviewTab: FC<OverviewTabProps> = ({
   }, [connectorData]);
 
   return (
-    <PageSection variant={PageSectionVariants.light}>
-      <ConnectorInfoTextList
-        onDuplicateConnector={onDuplicateConnector}
-        name={connectorData?.name}
-        id={connectorData?.id!}
-        type={connectorData?.connector_type_id}
-        bootstrapServer={connectorData?.kafka?.url}
-        kafkaInstanceData={kafkaInstanceData || <Spinner size="md" />}
-        namespaceData={namespaceData || <Spinner size="md" />}
-        owner={connectorData?.owner!}
-        createdAt={new Date(connectorData?.created_at!)}
-        modifiedAt={new Date(connectorData?.modified_at!)}
-      />
+    <PageSection>
+      <Grid hasGutter>
+        <GridItem span={8}>
+          <Card>
+            <CardBody>
+              <ConnectorInfoTextList
+                onDuplicateConnector={onDuplicateConnector}
+                name={connectorData?.name}
+                id={connectorData?.id!}
+                type={connectorData?.connector_type_id}
+                bootstrapServer={connectorData?.kafka?.url}
+                kafkaInstanceData={kafkaInstanceData || <Spinner size="md" />}
+                namespaceData={namespaceData || <Spinner size="md" />}
+                owner={connectorData?.owner!}
+                createdAt={new Date(connectorData?.created_at!)}
+                modifiedAt={new Date(connectorData?.modified_at!)}
+              />
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem span={4}>
+          <Card>
+            <CardBody>
+              <ErrorHandlerInfo
+                errorHandler={
+                  (connectorData.connector as ConnectorWithErrorHandler)
+                    .error_handler
+                }
+                kafkaId={(kafkaInstanceData as KafkaInstance)?.id}
+              />
+            </CardBody>
+          </Card>
+        </GridItem>
+      </Grid>
     </PageSection>
   );
 };

@@ -31,10 +31,10 @@ export type ConnectorInfoTextListProps = {
   type?: string;
   bootstrapServer: string;
   kafkaInstanceData: string | KafkaInstance | ReactNode;
-  owner: string;
+  owner?: string;
   namespaceData: ConnectorNamespace | ReactNode;
-  createdAt: Date;
-  modifiedAt: Date;
+  createdAt?: Date;
+  modifiedAt?: Date;
   onDuplicateConnector: (id: string) => void;
 };
 
@@ -171,23 +171,31 @@ export const ConnectorInfoTextList: FunctionComponent<
                 />
               )}
             {textListItem(t('owner'), owner)}
-            {textListItem(
-              t('timeCreated'),
-              <time
-                title={t('{{date}}', { date: createdAt })}
-                dateTime={createdAt.toISOString()}
-              >
-                {t('{{ date, ago }}', { date: createdAt })}
-              </time>
+            {createdAt ? (
+              textListItem(
+                t('timeCreated'),
+                <time
+                  title={t('{{date}}', { date: createdAt })}
+                  dateTime={createdAt.toISOString()}
+                >
+                  {t('{{ date, ago }}', { date: createdAt })}
+                </time>
+              )
+            ) : (
+              <></>
             )}
-            {textListItem(
-              t('timeUpdated'),
-              <time
-                title={t('{{date}}', { date: modifiedAt })}
-                dateTime={modifiedAt.toISOString()}
-              >
-                {t('{{ date, ago }}', { date: modifiedAt })}
-              </time>
+            {modifiedAt ? (
+              textListItem(
+                t('timeUpdated'),
+                <time
+                  title={t('{{date}}', { date: modifiedAt })}
+                  dateTime={modifiedAt.toISOString()}
+                >
+                  {t('{{ date, ago }}', { date: modifiedAt })}
+                </time>
+              )
+            ) : (
+              <></>
             )}
           </TextList>
         </TextContent>

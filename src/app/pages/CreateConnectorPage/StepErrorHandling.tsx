@@ -1,5 +1,5 @@
 import { useErrorHandlingMachine } from '@app/components/CreateConnectorWizard/CreateConnectorWizardContext';
-import { ErrorHandler } from '@app/components/ErrorHandler/ErrorHandler';
+import { ErrorHandlerSelector } from '@app/components/ErrorHandlerSelector/ErrorHandlerSelector';
 import { StepBodyLayout } from '@app/components/StepBodyLayout/StepBodyLayout';
 import { createValidator } from '@utils/createValidator';
 import React, { FunctionComponent, useEffect } from 'react';
@@ -69,7 +69,7 @@ export const StepErrorHandling: FunctionComponent = () => {
     >
       <Grid hasGutter className="pf-u-p-md ">
         <GridItem span={8}>
-          <ErrorHandler
+          <ErrorHandlerSelector
             errorHandlersList={ErrorHandlersList}
             errorHandler={errorHandler}
             topic={topic}

@@ -1,14 +1,13 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import { ErrorHandler } from './ErrorHandler';
+import { ErrorHandlerSelector } from './ErrorHandlerSelector';
 
 export default {
   title: 'Wizard Step 4.3/Error handler Step',
-  component: ErrorHandler,
+  component: ErrorHandlerSelector,
 };
 
-const Template = (args) => <ErrorHandler {...args} />;
+const Template = (args) => <ErrorHandlerSelector {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {

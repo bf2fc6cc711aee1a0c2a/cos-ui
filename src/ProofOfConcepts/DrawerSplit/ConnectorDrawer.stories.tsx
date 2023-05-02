@@ -11,7 +11,7 @@ import {
 import { ConnectorDrawer } from './ConnectorDrawer';
 
 export default {
-  title: 'POC-Connectors Message Drawer/Split Full Example',
+  title: 'ProofOfConcepts/Connectors Message Drawer/Split Full Example',
   component: ConnectorDrawer,
   args: { sent: '1600', notSent: '12' },
   parameters: {

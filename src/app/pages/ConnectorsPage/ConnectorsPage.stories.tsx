@@ -1,5 +1,6 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { rest } from 'msw';
+import Prando from 'prando';
 import React from 'react';
 
 import manyConnectorsData from '../../../../cypress/fixtures/connectorsPolling.json';
@@ -9,6 +10,7 @@ import { AlertsProvider } from '../../components/Alerts/Alerts';
 import { ConnectorsPage } from './ConnectorsPage';
 
 const API_BASE = 'https://dummy.server';
+const rng = new Prando('story-connectors-page');
 
 export default {
   title: 'Pages/Connector Instances Page',
@@ -37,6 +39,8 @@ const Template: ComponentStory<typeof ConnectorsPage> = (args) => (
 );
 
 const GET_CONNECTORS_API = `${API_BASE}/api/connector_mgmt/v1/kafka_connectors`;
+const GET_CONNECTOR_NAMESPACE_API = `${API_BASE}/api/connector_mgmt/v1/kafka_connector_namespaces/:id`;
+const GET_KAFKA_API = `${API_BASE}/api/kafkas_mgmt/v1/kafkas/:id`;
 
 export const InitialLoading = Template.bind({});
 InitialLoading.parameters = {
@@ -62,6 +66,16 @@ WithConnectors.parameters = {
     rest.get(GET_CONNECTORS_API, (req, res, ctx) => {
       return res(ctx.delay(), ctx.json(manyConnectorsData));
     }),
+    rest.get(GET_KAFKA_API, (req, res, ctx) => {
+      const id = req.params.id as string;
+      const response = generateStoryKafkaInstance(id);
+      return res(ctx.delay(), ctx.json(response));
+    }),
+    rest.get(GET_CONNECTOR_NAMESPACE_API, (req, res, ctx) => {
+      const id = req.params.id as string;
+      const response = generateStoryNamespaceInstance(id);
+      return res(ctx.delay(), ctx.json(response));
+    }),
   ],
 };
 
@@ -76,6 +90,16 @@ WithOneConnector.parameters = {
       const response = generateStoryConnectorInstances(page, size, search, 1);
       return res(ctx.delay(), ctx.json(response));
     }),
+    rest.get(GET_KAFKA_API, (req, res, ctx) => {
+      const id = req.params.id as string;
+      const response = generateStoryKafkaInstance(id);
+      return res(ctx.delay(), ctx.json(response));
+    }),
+    rest.get(GET_CONNECTOR_NAMESPACE_API, (req, res, ctx) => {
+      const id = req.params.id as string;
+      const response = generateStoryNamespaceInstance(id);
+      return res(ctx.delay(), ctx.json(response));
+    }),
   ],
 };
 
@@ -88,6 +112,16 @@ WithLotsOfConnectors.parameters = {
       const size = +(searchParams.get('size') || 20);
       const search = searchParams.get('search') || '';
       const response = generateStoryConnectorInstances(page, size, search, 200);
+      return res(ctx.delay(), ctx.json(response));
+    }),
+    rest.get(GET_KAFKA_API, (req, res, ctx) => {
+      const id = req.params.id as string;
+      const response = generateStoryKafkaInstance(id);
+      return res(ctx.delay(), ctx.json(response));
+    }),
+    rest.get(GET_CONNECTOR_NAMESPACE_API, (req, res, ctx) => {
+      const id = req.params.id as string;
+      const response = generateStoryNamespaceInstance(id);
       return res(ctx.delay(), ctx.json(response));
     }),
   ],
@@ -121,6 +155,27 @@ WithErrorAfterPolling.parameters = {
       return res(ctx.json(response));
     }),
   ],
+};
+
+const generateStoryKafkaInstance = (id: string) => {
+  return {
+    id,
+    name: `${id} Kafka`,
+  };
+};
+
+const generateStoryNamespaceInstance = (id: string) => {
+  return {
+    cluster_id: id,
+    name: `${id} Namespace`,
+    ...(id.startsWith('baz')
+      ? {
+          expiration: `${new Date(
+            Date.now() + rng.nextInt(2400000, 4800000)
+          ).toISOString()}`,
+        }
+      : {}),
+  };
 };
 
 // generate a deterministic set of connectors
@@ -200,19 +255,34 @@ const generateStoryConnectorInstances = (page, size, search, total) => {
     }
   }
 
+  function genErrorHandler(index) {
+    switch (getNameBit(index)) {
+      case 'foo':
+        return { stop: {} };
+      case 'bar':
+        return { log: {} };
+      default:
+        return { dead_letter_queue: { topic: 'dlq-topic' } };
+    }
+  }
+
   const fullSet = Array.from({ length: total }, (_, index) => ({
     name: genConnectorName(index),
     id: genConnectorId(index),
     connector_type_id: genConnectorTypeId(index),
     desired_state: genConnectorDesiredState(index),
     status: genConnectorState(index),
-    created_at: new Date().toISOString(),
-    modified_at: new Date().toISOString(),
+    created_at: new Date(Date.now() - 1200000).toISOString(),
+    modified_at: new Date(Date.now() - 120000).toISOString(),
     kafka: {
       id: genConnectorId(index),
       url: 'https://teh-internets:443',
     },
+    namespace_id: genConnectorId(index),
     owner: 'somebody',
+    connector: {
+      error_handler: genErrorHandler(index),
+    },
   }));
   const start = (page - 1) * size;
   const end = start + size;
