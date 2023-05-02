@@ -1,7 +1,5 @@
 import Keycloak, { KeycloakInstance, KeycloakProfile } from 'keycloak-js';
-import React from 'react';
-
-import { Auth, AuthContext } from '@rhoas/app-services-ui-shared';
+import React, { useContext } from 'react';
 
 export let keycloak: Keycloak.KeycloakInstance | undefined;
 
@@ -120,20 +118,34 @@ export const KeycloakContext = React.createContext<IKeycloakContext>({
   keycloak: undefined,
 });
 
-export const KeycloakAuthProvider: React.FunctionComponent = (props) => {
-  const getUsername = () => {
-    return getParsedKeyCloakToken().then((token: any) => token['username']);
+/**
+ * Hook to get ahold of the keycloak instance
+ * @returns
+ */
+export const useKeyCloak = () => {
+  const context = useContext(KeycloakContext);
+  if (!context) {
+    throw new Error(
+      'useKeyCloak must be used inside a KeycloakContext.provider'
+    );
+  }
+  return {
+    ...context,
   };
+};
 
-  const authTokenContext = {
-    kas: {
-      getToken: getKeyCloakToken,
-    },
-    getUsername: getUsername,
-  } as Auth;
-  return (
-    <AuthContext.Provider value={authTokenContext}>
-      {props.children}
-    </AuthContext.Provider>
-  );
+/**
+ *
+ * @returns Hook that just returns a function to get the authorization token
+ */
+export const useKeyCloakAuthToken = () => {
+  const context = useContext(KeycloakContext);
+  if (!context) {
+    throw new Error(
+      'useKeycloakAuthToken must be used inside a KeycloakContext.provider'
+    );
+  }
+  return {
+    getKeyCloakToken,
+  };
 };

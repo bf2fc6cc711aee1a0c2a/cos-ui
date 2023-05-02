@@ -4,7 +4,6 @@ import _ from 'lodash';
 
 import { Sender } from 'xstate';
 
-import { KafkaInstance } from '@rhoas/app-services-ui-shared';
 import {
   Channel,
   Configuration,
@@ -768,7 +767,7 @@ export const getKafkaInstanceById = ({
   accessToken,
   kafkaManagementBasePath,
   KafkaInstanceId,
-}: KafkaInstanceDetailProps): FetchCallbacks<KafkaInstance> => {
+}: KafkaInstanceDetailProps): FetchCallbacks<KafkaRequest> => {
   const connectorsAPI = new DefaultApi(
     new Configuration({
       accessToken,

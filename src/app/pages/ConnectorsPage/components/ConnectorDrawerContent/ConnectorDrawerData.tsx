@@ -1,4 +1,5 @@
 import { getKafkaInstanceById, getNamespace } from '@apis/api';
+import { useAlert } from '@hooks/useAlert';
 import { useCos } from '@hooks/useCos';
 import React, {
   FunctionComponent,
@@ -10,8 +11,8 @@ import React, {
 import { AlertVariant } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { KafkaInstance, useAlert } from '@rhoas/app-services-ui-shared';
 import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
+import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
 export type ConnectorDrawerContentProps = {
   kafkaInstanceId: string;
@@ -29,7 +30,7 @@ export const ConnectorDrawerData: FunctionComponent<
     null
   );
   const [kafkaInstanceData, setKafkaInstanceData] = useState<
-    KafkaInstance | string
+    KafkaRequest | string
   >('');
 
   const { connectorsApiBasePath, kafkaManagementApiBasePath, getToken } =
@@ -42,7 +43,7 @@ export const ConnectorDrawerData: FunctionComponent<
   }, []);
 
   const getKIData = useCallback((data) => {
-    setKafkaInstanceData(data as KafkaInstance);
+    setKafkaInstanceData(data as KafkaRequest);
   }, []);
 
   const onError = useCallback(

@@ -20,8 +20,8 @@ import {
 } from '@patternfly/react-icons';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { KafkaInstance } from '@rhoas/app-services-ui-shared';
 import { ConnectorNamespace } from '@rhoas/connector-management-sdk';
+import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
 import './ConnectorInfoTextList.css';
 
@@ -30,7 +30,7 @@ export type ConnectorInfoTextListProps = {
   id: string;
   type?: string;
   bootstrapServer: string;
-  kafkaInstanceData: string | KafkaInstance | ReactNode;
+  kafkaInstanceData: string | KafkaRequest | ReactNode;
   owner?: string;
   namespaceData: ConnectorNamespace | ReactNode;
   createdAt?: Date;
@@ -64,7 +64,7 @@ export const ConnectorInfoTextList: FunctionComponent<
 
   const textListItem: (
     title: string,
-    value?: string | KafkaInstance | ReactNode
+    value?: string | KafkaRequest | ReactNode
   ) => ReactNode = (title, value?) => (
     <>
       {value && (
@@ -76,19 +76,19 @@ export const ConnectorInfoTextList: FunctionComponent<
             {(() => {
               switch (title) {
                 case t('kafkaInstance'):
-                  return (value as KafkaInstance)?.name ? (
+                  return (value as KafkaRequest)?.name ? (
                     <Button
                       className="pf-u-p-0"
                       variant="link"
                       onClick={() => {
                         window.open(
                           'https://console.redhat.com/application-services/streams/kafkas/' +
-                            (value as KafkaInstance).id,
+                            (value as KafkaRequest).id,
                           '_blank'
                         );
                       }}
                     >
-                      {(value as KafkaInstance).name}
+                      {(value as KafkaRequest).name}
                     </Button>
                   ) : typeof value === 'string' ? (
                     <>

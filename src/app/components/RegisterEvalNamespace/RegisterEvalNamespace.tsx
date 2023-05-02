@@ -1,4 +1,5 @@
 import { registerEvalNamespace } from '@apis/api';
+import { useAlert } from '@hooks/useAlert';
 import { useCos } from '@hooks/useCos';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -15,7 +16,6 @@ import {
 } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { useAlert } from '@rhoas/app-services-ui-shared';
 
 import { ModalAlerts } from './ModalAlerts';
 

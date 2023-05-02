@@ -2,6 +2,7 @@ import { deleteConnector, startConnector, stopConnector } from '@apis/api';
 import { ConnectorStatus } from '@app/components/ConnectorStatus/ConnectorStatus';
 import { SomethingWentWrongInline } from '@app/components/SomethingWentWrongInline/SomethingWentWrongInline';
 import { CONNECTOR_DETAILS_TABS } from '@constants/constants';
+import { useAlert } from '@hooks/useAlert';
 import React, { FC, useCallback, useEffect, useReducer } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 
@@ -16,7 +17,6 @@ import {
 } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { useAlert } from '@rhoas/app-services-ui-shared';
 import {
   Connector,
   ConnectorDesiredState,

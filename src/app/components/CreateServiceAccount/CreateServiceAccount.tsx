@@ -1,4 +1,5 @@
 import { createServiceAccount, UserProvidedServiceAccount } from '@apis/api';
+import { useAlert } from '@hooks/useAlert';
 import { useCos } from '@hooks/useCos';
 import React, { FormEvent, useCallback, useState } from 'react';
 import { FC } from 'react';
@@ -28,7 +29,7 @@ import {
 import { KeyIcon, HelpIcon } from '@patternfly/react-icons';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { ServiceAccount, useAlert } from '@rhoas/app-services-ui-shared';
+import { ServiceAccount } from '@rhoas/connector-management-sdk';
 
 type CreateServiceAccountProps = {
   isOpen: boolean;

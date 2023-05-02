@@ -10,6 +10,7 @@ import {
   ConfigurationMode,
   ConnectorConfiguratorComponent,
 } from '@app/machines/StepConfiguratorLoader.machine';
+import { useAlert } from '@hooks/useAlert';
 import { useCos } from '@hooks/useCos';
 import { fetchConfigurator } from '@utils/loadFederatedConfigurator';
 import {
@@ -36,15 +37,11 @@ import {
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
 import {
-  KafkaInstance,
-  useAlert,
-  useConfig,
-} from '@rhoas/app-services-ui-shared';
-import {
   Connector,
   ConnectorType,
   ConnectorTypeAllOf,
 } from '@rhoas/connector-management-sdk';
+import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
 import { CommonStep } from './CommonStep';
 import { ConfigurationStep } from './ConfigurationStep';
@@ -56,7 +53,7 @@ export type ConfigurationTabProps = {
   editMode: boolean;
   updateEditMode: (editEnable: boolean) => void;
   connectorData: Connector;
-  kafkaInstanceDetails: KafkaInstance | string;
+  kafkaInstanceDetails: KafkaRequest | string;
   connectorTypeDetails: ConnectorType;
 };
 export type connector = {
@@ -117,9 +114,8 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
 }) => {
   const { t } = useTranslation();
   const alert = useAlert();
-  const config = useConfig();
 
-  const { connectorsApiBasePath, getToken } = useCos();
+  const { connectorsApiBasePath, getToken, configurators } = useCos();
 
   const [askForLeaveConfirm, setAskForLeaveConfirm] = useState(false);
   const [userTouched, setUserTouched] = useState(false);
@@ -243,7 +239,7 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
     try {
       response = await fetchConfigurator(
         connectorTypeDetails,
-        config?.cos.configurators || {}
+        configurators || {}
       );
       setConfigurator(response);
     } catch (err) {
@@ -384,7 +380,7 @@ export const ConfigurationTab: FC<ConfigurationTabProps> = ({
                         }
                         configuration={errHandlerConfiguration}
                         kafkaId={
-                          (kafkaInstanceDetails as KafkaInstance)?.id || ''
+                          (kafkaInstanceDetails as KafkaRequest)?.id || ''
                         }
                         changeIsValid={setIsEditValid}
                         onUpdateConfiguration={onUpdateConfiguration}

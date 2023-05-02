@@ -20,9 +20,10 @@ http://localhost:9002/?pseudolocalization=true&lng=en
 # Change language to Japanese (if you don't want to change your browser language)
 http://localhost:9002/?lng=ja
 ```
+
 ## API
 
-By default the UI will run against the staging api (api.stage.openshift.com) in development. To change the API server set the environment variable `BASE_PATH`.
+By default the standalone UI will run against a development backend environment for connectors and use production for Kafka.
 
 For example:
 
@@ -37,10 +38,10 @@ npm install
 npm run start
 ```
 
-This will start the standalone app on `https://prod.foo.redhat.com:1337/`. 
+This will start the standalone app on `https://prod.foo.redhat.com:1337/`.
 
 - make sure you have `127.0.0.1 prod.foo.redhat.com` in your hosts file for this to work.
-- you can also change the backend (fleet-manager) that the app will point to in the `.env` file.
+- You can use the menu at the top right of the main navigation to select a backend to run against.
 
 ## Run the UI as a federated module consumed by the application-services-ui app
 
@@ -49,7 +50,16 @@ npm install
 npm run start:federate
 ```
 
-This will run a dev server on http://localhost:9002 that will serve a federated module named `cos`.
+This will run a dev server on http://localhost:9002 that will serve a federated module named `cos`. When using this with the app-services-ui shell the backend will default to the development connectors environment and the production Kafka environment. To change either backend URL set either or both of the relevant environment variables before running `npm run start:federate`:
+
+```sh
+# use the stage instance of this API
+export COS_MGMT_URL="https://api.stage.openshift.com"
+# use the production instance of this API
+export KAS_MGMT_URL="https://api.openshift.com"
+```
+
+_Important Note_: These environment variables also allow for building a version of the federated module that uses a custom backend. It's very important however when building this module for staging or production that these variables are left unset.
 
 ### Running Cypress
 
@@ -110,6 +120,7 @@ type ApiDrawerState = {
   isExpanded: boolean;
 };
 ```
+
 ### Interfaces
 
 Interfaces should be used for all public facing API definitions, as well as models. A table describing when to use interfaces vs. types can be found [here](https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/types_or_interfaces).
@@ -211,6 +222,7 @@ function Counter() {
   );
 }
 ```
+
 #### useEffect
 
 For useEffect only [return the function or undefined](https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/hooks#useeffect).

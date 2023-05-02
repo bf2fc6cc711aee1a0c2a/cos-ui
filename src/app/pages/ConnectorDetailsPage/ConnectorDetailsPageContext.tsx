@@ -11,16 +11,16 @@ import React, {
 } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { KafkaInstance } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorType } from '@rhoas/connector-management-sdk';
+import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
 type ConnectorDetailsPageContextType = {
   connectorData?: Connector;
-  kafkaInstanceDetails: KafkaInstance | string;
+  kafkaInstanceDetails: KafkaRequest | string;
   connectorTypeDetails?: ConnectorType;
   fetchError: string | boolean;
   setKafkaInstanceDetails: React.Dispatch<
-    React.SetStateAction<string | KafkaInstance>
+    React.SetStateAction<string | KafkaRequest>
   >;
 };
 
@@ -34,7 +34,7 @@ export const ConnectorDetailsPageProvider: FunctionComponent = ({
   const { connectorsApiBasePath, getToken } = useCos();
   const [connectorData, setConnectorData] = useState<Connector>();
   const [kafkaInstanceDetails, setKafkaInstanceDetails] = useState<
-    KafkaInstance | string
+    KafkaRequest | string
   >('');
   const [connectorTypeDetails, setConnectorTypeDetails] =
     useState<ConnectorType>();

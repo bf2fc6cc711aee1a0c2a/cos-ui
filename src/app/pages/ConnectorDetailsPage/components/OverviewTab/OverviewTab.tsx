@@ -5,6 +5,7 @@ import {
 } from '@apis/api';
 import { ConnectorInfoTextList } from '@app/components/ConnectorInfoTextList/ConnectorInfoTextList';
 import { ErrorHandlerInfo } from '@app/components/ErrorHandlerInfo/ErrorHandlerInfo';
+import { useAlert } from '@hooks/useAlert';
 import { useCos } from '@hooks/useCos';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 
@@ -19,13 +20,13 @@ import {
 } from '@patternfly/react-core';
 
 import { useTranslation } from '@rhoas/app-services-ui-components';
-import { KafkaInstance, useAlert } from '@rhoas/app-services-ui-shared';
 import { Connector, ConnectorNamespace } from '@rhoas/connector-management-sdk';
+import { KafkaRequest } from '@rhoas/kafka-management-sdk';
 
 export interface OverviewTabProps {
   connectorData: Connector;
   setKafkaInstanceDetails: React.Dispatch<
-    React.SetStateAction<string | KafkaInstance>
+    React.SetStateAction<string | KafkaRequest>
   >;
   onDuplicateConnector: (id: string) => void;
 }
@@ -37,7 +38,7 @@ export const OverviewTab: FC<OverviewTabProps> = ({
 }) => {
   const [namespaceData, setNamespaceData] = useState<ConnectorNamespace>();
   const [kafkaInstanceData, setKafkaInstanceData] = useState<
-    KafkaInstance | string
+    KafkaRequest | string
   >('');
 
   const { connectorsApiBasePath, kafkaManagementApiBasePath, getToken } =
@@ -50,7 +51,7 @@ export const OverviewTab: FC<OverviewTabProps> = ({
   }, []);
 
   const getKIData = useCallback((data) => {
-    setKafkaInstanceData(data as KafkaInstance);
+    setKafkaInstanceData(data as KafkaRequest);
   }, []);
 
   const onError = useCallback(
