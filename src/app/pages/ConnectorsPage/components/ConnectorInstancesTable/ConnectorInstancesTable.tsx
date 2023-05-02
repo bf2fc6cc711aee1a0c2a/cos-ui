@@ -4,7 +4,6 @@ import { EmptyStateNoMatchesFound } from '@app/components/EmptyStateNoMatchesFou
 import { ConnectorMachineActorRef } from '@app/machines/Connector.machine';
 import { validateSearchField } from '@utils/shared';
 import React, { FunctionComponent } from 'react';
-import { NavLink } from 'react-router-dom';
 
 import { Card, PageSection } from '@patternfly/react-core';
 
@@ -142,7 +141,8 @@ export const ConnectorInstancesTable: FunctionComponent<
               errorMessage: t('input_field_invalid_message'),
             },
           }}
-          tools={[
+          tools={
+            /*
             <NavLink
               className="pf-c-button pf-m-primary"
               to={'/create-connector'}
@@ -150,7 +150,9 @@ export const ConnectorInstancesTable: FunctionComponent<
             >
               {t('createConnectorsInstance')}
             </NavLink>,
-          ]}
+          */
+            undefined
+          }
           itemCount={itemCount}
           page={page}
           perPage={size}

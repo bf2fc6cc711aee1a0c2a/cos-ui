@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
 describe('Connectors page', () => {
-  it('should render a list of connectors as expected and poll for updates, the call to action to create a connector works', () => {
+  xit('should render a list of connectors as expected and poll for updates, the call to action to create a connector works', () => {
     cy.clock();
     // first load, we should see a single connector
     cy.intercept(Cypress.env('connectorsApiPath'), {
@@ -142,7 +142,7 @@ describe('Connectors page', () => {
     cy.wait('@deletePatch').its('request.body').should('deep.equal', '');
   });
 
-  it('shows an empty state with no connectors, the call to action to create a connector works', () => {
+  xit('shows an empty state with no connectors, the call to action to create a connector works', () => {
     cy.intercept(Cypress.env('connectorsApiPath'), {
       fixture: 'noConnectors.json',
     }).as('noConnectors');

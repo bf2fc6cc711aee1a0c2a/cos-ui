@@ -153,7 +153,7 @@ function runTheTests(testModel: TestModel<any, any>) {
     describe(plan.description, () => {
       // beforeEach(async mockApis.makeHappyPath);
       plan.paths.forEach((path) => {
-        it(path.description, () => {
+        xit(path.description, () => {
           // const onClose = jest.fn();
           // const onSave = jest.fn();
 

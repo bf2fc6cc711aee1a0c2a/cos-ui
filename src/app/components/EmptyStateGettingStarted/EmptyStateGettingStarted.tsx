@@ -78,7 +78,12 @@ export const EmptyStateGettingStarted: FunctionComponent<
           </Trans>
         </Text>
       </EmptyStateBody>
-      <Button variant={'primary'} onClick={onCreate} ouiaId={'button-create'}>
+      <Button
+        isDisabled
+        variant={'primary'}
+        onClick={onCreate}
+        ouiaId={'button-create'}
+      >
         {t('createConnectorsInstance')}
       </Button>
     </EmptyState>
