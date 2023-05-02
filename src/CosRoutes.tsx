@@ -1,12 +1,7 @@
 import { ConnectorDetailsPage } from '@app/pages/ConnectorDetailsPage/ConnectorDetailsPage';
 import { ConnectorsPage } from '@app/pages/ConnectorsPage/ConnectorsPage';
-import { CreateConnectorPage } from '@app/pages/CreateConnectorPage/CreateConnectorPage';
-import { DuplicateConnectorPage } from '@app/pages/CreateConnectorPage/DuplicateConnectorPage';
 import React, { FunctionComponent, useCallback } from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
-
-import { useTranslation } from '@rhoas/app-services-ui-components';
-import { AlertVariant, useAlert } from '@rhoas/app-services-ui-shared';
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
 
 import { CosContextProvider } from './hooks/useCos';
 
@@ -21,8 +16,10 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
   connectorsApiBasePath,
   kafkaManagementApiBasePath,
 }) => {
+  /*
   const { t } = useTranslation();
   const alert = useAlert();
+  */
   const history = useHistory();
   const goToConnectorsList = useCallback(() => history.push('/'), [history]);
   const goToCreateConnector = useCallback(
@@ -46,6 +43,7 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
     [history]
   );
 
+  /*
   const onConnectorSave = useCallback(
     (name: string) => {
       alert?.addAlert({
@@ -58,6 +56,7 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
     },
     [alert, goToConnectorsList, t]
   );
+  */
   return (
     <CosContextProvider
       getToken={getToken}
@@ -73,16 +72,22 @@ export const CosRoutes: FunctionComponent<CosRoutesProps> = ({
           />
         </Route>
         <Route path={'/create-connector'}>
+          <Redirect to={'/'} />
+          {/*
           <CreateConnectorPage
             onSave={onConnectorSave}
             onClose={goToConnectorsList}
           />
+          */}
         </Route>
         <Route path={'/duplicate-connector'}>
+          <Redirect to={'/'} />
+          {/*
           <DuplicateConnectorPage
             onSave={onConnectorSave}
             onClose={goToConnectorsList}
           />
+          */}
         </Route>
         <Route path={'/:id/'}>
           <ConnectorDetailsPage

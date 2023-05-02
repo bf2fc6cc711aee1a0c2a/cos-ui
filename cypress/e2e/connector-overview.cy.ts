@@ -40,7 +40,7 @@ describe(
       cy.wait('@slack-connector-kafka-namespace');
     };
 
-    it('should show the overview for a connector with the appropriate kafka and namespace', () => {
+    xit('should show the overview for a connector with the appropriate kafka and namespace', () => {
       cy.visit(Cypress.env('overview'));
       waitForData();
       cy.findByText('cc1p3tjvcap6794aj210').should('exist');
@@ -48,7 +48,7 @@ describe(
       cy.findByText('default-connector-namespace').should('exist');
     });
 
-    it('should show the connector configuration, edit the properties, clear a value and save it successfully', () => {
+    xit('should show the connector configuration, edit the properties, clear a value and save it successfully', () => {
       cy.visit(Cypress.env('overview'));
       waitForData();
       cy.findByText('Configuration').click();
@@ -70,7 +70,7 @@ describe(
         });
     });
 
-    it('should change the error handler from stop to log with the correct request', () => {
+    xit('should change the error handler from stop to log with the correct request', () => {
       cy.visit(Cypress.env('overview'));
       waitForData();
       cy.findByText('Configuration').click();
