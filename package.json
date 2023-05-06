@@ -104,7 +104,7 @@
     "i18next-parser": "5.4.0",
     "jest": "27.5.1",
     "jest-environment-jsdom": "27.5.1",
-    "jest-mock-axios": "4.7.1",
+    "jest-mock-axios": "4.7.2",
     "keycloak-js": "9.0.0",
     "lint-staged": "11.2.6",
     "mini-css-extract-plugin": "2.7.5",
