@@ -81,7 +81,7 @@
     "chai": "4.3.7",
     "chromatic": "6.17.4",
     "copy-webpack-plugin": "9.1.0",
-    "css-loader": "6.8.0",
+    "css-loader": "6.8.1",
     "css-minimizer-webpack-plugin": "3.4.1",
     "cssnano": "5.1.15",
     "cypress": "10.11.0",
